@@ -26,15 +26,15 @@ export function ThemeSwitcher() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme("light")}>
-          <Sun />
+          <Sun className="opacity-60" aria-hidden="true" />
           <span>Light</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("dark")}>
-          <Moon />
+          <Moon className="opacity-60" aria-hidden="true" />
           <span>Dark</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("system")}>
-          <Monitor />
+          <Monitor className="opacity-60" aria-hidden="true" />
           <span>System</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

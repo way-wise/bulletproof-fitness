@@ -13,6 +13,9 @@ export default {
       padding: "1rem",
     },
     extend: {
+      fontFamily: {
+        quicksand: ["var(--font-quicksand)"],
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -59,6 +62,20 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "collapsible-expand": {
+          from: { height: "0px" },
+          to: { height: "var(--radix-collapsible-content-height)" },
+        },
+        "collapsible-collapse": {
+          from: { height: "var(--radix-collapsible-content-height)" },
+          to: { height: "0px" },
+        },
+      },
+      animation: {
+        "collapsible-expand": "collapsible-expand 0.2s ease-out",
+        "collapsible-collapse": "collapsible-collapse 0.2s ease-out",
       },
     },
   },

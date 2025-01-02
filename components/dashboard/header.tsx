@@ -1,3 +1,5 @@
+"use client";
+
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, LogOut, Menu, UserRound } from "lucide-react";
@@ -11,12 +13,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSidebar } from "@/providers/sidebar-provider";
 
 const Header = () => {
+  const { toggleSidebar } = useSidebar();
+
   return (
-    <header className="flex h-16 shrink-0 items-center justify-between border-b border-border px-6 dark:bg-slate-900">
-      <Button size="icon" variant="secondary">
-        <Menu className="size-5" />
+    <header className="flex h-16 shrink-0 items-center justify-between border-b px-6 dark:bg-slate-900">
+      <Button onClick={toggleSidebar} size="icon" variant="secondary">
+        <Menu />
       </Button>
       <div className="flex items-center gap-4">
         <ThemeSwitcher />
@@ -38,7 +43,7 @@ const Header = () => {
               <span className="truncate text-sm font-medium text-foreground">
                 Mason Alex
               </span>
-              <span className="truncate text-sm font-normal text-muted-foreground">
+              <span className="truncate text-sm font-medium text-muted-foreground">
                 mason@example.com
               </span>
             </DropdownMenuLabel>
