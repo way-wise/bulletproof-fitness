@@ -9,17 +9,6 @@ const Navbar = () => {
         <Link href="/" className="text-2xl font-bold">
           Logo
         </Link>
-        <ul className="flex gap-6">
-          <li>
-            <Link href="/">Home</Link>
-          </li>
-          <li>
-            <Link href="/about">About</Link>
-          </li>
-          <li>
-            <Link href="/contact">Contact</Link>
-          </li>
-        </ul>
         <div className="flex items-center gap-4">
           <ThemeSwitcher />
           <Button asChild>
