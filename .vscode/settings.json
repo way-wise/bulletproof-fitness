@@ -1,4 +1,4 @@
 {
   "css.lint.unknownAtRules": "ignore",
-  "cSpell.words": ["usehooks"]
+  "cSpell.words": ["autoincrement", "usehooks"]
 }

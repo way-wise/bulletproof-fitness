@@ -3,6 +3,7 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInSchema } from "@/validators/authValidators";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import { FaLinkedin } from "react-icons/fa";
@@ -25,9 +26,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { signIn } from "@/lib/auth-client";
 import Link from "next/link";
+import { FormError } from "@/components/ui/form-error";
 
 const SigninForm = () => {
+  const [formError, setFormError] = useState<string>("");
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -36,8 +43,24 @@ const SigninForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof signInSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof signInSchema>) => {
+    await signIn.email(
+      {
+        email: values.email,
+        password: values.password,
+      },
+      {
+        onRequest: () => {
+          setFormError("");
+        },
+        onSuccess: () => {
+          router.replace("/dashboard");
+        },
+        onError: (ctx) => {
+          setFormError(ctx.error.message);
+        },
+      },
+    );
   };
 
   return (
@@ -49,7 +72,7 @@ const SigninForm = () => {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormFieldset>
+            <FormFieldset disabled={form.formState.isSubmitting}>
               <FormField
                 control={form.control}
                 name="email"
@@ -85,7 +108,12 @@ const SigninForm = () => {
                 )}
               />
             </FormFieldset>
-            <Button type="submit" className="mt-4 w-full">
+            <FormError message={formError} />
+            <Button
+              type="submit"
+              className="mt-4 w-full"
+              isLoading={form.formState.isSubmitting}
+            >
               Sign In
             </Button>
 
