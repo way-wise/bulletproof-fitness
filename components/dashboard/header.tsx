@@ -50,11 +50,11 @@ const Header = () => {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <UserRound className="opacity-60" aria-hidden="true" />
+                <UserRound aria-hidden="true" />
                 <span>Profile</span>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <LogOut className="opacity-60" aria-hidden="true" />
+                <LogOut aria-hidden="true" />
                 <span>Logout</span>
               </DropdownMenuItem>
             </DropdownMenuGroup>
