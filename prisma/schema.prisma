@@ -13,41 +13,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            Int       @id @default(autoincrement())
-  email         String    @unique
+model users {
+  id            String     @id @default(cuid())
+  email         String     @unique
   name          String?
   emailVerified Boolean
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
-
-  @@map("user")
+  sessions      sessions[]
+  accounts      accounts[]
 }
 
-model Session {
-  id        String   @id
+model sessions {
+  id        String   @id @default(cuid())
   expiresAt DateTime
   token     String
   createdAt DateTime
   updatedAt DateTime
   ipAddress String?
   userAgent String?
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  user      users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
-  @@map("session")
 }
 
-model Account {
-  id                    String    @id
+model accounts {
+  id                    String    @id @default(cuid())
   accountId             String
   providerId            String
-  userId                Int
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                String
+  user                  users     @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -57,17 +54,13 @@ model Account {
   password              String?
   createdAt             DateTime
   updatedAt             DateTime
-
-  @@map("account")
 }
 
-model Verification {
-  id         String    @id
+model verifications {
+  id         String    @id @default(cuid())
   identifier String
   value      String
   expiresAt  DateTime
   createdAt  DateTime?
   updatedAt  DateTime?
-
-  @@map("verification")
 }

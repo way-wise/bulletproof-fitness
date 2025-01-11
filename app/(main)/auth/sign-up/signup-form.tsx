@@ -2,7 +2,7 @@
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signInSchema } from "@/validators/authValidators";
+import { signUpSchema } from "@/validators/authValidators";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
@@ -27,25 +27,27 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { signIn } from "@/lib/auth-client";
-import Link from "next/link";
+import { signUp } from "@/lib/auth-client";
 import { FormError } from "@/components/ui/form-error";
+import Link from "next/link";
 
-const SigninForm = () => {
+const SignupForm = () => {
   const [formError, setFormError] = useState<string>("");
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof signInSchema>>({
-    resolver: zodResolver(signInSchema),
+  const form = useForm<z.infer<typeof signUpSchema>>({
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof signInSchema>) => {
-    await signIn.email(
+  const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
+    await signUp.email(
       {
+        name: values.name,
         email: values.email,
         password: values.password,
       },
@@ -66,13 +68,30 @@ const SigninForm = () => {
   return (
     <Card>
       <CardHeader className="items-center">
-        <CardTitle className="text-2xl">Sign In</CardTitle>
-        <CardDescription>Enter your account details to login</CardDescription>
+        <CardTitle className="text-2xl">Sign Up</CardTitle>
+        <CardDescription>Create an account to continue</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FormFieldset disabled={form.formState.isSubmitting}>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Enter your name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="email"
@@ -114,7 +133,7 @@ const SigninForm = () => {
               className="mt-4 w-full"
               isLoading={form.formState.isSubmitting}
             >
-              Sign In
+              Sign Up
             </Button>
 
             <div className="relative py-4 text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
@@ -123,23 +142,23 @@ const SigninForm = () => {
               </span>
             </div>
 
-            <div className="space-y-3">
+            <div className="flex flex-col items-center gap-3 md:flex-row">
               <Button type="button" variant="secondary" className="w-full">
                 <FcGoogle className="size-5" />
-                <span>Login with Google</span>
+                <span>Google</span>
               </Button>
 
               <Button type="button" variant="secondary" className="w-full">
                 <FaLinkedin className="size-5 text-[#0072b1]" />
-                <span>Login with LinkedIn</span>
+                <span>LinkedIn</span>
               </Button>
             </div>
           </form>
         </Form>
         <div className="mt-5 space-x-1 text-center text-sm">
-          <span>Don&apos;t have an account?</span>
-          <Link href="/auth/sign-up" className="font-medium underline">
-            Sign Up
+          <span>Already have an account?</span>
+          <Link href="/auth/sign-in" className="font-medium underline">
+            Sign In
           </Link>
         </div>
       </CardContent>
@@ -147,4 +166,4 @@ const SigninForm = () => {
   );
 };
 
-export default SigninForm;
+export default SignupForm;
