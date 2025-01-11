@@ -56,7 +56,7 @@ const SignupForm = () => {
           setFormError("");
         },
         onSuccess: () => {
-          router.push("/dashboard");
+          router.replace("/dashboard");
         },
         onError: (ctx) => {
           setFormError(ctx.error.message);

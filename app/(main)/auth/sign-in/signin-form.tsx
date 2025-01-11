@@ -28,8 +28,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
-import Link from "next/link";
 import { FormError } from "@/components/ui/form-error";
+import Link from "next/link";
 
 const SigninForm = () => {
   const [formError, setFormError] = useState<string>("");
@@ -54,7 +54,7 @@ const SigninForm = () => {
           setFormError("");
         },
         onSuccess: () => {
-          router.push("/dashboard");
+          router.replace("/dashboard");
         },
         onError: (ctx) => {
           setFormError(ctx.error.message);

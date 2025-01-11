@@ -14,9 +14,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSidebar } from "@/providers/sidebar-provider";
+import { signOut, useSession } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
   const { toggleSidebar } = useSidebar();
+  const { data } = useSession();
+  const router = useRouter();
 
   return (
     <header className="flex h-16 shrink-0 items-center justify-between border-b px-6 dark:bg-slate-900">
@@ -41,10 +45,10 @@ const Header = () => {
           <DropdownMenuContent align="end" className="max-w-64">
             <DropdownMenuLabel className="flex min-w-0 flex-col">
               <span className="truncate text-sm font-medium text-foreground">
-                Mason Alex
+                {data?.user.name}
               </span>
               <span className="truncate text-sm font-medium text-muted-foreground">
-                mason@example.com
+                {data?.user.email}
               </span>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -53,7 +57,17 @@ const Header = () => {
                 <UserRound aria-hidden="true" />
                 <span>Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={async () => {
+                  await signOut({
+                    fetchOptions: {
+                      onSuccess: () => {
+                        router.replace("/auth/sign-in");
+                      },
+                    },
+                  });
+                }}
+              >
                 <LogOut aria-hidden="true" />
                 <span>Logout</span>
               </DropdownMenuItem>
