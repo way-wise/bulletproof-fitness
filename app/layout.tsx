@@ -3,6 +3,7 @@ import { Quicksand } from "next/font/google";
 import "./globals.css";
 
 import { ThemeProvider } from "@/providers/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const quickSand = Quicksand({
   variable: "--font-quicksand",
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className={`${quickSand.variable} antialiased`}>
         <ThemeProvider attribute="class" enableSystem>
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

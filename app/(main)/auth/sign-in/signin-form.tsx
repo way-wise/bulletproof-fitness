@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
 import { FormError } from "@/components/ui/form-error";
+import { toast } from "sonner";
 import Link from "next/link";
 
 const SigninForm = () => {
@@ -54,7 +55,8 @@ const SigninForm = () => {
           setFormError("");
         },
         onSuccess: () => {
-          router.replace("/dashboard");
+          toast.success("Login successful");
+          router.push("/dashboard");
         },
         onError: (ctx) => {
           setFormError(ctx.error.message);
