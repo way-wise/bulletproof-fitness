@@ -58,7 +58,8 @@ const SignupForm = () => {
         },
         onSuccess: () => {
           toast.success("Registration successful");
-          router.push("/dashboard");
+          router.replace("/dashboard");
+          router.refresh();
         },
         onError: (ctx) => {
           setFormError(ctx.error.message);

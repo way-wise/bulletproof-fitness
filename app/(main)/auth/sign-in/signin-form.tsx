@@ -56,7 +56,8 @@ const SigninForm = () => {
         },
         onSuccess: () => {
           toast.success("Login successful");
-          router.push("/dashboard");
+          router.replace("/dashboard");
+          router.refresh();
         },
         onError: (ctx) => {
           setFormError(ctx.error.message);

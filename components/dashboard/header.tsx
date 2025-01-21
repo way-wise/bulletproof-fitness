@@ -63,6 +63,7 @@ const Header = () => {
                     fetchOptions: {
                       onSuccess: () => {
                         router.replace("/auth/sign-in");
+                        router.refresh();
                       },
                     },
                   });
