@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer className="mt-auto border-t border-border py-4 dark:bg-slate-900">
+    <footer className="mt-auto border-t border-border py-4 dark:bg-zinc-900">
       <div className="container">
         <p className="text-center">
           &copy;Copyright {new Date().getFullYear()} Company Name

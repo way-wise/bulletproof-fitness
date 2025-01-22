@@ -34,7 +34,7 @@ export function useSidebar() {
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(true);
   const [openMobile, setOpenMobile] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 768px)", {
+  const isMobile = useMediaQuery("(max-width: 1024px)", {
     initializeWithValue: false,
   });
 

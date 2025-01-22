@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${quickSand.variable} antialiased`}>
+      <body className={quickSand.variable}>
         <ThemeProvider attribute="class" enableSystem>
           {children}
           <Toaster />
