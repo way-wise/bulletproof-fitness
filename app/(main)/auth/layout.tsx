@@ -1,19 +1,7 @@
-import Image from "next/image";
-
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="grid grow place-items-center px-4 py-8">
-      <main className="flex w-full max-w-sm flex-col gap-8">
-        <Image
-          src="/logo.svg"
-          width={200}
-          height={100}
-          alt="logo"
-          className="mx-auto w-44"
-          priority
-        />
-        {children}
-      </main>
+      <main className="flex w-full max-w-sm flex-col gap-8">{children}</main>
     </div>
   );
 };

@@ -72,11 +72,13 @@ const SignupForm = () => {
     <Card>
       <CardHeader className="items-center">
         <CardTitle className="text-2xl">Sign Up</CardTitle>
-        <CardDescription>Create an account to continue</CardDescription>
+        <CardDescription className="text-center">
+          Create an account to continue
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <form onSubmit={form.handleSubmit(onSubmit)} autoComplete="off">
             <FormFieldset disabled={form.formState.isSubmitting}>
               <FormField
                 control={form.control}
@@ -158,7 +160,7 @@ const SignupForm = () => {
             </div>
           </form>
         </Form>
-        <div className="mt-5 space-x-1 text-center text-sm">
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-1 text-center text-sm">
           <span>Already have an account?</span>
           <Link href="/auth/sign-in" className="font-medium underline">
             Sign In

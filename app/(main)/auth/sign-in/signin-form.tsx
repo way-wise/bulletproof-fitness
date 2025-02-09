@@ -70,7 +70,9 @@ const SigninForm = () => {
     <Card>
       <CardHeader className="items-center">
         <CardTitle className="text-2xl">Sign In</CardTitle>
-        <CardDescription>Enter your account details to login</CardDescription>
+        <CardDescription className="text-center">
+          Enter your account details to login
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -139,7 +141,7 @@ const SigninForm = () => {
             </div>
           </form>
         </Form>
-        <div className="mt-5 space-x-1 text-center text-sm">
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-1 text-center text-sm">
           <span>Don&apos;t have an account?</span>
           <Link href="/auth/sign-up" className="font-medium underline">
             Sign Up

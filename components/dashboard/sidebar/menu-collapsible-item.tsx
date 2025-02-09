@@ -14,7 +14,7 @@ const MenuCollapsibleItem = ({ title, url }: MenuCollapsibleItemProps) => {
   return (
     <Link
       href={url}
-      className="relative flex items-center before:h-px before:w-[1.6rem] before:bg-border before:transition-colors before:content-[''] focus-visible:outline-none"
+      className="relative flex items-center before:h-px before:w-[1.6rem] before:bg-border before:transition-colors before:content-[''] focus-visible:outline-hidden"
     >
       <span
         className={cn(
