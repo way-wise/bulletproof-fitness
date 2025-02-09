@@ -33,6 +33,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 
 const SigninForm = () => {
+  const [pendingAuth, setPendingAuth] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>("");
   const router = useRouter();
 
@@ -52,6 +53,7 @@ const SigninForm = () => {
       },
       {
         onRequest: () => {
+          setPendingAuth(true);
           setFormError("");
         },
         onSuccess: () => {
@@ -64,6 +66,8 @@ const SigninForm = () => {
         },
       },
     );
+
+    setPendingAuth(false);
   };
 
   return (
@@ -77,7 +81,7 @@ const SigninForm = () => {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormFieldset disabled={form.formState.isSubmitting}>
+            <FormFieldset disabled={pendingAuth}>
               <FormField
                 control={form.control}
                 name="email"
@@ -117,7 +121,7 @@ const SigninForm = () => {
             <Button
               type="submit"
               className="mt-4 w-full"
-              isLoading={form.formState.isSubmitting}
+              isLoading={pendingAuth}
             >
               Sign In
             </Button>
@@ -129,12 +133,22 @@ const SigninForm = () => {
             </div>
 
             <div className="space-y-3">
-              <Button type="button" variant="secondary" className="w-full">
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full"
+                disabled={pendingAuth}
+              >
                 <FcGoogle className="size-5" />
                 <span>Login with Google</span>
               </Button>
 
-              <Button type="button" variant="secondary" className="w-full">
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full"
+                disabled={pendingAuth}
+              >
                 <FaLinkedin className="size-5 text-[#0072b1]" />
                 <span>Login with LinkedIn</span>
               </Button>

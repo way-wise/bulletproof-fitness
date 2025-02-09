@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={quickSand.variable}>
-        <ThemeProvider attribute="class" enableSystem>
+        <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
           {children}
           <Toaster />
         </ThemeProvider>

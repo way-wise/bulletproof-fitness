@@ -5,11 +5,11 @@ import { SidebarProvider } from "@/providers/sidebar-provider";
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider>
-      <div className="flex h-screen">
+      <div className="fixed flex size-full">
         <Sidebar />
-        <div className="flex flex-1 flex-col">
+        <div className="flex w-full flex-col overflow-hidden">
           <Header />
-          <main className="flex-1 overflow-y-auto p-6">{children}</main>
+          <main className="overflow-y-auto p-6">{children}</main>
         </div>
       </div>
     </SidebarProvider>

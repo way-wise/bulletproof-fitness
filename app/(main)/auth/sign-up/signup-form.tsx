@@ -33,6 +33,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 
 const SignupForm = () => {
+  const [pendingAuth, setPendingAuth] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>("");
   const router = useRouter();
 
@@ -54,6 +55,7 @@ const SignupForm = () => {
       },
       {
         onRequest: () => {
+          setPendingAuth(true);
           setFormError("");
         },
         onSuccess: () => {
@@ -66,6 +68,8 @@ const SignupForm = () => {
         },
       },
     );
+
+    setPendingAuth(false);
   };
 
   return (
@@ -79,7 +83,7 @@ const SignupForm = () => {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} autoComplete="off">
-            <FormFieldset disabled={form.formState.isSubmitting}>
+            <FormFieldset disabled={pendingAuth}>
               <FormField
                 control={form.control}
                 name="name"
@@ -136,7 +140,7 @@ const SignupForm = () => {
             <Button
               type="submit"
               className="mt-4 w-full"
-              isLoading={form.formState.isSubmitting}
+              isLoading={pendingAuth}
             >
               Sign Up
             </Button>
@@ -148,12 +152,22 @@ const SignupForm = () => {
             </div>
 
             <div className="flex flex-col items-center gap-3 md:flex-row">
-              <Button type="button" variant="secondary" className="w-full">
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full"
+                disabled={pendingAuth}
+              >
                 <FcGoogle className="size-5" />
                 <span>Google</span>
               </Button>
 
-              <Button type="button" variant="secondary" className="w-full">
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full"
+                disabled={pendingAuth}
+              >
                 <FaLinkedin className="size-5 text-[#0072b1]" />
                 <span>LinkedIn</span>
               </Button>
