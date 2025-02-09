@@ -1,4 +1,10 @@
 {
   "css.lint.unknownAtRules": "ignore",
-  "cSpell.words": ["autoincrement", "sonner", "Stylesheet", "usehooks"]
+  "cSpell.words": [
+    "autoincrement",
+    "sonner",
+    "Stylesheet",
+    "turbopack",
+    "usehooks"
+  ]
 }
