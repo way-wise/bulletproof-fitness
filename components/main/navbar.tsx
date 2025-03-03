@@ -46,10 +46,7 @@ const Navbar = () => {
                   className="h-auto p-0 hover:bg-transparent"
                 >
                   <Avatar>
-                    <AvatarImage
-                      src="https://i.pravatar.cc/40?img=12"
-                      alt="Profile image"
-                    />
+                    <AvatarImage src="" alt="Profile image" />
                     <AvatarFallback>T</AvatarFallback>
                   </Avatar>
                   <span className="max-w-52 truncate text-lg">

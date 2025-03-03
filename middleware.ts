@@ -1,21 +1,13 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { getSessionCookie } from "better-auth/cookies";
 
-export default async function authMiddleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  const session = getSessionCookie(request);
+
   const { pathname } = request.nextUrl;
 
   const protectedRoute = pathname.startsWith("/dashboard");
   const authRoute = pathname.startsWith("/auth");
-
-  // Get the cookie from the request
-  const response = await fetch(
-    `${request.nextUrl.origin}/api/auth/get-session`,
-    {
-      headers: {
-        cookie: request.headers.get("cookie") || "",
-      },
-    },
-  );
-  const session = await response.json();
 
   /**
    * If not authenticated don't allow /dashboard pages

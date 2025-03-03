@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Quicksand } from "next/font/google";
 import "./globals.css";
 
+import { unstable_ViewTransition as ViewTransition } from "react";
+
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -24,7 +26,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={quickSand.variable}>
         <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
-          {children}
+          <ViewTransition>{children}</ViewTransition>
           <Toaster />
         </ThemeProvider>
       </body>
