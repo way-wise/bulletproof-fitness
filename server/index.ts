@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { auth } from "@server/lib/auth";
-import authModule from "@server/modules/auth";
-import userModule from "@server/modules/users";
+import { initAuth } from "@/server/middlewares/authMiddleware";
+import authModule from "@/server/modules/authModule";
 
 export const runtime = "nodejs";
 
@@ -14,36 +14,13 @@ const app = new Hono<{
   };
 }>().basePath("/api");
 
-// Cors Config
+// Cors config
 app.use("*", cors());
 
-// Better Auth Config
-app.use("*", async (c, next) => {
-  const session = await auth.api.getSession({ headers: c.req.raw.headers });
-
-  if (!session) {
-    c.set("user", null);
-    c.set("session", null);
-    return next();
-  }
-
-  c.set("user", session.user);
-  c.set("session", session.session);
-  return next();
-});
+// Auth init
+app.use("*", initAuth);
 
 // Routes
 app.route("/auth", authModule);
-app.route("/users", userModule);
-
-// 404 Not found
-app.notFound((c) => {
-  return c.json(
-    {
-      message: `${c.req.path} not found`,
-    },
-    404,
-  );
-});
 
 export default app;

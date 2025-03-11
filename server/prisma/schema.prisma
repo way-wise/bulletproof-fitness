@@ -20,6 +20,10 @@ model users {
   name          String?
   emailVerified Boolean
   image         String?
+  role          String?
+  banned        Boolean?
+  banReason     String?
+  banExpires    Int?
   createdAt     DateTime
   updatedAt     DateTime
   sessions      sessions[]
@@ -27,15 +31,16 @@ model users {
 }
 
 model sessions {
-  id        String   @id @default(cuid())
-  expiresAt DateTime
-  token     String
-  createdAt DateTime
-  updatedAt DateTime
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  expiresAt      DateTime
+  token          String
+  impersonatedBy String?
+  createdAt      DateTime
+  updatedAt      DateTime
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  user           users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
 }
