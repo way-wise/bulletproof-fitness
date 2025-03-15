@@ -2,6 +2,7 @@
   "css.lint.unknownAtRules": "ignore",
   "cSpell.words": [
     "autoincrement",
+    "cuid",
     "Loopnex",
     "sonner",
     "Stylesheet",
