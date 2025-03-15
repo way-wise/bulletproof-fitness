@@ -27,7 +27,12 @@ const Header = () => {
   return (
     <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b px-6 dark:bg-zinc-900">
       <div className="flex items-center gap-4">
-        <Button onClick={toggleSidebar} size="icon" variant="secondary">
+        <Button
+          aria-label="Toggle sidebar"
+          onClick={toggleSidebar}
+          size="icon"
+          variant="secondary"
+        >
           <Menu />
         </Button>
         <Button variant="secondary" className="hidden sm:inline-flex" asChild>
