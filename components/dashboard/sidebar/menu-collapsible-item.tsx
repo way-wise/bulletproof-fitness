@@ -14,16 +14,14 @@ const MenuCollapsibleItem = ({ title, url }: MenuCollapsibleItemProps) => {
   return (
     <Link
       href={url}
-      className="relative flex items-center before:h-px before:w-[1.6rem] before:bg-border before:transition-colors before:content-[''] focus-visible:outline-hidden"
+      className="relative flex items-center transition-colors before:h-px before:w-[1.6rem] before:bg-border before:transition-colors before:content-[''] focus-visible:outline-hidden"
     >
       <span
-        className={cn(
-          "w-full rounded-sm px-2.5 py-1 font-medium transition-colors",
-          {
-            "bg-secondary": active,
-            "text-secondary-foreground/70 hover:bg-secondary": !active,
-          },
-        )}
+        className={cn("w-full rounded-sm px-2.5 py-1 font-medium", {
+          "bg-secondary": active,
+          "text-secondary-foreground/70 hover:bg-secondary in-focus-visible:bg-secondary":
+            !active,
+        })}
       >
         {title}
       </span>
