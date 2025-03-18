@@ -53,7 +53,7 @@ const Sidebar = () => {
   return (
     <aside
       className={cn(
-        "hidden w-72 shrink-0 flex-col border-r transition-[margin] duration-300 md:flex dark:bg-zinc-900",
+        "hidden w-72 shrink-0 flex-col border-r bg-card transition-[margin] duration-300 md:flex",
         {
           "-ml-72": state === "collapsed",
         },

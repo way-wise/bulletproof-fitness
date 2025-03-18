@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
-import { Quicksand } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-
-import { unstable_ViewTransition as ViewTransition } from "react";
 
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 
-const quickSand = Quicksand({
-  variable: "--font-quicksand",
+const inter = Inter({
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -23,10 +21,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={quickSand.variable}>
+    <html lang="en" className={inter.className} suppressHydrationWarning>
+      <body>
         <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
-          <ViewTransition>{children}</ViewTransition>
+          {children}
           <Toaster />
         </ThemeProvider>
       </body>

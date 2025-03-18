@@ -25,7 +25,7 @@ const Header = () => {
   const router = useRouter();
 
   return (
-    <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b px-6 dark:bg-zinc-900">
+    <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b px-6 dark:bg-card">
       <div className="flex items-center gap-4">
         <Button
           aria-label="Toggle sidebar"
@@ -63,7 +63,7 @@ const Header = () => {
                   <AvatarImage src="" alt="Profile image" />
                   <AvatarFallback>T</AvatarFallback>
                 </Avatar>
-                <span className="max-w-52 truncate text-lg">
+                <span className="max-w-52 truncate text-base">
                   {session?.user.name}
                 </span>
                 <ChevronDown className="opacity-60" aria-hidden="true" />
@@ -74,7 +74,7 @@ const Header = () => {
                 <span className="truncate font-medium">
                   {session?.user.name}
                 </span>
-                <span className="truncate text-sm font-medium text-muted-foreground">
+                <span className="truncate text-sm text-muted-foreground">
                   {session?.user.email}
                 </span>
               </DropdownMenuLabel>

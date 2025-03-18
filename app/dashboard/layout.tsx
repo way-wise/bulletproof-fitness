@@ -9,7 +9,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         <Sidebar />
         <div className="flex w-full flex-col overflow-hidden">
           <Header />
-          <main className="grow overflow-y-auto p-6">{children}</main>
+          <main className="grow overflow-y-auto bg-zinc-50 p-6 dark:bg-background">
+            {children}
+          </main>
         </div>
       </div>
     </SidebarProvider>

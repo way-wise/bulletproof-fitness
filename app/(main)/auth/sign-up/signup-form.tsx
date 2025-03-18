@@ -146,7 +146,7 @@ const SignupForm = () => {
             </Button>
 
             <div className="relative py-4 text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-              <span className="relative z-10 bg-background px-2 font-medium text-muted-foreground">
+              <span className="relative z-10 bg-card px-2 font-medium text-muted-foreground">
                 OR
               </span>
             </div>
@@ -175,8 +175,13 @@ const SignupForm = () => {
           </form>
         </Form>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-1 text-center text-sm">
-          <span>Already have an account?</span>
-          <Link href="/auth/sign-in" className="font-medium underline">
+          <span className="text-muted-foreground">
+            Already have an account?
+          </span>
+          <Link
+            href="/auth/sign-in"
+            className="underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-hidden"
+          >
             Sign In
           </Link>
         </div>

@@ -23,7 +23,7 @@ const Navbar = () => {
   const router = useRouter();
 
   return (
-    <nav className="border-b border-border py-3 dark:bg-zinc-900">
+    <nav className="border-b border-border bg-white py-3 dark:bg-card">
       <div className="container flex items-center justify-between gap-4">
         <Link href="/" className="text-2xl font-bold">
           Logo
@@ -49,7 +49,7 @@ const Navbar = () => {
                     <AvatarImage src="" alt="Profile image" />
                     <AvatarFallback>T</AvatarFallback>
                   </Avatar>
-                  <span className="max-w-52 truncate text-lg">
+                  <span className="max-w-52 truncate text-base">
                     {session?.user.name}
                   </span>
                   <ChevronDown className="opacity-60" aria-hidden="true" />
