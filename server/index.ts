@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { secureHeaders } from "hono/secure-headers";
 import { cors } from "hono/cors";
 import { auth } from "@server/lib/auth";
 import { initAuth } from "@/server/middlewares/authMiddleware";
@@ -14,13 +15,26 @@ const app = new Hono<{
   };
 }>().basePath("/api");
 
+// Secure Headers
+app.use(secureHeaders());
+
 // Cors config
-app.use("*", cors());
+app.use(cors());
 
 // Auth init
-app.use("*", initAuth);
+app.use(initAuth);
 
 // Routes
 app.route("/auth", authModule);
+
+// Not found
+app.notFound((c) => {
+  return c.json(
+    {
+      message: `${c.req.path} not found`,
+    },
+    404,
+  );
+});
 
 export default app;

@@ -1,5 +1,5 @@
-import Footer from "@/components/main/footer";
-import Navbar from "@/components/main/navbar";
+import Footer from "@/app/(main)/_components/footer";
+import Navbar from "@/app/(main)/_components/navbar";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   return (

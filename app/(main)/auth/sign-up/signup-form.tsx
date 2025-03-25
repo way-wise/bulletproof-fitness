@@ -2,7 +2,7 @@
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signUpSchema } from "@/validators/authValidators";
+import { signUpSchema } from "@/schema/authSchema";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
