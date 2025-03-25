@@ -2,7 +2,7 @@ import { Context, Next } from "hono";
 import { auth } from "@server/lib/auth";
 
 // Auth init
-export async function initAuth(c: Context, next: Next) {
+export const initAuth = async (c: Context, next: Next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
   if (!session) {
@@ -14,10 +14,10 @@ export async function initAuth(c: Context, next: Next) {
   c.set("user", session.user);
   c.set("session", session.session);
   return next();
-}
+};
 
 // Prevent Unauthorized Request
-export async function requiresAuth(c: Context, next: Next) {
+export const requiresAuth = (c: Context, next: Next) => {
   const session = c.get("session");
 
   if (!session) {
@@ -25,4 +25,4 @@ export async function requiresAuth(c: Context, next: Next) {
   }
 
   return next();
-}
+};

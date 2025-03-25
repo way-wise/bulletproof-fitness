@@ -3,6 +3,7 @@ import { secureHeaders } from "hono/secure-headers";
 import { cors } from "hono/cors";
 import { auth } from "@server/lib/auth";
 import { initAuth } from "@/server/middlewares/authMiddleware";
+import { errorHandler } from "@server/middlewares/errorMiddleware";
 import authModule from "@/server/modules/authModule";
 
 export const runtime = "nodejs";
@@ -31,10 +32,13 @@ app.route("/auth", authModule);
 app.notFound((c) => {
   return c.json(
     {
-      message: `${c.req.path} not found`,
+      message: `${c.req.path} Not Found`,
     },
     404,
   );
 });
+
+// Error Handler
+app.onError(errorHandler);
 
 export default app;
