@@ -7,7 +7,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import { FaLinkedin } from "react-icons/fa";
-
 import {
   Card,
   CardHeader,
@@ -37,7 +36,7 @@ const SigninForm = () => {
   const [formError, setFormError] = useState<string>("");
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof signInSchema>>({
+  const form = useForm({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",

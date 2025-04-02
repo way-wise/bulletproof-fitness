@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 import { ThemeProvider } from "@/providers/theme-provider";
+import { ProgressProvider } from "@/providers/progress-provider";
 import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
@@ -24,8 +25,10 @@ export default function RootLayout({
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body>
         <ThemeProvider attribute="class" enableSystem disableTransitionOnChange>
-          {children}
-          <Toaster />
+          <ProgressProvider>
+            {children}
+            <Toaster />
+          </ProgressProvider>
         </ThemeProvider>
       </body>
     </html>

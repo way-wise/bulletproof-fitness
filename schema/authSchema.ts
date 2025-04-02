@@ -1,5 +1,3 @@
-"use client";
-
 import * as z from "zod";
 
 // Sign Up Schema
