@@ -1,8 +1,10 @@
+import { headers } from "next/headers";
 import { betterAuth } from "better-auth";
 import { admin } from "better-auth/plugins";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/prisma-client";
 
+// Auth Config
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -24,3 +26,12 @@ export const auth = betterAuth({
   },
   plugins: [admin()],
 });
+
+// Get the current user session from request headers
+export const getSession = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  return session;
+};

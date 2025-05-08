@@ -5,8 +5,10 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider        = "prisma-client-js"
+  provider        = "prisma-client"
   previewFeatures = ["relationJoins"]
+  output          = "generated/client"
+  moduleFormat    = "cjs"
 }
 
 datasource db {
@@ -15,9 +17,9 @@ datasource db {
 }
 
 model users {
-  id            String     @id @default(cuid())
+  id            String     @id @default(ulid())
   email         String     @unique
-  name          String?
+  name          String
   emailVerified Boolean
   image         String?
   role          String?
@@ -31,7 +33,7 @@ model users {
 }
 
 model sessions {
-  id             String   @id @default(cuid())
+  id             String   @id @default(ulid())
   expiresAt      DateTime
   token          String   @unique
   impersonatedBy String?
@@ -46,7 +48,7 @@ model sessions {
 }
 
 model accounts {
-  id                    String    @id @default(cuid())
+  id                    String    @id @default(ulid())
   accountId             String
   providerId            String
   userId                String
@@ -65,7 +67,7 @@ model accounts {
 }
 
 model verifications {
-  id         String    @id @default(cuid())
+  id         String    @id @default(ulid())
   identifier String
   value      String
   expiresAt  DateTime

@@ -19,8 +19,7 @@ app.use(secureHeaders());
 app.use(cors());
 
 // Routes
-app.route("/auth", authModule);
-app.route("/users", userModule);
+const routes = app.route("/auth", authModule).route("/users", userModule);
 
 // Not found
 app.notFound((c) => {
@@ -37,3 +36,5 @@ app.onError(errorHandler);
 
 export const GET = handle(app);
 export const POST = handle(app);
+
+export type AppType = typeof routes;

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ProfileDropdown } from "./profile-dropdown";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { Button } from "@/components/ui/button";
-import { getSession } from "@/lib/getSession";
+import { getSession } from "@/lib/auth";
 
 const Navbar = async () => {
   const session = await getSession();
