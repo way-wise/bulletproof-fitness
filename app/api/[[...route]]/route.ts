@@ -19,6 +19,7 @@ app.use(secureHeaders());
 app.use(cors());
 
 // Routes
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const routes = app.route("/auth", authModule).route("/users", userModule);
 
 // Not found
