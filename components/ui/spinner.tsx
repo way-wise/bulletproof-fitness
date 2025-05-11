@@ -1,11 +1,14 @@
-const Spinner = () => {
+import { type ClassValue } from "clsx";
+import { cn } from "@/lib/utils";
+
+const Spinner = ({ className }: { className?: ClassValue }) => {
   return (
     <svg
       width="24"
       height="24"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
-      className="size-8 stroke-primary"
+      className={cn("size-8 stroke-primary", className)}
     >
       <style>
         {`

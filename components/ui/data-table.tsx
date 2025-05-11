@@ -11,6 +11,13 @@ import {
 import { PaginatedData } from "@/lib/dataTypes";
 import { useQueryStates, parseAsInteger } from "nuqs";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // Table Props Interface
@@ -23,6 +30,8 @@ export const DataTable = <TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) => {
+  const [pending, startTransition] = React.useTransition();
+
   // Pagination state
   const [paginationState, setPaginationState] = useQueryStates(
     {
@@ -30,10 +39,11 @@ export const DataTable = <TData, TValue>({
       limit: parseAsInteger.withDefault(10),
     },
     {
+      startTransition,
       shallow: false,
-    }
+    },
   );
-  
+
   // Row selection state
   const [rowSelection, setRowSelection] = React.useState({});
 
@@ -42,18 +52,31 @@ export const DataTable = <TData, TValue>({
     pageIndex: paginationState.page - 1,
     pageSize: paginationState.limit,
   };
-  
+
   // Handle pagination changes
-  const handlePaginationChange = (updaterOrValue: PaginationState | ((old: PaginationState) => PaginationState)) => {
+  const handlePaginationChange = (
+    updaterOrValue:
+      | PaginationState
+      | ((old: PaginationState) => PaginationState),
+  ) => {
     // Handle both function updater and direct value
-    const newPagination = typeof updaterOrValue === 'function' 
-      ? updaterOrValue(pagination) 
-      : updaterOrValue;
-    
+    const newPagination =
+      typeof updaterOrValue === "function"
+        ? updaterOrValue(pagination)
+        : updaterOrValue;
+
     // Update both page and limit
     setPaginationState({
       page: newPagination.pageIndex + 1,
       limit: newPagination.pageSize,
+    });
+  };
+
+  // Handle limit changes
+  const handleLimitChange = (limit: string) => {
+    setPaginationState({
+      limit: parseInt(limit),
+      page: 1,
     });
   };
 
@@ -77,7 +100,7 @@ export const DataTable = <TData, TValue>({
     <>
       <div className="overflow-auto">
         <table className="w-full">
-          <thead className="border-b bg-secondary tracking-wide dark:bg-background">
+          <thead className="sticky top-0 border-b bg-secondary tracking-wide dark:bg-background">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -133,25 +156,25 @@ export const DataTable = <TData, TValue>({
 
       {/* Pagination */}
       {table.getPaginationRowModel().rows.length > 0 && (
-        <div className="flex items-center justify-between pt-6">
+        <div className="flex flex-wrap items-center justify-center sm:justify-between gap-4 pt-6">
           <div className="text-sm text-muted-foreground">
             Showing {(paginationState.page - 1) * paginationState.limit + 1}
             &nbsp;&minus;&nbsp;
             {Math.min(
               paginationState.page * paginationState.limit,
-              data.meta.total
-            )} 
+              data.meta.total,
+            )}
             &nbsp;of&nbsp;
             {data.meta.total}
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-x-2">
             <Button
               variant="outline"
               size="icon"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="icon" />
               <span className="sr-only">Previous</span>
             </Button>
             <Button
@@ -160,9 +183,29 @@ export const DataTable = <TData, TValue>({
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="icon" />
               <span className="sr-only">Next</span>
             </Button>
+          </div>
+          <div className="flex items-center gap-x-2">
+            <label className="text-sm text-muted-foreground">
+              Rows per page:
+            </label>
+            <Select
+              value={paginationState.limit.toString()}
+              onValueChange={handleLimitChange}
+            >
+              <SelectTrigger className="w-24">
+                <SelectValue placeholder="Select Limit" />
+              </SelectTrigger>
+              <SelectContent>
+                {[10, 30, 50, 100].map((limit) => (
+                  <SelectItem key={limit} value={limit.toString()}>
+                    {limit}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       )}
