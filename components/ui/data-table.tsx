@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Spinner from "@/components/ui/spinner";
 
 // Table Props Interface
 interface DataTableProps<TData, TValue> {
@@ -98,7 +99,14 @@ export const DataTable = <TData, TValue>({
 
   return (
     <>
-      <div className="overflow-auto">
+      <div className="relative overflow-auto">
+        {/* Loading overlay */}
+        {pending && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50">
+            <Spinner className="size-12" />
+          </div>
+        )}
+        {/* Main Table */}
         <table className="w-full">
           <thead className="sticky top-0 border-b bg-secondary tracking-wide dark:bg-background">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -156,7 +164,7 @@ export const DataTable = <TData, TValue>({
 
       {/* Pagination */}
       {table.getPaginationRowModel().rows.length > 0 && (
-        <div className="flex flex-wrap items-center justify-center sm:justify-between gap-4 pt-6">
+        <div className="flex flex-wrap items-center justify-center gap-4 pt-6 sm:justify-between">
           <div className="text-sm text-muted-foreground">
             Showing {(paginationState.page - 1) * paginationState.limit + 1}
             &nbsp;&minus;&nbsp;
