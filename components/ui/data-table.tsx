@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   type ColumnDef,
   flexRender,
@@ -19,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Spinner from "@/components/ui/spinner";
+import Spinner from "./spinner";
 
 // Table Props Interface
 interface DataTableProps<TData, TValue> {
@@ -99,72 +100,83 @@ export const DataTable = <TData, TValue>({
 
   return (
     <>
-      <div className="relative overflow-auto">
-        {/* Loading overlay */}
-        {pending && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50">
-            <Spinner className="size-12" />
-          </div>
-        )}
-        {/* Main Table */}
-        <table className="w-full">
-          <thead className="sticky top-0 border-b bg-secondary tracking-wide dark:bg-background">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="h-12 px-6 text-left font-medium whitespace-nowrap"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className="max-w-[230px] truncate px-6 py-4 text-sm"
+      <div className="relative">
+        {/* Smooth loading overlay */}
+        <AnimatePresence>
+          {pending && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="absolute inset-0 z-10 flex items-center justify-center bg-background/40"
+            >
+              <Spinner className="size-10" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {/* Table */}
+        <div className="relative overflow-auto">
+          <table className="w-full">
+            <thead className="border-b bg-secondary tracking-wide dark:bg-background">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="h-12 px-6 text-left font-medium whitespace-nowrap"
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </td>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </th>
                   ))}
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={columns.length}
-                  className="h-28 text-center text-lg text-muted-foreground"
-                >
-                  No data found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className="max-w-[230px] truncate px-6 py-3.5 text-sm"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={columns.length}
+                    className="h-28 text-center text-lg text-muted-foreground"
+                  >
+                    No data found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Pagination */}
       {table.getPaginationRowModel().rows.length > 0 && (
         <div className="flex flex-wrap items-center justify-center gap-4 pt-6 sm:justify-between">
+          {/* Pagination range indicator (e.g., '1-10 of 50') */}
           <div className="text-sm text-muted-foreground">
             Showing {(paginationState.page - 1) * paginationState.limit + 1}
             &nbsp;&minus;&nbsp;
@@ -175,45 +187,49 @@ export const DataTable = <TData, TValue>({
             &nbsp;of&nbsp;
             {data.meta.total}
           </div>
-          <div className="flex items-center gap-x-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <ChevronLeft className="icon" />
-              <span className="sr-only">Previous</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <ChevronRight className="icon" />
-              <span className="sr-only">Next</span>
-            </Button>
-          </div>
-          <div className="flex items-center gap-x-2">
-            <label className="text-sm text-muted-foreground">
-              Rows per page:
-            </label>
-            <Select
-              value={paginationState.limit.toString()}
-              onValueChange={handleLimitChange}
-            >
-              <SelectTrigger className="w-24">
-                <SelectValue placeholder="Select Limit" />
-              </SelectTrigger>
-              <SelectContent>
-                {[10, 30, 50, 100].map((limit) => (
-                  <SelectItem key={limit} value={limit.toString()}>
-                    {limit}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-4">
+            {/* Rows per page selector */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-muted-foreground">
+                Rows per page:
+              </label>
+              <Select
+                value={paginationState.limit.toString()}
+                onValueChange={handleLimitChange}
+              >
+                <SelectTrigger className="w-24">
+                  <SelectValue placeholder="Select Limit" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[10, 30, 50, 100].map((limit) => (
+                    <SelectItem key={limit} value={limit.toString()}>
+                      {limit}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Previous and Next buttons */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                <ChevronLeft className="icon" />
+                <span className="sr-only">Previous</span>
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                <ChevronRight className="icon" />
+                <span className="sr-only">Next</span>
+              </Button>
+            </div>
           </div>
         </div>
       )}

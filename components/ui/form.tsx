@@ -35,7 +35,7 @@ const FormFieldset = React.forwardRef<HTMLFieldSetElement, FieldsetProps>(
     return (
       <fieldset
         className={cn(
-          "space-y-2 disabled:pointer-events-none disabled:opacity-80",
+          "space-y-2 disabled:pointer-events-none disabled:opacity-90",
           className,
         )}
         ref={ref}

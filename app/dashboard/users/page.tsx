@@ -16,17 +16,7 @@ const UsersPage = async ({
   });
   const users = await response.json();
 
-  return (
-    <>
-      <hgroup className="mb-6">
-        <h1 className="text-2xl font-medium">Users</h1>
-        <p className="text-muted-foreground">
-          Manage your users and their roles.
-        </p>
-      </hgroup>
-      <UsersTable data={users} />
-    </>
-  );
+  return <UsersTable data={users} />;
 };
 
 export default UsersPage;

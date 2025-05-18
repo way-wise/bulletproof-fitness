@@ -46,7 +46,7 @@ export const ProfileDropdown = ({ session }: { session: Session }) => {
           <ChevronDown className="opacity-60" aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="max-w-64">
+      <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuLabel className="flex min-w-0 flex-col">
           <span className="truncate font-medium">{session?.user.name}</span>
           <span className="truncate text-sm text-muted-foreground">

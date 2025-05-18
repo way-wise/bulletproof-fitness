@@ -66,7 +66,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isLoading}
         {...props}
       >
-        {isLoading ? <Spinner className="stroke-foreground" /> : children}
+        {isLoading ? <Spinner className="stroke-white" /> : children}
       </Comp>
     );
   },
