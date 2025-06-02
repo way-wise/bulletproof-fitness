@@ -1,4 +1,4 @@
-import prisma from "../lib/prisma-client";
+import prisma from "../lib/prisma";
 import { faker } from "@faker-js/faker";
 import { hashPassword } from "better-auth/crypto";
 

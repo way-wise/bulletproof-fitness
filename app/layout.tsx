@@ -29,7 +29,7 @@ export default function RootLayout({
           <ProgressProvider>
             <NuqsAdapter>{children}</NuqsAdapter>
           </ProgressProvider>
-          <Toaster />
+          <Toaster richColors />
         </ThemeProvider>
       </body>
     </html>

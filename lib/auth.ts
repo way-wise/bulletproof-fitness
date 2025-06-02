@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { betterAuth } from "better-auth";
 import { admin } from "better-auth/plugins";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import prisma from "@/lib/prisma-client";
+import prisma from "@/lib/prisma";
 
 // Auth Config
 export const auth = betterAuth({

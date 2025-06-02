@@ -15,18 +15,30 @@ import {
 import { ChevronDown, LogOut, UserRound } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { useProgress } from "@bprogress/next";
+import { toast } from "sonner";
 
 type Session = typeof auth.$Infer.Session | null;
 
 export const ProfileDropdown = ({ session }: { session: Session }) => {
   const router = useRouter();
+  const { start, stop } = useProgress();
 
+  // Handle sign-out & progressbar
   const handleSignout = async () => {
     await signOut({
       fetchOptions: {
+        onRequest: () => {
+          start();
+        },
         onSuccess: () => {
           router.push("/auth/sign-in");
           router.refresh();
+          stop();
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+          stop();
         },
       },
     });

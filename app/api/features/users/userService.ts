@@ -1,6 +1,6 @@
 import type { PaginationQuery } from "@/schema/paginationSchema";
 import { getPaginationQuery } from "@/app/api/lib/pagination";
-import prisma from "@/lib/prisma-client";
+import prisma from "@/lib/prisma";
 
 export const userService = {
   getUsers: async (query: PaginationQuery) => {
