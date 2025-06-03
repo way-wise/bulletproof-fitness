@@ -5,8 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signInSchema } from "@/schema/authSchema";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FcGoogle } from "react-icons/fc";
-import { FaLinkedin } from "react-icons/fa";
+import { FaGoogle, FaGithub } from "react-icons/fa";
 import {
   Card,
   CardHeader,
@@ -138,7 +137,7 @@ const SigninForm = () => {
                 className="w-full"
                 disabled={pendingAuth}
               >
-                <FcGoogle className="size-5" />
+                <FaGoogle />
                 <span>Login with Google</span>
               </Button>
 
@@ -148,8 +147,8 @@ const SigninForm = () => {
                 className="w-full"
                 disabled={pendingAuth}
               >
-                <FaLinkedin className="size-5 text-[#0072b1]" />
-                <span>Login with LinkedIn</span>
+                <FaGithub />
+                <span>Login with Github</span>
               </Button>
             </div>
           </form>
