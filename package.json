@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -15,6 +19,7 @@
     "@bprogress/next": "^3.2.12",
     "@hono/zod-validator": "^0.7.0",
     "@hookform/resolvers": "^5.0.1",
+    "@opennextjs/cloudflare": "^1.1.0",
     "@prisma/client": "^6.8.2",
     "@prisma/extension-accelerate": "^2.0.1",
     "@radix-ui/react-avatar": "^1.1.10",
@@ -60,6 +65,7 @@
     "prettier-plugin-tailwindcss": "^0.6.12",
     "prisma": "^6.8.2",
     "tailwindcss": "^4.1.8",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "wrangler": "^4.19.1"
   }
 }

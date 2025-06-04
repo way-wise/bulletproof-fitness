@@ -37,5 +37,6 @@ app.onError(errorHandler);
 
 export const GET = handle(app);
 export const POST = handle(app);
+export default app;
 
 export type AppType = typeof routes;
