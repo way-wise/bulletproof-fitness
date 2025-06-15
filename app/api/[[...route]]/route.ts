@@ -7,8 +7,6 @@ import { errorHandler } from "@api/lib/errorHandler";
 import authModule from "@api/features/auth/authModule";
 import userModule from "@api/features/users/userModule";
 
-export const runtime = "nodejs";
-
 // Hono init
 const app = new Hono().basePath("/api");
 
@@ -37,6 +35,5 @@ app.onError(errorHandler);
 
 export const GET = handle(app);
 export const POST = handle(app);
-export default app;
 
 export type AppType = typeof routes;

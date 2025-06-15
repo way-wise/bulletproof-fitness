@@ -19,5 +19,8 @@
       "binding": "NEXT_INC_CACHE_R2_BUCKET",
       "bucket_name": "next-fs-starter-bucket"
     }
-  ]
+  ],
+  "observability": {
+    "enabled": true
+  }
 }
