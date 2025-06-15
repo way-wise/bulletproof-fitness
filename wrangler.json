@@ -2,7 +2,10 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "main": ".open-next/worker.js",
   "name": "next-fs-starter",
-  "compatibility_date": "2025-05-30",
+  "keep_names": false,
+  "workers_dev": false,
+  "preview_urls": false,
+  "compatibility_date": "2025-05-25",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
     "directory": ".open-next/assets",
