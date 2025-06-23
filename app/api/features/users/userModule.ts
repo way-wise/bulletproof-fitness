@@ -8,7 +8,6 @@ const app = new Hono().get(
   zValidator("query", paginationQuerySchema),
   async (c) => {
     const validatedQuery = c.req.valid("query");
-
     const result = await userService.getUsers(validatedQuery);
     return c.json(result);
   },

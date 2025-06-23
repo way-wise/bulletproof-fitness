@@ -7,6 +7,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
+  Ban,
   Check,
   Eye,
   MoreVertical,
@@ -59,7 +60,9 @@ export const UsersTable = ({ data }: { data: PaginatedData<User> }) => {
       cell: ({ row }) => row.original.email,
     },
     {
-      header: () => <div className="flex items-center justify-center">Email Verified</div>,
+      header: () => (
+        <div className="flex items-center justify-center">Email Verified</div>
+      ),
       accessorKey: "emailVerified",
       cell: ({ row }) => {
         return (
@@ -115,7 +118,7 @@ export const UsersTable = ({ data }: { data: PaginatedData<User> }) => {
       cell: () => {
         return (
           <DropdownMenu modal={false}>
-            <DropdownMenuTrigger className="align-middle">
+            <DropdownMenuTrigger>
               <MoreVertical />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -127,7 +130,11 @@ export const UsersTable = ({ data }: { data: PaginatedData<User> }) => {
                 <Pencil />
                 <span>Edit</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+              <DropdownMenuItem variant="destructive">
+                <Ban />
+                <span>Ban</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem variant="destructive">
                 <Trash />
                 <span>Delete</span>
               </DropdownMenuItem>

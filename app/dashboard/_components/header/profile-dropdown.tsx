@@ -52,7 +52,7 @@ export const ProfileDropdown = ({ session }: { session: Session }) => {
             <AvatarImage src="" alt="Profile image" />
             <AvatarFallback>T</AvatarFallback>
           </Avatar>
-          <span className="max-w-52 truncate text-base">
+          <span className="max-w-40 truncate text-base">
             {session?.user.name}
           </span>
           <ChevronDown className="opacity-60" aria-hidden="true" />

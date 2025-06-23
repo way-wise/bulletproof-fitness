@@ -1,5 +1,6 @@
 import * as z from "zod";
 
+// User Schema
 export const userSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -9,7 +10,7 @@ export const userSchema = z.object({
   banned: z.boolean().nullable(),
   role: z.string().nullable(),
   banReason: z.string().nullable(),
-  banExpires: z.union([z.date(), z.string(), z.number(), z.null()]),
+  banExpires: z.number().nullable(),
   createdAt: z.union([z.date(), z.string()]),
   updatedAt: z.union([z.date(), z.string()]),
 });

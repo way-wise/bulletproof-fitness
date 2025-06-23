@@ -1,6 +1,6 @@
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { AppType } from "@api/[[...route]]/route";
 import { hc } from "hono/client";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 const { env } = await getCloudflareContext({ async: true });
 

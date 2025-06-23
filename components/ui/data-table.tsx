@@ -115,6 +115,7 @@ export const DataTable = <TData, TValue>({
             </motion.div>
           )}
         </AnimatePresence>
+
         {/* Table */}
         <div className="relative overflow-auto">
           <table className="w-full">
@@ -142,7 +143,7 @@ export const DataTable = <TData, TValue>({
                 table.getRowModel().rows.map((row) => (
                   <tr
                     key={row.id}
-                    className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
+                    className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted/50"
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (

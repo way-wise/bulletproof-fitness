@@ -2,17 +2,16 @@
 
 import { useSidebar } from "@/providers/sidebar-provider";
 import SidebarMenu from "./menu";
-
 import { cn } from "@/lib/utils";
 import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerClose,
+  DrawerHeader,
+} from "@/components/ui/drawer";
+import { buttonVariants } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
@@ -30,23 +29,28 @@ const Sidebar = () => {
 
   if (isMobile) {
     return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile}>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle className="text-xl font-medium">Brand Logo</SheetTitle>
-            <SheetClose asChild>
-              <Button variant="outline" size="icon">
-                <X />
-                <span className="sr-only">Close</span>
-              </Button>
-            </SheetClose>
-          </SheetHeader>
-          <SheetDescription className="sr-only">
-            Mobile sidebar navigation
-          </SheetDescription>
+      <Drawer open={openMobile} onOpenChange={setOpenMobile}>
+        <DrawerContent>
+          <DrawerHeader>
+            <div className="flex flex-col">
+              <DrawerTitle className="text-xl font-medium">
+                Brand Logo
+              </DrawerTitle>
+              <DrawerDescription className="sr-only">
+                Mobile sidebar navigation
+              </DrawerDescription>
+            </div>
+            <DrawerClose
+              className={cn(
+                buttonVariants({ variant: "secondary", size: "icon" }),
+              )}
+            >
+              <X />
+            </DrawerClose>
+          </DrawerHeader>
           <SidebarMenu />
-        </SheetContent>
-      </Sheet>
+        </DrawerContent>
+      </Drawer>
     );
   }
 
