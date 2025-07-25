@@ -1,6 +1,5 @@
 "use client";
 
-import type { User } from "@/schema/userSchema";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
@@ -25,6 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { User } from "@/schema/userSchema";
 
 export const UsersTable = ({ data }: { data: PaginatedData<User> }) => {
   // Table columns
@@ -52,12 +52,10 @@ export const UsersTable = ({ data }: { data: PaginatedData<User> }) => {
     {
       header: "Name",
       accessorKey: "name",
-      cell: ({ row }) => row.original.name,
     },
     {
       header: "Email",
       accessorKey: "email",
-      cell: ({ row }) => row.original.email,
     },
     {
       header: () => (

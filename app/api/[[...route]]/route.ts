@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { secureHeaders } from "hono/secure-headers";
 import { cors } from "hono/cors";
 import { handle } from "hono/vercel";
-import { errorHandler } from "@api/lib/errorHandler";
+import { errorHandler } from "@/app/api/lib/errorHandler";
 
 import authModule from "@api/features/auth/authModule";
 import userModule from "@api/features/users/userModule";
@@ -17,8 +17,8 @@ app.use(secureHeaders());
 app.use(cors());
 
 // Routes
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const routes = app.route("/auth", authModule).route("/users", userModule);
+app.route("/auth", authModule);
+app.route("/users", userModule);
 
 // Not found
 app.notFound((c) => {
@@ -35,5 +35,5 @@ app.onError(errorHandler);
 
 export const GET = handle(app);
 export const POST = handle(app);
-
-export type AppType = typeof routes;
+export const PUT = handle(app);
+export const DELETE = handle(app);

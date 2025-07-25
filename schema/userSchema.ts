@@ -1,18 +1,18 @@
-import * as z from "zod";
+import { InferType, object, string, boolean, mixed } from "yup";
 
 // User Schema
-export const userSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  email: z.string().email(),
-  emailVerified: z.boolean(),
-  image: z.string().nullable(),
-  banned: z.boolean().nullable(),
-  role: z.string().nullable(),
-  banReason: z.string().nullable(),
-  banExpires: z.number().nullable(),
-  createdAt: z.union([z.date(), z.string()]),
-  updatedAt: z.union([z.date(), z.string()]),
+export const userSchema = object({
+  id: string(),
+  name: string(),
+  email: string().email(),
+  emailVerified: boolean().nullable(),
+  image: string().nullable(),
+  banned: boolean().nullable(),
+  role: string().nullable(),
+  banReason: string().nullable(),
+  banExpires: mixed(),
+  createdAt: mixed(),
+  updatedAt: mixed(),
 });
 
-export type User = z.infer<typeof userSchema>;
+export type User = InferType<typeof userSchema>;

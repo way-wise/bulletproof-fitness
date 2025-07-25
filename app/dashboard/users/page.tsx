@@ -1,4 +1,4 @@
-import { client } from "@/lib/hono-client";
+import { client } from "@/rpc/users";
 import { UsersTable } from "./table";
 
 const UsersPage = async ({
@@ -8,7 +8,7 @@ const UsersPage = async ({
 }) => {
   const { page, limit } = await searchParams;
 
-  const response = await client.api.users.$get({
+  const response = await client.index.$get({
     query: {
       page,
       limit,

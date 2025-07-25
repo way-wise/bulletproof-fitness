@@ -1,7 +1,7 @@
 "use client";
 
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { InferType } from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { signUpSchema } from "@/schema/authSchema";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -36,7 +36,7 @@ const SignupForm = () => {
   const router = useRouter();
 
   const form = useForm({
-    resolver: zodResolver(signUpSchema),
+    resolver: yupResolver(signUpSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -44,7 +44,7 @@ const SignupForm = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
+  const onSubmit = async (values: InferType<typeof signUpSchema>) => {
     await signUp.email(
       {
         name: values.name,

@@ -40,10 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# opennext
-.open-next
-
-# cloudflare
-.wrangler/
-worker-configuration.d.ts
-cloudflare-env.d.ts
+# prisma
+prisma/generated

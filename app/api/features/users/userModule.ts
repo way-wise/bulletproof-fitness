@@ -1,16 +1,18 @@
 import { Hono } from "hono";
 import { userService } from "./userService";
-import { zValidator } from "@hono/zod-validator";
 import { paginationQuerySchema } from "@/schema/paginationSchema";
+import { validateInput } from "@api/lib/validateInput";
 
-const app = new Hono().get(
-  "/",
-  zValidator("query", paginationQuerySchema),
-  async (c) => {
-    const validatedQuery = c.req.valid("query");
-    const result = await userService.getUsers(validatedQuery);
-    return c.json(result);
-  },
-);
+const app = new Hono().get("/", async (c) => {
+  const validatedQuery = await validateInput({
+    type: "query",
+    schema: paginationQuerySchema,
+    data: c.req.query(),
+  });
+
+  const result = await userService.getUsers(validatedQuery);
+  return c.json(result);
+});
 
 export default app;
+export type UserType = typeof app;
