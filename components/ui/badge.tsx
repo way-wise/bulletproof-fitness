@@ -12,7 +12,7 @@ const badgeVariants = cva(
         secondary: "bg-secondary text-secondary-foreground",
         success:
           "bg-emerald-500 text-primary-foreground dark:bg-emerald-500/70",
-        destructive: "bg-destructive text-primary-foreground",
+        destructive: "bg-destructive/70 text-white",
       },
       size: {
         default: "px-3 py-1",
