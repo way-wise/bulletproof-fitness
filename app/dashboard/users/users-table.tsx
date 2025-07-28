@@ -26,14 +26,26 @@ import {
 import { User } from "@/schema/userSchema";
 import { useState } from "react";
 import { Modal } from "@/components/ui/modal";
-import { Form, FormFieldset } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormFieldset,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { admin } from "@/lib/auth-client";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
+import Link from "next/link";
+import { Textarea } from "@/components/ui/textarea";
 
 export const UsersTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [banModalOpen, setBanModalOpen] = useState(false);
+  const [unbanModalOpen, setUnbanModalOpen] = useState(false);
   const [userId, setUserId] = useState<string | undefined>("");
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 1,
@@ -43,6 +55,44 @@ export const UsersTable = () => {
   // Get users data
   const url = `/api/users?page=${pagination.pageIndex}&limit=${pagination.pageSize}`;
   const { isValidating, data } = useSWR(url);
+
+  // Handle User Ban
+  const banForm = useForm({
+    defaultValues: {
+      banReason: "",
+    },
+  });
+  const handleBanUser = async () => {
+    const { error } = await admin.banUser({
+      userId,
+      banReason: banForm.getValues("banReason"),
+    });
+
+    if (error) {
+      toast.error(error.message);
+    }
+
+    toast.error("User banned");
+    setBanModalOpen(false);
+    banForm.reset();
+    mutate(url);
+  };
+
+  // Handle User Unban
+  const unbanForm = useForm();
+  const handleUnbanUser = async () => {
+    const { error } = await admin.unbanUser({
+      userId,
+    });
+
+    if (error) {
+      toast.error(error.message);
+    }
+
+    toast.success("User unbanned");
+    setUnbanModalOpen(false);
+    mutate(url);
+  };
 
   // Handle User Deletion
   const deleteForm = useForm();
@@ -150,7 +200,7 @@ export const UsersTable = () => {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
-        const { id } = row.original;
+        const { id, banned } = row.original;
 
         return (
           <>
@@ -159,18 +209,39 @@ export const UsersTable = () => {
                 <MoreVertical />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-36">
-                <DropdownMenuItem>
-                  <Eye />
-                  <span>View</span>
+                <DropdownMenuItem asChild>
+                  <Link href={`/dashboard/users/${id}`}>
+                    <Eye />
+                    <span>View</span>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Pencil />
                   <span>Edit</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem variant="destructive">
-                  <Ban />
-                  <span>Ban</span>
-                </DropdownMenuItem>
+                {banned ? (
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() => {
+                      setUserId(id);
+                      setUnbanModalOpen(true);
+                    }}
+                  >
+                    <Ban />
+                    <span>Unban</span>
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() => {
+                      setUserId(id);
+                      setBanModalOpen(true);
+                    }}
+                  >
+                    <Ban />
+                    <span>Ban</span>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
                   variant="destructive"
                   onClick={() => {
@@ -194,9 +265,7 @@ export const UsersTable = () => {
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <hgroup>
           <h1 className="text-2xl font-medium">Users</h1>
-          <p className="text-muted-foreground">
-            Manage your users and their roles.
-          </p>
+          <p className="text-muted-foreground">Manage your users</p>
         </hgroup>
         <Button>
           <Plus />
@@ -215,6 +284,89 @@ export const UsersTable = () => {
           onPaginationChange={setPagination}
         />
       </div>
+
+      {/* Ban User Modal */}
+      <Modal
+        isOpen={banModalOpen}
+        onClose={() => setBanModalOpen(false)}
+        title="Ban User"
+        isPending={banForm.formState.isSubmitting}
+      >
+        <Form {...banForm}>
+          <form onSubmit={banForm.handleSubmit(handleBanUser)}>
+            <FormFieldset disabled={banForm.formState.isSubmitting}>
+              <p className="mb-5 text-muted-foreground">
+                This will prevent the user from logging in and using the
+                application.
+              </p>
+              <FormField
+                control={banForm.control}
+                name="banReason"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ban Reason</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Enter ban reason" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end gap-3 py-5">
+                <Button
+                  type="button"
+                  onClick={() => setBanModalOpen(false)}
+                  variant="secondary"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="destructive"
+                  isLoading={banForm.formState.isSubmitting}
+                >
+                  Continue
+                </Button>
+              </div>
+            </FormFieldset>
+          </form>
+        </Form>
+      </Modal>
+
+      {/* Unban User Modal */}
+      <Modal
+        isOpen={unbanModalOpen}
+        onClose={() => setUnbanModalOpen(false)}
+        title="Unban User"
+        isPending={unbanForm.formState.isSubmitting}
+      >
+        <Form {...unbanForm}>
+          <form onSubmit={unbanForm.handleSubmit(handleUnbanUser)}>
+            <FormFieldset disabled={unbanForm.formState.isSubmitting}>
+              <p className="mb-5 text-muted-foreground">
+                This will allow the user to log in and use the application
+                again.
+              </p>
+              <div className="flex justify-end gap-3 py-5">
+                <Button
+                  type="button"
+                  onClick={() => setUnbanModalOpen(false)}
+                  variant="secondary"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="destructive"
+                  isLoading={unbanForm.formState.isSubmitting}
+                >
+                  Continue
+                </Button>
+              </div>
+            </FormFieldset>
+          </form>
+        </Form>
+      </Modal>
 
       {/* Delete User Modal */}
       <Modal

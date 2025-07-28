@@ -1,6 +1,5 @@
 "use client";
 
-import { defaultPaginatedData } from "@/lib/default-data";
 import { SWRConfig } from "swr";
 
 // API URL
@@ -18,7 +17,6 @@ export const SwrConfigProvider = ({
         revalidateOnReconnect: true,
         revalidateOnFocus: false,
         revalidateIfStale: false,
-        fallback: defaultPaginatedData,
         keepPreviousData: true,
       }}
     >
