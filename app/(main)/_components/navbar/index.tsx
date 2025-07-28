@@ -3,15 +3,22 @@ import { ProfileDropdown } from "./profile-dropdown";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/auth";
+import Image from "next/image";
 
 const Navbar = async () => {
   const session = await getSession();
 
   return (
-    <nav className="border-b border-border bg-white py-3 dark:bg-card">
+    <nav className="h-16 border-b border-border bg-white py-3 dark:bg-card">
       <div className="container flex items-center justify-between gap-4">
-        <Link href="/" className="text-2xl font-bold">
-          Logo
+        <Link href="/">
+          <Image
+            src="/logo.svg"
+            alt="Brand Logo"
+            width={100}
+            height={70}
+            priority
+          />
         </Link>
         <div className="flex items-center gap-4">
           <ThemeSwitcher />

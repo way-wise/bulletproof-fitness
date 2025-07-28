@@ -19,7 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { TableSkeleton } from "./table-skeleton";
+import { AnimatePresence, motion } from "framer-motion";
+import Spinner from "./spinner";
 
 // Table Props Interface
 interface DataTableProps<TData, TValue> {
@@ -45,9 +46,9 @@ export const DataTable = <TData, TValue>({
 
   // Table configuration
   const table = useReactTable({
-    data: data.data || [],
+    data: data?.data || [],
     columns,
-    pageCount: Math.ceil(data.meta.total / pagination.pageSize),
+    pageCount: Math.ceil((data?.meta?.total || 0) / pagination.pageSize),
     state: {
       rowSelection,
       pagination: {
@@ -68,10 +69,26 @@ export const DataTable = <TData, TValue>({
   };
 
   return (
-    <>
+    <div className="relative">
+      {/* Smooth loading overlay */}
+      <AnimatePresence>
+        {isPending && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0 z-10 flex items-center justify-center gap-4 bg-background/40"
+          >
+            <Spinner className="size-10" />
+            <span className="text-lg">Loading...</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Table */}
       <div className="relative overflow-auto">
-        <table className="w-full">
+        <table className="min-h-40 w-full">
           <thead className="border-b bg-secondary tracking-wide dark:bg-background">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -92,12 +109,15 @@ export const DataTable = <TData, TValue>({
             ))}
           </thead>
           <tbody>
-            {isPending ? (
-              <TableSkeleton
-                columns={columns.length}
-                rows={pagination.pageSize}
-              />
+            {isPending && !data ? (
+              // Initial load: show empty tbody with min-height, overlay handles loading
+              <tr>
+                <td colSpan={columns.length} className="h-40">
+                  {/* Empty cell to maintain table structure during initial load */}
+                </td>
+              </tr>
             ) : table.getRowModel().rows.length ? (
+              // Show data rows (either from initial load or kept from previous)
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
@@ -118,6 +138,7 @@ export const DataTable = <TData, TValue>({
                 </tr>
               ))
             ) : (
+              // Show "No data found" only after loading completes and no data exists
               <tr>
                 <td
                   colSpan={columns.length}
@@ -139,10 +160,10 @@ export const DataTable = <TData, TValue>({
           &nbsp;&minus;&nbsp;
           {Math.min(
             pagination.pageIndex * pagination.pageSize,
-            data.meta.total,
+            data?.meta?.total || 0,
           )}
           &nbsp;of&nbsp;
-          {data.meta.total}
+          {data?.meta?.total || 0}
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-4">
@@ -189,6 +210,6 @@ export const DataTable = <TData, TValue>({
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };

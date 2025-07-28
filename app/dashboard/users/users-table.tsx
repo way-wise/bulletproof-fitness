@@ -30,9 +30,6 @@ import { Form, FormFieldset } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { admin } from "@/lib/auth-client";
 import { toast } from "sonner";
-import { InferRequestType } from "hono";
-import { client } from "@/rpc/users";
-import { defaultPaginatedData } from "@/lib/default-data";
 import useSWR, { mutate } from "swr";
 
 export const UsersTable = () => {
@@ -44,24 +41,8 @@ export const UsersTable = () => {
   });
 
   // Get users data
-  const $get = client.index.$get;
-  const fetcher = (arg: InferRequestType<typeof $get>) => async () => {
-    const res = await $get(arg);
-    return await res.json();
-  };
-  const { isLoading, data } = useSWR(
-    ["users", pagination],
-    fetcher({
-      query: {
-        page: pagination.pageIndex,
-        limit: pagination.pageSize,
-      },
-    }),
-    {
-      fallbackData: defaultPaginatedData,
-      keepPreviousData: true,
-    },
-  );
+  const url = `/api/users?page=${pagination.pageIndex}&limit=${pagination.pageSize}`;
+  const { isValidating, data } = useSWR(url);
 
   // Handle User Deletion
   const deleteForm = useForm();
@@ -79,7 +60,7 @@ export const UsersTable = () => {
     }
 
     setDeleteDialogOpen(false);
-    mutate(["users", pagination]);
+    mutate(url);
   };
 
   // Table columns
@@ -229,7 +210,7 @@ export const UsersTable = () => {
         <DataTable
           data={data}
           columns={columns}
-          isPending={isLoading}
+          isPending={isValidating}
           pagination={pagination}
           onPaginationChange={setPagination}
         />
