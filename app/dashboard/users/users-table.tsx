@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { User } from "@/schema/userSchema";
 import { useState } from "react";
-import { AlertDialog } from "@/components/ui/alert-dialog";
+import { Modal } from "@/components/ui/modal";
 import { Form, FormFieldset } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { admin } from "@/lib/auth-client";
@@ -33,7 +33,7 @@ import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 
 export const UsersTable = () => {
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [userId, setUserId] = useState<string | undefined>("");
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 1,
@@ -59,7 +59,7 @@ export const UsersTable = () => {
       toast.success("User deleted successfully");
     }
 
-    setDeleteDialogOpen(false);
+    setDeleteModalOpen(false);
     mutate(url);
   };
 
@@ -175,7 +175,7 @@ export const UsersTable = () => {
                   variant="destructive"
                   onClick={() => {
                     setUserId(id);
-                    setDeleteDialogOpen(true);
+                    setDeleteModalOpen(true);
                   }}
                 >
                   <Trash />
@@ -216,10 +216,10 @@ export const UsersTable = () => {
         />
       </div>
 
-      {/* Delete User Dialog */}
-      <AlertDialog
-        isOpen={deleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
+      {/* Delete User Modal */}
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
         title="Delete User"
         isPending={deleteForm.formState.isSubmitting}
       >
@@ -233,7 +233,7 @@ export const UsersTable = () => {
               <div className="flex justify-end gap-3 py-5">
                 <Button
                   type="button"
-                  onClick={() => setDeleteDialogOpen(false)}
+                  onClick={() => setDeleteModalOpen(false)}
                   variant="secondary"
                 >
                   Cancel
@@ -249,7 +249,7 @@ export const UsersTable = () => {
             </FormFieldset>
           </form>
         </Form>
-      </AlertDialog>
+      </Modal>
     </>
   );
 };

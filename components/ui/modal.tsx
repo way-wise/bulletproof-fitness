@@ -8,7 +8,7 @@ import {
 } from "@headlessui/react";
 
 // Modal
-interface DialogProps {
+interface ModalProps {
   title: string;
   children: React.ReactNode;
   isOpen: boolean;
@@ -16,13 +16,13 @@ interface DialogProps {
   onClose: () => void;
 }
 
-const AlertDialog = ({
+const Modal = ({
   title,
   children,
   isOpen = false,
   isPending = false,
   onClose,
-}: DialogProps) => {
+}: ModalProps) => {
   // Close modal if closable
   const close = () => {
     if (!isPending) {
@@ -52,4 +52,4 @@ const AlertDialog = ({
   );
 };
 
-export { AlertDialog };
+export { Modal };
