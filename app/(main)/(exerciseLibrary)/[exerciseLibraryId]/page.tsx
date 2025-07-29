@@ -3,10 +3,9 @@ import ExLibraryCardDetail from "../../_components/exercideLibrary/ExLibraryCard
 const CardPage = async ({
   params,
 }: {
-  params: { exerciseLibraryId: string };
+  params: Promise<{ exerciseLibraryId: string }>;
 }) => {
-  const query = await params;
-  const exerciseLibraryId = query?.exerciseLibraryId;
+  const { exerciseLibraryId } = await params;
 
   return <ExLibraryCardDetail exerciseLibraryId={exerciseLibraryId} />;
 };

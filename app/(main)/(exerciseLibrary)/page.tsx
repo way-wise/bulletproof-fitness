@@ -1,7 +1,6 @@
 import ExCardsSection from "../_components/exercideLibrary/ExCardsSection";
 
-const ExerciseLibraryPage = ({ params }: { params: { card: string } }) => {
-  console.log(params);
+const CardsPage = () => {
   return (
     <div className="p-4 text-center text-xl">
       <ExCardsSection />
@@ -9,4 +8,4 @@ const ExerciseLibraryPage = ({ params }: { params: { card: string } }) => {
   );
 };
 
-export default ExerciseLibraryPage;
+export default CardsPage;
