@@ -16,5 +16,6 @@ export type TCardType = {
   likes: number;
   comments: number;
   saves: number;
+  label: string;
   videoUrl: string;
 };

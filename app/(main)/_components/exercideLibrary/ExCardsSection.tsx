@@ -1,8 +1,9 @@
 "use client";
 import { TCardType } from "@/lib/dataTypes";
-import Card from "./Card";
+import ExLibraryCard from "./ExLibraryCard";
 import FilterSection from "./FilterSection";
-const seedData: TCardType[] = [
+
+export const seedData: TCardType[] = [
   {
     id: 1,
     title: "SEATED HIGH ROW",
@@ -11,6 +12,7 @@ const seedData: TCardType[] = [
     views: 590,
     likes: 3,
     comments: 1,
+    label: "Yellow",
     saves: 1,
     videoUrl: "https://www.youtube.com/embed/nSrE8o1yJAk",
   },
@@ -22,6 +24,7 @@ const seedData: TCardType[] = [
     views: 1117,
     likes: 0,
     comments: 0,
+    label: "Green",
     saves: 0,
     videoUrl: "https://www.youtube.com/embed/YEThZcfmok4",
   },
@@ -33,6 +36,7 @@ const seedData: TCardType[] = [
     views: 906,
     likes: 0,
     comments: 0,
+    label: "Blue",
     saves: 1,
     videoUrl: "https://www.youtube.com/embed/zyvf2MpLl3M",
   },
@@ -44,6 +48,7 @@ const seedData: TCardType[] = [
     views: 906,
     likes: 0,
     comments: 0,
+    label: "Red",
     saves: 1,
     videoUrl: "https://www.youtube.com/embed/acaW9SCxWJI",
   },
@@ -55,6 +60,7 @@ const seedData: TCardType[] = [
     views: 906,
     likes: 0,
     comments: 0,
+    label: "Orange",
     saves: 1,
     videoUrl: "https://www.youtube.com/embed/XEPTrmr8jik",
   },
@@ -66,77 +72,84 @@ const seedData: TCardType[] = [
     views: 906,
     likes: 0,
     comments: 0,
+    label: "Not Used",
     saves: 1,
     videoUrl: "https://www.youtube.com/embed/QKHxkZo9Yt8",
   },
   {
-    id: 1,
+    id: 7,
     title: "SEATED HIGH ROW",
     category: "Back",
     equipment: "Bulletproof Fitness Equipment",
     views: 590,
     likes: 3,
     comments: 1,
+    label: "Red",
     saves: 1,
     videoUrl: "https://www.youtube.com/embed/nSrE8o1yJAk",
   },
   {
-    id: 2,
+    id: 8,
     title: "AB CRUNCH",
     category: "Abs",
     equipment: "Bulletproof Fitness Equipment",
     views: 1117,
     likes: 0,
     comments: 0,
+    label: "Green",
     saves: 0,
     videoUrl: "https://www.youtube.com/embed/YEThZcfmok4",
   },
   {
-    id: 3,
+    id: 9,
     title: "CONCENTRATION CURL",
     category: "Biceps",
     equipment: "Bulletproof Fitness Equipment",
     views: 906,
     likes: 0,
     comments: 0,
+    label: "Blue",
     saves: 1,
     videoUrl: "https://www.youtube.com/embed/zyvf2MpLl3M",
   },
   {
-    id: 4,
+    id: 10,
     title: "CONCENTRATION CURL",
     category: "Biceps",
     equipment: "Bulletproof Fitness Equipment",
     views: 906,
     likes: 0,
     comments: 0,
+    label: "Red",
     saves: 1,
     videoUrl: "https://www.youtube.com/embed/acaW9SCxWJI",
   },
   {
-    id: 5,
+    id: 11,
     title: "CONCENTRATION CURL",
     category: "Biceps",
     equipment: "Bulletproof Fitness Equipment",
     views: 906,
     likes: 0,
     comments: 0,
+    label: "Orange",
     saves: 1,
     videoUrl: "https://www.youtube.com/embed/XEPTrmr8jik",
   },
   {
-    id: 6,
+    id: 12,
     title: "CONCENTRATION CURL",
     category: "Biceps",
     equipment: "Bulletproof Fitness Equipment",
     views: 906,
     likes: 0,
     comments: 0,
+    label: "Orange",
     saves: 1,
     videoUrl: "https://www.youtube.com/embed/QKHxkZo9Yt8",
   },
 ];
-const CardsSection = () => {
+const ExCardsSection = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
@@ -155,7 +168,7 @@ const CardsSection = () => {
             </div>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {seedData.map((item) => (
-                <Card key={item.id} item={item} />
+                <ExLibraryCard key={item.id} item={item} />
               ))}
             </div>
           </div>
@@ -165,4 +178,4 @@ const CardsSection = () => {
   );
 };
 
-export default CardsSection;
+export default ExCardsSection;

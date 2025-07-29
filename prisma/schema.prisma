@@ -75,3 +75,139 @@ model verifications {
 
   @@index([identifier])
 }
+
+model exerciseLibrary {
+  id              String            @id @default(ulid())
+  title           String
+  createdAt       DateTime
+  updatedAt       DateTime
+  exLibBodyParts  exLibBodyParts[]
+  exLibEquipments exLibEquipments[]
+  exLibRaks       exLibRaks[]
+}
+
+model bodyParts {
+  id               String             @id @default(ulid())
+  name             String
+  createdAt        DateTime
+  updatedAt        DateTime
+  exLibBodyParts   exLibBodyParts[]
+  exSetupBodyParts exSetupBodyParts[]
+}
+
+model equipments {
+  id                   String                 @id @default(ulid())
+  name                 String
+  createdAt            DateTime
+  updatedAt            DateTime
+  exLibEquipments      exLibEquipments[]
+  exSetupEquipments    exSetupEquipments[]
+  demoCenterEquipments demoCenterEquipments[]
+}
+
+model raks {
+  id          String        @id @default(ulid())
+  name        String
+  createdAt   DateTime
+  updatedAt   DateTime
+  exLibRaks   exLibRaks[]
+  exSetupRaks exSetupRaks[]
+}
+
+// many to many relation between exerciseLibrary and bodyParts
+model exLibBodyParts {
+  id          String          @id @default(ulid())
+  exLibraryId String
+  exLibrary   exerciseLibrary @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
+  bodyPartId  String
+  bodyPart    bodyParts       @relation(fields: [bodyPartId], references: [id], onDelete: Cascade)
+  createdAt   DateTime
+  updatedAt   DateTime
+}
+
+// many to many relation between exerciseLibrary and equipments
+model exLibEquipments {
+  id          String          @id @default(ulid())
+  exLibraryId String
+  exLibrary   exerciseLibrary @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
+  equipmentId String
+  equipment   equipments      @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime
+  updatedAt   DateTime
+}
+
+// many to many relation between exerciseLibrary and raks
+model exLibRaks {
+  id          String          @id @default(ulid())
+  exLibraryId String
+  exLibrary   exerciseLibrary @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
+  rakId       String
+  rak         raks            @relation(fields: [rakId], references: [id], onDelete: Cascade)
+  createdAt   DateTime
+  updatedAt   DateTime
+}
+
+model exerciseSetups {
+  id                String              @id @default(ulid())
+  title             String
+  createdAt         DateTime
+  updatedAt         DateTime
+  exSetupBodyParts  exSetupBodyParts[]
+  exSetupEquipments exSetupEquipments[]
+  exSetupRaks       exSetupRaks[]
+}
+
+// many to many relation between exerciseSetups and bodyParts
+model exSetupBodyParts {
+  id         String         @id @default(ulid())
+  exSetupId  String
+  exSetup    exerciseSetups @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
+  bodyPartId String
+  bodyPart   bodyParts      @relation(fields: [bodyPartId], references: [id], onDelete: Cascade)
+  createdAt  DateTime
+  updatedAt  DateTime
+}
+
+// many to many relation between exerciseSetups and equipments
+model exSetupEquipments {
+  id          String         @id @default(ulid())
+  exSetupId   String
+  exSetup     exerciseSetups @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
+  equipmentId String
+  equipment   equipments     @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime
+  updatedAt   DateTime
+}
+
+// many to many relation between exerciseSetups and raks
+model exSetupRaks {
+  id        String         @id @default(ulid())
+  exSetupId String
+  exSetup   exerciseSetups @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
+  rakId     String
+  rak       raks           @relation(fields: [rakId], references: [id], onDelete: Cascade)
+  createdAt DateTime
+  updatedAt DateTime
+}
+
+model demoCenters {
+  id                   String                 @id @default(ulid())
+  name                 String
+  address              String
+  phone                String
+  email                String
+  website              String
+  createdAt            DateTime
+  updatedAt            DateTime
+  demoCenterEquipments demoCenterEquipments[]
+}
+
+model demoCenterEquipments {
+  id           String      @id @default(ulid())
+  demoCenterId String
+  demoCenter   demoCenters @relation(fields: [demoCenterId], references: [id], onDelete: Cascade)
+  equipmentId  String
+  equipment    equipments  @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  createdAt    DateTime
+  updatedAt    DateTime
+}

@@ -2,8 +2,9 @@ import { Badge } from "@/components/ui/badge";
 import { CardContent, Card as CardUI } from "@/components/ui/card";
 import { TCardType } from "@/lib/dataTypes";
 import { Eye, Star, ThumbsDown, ThumbsUp } from "lucide-react";
+import Link from "next/link";
 
-const Card = ({ item }: { item: TCardType }) => {
+const ExLibraryCard = ({ item }: { item: TCardType }) => {
   return (
     <div>
       <CardUI className="overflow-hidden rounded-none border-none shadow-none">
@@ -24,8 +25,11 @@ const Card = ({ item }: { item: TCardType }) => {
             </Badge>
           )}
           <p className="text-[16px] text-gray-500">{item.equipment}</p>
-          <h3 className="text-[20px] font-bold uppercase">{item.title}</h3>
-          <div className="flex items-center gap-6 text-[16px] text-primary">
+
+          <Link href={`/${item.id}`}>
+            <h3 className="text-[20px] font-bold uppercase">{item.title}</h3>
+          </Link>
+          <div className="mt-[12px] flex items-center gap-6 text-[16px] text-primary">
             <span className="flex items-center gap-1">
               <Eye className="h-4 w-4" /> {item.views}
             </span>
@@ -46,4 +50,4 @@ const Card = ({ item }: { item: TCardType }) => {
   );
 };
 
-export default Card;
+export default ExLibraryCard;
