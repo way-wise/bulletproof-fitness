@@ -25,7 +25,7 @@ const Navbar = () => {
     },
     {
       title: "EXERCISE SETUP",
-      url: "/exercise-setup",
+      url: "/exerciseSetup",
     },
     {
       title: "DEMO/RETAIL CENTERS",
@@ -80,7 +80,7 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="h-16 border-b border-border bg-white py-3 dark:bg-card">
+      <nav className="sticky top-0 z-40 h-16 border-b border-border bg-white py-3 dark:bg-card">
         <div className="container flex items-center justify-between gap-2">
           <Link href="/">
             <Image
