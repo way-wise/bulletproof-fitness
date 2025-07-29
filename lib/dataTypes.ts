@@ -7,3 +7,14 @@ export type PaginatedData<T> = {
     total: number;
   };
 };
+export type TCardType = {
+  id: number;
+  title: string;
+  category: string;
+  equipment: string;
+  views: number;
+  likes: number;
+  comments: number;
+  saves: number;
+  videoUrl: string;
+};

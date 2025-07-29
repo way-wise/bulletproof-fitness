@@ -1,11 +1,12 @@
 "use client";
+import { TCardType } from "@/lib/dataTypes";
 import Card from "./Card";
 import FilterSection from "./FilterSection";
-const seedData = [
+const seedData: TCardType[] = [
   {
     id: 1,
     title: "SEATED HIGH ROW",
-    category: null,
+    category: "Back",
     equipment: "Bulletproof Fitness Equipment",
     views: 590,
     likes: 3,
