@@ -25,7 +25,7 @@ const Navbar = () => {
     },
     {
       title: "EXERCISE SETUP",
-      url: "/exercise-setup",
+      url: "/exerciseSetup",
     },
     {
       title: "DEMO/RETAIL CENTERS",
