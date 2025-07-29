@@ -1,9 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import { CardContent, Card as CardUI } from "@/components/ui/card";
 import { TCardType } from "@/lib/dataTypes";
-import { Eye, Heart, MessageCircle, Star } from "lucide-react";
+import { Eye, Star, ThumbsDown, ThumbsUp } from "lucide-react";
+import Link from "next/link";
 
-const Card = ({ item }: { item: TCardType }) => {
+const ExLibraryCard = ({ item }: { item: TCardType }) => {
   return (
     <div>
       <CardUI className="overflow-hidden rounded-none border-none shadow-none">
@@ -17,26 +18,30 @@ const Card = ({ item }: { item: TCardType }) => {
             className="h-full w-full"
           ></iframe>
         </div>
-        <CardContent className="space-y-2 border-none p-4">
+        <CardContent className="space-y-3 border-none p-4 text-left">
           {item.category && (
             <Badge className="rounded-full border border-gray-400 bg-transparent text-[16px] font-light text-primary">
               {item.category}
             </Badge>
           )}
-          <p className="text-sm text-gray-500">{item.equipment}</p>
-          <h3 className="text-lg font-bold uppercase">{item.title}</h3>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <p className="text-[16px] text-gray-500">{item.equipment}</p>
+
+          <Link href={`/${item.id}`}>
+            <h3 className="text-[20px] font-bold uppercase">{item.title}</h3>
+          </Link>
+          <div className="mt-[12px] flex items-center gap-6 text-[16px] text-primary">
             <span className="flex items-center gap-1">
               <Eye className="h-4 w-4" /> {item.views}
             </span>
             <span className="flex items-center gap-1">
               <Star className="h-4 w-4" /> {item.likes}
             </span>
+
             <span className="flex items-center gap-1">
-              <MessageCircle className="h-4 w-4" /> {item.comments}
+              <ThumbsUp className="h-4 w-4" /> {item.comments}
             </span>
             <span className="flex items-center gap-1">
-              <Heart className="h-4 w-4" /> {item.saves}
+              <ThumbsDown className="h-4 w-4" /> {item.saves}
             </span>
           </div>
         </CardContent>
@@ -45,4 +50,4 @@ const Card = ({ item }: { item: TCardType }) => {
   );
 };
 
-export default Card;
+export default ExLibraryCard;

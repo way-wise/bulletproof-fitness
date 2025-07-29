@@ -17,17 +17,17 @@ export default function ExerciseFilters() {
   const [rating, setRating] = useState(0);
 
   return (
-    <div className="container mx-auto px-8 py-10">
-      <h2 className="mb-10 text-left text-[28px] font-extrabold uppercase">
-        Exercise Library
+    <div className="bg-white px-4 py-6">
+      <h2 className="text-left text-[24px] font-extrabold uppercase">
+        Filters
       </h2>
-
-      <div className="grid grid-cols-1 gap-x-12 gap-y-10 md:grid-cols-3">
+      <hr />
+      <div className="mt-6 space-y-4">
         {/* Body Part Filter */}
-        <div className="flex flex-col items-start space-y-2">
-          <Label className="text-lg font-bold">Filter By Body Part</Label>
+        <div className="flex flex-col items-start space-y-1">
+          <Label className="text-[16px] font-bold">Filter By Body Part</Label>
           <Select>
-            <SelectTrigger className="w-full rounded-none py-6 text-lg">
+            <SelectTrigger className="w-full rounded-sm py-4 text-[14px]">
               <SelectValue placeholder="Filter by Body Part" />
             </SelectTrigger>
             <SelectContent>
@@ -38,10 +38,10 @@ export default function ExerciseFilters() {
         </div>
 
         {/* Equipment Filter */}
-        <div className="flex flex-col items-start space-y-2">
-          <Label className="text-lg font-bold">Filter By Equipment</Label>
+        <div className="flex flex-col items-start space-y-1">
+          <Label className="text-[16px] font-bold">Filter By Equipment</Label>
           <Select>
-            <SelectTrigger className="w-full rounded-none py-6 text-lg">
+            <SelectTrigger className="w-full rounded-sm py-4 text-[14px]">
               <SelectValue placeholder="Filter by Equipment" />
             </SelectTrigger>
             <SelectContent>
@@ -52,9 +52,9 @@ export default function ExerciseFilters() {
         </div>
 
         {/* Ratings Filter */}
-        <div className="flex flex-col items-start space-y-2">
-          <Label className="text-lg font-bold">Filter By Ratings</Label>
-          <div className="flex w-full space-x-4 border bg-white p-3">
+        <div className="flex flex-col items-start space-y-1">
+          <Label className="text-[16px] font-bold">Filter By Ratings</Label>
+          <div className="flex w-full space-x-4 rounded-sm border bg-white p-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star
                 key={star}
@@ -66,10 +66,10 @@ export default function ExerciseFilters() {
         </div>
 
         {/* Rack Filter */}
-        <div className="flex flex-col items-start space-y-2">
-          <Label className="text-lg font-bold">Filter By Rack</Label>
+        <div className="flex flex-col items-start space-y-1">
+          <Label className="text-[16px] font-bold">Filter By Rack</Label>
           <Select>
-            <SelectTrigger className="w-full rounded-none py-6 text-lg">
+            <SelectTrigger className="w-full rounded-sm py-4 text-[14px]">
               <SelectValue placeholder="Filter By Rack" />
             </SelectTrigger>
             <SelectContent>
@@ -80,20 +80,20 @@ export default function ExerciseFilters() {
         </div>
 
         {/* Username Filter */}
-        <div className="flex flex-col items-start space-y-2">
-          <Label className="text-lg font-bold">Filter By Username</Label>
+        <div className="flex flex-col items-start space-y-1">
+          <Label className="text-[16px] font-bold">Filter By Username</Label>
           <Input
             placeholder="Search by Username..."
-            className="w-full rounded-none py-6 text-lg"
+            className="w-full rounded-sm py-4 text-[14px]"
           />
         </div>
 
         {/* Height Filter */}
-        <div className="flex flex-col space-y-2">
-          <Label className="text-left text-lg font-bold">
+        <div className="flex flex-col space-y-1">
+          <Label className="text-left text-[16px] font-bold">
             Filter By Height
           </Label>
-          <div className="pt-5">
+          <div className="pt-4">
             <Slider
               defaultValue={[85]}
               max={85}
