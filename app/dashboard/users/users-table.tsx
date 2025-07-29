@@ -4,7 +4,7 @@ import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Ban,
   Check,
@@ -36,32 +36,73 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { admin } from "@/lib/auth-client";
+import { admin, useSession } from "@/lib/auth-client";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { object, string } from "yup";
+import { InferType } from "yup";
+import { signUpSchema } from "@/schema/authSchema";
 
 export const UsersTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [banModalOpen, setBanModalOpen] = useState(false);
   const [unbanModalOpen, setUnbanModalOpen] = useState(false);
+  const [addUserModalOpen, setAddUserModalOpen] = useState(false);
   const [userId, setUserId] = useState<string | undefined>("");
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 1,
     pageSize: 10,
   });
 
+  const router = useRouter();
+
   // Get users data
   const url = `/api/users?page=${pagination.pageIndex}&limit=${pagination.pageSize}`;
   const { isValidating, data } = useSWR(url);
 
-  // Handle User Ban
+  // Add User Form
+  const addUserForm = useForm({
+    resolver: yupResolver(signUpSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+  });
+
+  // Handle Add User
+  const handleAddUser = async (values: InferType<typeof signUpSchema>) => {
+    const { error } = await admin.createUser({
+      name: values.name,
+      email: values.email,
+      password: values.password,
+    });
+
+    if (error) {
+      setAddUserModalOpen(false);
+      addUserForm.reset();
+      return toast.error(error.message);
+    }
+
+    toast.success("User added successfully");
+    setAddUserModalOpen(false);
+    addUserForm.reset();
+    mutate(url);
+  };
+
+  // Ban Form
   const banForm = useForm({
     defaultValues: {
       banReason: "",
     },
   });
+
+  // Handle User Ban
   const handleBanUser = async () => {
     const { error } = await admin.banUser({
       userId,
@@ -69,7 +110,9 @@ export const UsersTable = () => {
     });
 
     if (error) {
-      toast.error(error.message);
+      setBanModalOpen(false);
+      banForm.reset();
+      return toast.error(error.message);
     }
 
     toast.error("User banned");
@@ -78,7 +121,7 @@ export const UsersTable = () => {
     mutate(url);
   };
 
-  // Handle User Unban
+  // Unban Form
   const unbanForm = useForm();
   const handleUnbanUser = async () => {
     const { error } = await admin.unbanUser({
@@ -86,7 +129,8 @@ export const UsersTable = () => {
     });
 
     if (error) {
-      toast.error(error.message);
+      setUnbanModalOpen(false);
+      return toast.error(error.message);
     }
 
     toast.success("User unbanned");
@@ -94,8 +138,10 @@ export const UsersTable = () => {
     mutate(url);
   };
 
-  // Handle User Deletion
+  // Delete Form
   const deleteForm = useForm();
+
+  // Handle User Deletion
   const handleDeleteUser = async () => {
     const { error, data } = await admin.removeUser({
       userId,
@@ -263,11 +309,8 @@ export const UsersTable = () => {
   return (
     <>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <hgroup>
-          <h1 className="text-2xl font-medium">Users</h1>
-          <p className="text-muted-foreground">Manage your users</p>
-        </hgroup>
-        <Button>
+        <h1 className="text-2xl font-medium">Users</h1>
+        <Button onClick={() => setAddUserModalOpen(true)}>
           <Plus />
           <span>Add User</span>
         </Button>
@@ -284,6 +327,78 @@ export const UsersTable = () => {
           onPaginationChange={setPagination}
         />
       </div>
+
+      {/* User Creation Modal */}
+      <Modal
+        isOpen={addUserModalOpen}
+        onClose={() => setAddUserModalOpen(false)}
+        title="Add User"
+        isPending={addUserForm.formState.isSubmitting}
+      >
+        <Form {...addUserForm}>
+          <form onSubmit={addUserForm.handleSubmit(handleAddUser)}>
+            <FormFieldset disabled={addUserForm.formState.isSubmitting}>
+              <FormField
+                control={addUserForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={addUserForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={addUserForm.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end gap-3 py-5">
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setAddUserModalOpen(false);
+                    addUserForm.reset();
+                  }}
+                  variant="secondary"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  isLoading={addUserForm.formState.isSubmitting}
+                >
+                  Add
+                </Button>
+              </div>
+            </FormFieldset>
+          </form>
+        </Form>
+      </Modal>
 
       {/* Ban User Modal */}
       <Modal
@@ -315,7 +430,10 @@ export const UsersTable = () => {
               <div className="flex justify-end gap-3 py-5">
                 <Button
                   type="button"
-                  onClick={() => setBanModalOpen(false)}
+                  onClick={() => {
+                    setBanModalOpen(false);
+                    banForm.reset();
+                  }}
                   variant="secondary"
                 >
                   Cancel

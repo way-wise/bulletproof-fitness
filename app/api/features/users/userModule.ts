@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { userService } from "./userService";
 import { paginationQuerySchema } from "@/schema/paginationSchema";
 import { validateInput } from "@api/lib/validateInput";
-import { idSchema } from "@/schema/generalSchema";
+import { object, string } from "yup";
 
 const app = new Hono();
 
@@ -30,7 +30,9 @@ app.get("/", async (c) => {
 app.get("/:id", async (c) => {
   const validatedParam = await validateInput({
     type: "param",
-    schema: idSchema,
+    schema: object({
+      id: string().required(),
+    }),
     data: c.req.param(),
   });
 
