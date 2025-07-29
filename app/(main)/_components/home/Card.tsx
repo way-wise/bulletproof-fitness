@@ -1,8 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { CardContent, Card as CardUI } from "@/components/ui/card";
+import { TCardType } from "@/lib/dataTypes";
 import { Eye, Heart, MessageCircle, Star } from "lucide-react";
 
-const Card = ({ item }: { item: any }) => {
+const Card = ({ item }: { item: TCardType }) => {
   return (
     <div>
       <CardUI className="overflow-hidden rounded-none border-none shadow-none">
@@ -18,7 +19,9 @@ const Card = ({ item }: { item: any }) => {
         </div>
         <CardContent className="space-y-2 border-none p-4">
           {item.category && (
-            <Badge className="rounded-none">{item.category}</Badge>
+            <Badge className="rounded-full border border-gray-400 bg-transparent text-[16px] font-light text-primary">
+              {item.category}
+            </Badge>
           )}
           <p className="text-sm text-gray-500">{item.equipment}</p>
           <h3 className="text-lg font-bold uppercase">{item.title}</h3>
