@@ -29,11 +29,11 @@ const Navbar = () => {
     },
     {
       title: "DEMO/RETAIL CENTERS",
-      baseUrl: "/demo-retail-centers",
+      baseUrl: "/demoCenters",
       submenu: [
         {
           title: "DEMO CENTER",
-          url: "/demo-retail-centers",
+          url: "/demoCenters",
         },
         {
           title: "RETAIL CENTER",
