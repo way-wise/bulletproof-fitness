@@ -89,14 +89,12 @@ export default function ExerciseDetailPage({
         <h2 className="mb-6 text-2xl font-bold uppercase">Pump-By-Numbers:</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
           {pumpData.map((item, i) => (
-            <Card key={i} className="border border-gray-300 shadow-sm">
+            <Card key={i} className="border border-gray-300">
               <CardContent className="flex items-start gap-5 p-6">
                 <div className="h-[64px] w-[52px] flex-shrink-0 rounded bg-gray-200" />
                 <div className="text-base">
                   <p className="font-medium">
-                    <span className="font-semibold ">
-                      {item.label}
-                    </span>
+                    <span className="font-semibold">{item.label}</span>
                     {item.label !== "Not Used" && ` (${item.desc})`}:
                     <span className="ml-1 font-bold">
                       {item.value ?? "Not Used"}

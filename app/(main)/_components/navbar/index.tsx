@@ -111,7 +111,7 @@ const Navbar = () => {
                           <button
                             onMouseEnter={() => handleDropdownOpen(menu.title)}
                             className={cn(
-                              "flex items-center border-b-2 border-transparent py-2 text-sm font-medium transition-colors hover:text-black focus:outline-none",
+                              "flex items-center gap-2 border-b-2 border-transparent py-2 text-sm font-medium transition-colors hover:text-black focus:outline-none",
                               {
                                 "border-b-black text-black": isActive,
                                 "text-muted-foreground": !isActive,
@@ -121,7 +121,7 @@ const Navbar = () => {
                             {menu.title}
                             <ChevronDown
                               className={cn(
-                                "h-3 w-3 text-2xl",
+                                "h-4 w-4 text-2xl transition-transform duration-200",
                                 isDropdownOpen && "rotate-180",
                               )}
                             />
@@ -202,133 +202,151 @@ const Navbar = () => {
       </nav>
 
       {/* Mobile Sidebar */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/50"
-            onClick={closeMobileMenu}
-          />
+      <div
+        className={cn(
+          "fixed inset-0 z-50 transition-opacity duration-300 md:hidden",
+          mobileMenuOpen ? "opacity-100" : "pointer-events-none opacity-0",
+        )}
+      >
+        {/* Backdrop */}
+        <div
+          className={cn(
+            "fixed inset-0 bg-black/50 transition-opacity duration-300",
+            mobileMenuOpen ? "opacity-100" : "opacity-0",
+          )}
+          onClick={closeMobileMenu}
+        />
 
-          {/* Sidebar */}
-          <div className="fixed top-0 left-0 h-full w-80 bg-white shadow-lg dark:bg-gray-900">
-            <div className="flex h-16 items-center justify-between border-b px-6">
-              <h2 className="text-lg font-semibold">Menu</h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={closeMobileMenu}
-                className="p-2"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
+        {/* Sidebar */}
+        <div
+          className={cn(
+            "fixed top-0 left-0 h-full w-80 bg-white shadow-lg transition-transform duration-300 ease-in-out dark:bg-gray-900",
+            mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
+          )}
+        >
+          <div className="flex h-16 items-center justify-between border-b px-6">
+            <h2 className="text-lg font-semibold">Menu</h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={closeMobileMenu}
+              className="p-2"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
 
-            <div className="flex flex-col p-6">
-              {/* Mobile Navigation Menu */}
-              <nav className="space-y-4">
-                {menuList.map((menu, index) => {
-                  const isActive = menu.url
-                    ? pathname === menu.url
-                    : pathname.startsWith(menu.baseUrl || "");
-                  const isDropdownOpen = openDropdown === menu.title;
+          <div className="flex flex-col p-6">
+            {/* Mobile Navigation Menu */}
+            <nav className="space-y-4">
+              {menuList.map((menu, index) => {
+                const isActive = menu.url
+                  ? pathname === menu.url
+                  : pathname.startsWith(menu.baseUrl || "");
+                const isDropdownOpen = openDropdown === menu.title;
 
-                  return (
-                    <div key={index} className="space-y-2">
-                      {menu.submenu ? (
-                        // Mobile Dropdown Menu Item
-                        <div>
-                          <button
-                            onClick={() => handleDropdownToggle(menu.title)}
-                            className={cn(
-                              "flex w-full items-center justify-between border-b-2 border-transparent py-3 text-left text-sm font-medium transition-colors",
-                              {
-                                "border-b-primary text-primary": isActive,
-                                "text-muted-foreground": !isActive,
-                              },
-                            )}
-                          >
-                            {menu.title}
-                            <ChevronDown
-                              className={cn(
-                                "h-4 w-4 transition-transform",
-                                isDropdownOpen && "rotate-180",
-                              )}
-                            />
-                          </button>
-
-                          {/* Mobile Dropdown Content */}
-                          {isDropdownOpen && (
-                            <div className="ml-4 space-y-2 border-l pl-4">
-                              {menu.submenu.map((submenu, subIndex) => (
-                                <Link
-                                  key={subIndex}
-                                  href={submenu.url}
-                                  className={cn(
-                                    "block py-2 text-sm transition-colors hover:text-primary",
-                                    pathname === submenu.url
-                                      ? "text-primary"
-                                      : "text-muted-foreground",
-                                  )}
-                                  onClick={closeMobileMenu}
-                                >
-                                  {submenu.title}
-                                </Link>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        // Mobile Regular Menu Item
-                        <Link
-                          href={menu.url!}
+                return (
+                  <div key={index} className="space-y-2">
+                    {menu.submenu ? (
+                      // Mobile Dropdown Menu Item
+                      <div>
+                        <button
+                          onClick={() => handleDropdownToggle(menu.title)}
                           className={cn(
-                            "block border-b-2 border-transparent py-3 text-sm font-medium transition-colors",
+                            "flex w-full items-center justify-between border-b-2 border-transparent py-3 text-left text-sm font-medium transition-colors",
                             {
                               "border-b-primary text-primary": isActive,
                               "text-muted-foreground": !isActive,
                             },
                           )}
-                          onClick={closeMobileMenu}
                         >
                           {menu.title}
-                        </Link>
-                      )}
-                    </div>
-                  );
-                })}
-              </nav>
+                          <ChevronDown
+                            className={cn(
+                              "h-5 w-5 transition-transform duration-200",
+                              isDropdownOpen && "rotate-180",
+                            )}
+                          />
+                        </button>
 
-              {/* Mobile Auth Section */}
-              <div className="mt-8 border-t pt-6">
-                {session ? (
-                  <div className="space-y-4">
-                    <div className="text-sm text-muted-foreground">
-                      Signed in as {session.user.email}
-                    </div>
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => {
-                        // Handle sign out
-                        closeMobileMenu();
-                      }}
-                    >
-                      Sign Out
-                    </Button>
+                        {/* Mobile Dropdown Content */}
+                        <div
+                          className={cn(
+                            "overflow-hidden transition-all duration-300 ease-in-out",
+                            isDropdownOpen
+                              ? "max-h-96 opacity-100"
+                              : "max-h-0 opacity-0",
+                          )}
+                        >
+                          <div className="ml-4 space-y-2 border-l pt-2 pl-4">
+                            {menu.submenu.map((submenu, subIndex) => (
+                              <Link
+                                key={subIndex}
+                                href={submenu.url}
+                                className={cn(
+                                  "block py-2 text-sm transition-colors hover:text-primary",
+                                  pathname === submenu.url
+                                    ? "text-primary"
+                                    : "text-muted-foreground",
+                                )}
+                                onClick={closeMobileMenu}
+                              >
+                                {submenu.title}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      // Mobile Regular Menu Item
+                      <Link
+                        href={menu.url!}
+                        className={cn(
+                          "block border-b-2 border-transparent py-3 text-sm font-medium transition-colors",
+                          {
+                            "border-b-primary text-primary": isActive,
+                            "text-muted-foreground": !isActive,
+                          },
+                        )}
+                        onClick={closeMobileMenu}
+                      >
+                        {menu.title}
+                      </Link>
+                    )}
                   </div>
-                ) : (
-                  <Button asChild className="w-full">
-                    <Link href="/auth/sign-in" onClick={closeMobileMenu}>
-                      LOGIN/CREATE ACCOUNT
-                    </Link>
+                );
+              })}
+            </nav>
+
+            {/* Mobile Auth Section */}
+            <div className="mt-8 border-t pt-6">
+              {session ? (
+                <div className="space-y-4">
+                  <div className="text-sm text-muted-foreground">
+                    Signed in as {session.user.email}
+                  </div>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => {
+                      // Handle sign out
+                      closeMobileMenu();
+                    }}
+                  >
+                    Sign Out
                   </Button>
-                )}
-              </div>
+                </div>
+              ) : (
+                <Button asChild className="w-full">
+                  <Link href="/auth/sign-in" onClick={closeMobileMenu}>
+                    LOGIN/CREATE ACCOUNT
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 };

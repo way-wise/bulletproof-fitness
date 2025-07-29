@@ -1,5 +1,11 @@
+import ExCardsSection from "../_components/exercideLibrary/ExCardsSection";
+
 const ExerciseSetupPage = () => {
-  return <div className="p-4 text-center text-xl">set up</div>;
+  return (
+    <div className="p-4 text-center text-xl">
+      <ExCardsSection />
+    </div>
+  );
 };
 
 export default ExerciseSetupPage;
