@@ -4,7 +4,7 @@ import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Ban,
   Check,
@@ -36,15 +36,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { admin, useSession } from "@/lib/auth-client";
+import { admin } from "@/lib/auth-client";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { object, string } from "yup";
 import { InferType } from "yup";
 import { signUpSchema } from "@/schema/authSchema";
 

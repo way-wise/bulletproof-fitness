@@ -19,10 +19,6 @@ const SidebarMenu = () => {
           title: "All Users",
           url: "/dashboard/users",
         },
-        {
-          title: "Add User",
-          url: "/dashboard/users/add",
-        },
       ],
     },
     {
