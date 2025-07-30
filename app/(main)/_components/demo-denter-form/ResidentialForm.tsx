@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useEquipments } from "@/hooks/useEquipments";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useState } from "react";
@@ -50,6 +51,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function ResidentialForm() {
+  const { equipments, isLoading } = useEquipments();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -274,11 +276,11 @@ export default function ResidentialForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value={"12&quot; Weight Horns"}>
-                    12&quot; Weight Horns
-                  </SelectItem>
-                  <SelectItem value="Dumbbells">Dumbbells</SelectItem>
-                  <SelectItem value="Kettlebells">Kettlebells</SelectItem>
+                  {equipments.map((equipment) => (
+                    <SelectItem key={equipment.id} value={equipment.name}>
+                      {equipment.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
