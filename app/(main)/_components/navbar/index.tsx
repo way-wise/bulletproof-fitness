@@ -108,7 +108,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden items-center justify-between gap-2 md:flex">
+          <div className="hidden items-center justify-between gap-2 xl:flex">
             <div className="flex items-center gap-[2px]">
               {menuList.map((menu, index) => {
                 const isActive = menu.url
@@ -202,7 +202,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center gap-4 md:hidden">
+          <div className="flex items-center gap-4 xl:hidden">
             {session && <ProfileDropdown session={session} />}
             <Button
               variant="ghost"
@@ -219,7 +219,7 @@ const Navbar = () => {
       {/* Mobile Sidebar */}
       <div
         className={cn(
-          "fixed inset-0 z-50 transition-opacity duration-300 md:hidden",
+          "fixed inset-0 z-50 transition-opacity duration-300 xl:hidden",
           mobileMenuOpen ? "opacity-100" : "pointer-events-none opacity-0",
         )}
       >
