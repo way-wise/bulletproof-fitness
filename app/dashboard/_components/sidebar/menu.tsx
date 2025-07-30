@@ -32,6 +32,11 @@ const SidebarMenu = () => {
       url: "/dashboard/body-parts",
     },
     {
+      title: "Racks",
+      icon: <Dumbbell className="icon" />,
+      url: "/dashboard/racks",
+    },
+    {
       title: "Settings",
       icon: <Settings className="icon" />,
       url: "/dashboard/settings",
