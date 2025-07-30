@@ -2,13 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
-import { useSession } from "@/lib/auth-client";
+import { signOut, useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { useProgress } from "@bprogress/next";
 import { ChevronDown, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { ProfileDropdown } from "./profile-dropdown";
 
 const Navbar = () => {
@@ -16,7 +18,8 @@ const Navbar = () => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: session } = useSession();
-
+  const { start, stop } = useProgress();
+  const router = useRouter();
   // Navigation Links
   const menuList = [
     {
@@ -35,25 +38,38 @@ const Navbar = () => {
           title: "DEMO CENTER",
           url: "/demoCenters",
         },
-        {
-          title: "RETAIL CENTER",
-          url: "/demo-retail-centers/retail-center",
-        },
+        // {
+        //   title: "RETAIL CENTER",
+        //   url: "/demo-retail-centers/retail-center",
+        // },
         {
           title: "DEMO CENTER FORM",
-          url: "/demo-retail-centers/demo-center-form",
+          url: "/demoCenterForm",
         },
       ],
     },
     {
       title: "UPLOAD VIDEO",
-      url: "/upload-video",
-    },
-    {
-      title: "MEMBERSHIP ACCOUNT",
-      url: "/membership-account",
+      url: "/uploadVideo",
     },
   ];
+  const handleSignoutMobile = async () => {
+    await signOut({
+      fetchOptions: {
+        onRequest: () => {
+          start();
+        },
+        onSuccess: () => {
+          router.refresh();
+          stop();
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+          stop();
+        },
+      },
+    });
+  };
 
   const handleDropdownToggle = (title: string) => {
     setOpenDropdown(openDropdown === title ? null : title);
@@ -188,7 +204,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="flex items-center gap-4 md:hidden">
-            <ThemeSwitcher />
+            {session && <ProfileDropdown session={session} />}
             <Button
               variant="ghost"
               size="sm"
@@ -226,6 +242,7 @@ const Navbar = () => {
         >
           <div className="flex h-16 items-center justify-between border-b px-6">
             <h2 className="text-lg font-semibold">Menu</h2>
+            <ThemeSwitcher />
             <Button
               variant="ghost"
               size="sm"
@@ -328,10 +345,7 @@ const Navbar = () => {
                   <Button
                     variant="outline"
                     className="w-full"
-                    onClick={() => {
-                      // Handle sign out
-                      closeMobileMenu();
-                    }}
+                    onClick={handleSignoutMobile}
                   >
                     Sign Out
                   </Button>

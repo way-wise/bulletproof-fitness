@@ -1,10 +1,33 @@
 "use client";
 
-import type { ColumnDef, PaginationState } from "@tanstack/react-table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormFieldset,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
+import { Textarea } from "@/components/ui/textarea";
+import { admin } from "@/lib/auth-client";
+import { formatDate } from "@/lib/date-format";
+import { signUpSchema } from "@/schema/authSchema";
+import { User } from "@/schema/userSchema";
+import { yupResolver } from "@hookform/resolvers/yup";
+import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import {
   Ban,
   Check,
@@ -15,36 +38,12 @@ import {
   Trash,
   X,
 } from "lucide-react";
-import { formatDate } from "@/lib/date-format";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { User } from "@/schema/userSchema";
+import Link from "next/link";
 import { useState } from "react";
-import { Modal } from "@/components/ui/modal";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormFieldset,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { admin } from "@/lib/auth-client";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
-import Link from "next/link";
-import { Textarea } from "@/components/ui/textarea";
-import { useRouter } from "next/navigation";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { InferType } from "yup";
-import { signUpSchema } from "@/schema/authSchema";
 
 export const UsersTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -56,8 +55,6 @@ export const UsersTable = () => {
     pageIndex: 1,
     pageSize: 10,
   });
-
-  const router = useRouter();
 
   // Get users data
   const url = `/api/users?page=${pagination.pageIndex}&limit=${pagination.pageSize}`;
