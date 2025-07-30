@@ -7,6 +7,7 @@ import { handle } from "hono/vercel";
 
 import authModule from "@api/features/auth/authModule";
 import userModule from "@api/features/users/userModule";
+import { bodyPartsModule } from "../features/bodyParts/bodyPartsModule";
 
 // Hono init
 const app = new Hono().basePath("/api");
@@ -21,7 +22,7 @@ app.use(cors());
 app.route("/auth", authModule);
 app.route("/users", userModule);
 app.route("/equipments", equipmentModule);
-
+app.route("/body-parts", bodyPartsModule);
 // Not found
 app.notFound((c) => {
   return c.json(

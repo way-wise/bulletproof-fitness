@@ -24,13 +24,12 @@ const SidebarMenu = () => {
     {
       title: "Equipments",
       icon: <Dumbbell className="icon" />,
-      baseUrl: "/dashboard/equipments",
-      submenu: [
-        {
-          title: "All Equipments",
-          url: "/dashboard/equipments",
-        },
-      ],
+      url: "/dashboard/equipments",
+    },
+    {
+      title: "Body Parts",
+      icon: <Dumbbell className="icon" />,
+      url: "/dashboard/body-parts",
     },
     {
       title: "Settings",
