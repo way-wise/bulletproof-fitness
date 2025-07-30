@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,13 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, LayoutGrid, LogOut, UserRound } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { signOut } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
-import { useProgress } from "@bprogress/next";
-import { toast } from "sonner";
 import type { auth } from "@/lib/auth";
+import { signOut } from "@/lib/auth-client";
+import { useProgress } from "@bprogress/next";
+import { ChevronDown, LayoutGrid, LogOut, UserRound } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type Session = typeof auth.$Infer.Session | null;
 
@@ -71,6 +71,12 @@ export const ProfileDropdown = ({ session }: { session: Session }) => {
             <Link href="/dashboard">
               <LayoutGrid aria-hidden="true" />
               <span>Dashboard</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/membershipAccount">
+              <UserRound aria-hidden="true" className="" />
+              <span className="">Membership Account</span>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>

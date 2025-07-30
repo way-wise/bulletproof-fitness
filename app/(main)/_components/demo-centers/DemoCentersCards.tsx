@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,6 +12,7 @@ import {
 import { DemoCenter } from "@/lib/dataTypes";
 import { demoCentersData } from "@/lib/default-data";
 import { MapPin } from "lucide-react";
+import Image from "next/image";
 import { useMemo, useState } from "react";
 
 const DemoCentersCards = () => {
@@ -53,20 +53,25 @@ const DemoCentersCards = () => {
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
-        <Input
-          placeholder="Search Location, City, Zip..."
-          className="col-span-2 py-6"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+      <div className="grid grid-cols-1 gap-y-4 md:grid-cols-5 md:gap-x-4">
+        <div className="relative col-span-2">
+          <Input
+            placeholder="Search Location, City, Zip..."
+            className="w-full py-6"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button
+            type="button"
+            className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full p-1 transition hover:bg-gray-100"
+            aria-label="Use my location"
+          >
+            <MapPin size={18} />
+          </button>
+        </div>
 
-        <div className="col-span-3 flex gap-2">
+        <div className="col-span-3 flex flex-col gap-4 md:flex-row">
           <div className="flex w-full items-center gap-2">
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <MapPin size={18} />
-            </Button>
-
             <Select
               value={selectedDistance}
               onValueChange={setSelectedDistance}
@@ -132,9 +137,11 @@ const DemoCentersCards = () => {
                   TYPE: {center.type.toUpperCase()}
                 </p>
                 <div className="mt-4 h-48 w-full overflow-hidden rounded-md bg-gray-100">
-                  <img
-                    src={center.imageUrl}
+                  <Image
+                    src={center?.imageUrl}
                     alt={center.name}
+                    width={400}
+                    height={200}
                     className="h-full w-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
