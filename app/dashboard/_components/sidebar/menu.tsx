@@ -1,7 +1,7 @@
-import { LayoutGrid, Settings, UsersRound } from "lucide-react";
-import MenuItem from "./menu-item";
+import { Dumbbell, LayoutGrid, Settings, UsersRound } from "lucide-react";
 import MenuCollapsible from "./menu-collapsible";
 import MenuCollapsibleItem from "./menu-collapsible-item";
+import MenuItem from "./menu-item";
 
 const SidebarMenu = () => {
   const menuList = [
@@ -18,6 +18,17 @@ const SidebarMenu = () => {
         {
           title: "All Users",
           url: "/dashboard/users",
+        },
+      ],
+    },
+    {
+      title: "Equipments",
+      icon: <Dumbbell className="icon" />,
+      baseUrl: "/dashboard/equipments",
+      submenu: [
+        {
+          title: "All Equipments",
+          url: "/dashboard/equipments",
         },
       ],
     },
