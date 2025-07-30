@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { signOut, useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { useProgress } from "@bprogress/next";
@@ -191,7 +190,7 @@ const Navbar = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <ThemeSwitcher />
+              {/* <ThemeSwitcher /> */}
               {session ? (
                 <ProfileDropdown session={session} />
               ) : (
@@ -242,7 +241,7 @@ const Navbar = () => {
         >
           <div className="flex h-16 items-center justify-between border-b px-6">
             <h2 className="text-lg font-semibold">Menu</h2>
-            <ThemeSwitcher />
+            {/* <ThemeSwitcher /> */}
             <Button
               variant="ghost"
               size="sm"
