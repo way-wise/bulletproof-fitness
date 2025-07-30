@@ -160,7 +160,7 @@ export const seedData: TCardType[] = [
 const ExCardsSection = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto py-8">
         <div className="flex flex-col gap-4 md:flex-row">
           <div className="hidden lg:block lg:w-full lg:max-w-[250px]">
             <div className="sticky top-20">
@@ -170,7 +170,7 @@ const ExCardsSection = () => {
 
           <div className="w-full">
             <div className="mb-8 flex justify-between items-center">
-              <h1 className="text-left text-xl lg:text-3xl font-bold text-gray-900">
+              <h1 className="text-left text-lg md:text-xl lg:text-3xl font-bold text-gray-900">
                 EXERCISE LIBRARY
               </h1>
               <Drawer direction="right">

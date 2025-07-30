@@ -208,7 +208,7 @@ const Navbar = () => {
               variant="ghost"
               size="sm"
               onClick={() => setMobileMenuOpen(true)}
-              className="p-2"
+              className="p-2 border border-gray-300 rounded-md"
             >
               <Menu className="h-5 w-5" />
             </Button>
