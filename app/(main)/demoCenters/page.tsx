@@ -6,7 +6,7 @@ import MapDemoCenter from "../_components/demo-centers/MapDemoCenter";
 
 export default function DemoCenterPage() {
   return (
-    <main className="mx-auto max-w-[1200px] space-y-10 px-4 py-10">
+    <main className="container mx-auto max-w-[1200px] space-y-10 px-4 py-10">
       <section className="space-y-4 text-center">
         <h1 className="text-3xl font-bold md:text-5xl">DEMO CENTER</h1>
 
@@ -18,7 +18,9 @@ export default function DemoCenterPage() {
         </Link>
       </section>
 
-      <MapDemoCenter />
+      <div className="w-full">
+        <MapDemoCenter />
+      </div>
 
       <DemoCentersCards />
     </main>

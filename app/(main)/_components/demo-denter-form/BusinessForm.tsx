@@ -22,7 +22,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useEquipments } from "@/hooks/useEquipments";
 import { uploadImageToImgBB } from "@/lib/imageUpload";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -148,23 +147,9 @@ export default function BusinessForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto max-w-5xl space-y-6 rounded-lg border p-6 shadow"
+        className="mx-auto max-w-6xl space-y-6 rounded-lg p-6"
         autoComplete="off"
       >
-        <div className="flex items-center justify-between">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleBack}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-          <h1 className="text-2xl font-bold">Business Demo Center Form</h1>
-          <div className="w-16"></div> {/* Spacer for centering */}
-        </div>
-
         <FormField
           control={form.control}
           name="name"

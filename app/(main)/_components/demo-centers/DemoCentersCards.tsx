@@ -253,35 +253,36 @@ const DemoCentersCards = () => {
                   {center.cityZip} <br />
                   {center.contact}
                 </p>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded bg-gray-100 p-3">
-                    <h4 className="text-sm font-semibold">WEEKDAYS</h4>
-                    <p className="text-xs text-muted-foreground">
-                      {center.weekdays.length > 0
-                        ? center.weekdays.join(", ")
-                        : "Not specified"}
-                    </p>
-                    <p className="text-sm font-semibold">
-                      {center.weekdayOpen && center.weekdayClose
-                        ? `${center.weekdayOpen} - ${center.weekdayClose}`
-                        : "Contact for hours"}
-                    </p>
+                {center?.buildingType === "BUSINESS" && (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="rounded bg-gray-100 p-3">
+                      <h4 className="text-sm font-semibold">WEEKDAYS</h4>
+                      <p className="text-xs text-muted-foreground">
+                        {center.weekdays.length > 0
+                          ? center.weekdays.join(", ")
+                          : "Not specified"}
+                      </p>
+                      <p className="text-sm font-semibold">
+                        {center.weekdayOpen && center.weekdayClose
+                          ? `${center.weekdayOpen} - ${center.weekdayClose}`
+                          : "Contact for hours"}
+                      </p>
+                    </div>
+                    <div className="rounded bg-gray-100 p-3">
+                      <h4 className="text-sm font-semibold">WEEKENDS</h4>
+                      <p className="text-xs text-muted-foreground">
+                        {center.weekends.length > 0
+                          ? center.weekends.join(", ")
+                          : "Not specified"}
+                      </p>
+                      <p className="text-sm font-semibold">
+                        {center.weekendOpen && center.weekendClose
+                          ? `${center.weekendOpen} - ${center.weekendClose}`
+                          : "Contact for hours"}
+                      </p>
+                    </div>
                   </div>
-                  <div className="rounded bg-gray-100 p-3">
-                    <h4 className="text-sm font-semibold">WEEKENDS</h4>
-                    <p className="text-xs text-muted-foreground">
-                      {center.weekends.length > 0
-                        ? center.weekends.join(", ")
-                        : "Not specified"}
-                    </p>
-                    <p className="text-sm font-semibold">
-                      {center.weekendOpen && center.weekendClose
-                        ? `${center.weekendOpen} - ${center.weekendClose}`
-                        : "Contact for hours"}
-                    </p>
-                  </div>
-                </div>
+                )}
 
                 <div className="rounded bg-gray-100 p-3">
                   <h4 className="text-sm font-semibold">AVAILABILITY</h4>
