@@ -9,47 +9,99 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DemoCenter } from "@/lib/dataTypes";
-import { demoCentersData } from "@/lib/default-data";
 import { MapPin } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+// Type for the API response
+interface DemoCenterFromAPI {
+  id: string;
+  buildingType: string;
+  name: string;
+  address: string;
+  contact: string;
+  cityZip: string;
+  bio: string;
+  image: string;
+  availability?: string;
+  weekdays: string[];
+  weekends: string[];
+  weekdayOpen?: string;
+  weekdayClose?: string;
+  weekendOpen?: string;
+  weekendClose?: string;
+  createdAt: string;
+  updatedAt: string;
+  demoCenterEquipments: Array<{
+    id: string;
+    equipment: {
+      id: string;
+      name: string;
+    };
+  }>;
+}
 
 const DemoCentersCards = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<string>("");
   const [selectedEquipment, setSelectedEquipment] = useState<string>("");
   const [selectedDistance, setSelectedDistance] = useState<string>("5");
+  const [demoCenters, setDemoCenters] = useState<DemoCenterFromAPI[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch demo centers from API
+  useEffect(() => {
+    const fetchDemoCenters = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await fetch("/api/demo-centers");
+        if (!response.ok) {
+          throw new Error("Failed to fetch demo centers");
+        }
+        const data = await response.json();
+        console.log("Demo centers data:", data);
+        setDemoCenters(data.data || []);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch demo centers",
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDemoCenters();
+  }, []);
 
   // Filter demo centers based on search and filters
   const filteredDemoCenters = useMemo(() => {
-    return demoCentersData.filter((center: DemoCenter) => {
+    return demoCenters.filter((center: DemoCenterFromAPI) => {
       // Search filter
       const searchMatch =
         searchTerm === "" ||
         center.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        center.address.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        center.address.zipCode.includes(searchTerm);
+        center.cityZip.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        center.address.toLowerCase().includes(searchTerm.toLowerCase());
 
       // Type filter
-      const typeMatch = selectedType === "" || center.type === selectedType;
+      const typeMatch =
+        selectedType === "" ||
+        center.buildingType.toLowerCase() === selectedType.toLowerCase();
 
       // Equipment filter
       const equipmentMatch =
         selectedEquipment === "" ||
-        center.equipment.some((equip) =>
-          equip.toLowerCase().includes(selectedEquipment.toLowerCase()),
+        center.demoCenterEquipments.some((equip) =>
+          equip.equipment.name
+            .toLowerCase()
+            .includes(selectedEquipment.toLowerCase()),
         );
 
-      // Distance filter (if distance is available)
-      const distanceMatch =
-        selectedDistance === "" ||
-        !center.distance ||
-        center.distance <= parseInt(selectedDistance);
-
-      return searchMatch && typeMatch && equipmentMatch && distanceMatch;
+      return searchMatch && typeMatch && equipmentMatch;
     });
-  }, [searchTerm, selectedType, selectedEquipment, selectedDistance]);
+  }, [demoCenters, searchTerm, selectedType, selectedEquipment]);
 
   return (
     <div className="space-y-8">
@@ -119,14 +171,24 @@ const DemoCentersCards = () => {
 
       {/* Results */}
       <div className="space-y-8">
-        {filteredDemoCenters.length === 0 ? (
+        {isLoading ? (
+          <div className="py-12 text-center">
+            <p className="text-lg text-muted-foreground">
+              Loading demo centers...
+            </p>
+          </div>
+        ) : error ? (
+          <div className="py-12 text-center">
+            <p className="text-lg text-red-500">Error: {error}</p>
+          </div>
+        ) : filteredDemoCenters.length === 0 ? (
           <div className="py-12 text-center">
             <p className="text-lg text-muted-foreground">
               No demo centers found matching your criteria.
             </p>
           </div>
         ) : (
-          filteredDemoCenters.map((center: DemoCenter) => (
+          filteredDemoCenters.map((center: DemoCenterFromAPI) => (
             <Card
               key={center.id}
               className="grid grid-cols-1 gap-6 p-6 md:grid-cols-3"
@@ -134,28 +196,37 @@ const DemoCentersCards = () => {
               <div>
                 <h3 className="text-lg font-bold uppercase">{center.name}</h3>
                 <p className="text-sm text-muted-foreground">
-                  TYPE: {center.type.toUpperCase()}
+                  TYPE: {center.buildingType.toUpperCase()}
                 </p>
                 <div className="mt-4 h-48 w-full overflow-hidden rounded-md bg-gray-100">
-                  <Image
-                    src={center?.imageUrl}
-                    alt={center.name}
-                    width={400}
-                    height={200}
-                    className="h-full w-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = "none";
-                      target.parentElement!.innerHTML = `
-                        <div class="flex h-full w-full items-center justify-center bg-gray-200">
-                          <div class="text-center text-gray-500">
-                            <div class="text-2xl mb-2">🏋️</div>
-                            <div class="text-sm">Gym Image</div>
-                          </div>
-                        </div>
-                      `;
-                    }}
-                  />
+                  {center.image ? (
+                    <Image
+                      src={center.image}
+                      alt={center.name}
+                      width={400}
+                      height={200}
+                      className="h-full w-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = "none";
+                        target.parentElement!.innerHTML = `
+                           <div class="flex h-full w-full items-center justify-center bg-gray-200">
+                             <div class="text-center text-gray-500">
+                               <div class="text-2xl mb-2">🏋️</div>
+                               <div class="text-sm">Gym Image</div>
+                             </div>
+                           </div>
+                         `;
+                      }}
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                      <div className="text-center text-gray-500">
+                        <div className="mb-2 text-2xl">🏋️</div>
+                        <div className="text-sm">No Image Available</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <p className="pt-2 text-sm font-semibold">BIO:</p>
                 <p className="mt-1 text-sm text-muted-foreground">
@@ -166,53 +237,59 @@ const DemoCentersCards = () => {
               <div className="space-y-3 md:col-span-2">
                 <p className="text-sm font-bold uppercase">Equipment Onsite</p>
                 <div className="mb-4 flex flex-wrap gap-2">
-                  {center.equipment.map((equip, index) => (
+                  {center.demoCenterEquipments.map((equip) => (
                     <span
-                      key={index}
+                      key={equip.id}
                       className="inline-block rounded bg-gray-300 px-2 py-1 text-xs text-primary"
                     >
-                      {equip}
+                      {equip.equipment.name}
                     </span>
                   ))}
                 </div>
 
                 <h2 className="text-xl font-bold text-blue-900">VISIT US</h2>
                 <p className="text-sm leading-5">
-                  {center.address.street} <br />
-                  {center.address.city}, {center.address.state}{" "}
-                  {center.address.zipCode} <br />
-                  {center.phone}
+                  {center.address} <br />
+                  {center.cityZip} <br />
+                  {center.contact}
                 </p>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded bg-gray-100 p-3">
-                    <h4 className="text-sm font-semibold">WEEKDAYS</h4>
-                    <p className="text-xs text-muted-foreground">Mon - Fri</p>
-                    <p className="text-sm font-semibold">
-                      {center.hours.weekdays.open} -{" "}
-                      {center.hours.weekdays.close}
-                    </p>
+                {center?.buildingType === "BUSINESS" && (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="rounded bg-gray-100 p-3">
+                      <h4 className="text-sm font-semibold">WEEKDAYS</h4>
+                      <p className="text-xs text-muted-foreground">
+                        {center.weekdays.length > 0
+                          ? center.weekdays.join(", ")
+                          : "Not specified"}
+                      </p>
+                      <p className="text-sm font-semibold">
+                        {center.weekdayOpen && center.weekdayClose
+                          ? `${center.weekdayOpen} - ${center.weekdayClose}`
+                          : "Contact for hours"}
+                      </p>
+                    </div>
+                    <div className="rounded bg-gray-100 p-3">
+                      <h4 className="text-sm font-semibold">WEEKENDS</h4>
+                      <p className="text-xs text-muted-foreground">
+                        {center.weekends.length > 0
+                          ? center.weekends.join(", ")
+                          : "Not specified"}
+                      </p>
+                      <p className="text-sm font-semibold">
+                        {center.weekendOpen && center.weekendClose
+                          ? `${center.weekendOpen} - ${center.weekendClose}`
+                          : "Contact for hours"}
+                      </p>
+                    </div>
                   </div>
-                  <div className="rounded bg-gray-100 p-3">
-                    <h4 className="text-sm font-semibold">WEEKENDS</h4>
-                    <p className="text-xs text-muted-foreground">Sat - Sun</p>
-                    <p className="text-sm font-semibold">
-                      {center.hours.weekends.open} -{" "}
-                      {center.hours.weekends.close}
-                    </p>
-                  </div>
-                </div>
+                )}
 
                 <div className="rounded bg-gray-100 p-3">
                   <h4 className="text-sm font-semibold">AVAILABILITY</h4>
-                  <p className="text-sm">{center.availability}</p>
+                  <p className="text-sm">
+                    {center.availability || "Contact for availability"}
+                  </p>
                 </div>
-
-                {center.distance && (
-                  <div className="text-sm text-muted-foreground">
-                    Distance: {center.distance} miles away
-                  </div>
-                )}
               </div>
             </Card>
           ))

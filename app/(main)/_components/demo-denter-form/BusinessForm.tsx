@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -27,20 +28,26 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-const residentialFormSchema = z.object({
-  buildingType: z.literal("RESIDENTIAL"),
-  name: z.string().min(1, "Name is required"),
+const businessFormSchema = z.object({
+  buildingType: z.literal("BUSINESS"),
+  name: z.string().min(1, "Business name is required"),
   address: z.string().min(1, "Address is required"),
   contact: z.string().min(1, "Contact information is required"),
   cityZip: z.string().min(1, "City/Zip is required"),
   equipment: z.string().min(1, "Equipment selection is required"),
   availability: z.string().optional(),
   bio: z.string().min(1, "Bio is required"),
+  weekdays: z.array(z.string()).optional(),
+  weekends: z.array(z.string()).optional(),
+  weekdayOpen: z.string().optional(),
+  weekdayClose: z.string().optional(),
+  weekendOpen: z.string().optional(),
+  weekendClose: z.string().optional(),
 });
 
-type ResidentialFormValues = z.infer<typeof residentialFormSchema>;
+type BusinessFormValues = z.infer<typeof businessFormSchema>;
 
-export default function ResidentialForm() {
+export default function BusinessForm() {
   const { equipments, isLoading } = useEquipments();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -48,17 +55,19 @@ export default function ResidentialForm() {
     window.history.back();
   };
 
-  const form = useForm<ResidentialFormValues>({
-    resolver: zodResolver(residentialFormSchema),
+  const form = useForm<BusinessFormValues>({
+    resolver: zodResolver(businessFormSchema),
     defaultValues: {
-      buildingType: "RESIDENTIAL",
+      buildingType: "BUSINESS",
+      weekdays: [],
+      weekends: [],
     },
   });
 
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  const onSubmit = async (data: ResidentialFormValues) => {
+  const onSubmit = async (data: BusinessFormValues) => {
     if (!file) {
       toast.error("Please upload a facility photo");
       return;
@@ -93,7 +102,7 @@ export default function ResidentialForm() {
         throw new Error(errorData.message || "Failed to submit form");
       }
 
-      toast.success("Residential demo center submitted successfully!");
+      toast.success("Business demo center submitted successfully!");
       form.reset();
       setFile(null);
       setPreview(null);
@@ -119,6 +128,21 @@ export default function ResidentialForm() {
     setPreview(null);
   };
 
+  function generateTimeOptions() {
+    const times = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (const min of [0, 30]) {
+        const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : "30"} ${hour < 12 ? "AM" : "PM"}`;
+        times.push(
+          <option key={display} value={display}>
+            {display}
+          </option>,
+        );
+      }
+    }
+    return times;
+  }
+
   return (
     <Form {...form}>
       <form
@@ -132,13 +156,13 @@ export default function ResidentialForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-lg font-semibold">
-                Full Name *
+                Business Name *
               </FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Enter your full name" />
+                <Input {...field} placeholder="Enter business name" />
               </FormControl>
               <p className="text-xs text-muted-foreground">
-                Please enter your full name
+                Please enter the name of your business
               </p>
               <FormMessage />
             </FormItem>
@@ -224,8 +248,7 @@ export default function ResidentialForm() {
             </div>
           )}
           <p className="mt-2 text-xs text-muted-foreground">
-            You can upload a photo of the outside of your residence, a photo of
-            your home gym, or a photo of yourself
+            Please upload a photo of the outside of your business
           </p>
         </FormItem>
 
@@ -269,32 +292,173 @@ export default function ResidentialForm() {
           )}
         />
 
+        <div className="space-y-6 pt-6">
+          <h2 className="text-lg font-semibold">Business Availability</h2>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {/* Weekdays Checkboxes */}
+            <FormItem>
+              <FormLabel className="text-md mb-2 font-semibold">
+                Weekdays
+              </FormLabel>
+              <div className="grid grid-cols-2 gap-2">
+                {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(
+                  (day) => (
+                    <label key={day} className="flex items-center space-x-2">
+                      <Checkbox
+                        onCheckedChange={(checked) => {
+                          const current = form.getValues("weekdays") || [];
+                          if (checked) {
+                            form.setValue("weekdays", [...current, day]);
+                          } else {
+                            form.setValue(
+                              "weekdays",
+                              current.filter((d: string) => d !== day),
+                            );
+                          }
+                        }}
+                        checked={form.watch("weekdays")?.includes(day)}
+                      />
+                      <span>{day}</span>
+                    </label>
+                  ),
+                )}
+              </div>
+            </FormItem>
+
+            {/* Weekends Checkboxes */}
+            <FormItem>
+              <FormLabel className="text-md mb-2 font-semibold">
+                Weekends
+              </FormLabel>
+              <div className="grid grid-cols-2 gap-2">
+                {["Saturday", "Sunday"].map((day) => (
+                  <label key={day} className="flex items-center space-x-2">
+                    <Checkbox
+                      onCheckedChange={(checked) => {
+                        const current = form.getValues("weekends") || [];
+                        if (checked) {
+                          form.setValue("weekends", [...current, day]);
+                        } else {
+                          form.setValue(
+                            "weekends",
+                            current.filter((d: string) => d !== day),
+                          );
+                        }
+                      }}
+                      checked={form.watch("weekends")?.includes(day)}
+                    />
+                    <span>{day}</span>
+                  </label>
+                ))}
+              </div>
+            </FormItem>
+          </div>
+
+          {/* Weekdays Opening/Closing Time */}
+          <div className="grid grid-cols-2 gap-6">
+            <FormField
+              control={form.control}
+              name="weekdayOpen"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-md font-semibold">
+                    Weekdays Opening Time
+                  </FormLabel>
+                  <FormControl>
+                    <select {...field} className="w-full rounded border p-2">
+                      <option value="">Select time</option>
+                      {generateTimeOptions()}
+                    </select>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="weekdayClose"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-md font-semibold">
+                    Weekdays Closing Time
+                  </FormLabel>
+                  <FormControl>
+                    <select {...field} className="w-full rounded border p-2">
+                      <option value="">Select time</option>
+                      {generateTimeOptions()}
+                    </select>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Weekends Opening/Closing Time */}
+          <div className="grid grid-cols-2 gap-6">
+            <FormField
+              control={form.control}
+              name="weekendOpen"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-md font-semibold">
+                    Weekends Opening Time
+                  </FormLabel>
+                  <FormControl>
+                    <select {...field} className="w-full rounded border p-2">
+                      <option value="">Select time</option>
+                      {generateTimeOptions()}
+                    </select>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="weekendClose"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-md font-semibold">
+                    Weekends Closing Time
+                  </FormLabel>
+                  <FormControl>
+                    <select {...field} className="w-full rounded border p-2">
+                      <option value="">Select time</option>
+                      {generateTimeOptions()}
+                    </select>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
         <FormField
           control={form.control}
           name="availability"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-md font-semibold">
-                Availability
+                Additional Availability Notes
               </FormLabel>
               <FormControl>
                 <Textarea
                   rows={4}
                   {...field}
-                  placeholder="Describe your availability..."
+                  placeholder="Any additional availability information..."
                 />
               </FormControl>
               <div className="text-xs text-muted-foreground">
                 <p>
-                  Use this field to outline your availability for demo sessions.
+                  Use this field to provide additional availability details if
+                  the weekday and weekend hours above don&apos;t fit your needs.
                 </p>
                 <p className="mt-4">
                   Example: Available Monday-Wednesday 1:00pm - 5:00pm, Friday
                   10:00am - 12:00pm, Saturday 3:00pm - 5:00pm.
                 </p>
                 <p className="mt-4">
-                  You can leave this field blank and the site will say
-                  &quot;Contact for availability&quot;
+                  You can leave all hours and availability fields blank and the
+                  site will say &quot;Contact for availability&quot;
                 </p>
               </div>
               <FormMessage />
@@ -307,17 +471,19 @@ export default function ResidentialForm() {
           name="bio"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-md font-semibold">Bio *</FormLabel>
+              <FormLabel className="text-md font-semibold">
+                Business Bio *
+              </FormLabel>
               <FormControl>
                 <Textarea
                   rows={3}
                   {...field}
-                  placeholder="Tell us about yourself..."
+                  placeholder="Tell us about your business..."
                 />
               </FormControl>
               <p className="text-xs text-muted-foreground">
-                Tell everyone a little bit about yourself and your fitness
-                journey
+                Tell everyone a little bit about your business and what makes it
+                special
               </p>
               <FormMessage />
             </FormItem>
@@ -329,7 +495,7 @@ export default function ResidentialForm() {
           className="w-full cursor-pointer"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Submitting..." : "Submit Residential Demo Center"}
+          {isSubmitting ? "Submitting..." : "Submit Business Demo Center"}
         </Button>
       </form>
     </Form>
