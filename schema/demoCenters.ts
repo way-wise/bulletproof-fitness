@@ -1,4 +1,4 @@
-import { array, object, string } from "yup";
+import { array, boolean, object, string } from "yup";
 
 // Demo Center Schema
 export const demoCenterSchema = object({
@@ -9,13 +9,34 @@ export const demoCenterSchema = object({
   cityZip: string().required("City/Zip is required"),
   image: string().required("Image is required"),
   equipment: string().required("Equipment is required"),
-  availability: string().optional(),
+  availability: string().required("Availability is required"),
   bio: string().required("Bio is required"),
   // Business specific fields
-  weekdays: array().of(string()).optional(),
-  weekends: array().of(string()).optional(),
-  weekdayOpen: string().optional(),
-  weekdayClose: string().optional(),
-  weekendOpen: string().optional(),
-  weekendClose: string().optional(),
+  weekdays: array().of(string()).required("Weekdays are required"),
+  weekends: array().of(string()).required("Weekends are required"),
+  weekdayOpen: string().required("Weekday open time is required"),
+  weekdayClose: string().required("Weekday close time is required"),
+  weekendOpen: string().required("Weekend open time is required"),
+  weekendClose: string().required("Weekend close time is required"),
+  // New fields
+  isPublic: boolean().required("Public status is required"),
+  blocked: boolean().required("Blocked status is required"),
+  blockReason: string().required("Block reason is required"),
+});
+
+// Schema for updating demo center status
+export const updateDemoCenterStatusSchema = object({
+  isPublic: boolean().optional(),
+  blocked: boolean().optional(),
+  blockReason: string().optional(),
+});
+
+// Schema for blocking/unblocking demo center
+export const blockDemoCenterSchema = object({
+  demoCenterId: string().required("Demo center ID is required"),
+  blockReason: string().required("Block reason is required"),
+});
+
+export const unblockDemoCenterSchema = object({
+  demoCenterId: string().required("Demo center ID is required"),
 });

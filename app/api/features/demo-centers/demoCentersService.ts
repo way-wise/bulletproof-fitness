@@ -1,6 +1,10 @@
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { demoCenterSchema } from "@/schema/demoCenters";
+import {
+  blockDemoCenterSchema,
+  demoCenterSchema,
+  unblockDemoCenterSchema,
+} from "@/schema/demoCenters";
 import { PaginationQuery } from "@/schema/paginationSchema";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
@@ -8,12 +12,56 @@ import { getPaginationQuery } from "../../lib/pagination";
 
 export const demoCentersService = {
   // Get all demo centers
-  getDemoCenters: async (query: PaginationQuery) => {
+  getDemoCenters: async (query: PaginationQuery & { search?: string }) => {
     const session = await getSession();
     console.log(session);
     const { skip, take, page, limit } = getPaginationQuery(query);
+
+    // Build search filter
+    const searchFilter = {
+      // Exclude demo centers where isPublic is false AND blocked is true
+      NOT: {
+        isPublic: false,
+        blocked: true,
+      },
+      ...(query.search
+        ? {
+            OR: [
+              {
+                name: { contains: query.search, mode: "insensitive" as const },
+              },
+              {
+                buildingType: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                contact: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                address: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                cityZip: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+            ],
+          }
+        : {}),
+    };
+
     const [demoCenters, total] = await prisma.$transaction([
       prisma.demoCenter.findMany({
+        where: searchFilter,
         skip,
         take,
         orderBy: {
@@ -27,7 +75,83 @@ export const demoCentersService = {
           },
         },
       }),
-      prisma.demoCenter.count(),
+      prisma.demoCenter.count({
+        where: searchFilter,
+      }),
+    ]);
+
+    return {
+      data: demoCenters,
+      meta: {
+        page,
+        limit,
+        total,
+      },
+    };
+  },
+  getDemoCentersDashboard: async (
+    query: PaginationQuery & { search?: string },
+  ) => {
+    const session = await getSession();
+    console.log(session);
+    const { skip, take, page, limit } = getPaginationQuery(query);
+
+    // Build search filter
+    const searchFilter = {
+      ...(query.search
+        ? {
+            OR: [
+              {
+                name: { contains: query.search, mode: "insensitive" as const },
+              },
+              {
+                buildingType: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                contact: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                address: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                cityZip: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+            ],
+          }
+        : {}),
+    };
+
+    const [demoCenters, total] = await prisma.$transaction([
+      prisma.demoCenter.findMany({
+        where: searchFilter,
+        skip,
+        take,
+        orderBy: {
+          id: "desc",
+        },
+        include: {
+          demoCenterEquipments: {
+            include: {
+              equipment: true,
+            },
+          },
+        },
+      }),
+      prisma.demoCenter.count({
+        where: searchFilter,
+      }),
     ]);
 
     return {
@@ -76,6 +200,10 @@ export const demoCentersService = {
         weekdayClose: data.weekdayClose,
         weekendOpen: data.weekendOpen,
         weekendClose: data.weekendClose,
+        // New fields
+        isPublic: data.isPublic || false,
+        blocked: data.blocked || false,
+        blockReason: data.blockReason,
         createdAt: new Date(),
         updatedAt: new Date(),
         // Create the equipment relationship
@@ -95,7 +223,6 @@ export const demoCentersService = {
         },
       },
     });
-    console.log(demoCenter);
 
     return demoCenter;
   },
@@ -122,6 +249,103 @@ export const demoCentersService = {
     }
 
     return demoCenter;
+  },
+
+  // Update demo center status
+  updateDemoCenterStatus: async (
+    id: string,
+    data: { isPublic?: boolean; blocked?: boolean; blockReason?: string },
+  ) => {
+    const demoCenter = await prisma.demoCenter.findUnique({
+      where: { id },
+    });
+
+    if (!demoCenter) {
+      throw new HTTPException(404, {
+        message: "Demo center not found",
+      });
+    }
+
+    const updatedDemoCenter = await prisma.demoCenter.update({
+      where: { id },
+      data: {
+        ...data,
+        updatedAt: new Date(),
+      },
+      include: {
+        demoCenterEquipments: {
+          include: {
+            equipment: true,
+          },
+        },
+      },
+    });
+
+    return updatedDemoCenter;
+  },
+
+  // Block demo center
+  blockDemoCenter: async (data: InferType<typeof blockDemoCenterSchema>) => {
+    const demoCenter = await prisma.demoCenter.findUnique({
+      where: { id: data.demoCenterId },
+    });
+
+    if (!demoCenter) {
+      throw new HTTPException(404, {
+        message: "Demo center not found",
+      });
+    }
+
+    const updatedDemoCenter = await prisma.demoCenter.update({
+      where: { id: data.demoCenterId },
+      data: {
+        blocked: true,
+        blockReason: data.blockReason,
+        updatedAt: new Date(),
+      },
+      include: {
+        demoCenterEquipments: {
+          include: {
+            equipment: true,
+          },
+        },
+      },
+    });
+
+    return updatedDemoCenter;
+  },
+
+  // Unblock demo center
+  unblockDemoCenter: async (
+    data: InferType<typeof unblockDemoCenterSchema>,
+  ) => {
+    const demoCenter = await prisma.demoCenter.findUnique({
+      where: { id: data.demoCenterId },
+    });
+
+    if (!demoCenter) {
+      throw new HTTPException(404, {
+        message: "Demo center not found",
+      });
+    }
+
+    const updatedDemoCenter = await prisma.demoCenter.update({
+      where: { id: data.demoCenterId },
+      data: {
+        blocked: false,
+        blockReason: null,
+        updatedAt: new Date(),
+      },
+      include: {
+        demoCenterEquipments: {
+          include: {
+            equipment: true,
+          },
+        },
+      },
+    });
+
+    return updatedDemoCenter;
   },
 
   // Delete demo center by id
