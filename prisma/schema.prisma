@@ -16,8 +16,8 @@ datasource db {
 }
 
 model users {
-  id            String     @id @default(ulid())
-  email         String     @unique
+  id            String         @id @default(ulid())
+  email         String         @unique
   name          String
   emailVerified Boolean
   image         String?
@@ -29,6 +29,7 @@ model users {
   updatedAt     DateTime
   sessions      sessions[]
   accounts      accounts[]
+  youtubeVideos YouTubeVideo[]
 }
 
 model sessions {
@@ -216,6 +217,38 @@ model DemoCenterEquipment {
   equipment    Equipment  @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
   createdAt    DateTime
   updatedAt    DateTime
+}
+
+model YouTubeVideo {
+  id           String    @id @default(ulid())
+  title        String
+  description  String?
+  videoId      String    @unique
+  videoUrl     String
+  thumbnail    String?
+  tags         String[]  @default([])
+  category     String
+  privacy      String    @default("private")
+  status       String    @default("uploaded")
+  duration     Int?
+  viewCount    Int       @default(0)
+  likeCount    Int       @default(0)
+  commentCount Int       @default(0)
+  uploadDate   DateTime  @default(now())
+  publishedAt  DateTime?
+  userId       String
+  user         users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPublic     Boolean   @default(false)
+  blocked      Boolean   @default(false)
+  blockReason  String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([videoId])
+  @@index([isPublic, blocked])
+  @@index([category])
+  @@index([status])
 }
 
 // model exerciseLibrary {

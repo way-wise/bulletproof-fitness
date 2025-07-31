@@ -10,6 +10,7 @@ import { bodyPartsModule } from "../features/bodyParts/bodyPartsModule";
 import { demoCenterModule } from "../features/demo-centers/demoCentersModule";
 import { racksModule } from "../features/racks/racksModule";
 import userModule from "../features/users/userModule";
+import youtubeVideoModule from "../features/youtube-videos/youtubeVideoModule";
 
 // Hono init
 const app = new Hono().basePath("/api");
@@ -27,6 +28,7 @@ app.route("/equipments", equipmentModule);
 app.route("/body-parts", bodyPartsModule);
 app.route("/racks", racksModule);
 app.route("/demo-centers", demoCenterModule);
+app.route("/youtube-videos", youtubeVideoModule);
 // Not found
 app.notFound((c) => {
   return c.json(
