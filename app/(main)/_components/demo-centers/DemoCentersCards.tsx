@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useEquipments } from "@/hooks/useEquipments";
 import { MapPin } from "lucide-react";
 import Image from "next/image";
 import { useMemo, useState } from "react";
@@ -50,6 +51,7 @@ const DemoCentersCards = () => {
   const [selectedType, setSelectedType] = useState<string>("");
   const [selectedEquipment, setSelectedEquipment] = useState<string>("");
   const [selectedDistance, setSelectedDistance] = useState<string>("5");
+  const { equipments } = useEquipments();
 
   // Fetch demo centers using SWR
   const { data, error, isValidating } = useSWR(
@@ -142,8 +144,8 @@ const DemoCentersCards = () => {
               <SelectValue placeholder="Select Building Type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="business">Business</SelectItem>
-              <SelectItem value="isolator">Isolator</SelectItem>
+              <SelectItem value="RESIDENTIAL">RESIDENTIAL</SelectItem>
+              <SelectItem value="BUSINESS">BUSINESS</SelectItem>
             </SelectContent>
           </Select>
 
@@ -155,10 +157,11 @@ const DemoCentersCards = () => {
               <SelectValue placeholder="Filter By Equipments" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="rack">Rack</SelectItem>
-              <SelectItem value="machine">Machine</SelectItem>
-              <SelectItem value="cardio">Cardio</SelectItem>
-              <SelectItem value="isolation">Isolation</SelectItem>
+              {equipments.map((equipment) => (
+                <SelectItem key={equipment.id} value={equipment.name}>
+                  {equipment.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
