@@ -10,60 +10,41 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEquipments } from "@/hooks/useEquipments";
+import { DemoCenterFromAPI } from "@/lib/dataTypes";
 import { MapPin } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
-
-// Type for the API response
-interface DemoCenterFromAPI {
-  id: string;
-  buildingType: string;
-  name: string;
-  address: string;
-  contact: string;
-  cityZip: string;
-  bio: string;
-  image: string;
-  availability?: string;
-  weekdays: string[];
-  weekends: string[];
-  weekdayOpen?: string;
-  weekdayClose?: string;
-  weekendOpen?: string;
-  weekendClose?: string;
-  isPublic: boolean;
-  blocked: boolean;
-  blockReason?: string;
-  createdAt: string;
-  updatedAt: string;
-  demoCenterEquipments: Array<{
-    id: string;
-    equipment: {
-      id: string;
-      name: string;
-    };
-  }>;
-}
 
 const DemoCentersCards = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState<string>("");
   const [selectedEquipment, setSelectedEquipment] = useState<string>("");
   const [selectedDistance, setSelectedDistance] = useState<string>("5");
+  const [pagination, setPagination] = useState({
+    pageIndex: 1,
+    pageSize: 10,
+  });
   const { equipments } = useEquipments();
 
-  // Fetch demo centers using SWR
-  const { data, error, isValidating } = useSWR(
-    "/api/demo-centers",
-    async (url) => {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Failed to fetch demo centers");
-      }
-      return response.json();
-    },
-  );
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPagination((prev) => ({ ...prev, pageIndex: 1 }));
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch demo centers using SWR with pagination and search
+  const url = `/api/demo-centers?page=${pagination.pageIndex}&limit=${pagination.pageSize}&search=${encodeURIComponent(searchTerm)}`;
+  const { data, error, isValidating } = useSWR(url, async (url) => {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("Failed to fetch demo centers");
+    }
+    return response.json();
+  });
 
   // Filter demo centers based on search and filters
   const filteredDemoCenters = useMemo(() => {
@@ -74,13 +55,6 @@ const DemoCentersCards = () => {
       if (!center.isPublic || center.blocked) {
         return false;
       }
-
-      // Search filter
-      const searchMatch =
-        searchTerm === "" ||
-        center.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        center.cityZip.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        center.address.toLowerCase().includes(searchTerm.toLowerCase());
 
       // Type filter
       const typeMatch =
@@ -96,9 +70,26 @@ const DemoCentersCards = () => {
             .includes(selectedEquipment.toLowerCase()),
         );
 
-      return searchMatch && typeMatch && equipmentMatch;
+      return typeMatch && equipmentMatch;
     });
-  }, [data, searchTerm, selectedType, selectedEquipment]);
+  }, [data, selectedType, selectedEquipment]);
+
+  // Calculate pagination info
+  const totalItems = data?.meta?.total || 0;
+  const totalPages = Math.ceil(totalItems / pagination.pageSize);
+  const currentPage = pagination.pageIndex;
+  const startItem = (currentPage - 1) * pagination.pageSize + 1;
+  const endItem = Math.min(currentPage * pagination.pageSize, totalItems);
+
+  // Handle page change
+  const handlePageChange = (newPage: number) => {
+    setPagination((prev) => ({ ...prev, pageIndex: newPage }));
+  };
+
+  // Handle page size change
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPagination({ pageIndex: 1, pageSize: newPageSize });
+  };
 
   return (
     <div className="space-y-8">
@@ -191,111 +182,173 @@ const DemoCentersCards = () => {
             </p>
           </div>
         ) : (
-          filteredDemoCenters.map((center: DemoCenterFromAPI) => (
-            <Card
-              key={center.id}
-              className="grid grid-cols-1 gap-6 p-6 md:grid-cols-3"
-            >
-              <div>
-                <h3 className="text-lg font-bold uppercase">{center.name}</h3>
-                <p className="text-sm text-muted-foreground">
-                  TYPE: {center.buildingType.toUpperCase()}
-                </p>
-                <div className="mt-4 h-48 w-full overflow-hidden rounded-md bg-gray-100">
-                  {center.image ? (
-                    <Image
-                      src={center.image}
-                      alt={center.name}
-                      width={400}
-                      height={200}
-                      className="h-full w-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = "none";
-                        target.parentElement!.innerHTML = `
-                           <div class="flex h-full w-full items-center justify-center bg-gray-200">
-                             <div class="text-center text-gray-500">
-                               <div class="text-2xl mb-2">🏋️</div>
-                               <div class="text-sm">Gym Image</div>
+          <>
+            {/* Demo Centers Cards */}
+            {filteredDemoCenters.map((center: DemoCenterFromAPI) => (
+              <Card
+                key={center.id}
+                className="grid grid-cols-1 gap-6 p-6 md:grid-cols-3"
+              >
+                <div>
+                  <h3 className="text-lg font-bold uppercase">{center.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    TYPE: {center.buildingType.toUpperCase()}
+                  </p>
+                  <div className="mt-4 h-48 w-full overflow-hidden rounded-md bg-gray-100">
+                    {center.image ? (
+                      <Image
+                        src={center.image}
+                        alt={center.name}
+                        width={400}
+                        height={200}
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = "none";
+                          target.parentElement!.innerHTML = `
+                             <div class="flex h-full w-full items-center justify-center bg-gray-200">
+                               <div class="text-center text-gray-500">
+                                 <div class="text-2xl mb-2">🏋️</div>
+                                 <div class="text-sm">Gym Image</div>
+                               </div>
                              </div>
-                           </div>
-                         `;
-                      }}
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gray-200">
-                      <div className="text-center text-gray-500">
-                        <div className="mb-2 text-2xl">🏋️</div>
-                        <div className="text-sm">No Image Available</div>
+                           `;
+                        }}
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                        <div className="text-center text-gray-500">
+                          <div className="mb-2 text-2xl">🏋️</div>
+                          <div className="text-sm">No Image Available</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <p className="pt-2 text-sm font-semibold">BIO:</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {center.bio}
+                  </p>
+                </div>
+
+                <div className="space-y-3 md:col-span-2">
+                  <p className="text-sm font-bold uppercase">
+                    Equipment Onsite
+                  </p>
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    {center.demoCenterEquipments.map((equip) => (
+                      <span
+                        key={equip.id}
+                        className="inline-block rounded bg-gray-300 px-2 py-1 text-xs text-primary"
+                      >
+                        {equip.equipment.name}
+                      </span>
+                    ))}
+                  </div>
+
+                  <h2 className="text-xl font-bold text-blue-900">VISIT US</h2>
+                  <p className="text-sm leading-5">
+                    {center.address} <br />
+                    {center.cityZip} <br />
+                    {center.contact}
+                  </p>
+                  {center?.buildingType === "BUSINESS" && (
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="rounded bg-gray-100 p-3">
+                        <h4 className="text-sm font-semibold">WEEKDAYS</h4>
+                        <p className="text-xs text-muted-foreground">
+                          {center.weekdays.length > 0
+                            ? center.weekdays.join(", ")
+                            : "Not specified"}
+                        </p>
+                        <p className="text-sm font-semibold">
+                          {center.weekdayOpen && center.weekdayClose
+                            ? `${center.weekdayOpen} - ${center.weekdayClose}`
+                            : "Contact for hours"}
+                        </p>
+                      </div>
+                      <div className="rounded bg-gray-100 p-3">
+                        <h4 className="text-sm font-semibold">WEEKENDS</h4>
+                        <p className="text-xs text-muted-foreground">
+                          {center.weekends.length > 0
+                            ? center.weekends.join(", ")
+                            : "Not specified"}
+                        </p>
+                        <p className="text-sm font-semibold">
+                          {center.weekendOpen && center.weekendClose
+                            ? `${center.weekendOpen} - ${center.weekendClose}`
+                            : "Contact for hours"}
+                        </p>
                       </div>
                     </div>
                   )}
-                </div>
-                <p className="pt-2 text-sm font-semibold">BIO:</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {center.bio}
-                </p>
-              </div>
 
-              <div className="space-y-3 md:col-span-2">
-                <p className="text-sm font-bold uppercase">Equipment Onsite</p>
-                <div className="mb-4 flex flex-wrap gap-2">
-                  {center.demoCenterEquipments.map((equip) => (
-                    <span
-                      key={equip.id}
-                      className="inline-block rounded bg-gray-300 px-2 py-1 text-xs text-primary"
-                    >
-                      {equip.equipment.name}
-                    </span>
-                  ))}
-                </div>
-
-                <h2 className="text-xl font-bold text-blue-900">VISIT US</h2>
-                <p className="text-sm leading-5">
-                  {center.address} <br />
-                  {center.cityZip} <br />
-                  {center.contact}
-                </p>
-                {center?.buildingType === "BUSINESS" && (
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="rounded bg-gray-100 p-3">
-                      <h4 className="text-sm font-semibold">WEEKDAYS</h4>
-                      <p className="text-xs text-muted-foreground">
-                        {center.weekdays.length > 0
-                          ? center.weekdays.join(", ")
-                          : "Not specified"}
-                      </p>
-                      <p className="text-sm font-semibold">
-                        {center.weekdayOpen && center.weekdayClose
-                          ? `${center.weekdayOpen} - ${center.weekdayClose}`
-                          : "Contact for hours"}
-                      </p>
-                    </div>
-                    <div className="rounded bg-gray-100 p-3">
-                      <h4 className="text-sm font-semibold">WEEKENDS</h4>
-                      <p className="text-xs text-muted-foreground">
-                        {center.weekends.length > 0
-                          ? center.weekends.join(", ")
-                          : "Not specified"}
-                      </p>
-                      <p className="text-sm font-semibold">
-                        {center.weekendOpen && center.weekendClose
-                          ? `${center.weekendOpen} - ${center.weekendClose}`
-                          : "Contact for hours"}
-                      </p>
-                    </div>
+                  <div className="rounded bg-gray-100 p-3">
+                    <h4 className="text-sm font-semibold">AVAILABILITY</h4>
+                    <p className="text-sm">
+                      {center.availability || "Contact for availability"}
+                    </p>
                   </div>
-                )}
+                </div>
+              </Card>
+            ))}
 
-                <div className="rounded bg-gray-100 p-3">
-                  <h4 className="text-sm font-semibold">AVAILABILITY</h4>
-                  <p className="text-sm">
-                    {center.availability || "Contact for availability"}
-                  </p>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex flex-wrap items-center justify-center gap-4 pt-6 sm:justify-between">
+                {/* Pagination range indicator */}
+                <div className="text-sm text-muted-foreground">
+                  Showing {startItem} &minus; {endItem} of {totalItems}
+                </div>
+
+                <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-4">
+                  {/* Rows per page selector */}
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm text-muted-foreground">
+                      Items per page:
+                    </label>
+                    <Select
+                      value={pagination.pageSize.toString()}
+                      onValueChange={(value) =>
+                        handlePageSizeChange(Number(value))
+                      }
+                    >
+                      <SelectTrigger className="w-24">
+                        <SelectValue placeholder="Select Limit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[5, 10, 20, 50].map((limit) => (
+                          <SelectItem key={limit} value={limit.toString()}>
+                            {limit}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Previous and Next buttons */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage <= 1}
+                      className="rounded border px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Previous
+                    </button>
+                    <span className="px-3 py-2 text-sm">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage >= totalPages}
+                      className="rounded border px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Next
+                    </button>
+                  </div>
                 </div>
               </div>
-            </Card>
-          ))
+            )}
+          </>
         )}
       </div>
     </div>
