@@ -118,8 +118,10 @@ export default function DemoCenterFormPage() {
   return (
     <div className="container mx-auto max-w-4xl p-6">
       <div className="mb-8 text-center">
-        <h1 className="mb-4 text-3xl font-bold">Demo Center Registration</h1>
-        <p className="text-lg text-muted-foreground">
+        <h1 className="mb-4 text-2xl font-bold md:text-3xl">
+          Demo Center Registration
+        </h1>
+        <p className="text-md text-muted-foreground md:text-lg">
           Select a demo center type and complete your registration
         </p>
       </div>
@@ -145,9 +147,6 @@ export default function DemoCenterFormPage() {
         <TabsContent value="business" className="mt-6">
           <Card className="shadow-md">
             <CardHeader className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                <Building2 className="h-8 w-8 text-black" />
-              </div>
               <CardTitle className="text-2xl font-bold">
                 Business Demo Center
               </CardTitle>
@@ -161,9 +160,6 @@ export default function DemoCenterFormPage() {
         <TabsContent value="residential" className="mt-6">
           <Card className="shadow-md">
             <CardHeader className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-                <Home className="h-8 w-8 text-black" />
-              </div>
               <CardTitle className="text-2xl font-bold">
                 Residential Demo Center
               </CardTitle>

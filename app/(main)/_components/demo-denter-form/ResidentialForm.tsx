@@ -123,7 +123,7 @@ export default function ResidentialForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto max-w-6xl space-y-6 rounded-lg p-6"
+        className="mx-auto max-w-6xl space-y-6 rounded-lg p-0 md:p-6"
         autoComplete="off"
       >
         <FormField
