@@ -200,6 +200,9 @@ model DemoCenter {
   weekdayClose         String?
   weekendOpen          String?
   weekendClose         String?
+  isPublic             Boolean               @default(false)
+  blocked              Boolean               @default(false)
+  blockReason          String?
   createdAt            DateTime
   updatedAt            DateTime
   demoCenterEquipments DemoCenterEquipment[]

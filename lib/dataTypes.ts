@@ -22,29 +22,25 @@ export type TCardType = {
 };
 
 export type DemoCenter = {
-  id: number;
+  id: string;
+  buildingType: string;
   name: string;
-  type: "business" | "isolator";
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-  };
-  phone: string;
-  imageUrl: string;
+  address: string;
+  contact: string;
+  cityZip: string;
   bio: string;
-  equipment: string[];
-  hours: {
-    weekdays: {
-      open: string;
-      close: string;
-    };
-    weekends: {
-      open: string;
-      close: string;
-    };
-  };
-  availability: string;
-  distance?: number;
+  image: string;
+  availability?: string;
+  weekdays: string[];
+  weekends: string[];
+  weekdayOpen?: string;
+  weekdayClose?: string;
+  weekendOpen?: string;
+  weekendClose?: string;
+  isPublic: boolean;
+  blocked: boolean;
+  blockReason?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  demoCenterEquipments?: any[];
 };

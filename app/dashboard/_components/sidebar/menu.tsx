@@ -1,4 +1,10 @@
-import { Dumbbell, LayoutGrid, Settings, UsersRound } from "lucide-react";
+import {
+  Building2,
+  Dumbbell,
+  LayoutGrid,
+  Settings,
+  UsersRound,
+} from "lucide-react";
 import MenuCollapsible from "./menu-collapsible";
 import MenuCollapsibleItem from "./menu-collapsible-item";
 import MenuItem from "./menu-item";
@@ -18,6 +24,17 @@ const SidebarMenu = () => {
         {
           title: "All Users",
           url: "/dashboard/users",
+        },
+      ],
+    },
+    {
+      title: "Demo Centers",
+      icon: <Building2 className="icon" />,
+      baseUrl: "/dashboard/demo-centers",
+      submenu: [
+        {
+          title: "All Demo Centers",
+          url: "/dashboard/demo-centers",
         },
       ],
     },
