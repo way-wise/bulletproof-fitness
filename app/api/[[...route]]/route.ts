@@ -1,14 +1,15 @@
 import { errorHandler } from "@/app/api/lib/errorHandler";
-import { equipmentModule } from "@api/features/equipments/equipmentModule";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
 import { handle } from "hono/vercel";
+import { equipmentModule } from "../features/equipments/equipmentModule";
 
-import authModule from "@api/features/auth/authModule";
-import userModule from "@api/features/users/userModule";
+import authModule from "../features/auth/authModule";
 import { bodyPartsModule } from "../features/bodyParts/bodyPartsModule";
+import { demoCenterModule } from "../features/demo-centers/demoCentersModule";
 import { racksModule } from "../features/racks/racksModule";
+import userModule from "../features/users/userModule";
 
 // Hono init
 const app = new Hono().basePath("/api");
@@ -25,6 +26,7 @@ app.route("/users", userModule);
 app.route("/equipments", equipmentModule);
 app.route("/body-parts", bodyPartsModule);
 app.route("/racks", racksModule);
+app.route("/demo-centers", demoCenterModule);
 // Not found
 app.notFound((c) => {
   return c.json(

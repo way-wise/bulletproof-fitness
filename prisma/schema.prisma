@@ -186,11 +186,20 @@ model ExSetupRak {
 
 model DemoCenter {
   id                   String                @id @default(ulid())
+  buildingType         String
   name                 String
   address              String
-  phone                String
-  email                String
-  website              String
+  contact              String
+  cityZip              String
+  bio                  String
+  image                String
+  availability         String?
+  weekdays             String[]
+  weekends             String[]
+  weekdayOpen          String?
+  weekdayClose         String?
+  weekendOpen          String?
+  weekendClose         String?
   createdAt            DateTime
   updatedAt            DateTime
   demoCenterEquipments DemoCenterEquipment[]
