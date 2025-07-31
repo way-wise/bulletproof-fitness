@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/select";
 import { MapPin } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import useSWR from "swr";
 
 // Type for the API response
 interface DemoCenterFromAPI {
@@ -30,6 +31,9 @@ interface DemoCenterFromAPI {
   weekdayClose?: string;
   weekendOpen?: string;
   weekendClose?: string;
+  isPublic: boolean;
+  blocked: boolean;
+  blockReason?: string;
   createdAt: string;
   updatedAt: string;
   demoCenterEquipments: Array<{
@@ -46,38 +50,29 @@ const DemoCentersCards = () => {
   const [selectedType, setSelectedType] = useState<string>("");
   const [selectedEquipment, setSelectedEquipment] = useState<string>("");
   const [selectedDistance, setSelectedDistance] = useState<string>("5");
-  const [demoCenters, setDemoCenters] = useState<DemoCenterFromAPI[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // Fetch demo centers from API
-  useEffect(() => {
-    const fetchDemoCenters = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const response = await fetch("/api/demo-centers");
-        if (!response.ok) {
-          throw new Error("Failed to fetch demo centers");
-        }
-        const data = await response.json();
-        console.log("Demo centers data:", data);
-        setDemoCenters(data.data || []);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to fetch demo centers",
-        );
-      } finally {
-        setIsLoading(false);
+  // Fetch demo centers using SWR
+  const { data, error, isValidating } = useSWR(
+    "/api/demo-centers",
+    async (url) => {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Failed to fetch demo centers");
       }
-    };
-
-    fetchDemoCenters();
-  }, []);
+      return response.json();
+    },
+  );
 
   // Filter demo centers based on search and filters
   const filteredDemoCenters = useMemo(() => {
+    const demoCenters = data?.data || [];
+
     return demoCenters.filter((center: DemoCenterFromAPI) => {
+      // Only show published and non-blocked demo centers
+      if (!center.isPublic || center.blocked) {
+        return false;
+      }
+
       // Search filter
       const searchMatch =
         searchTerm === "" ||
@@ -101,7 +96,7 @@ const DemoCentersCards = () => {
 
       return searchMatch && typeMatch && equipmentMatch;
     });
-  }, [demoCenters, searchTerm, selectedType, selectedEquipment]);
+  }, [data, searchTerm, selectedType, selectedEquipment]);
 
   return (
     <div className="space-y-8">
@@ -171,7 +166,7 @@ const DemoCentersCards = () => {
 
       {/* Results */}
       <div className="space-y-8">
-        {isLoading ? (
+        {isValidating ? (
           <div className="py-12 text-center">
             <p className="text-lg text-muted-foreground">
               Loading demo centers...
@@ -179,7 +174,12 @@ const DemoCentersCards = () => {
           </div>
         ) : error ? (
           <div className="py-12 text-center">
-            <p className="text-lg text-red-500">Error: {error}</p>
+            <p className="text-lg text-red-500">
+              Error:{" "}
+              {error instanceof Error
+                ? error.message
+                : "Failed to fetch demo centers"}
+            </p>
           </div>
         ) : filteredDemoCenters.length === 0 ? (
           <div className="py-12 text-center">

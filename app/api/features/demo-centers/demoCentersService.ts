@@ -18,28 +18,120 @@ export const demoCentersService = {
     const { skip, take, page, limit } = getPaginationQuery(query);
 
     // Build search filter
-    const searchFilter = query.search
-      ? {
-          OR: [
-            { name: { contains: query.search, mode: "insensitive" as const } },
-            {
-              buildingType: {
-                contains: query.search,
-                mode: "insensitive" as const,
+    const searchFilter = {
+      // Exclude demo centers where isPublic is false AND blocked is true
+      NOT: {
+        isPublic: false,
+        blocked: true,
+      },
+      ...(query.search
+        ? {
+            OR: [
+              {
+                name: { contains: query.search, mode: "insensitive" as const },
               },
+              {
+                buildingType: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                contact: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                address: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                cityZip: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+            ],
+          }
+        : {}),
+    };
+
+    const [demoCenters, total] = await prisma.$transaction([
+      prisma.demoCenter.findMany({
+        where: searchFilter,
+        skip,
+        take,
+        orderBy: {
+          id: "desc",
+        },
+        include: {
+          demoCenterEquipments: {
+            include: {
+              equipment: true,
             },
-            {
-              contact: { contains: query.search, mode: "insensitive" as const },
-            },
-            {
-              address: { contains: query.search, mode: "insensitive" as const },
-            },
-            {
-              cityZip: { contains: query.search, mode: "insensitive" as const },
-            },
-          ],
-        }
-      : {};
+          },
+        },
+      }),
+      prisma.demoCenter.count({
+        where: searchFilter,
+      }),
+    ]);
+
+    return {
+      data: demoCenters,
+      meta: {
+        page,
+        limit,
+        total,
+      },
+    };
+  },
+  getDemoCentersDashboard: async (
+    query: PaginationQuery & { search?: string },
+  ) => {
+    const session = await getSession();
+    console.log(session);
+    const { skip, take, page, limit } = getPaginationQuery(query);
+
+    // Build search filter
+    const searchFilter = {
+      ...(query.search
+        ? {
+            OR: [
+              {
+                name: { contains: query.search, mode: "insensitive" as const },
+              },
+              {
+                buildingType: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                contact: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                address: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                cityZip: {
+                  contains: query.search,
+                  mode: "insensitive" as const,
+                },
+              },
+            ],
+          }
+        : {}),
+    };
 
     const [demoCenters, total] = await prisma.$transaction([
       prisma.demoCenter.findMany({

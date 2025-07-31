@@ -36,6 +36,25 @@ demoCenterModule.get("/", async (c) => {
   console.log(result);
   return c.json(result);
 });
+demoCenterModule.get("/dashboard", async (c) => {
+  const query = c.req.query();
+
+  const validatedQuery = await validateInput({
+    type: "query",
+    schema: paginationQuerySchema,
+    data: query,
+  });
+
+  // Add search parameter if present
+  const searchQuery = query.search
+    ? { ...validatedQuery, search: query.search }
+    : validatedQuery;
+
+  const result = await demoCentersService.getDemoCentersDashboard(searchQuery);
+  console.log("result");
+  console.log(result);
+  return c.json(result);
+});
 
 /*
         @route    POST: /demo-centers

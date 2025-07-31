@@ -58,7 +58,7 @@ export const DemoCenterTable = () => {
   });
 
   // Get demo centers data with search
-  const url = `/api/demo-centers?page=${pagination.pageIndex}&limit=${pagination.pageSize}&search=${encodeURIComponent(searchQuery)}`;
+  const url = `/api/demo-centers/dashboard?page=${pagination.pageIndex}&limit=${pagination.pageSize}&search=${encodeURIComponent(searchQuery)}`;
   const { isValidating, data } = useSWR(url);
 
   // Debounced search
