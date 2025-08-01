@@ -1,6 +1,6 @@
 import { bodyPartSchema } from "@/schema/bodyparts";
 import { paginationQuerySchema } from "@/schema/paginationSchema";
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { object, string } from "yup";
 import { validateInput } from "../../lib/validateInput";
 import { bodyPartsService } from "./bodyPartsService";
@@ -12,7 +12,7 @@ export const bodyPartsModule = new Hono();
   @access   private
   @desc     Get all equipments
 */
-bodyPartsModule.get("/", async (c) => {
+bodyPartsModule.get("/", async (c: Context) => {
   const validatedQuery = await validateInput({
     type: "query",
     schema: paginationQuerySchema,
@@ -30,7 +30,7 @@ bodyPartsModule.get("/", async (c) => {
   @access   private
   @desc     Create new equipment
 */
-bodyPartsModule.post("/", async (c) => {
+bodyPartsModule.post("/", async (c: Context) => {
   const validatedBody = await validateInput({
     type: "form",
     schema: bodyPartSchema,
@@ -46,7 +46,7 @@ bodyPartsModule.post("/", async (c) => {
   @access   private
   @desc     Get equipment by id
 */
-bodyPartsModule.get("/:id", async (c) => {
+bodyPartsModule.get("/:id", async (c: Context) => {
   const validatedParam = await validateInput({
     type: "param",
     schema: object({
@@ -64,7 +64,7 @@ bodyPartsModule.get("/:id", async (c) => {
   @access   private
   @desc     Delete equipment by id
 */
-bodyPartsModule.delete("/:id", async (c) => {
+bodyPartsModule.delete("/:id", async (c: Context) => {
   const validatedParam = await validateInput({
     type: "param",
     schema: object({
