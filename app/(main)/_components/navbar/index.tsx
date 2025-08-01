@@ -27,15 +27,15 @@ const Navbar = () => {
     },
     {
       title: "EXERCISE SETUP",
-      url: "/exerciseSetup",
+      url: "/exercise-setup",
     },
     {
       title: "DEMO/RETAIL CENTERS",
-      baseUrl: "/demoCenters",
+      baseUrl: "/demo-centers",
       submenu: [
         {
           title: "DEMO CENTER",
-          url: "/demoCenters",
+          url: "/demo-centers",
         },
         // {
         //   title: "RETAIL CENTER",
@@ -43,13 +43,13 @@ const Navbar = () => {
         // },
         {
           title: "DEMO CENTER FORM",
-          url: "/demoCenterForm",
+          url: "/demo-center-form",
         },
       ],
     },
     {
       title: "UPLOAD VIDEO",
-      url: "/uploadVideo",
+      url: "/upload-video",
     },
   ];
   const handleSignoutMobile = async () => {

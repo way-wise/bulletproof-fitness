@@ -1,10 +1,10 @@
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import {
-  blockDemoCenterSchema,
-  demoCenterSchema,
-  unblockDemoCenterSchema,
-} from "@/schema/demoCenters";
+    blockDemoCenterSchema,
+    demoCenterSchema,
+    unblockDemoCenterSchema,
+} from "@/schema/demo-centers";
 import { PaginationQuery } from "@/schema/paginationSchema";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";

@@ -1,4 +1,4 @@
-import ExCardsSection from "../_components/exercideLibrary/ExCardsSection";
+import ExCardsSection from "../_components/exercide-library/ExCardsSection";
 
 const ExerciseSetupPage = () => {
   return (
