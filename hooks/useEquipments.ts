@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 export type Equipment = {
   id: string;
@@ -16,49 +16,25 @@ export type EquipmentResponse = {
   };
 };
 
-interface UseEquipmentsReturn {
-  equipments: Equipment[];
-  isLoading: boolean;
-  error: Error | null;
-  mutate: () => void;
-}
+const fetcher = (url: string) =>
+  fetch(url).then((res) => {
+    if (!res.ok) throw new Error("Failed to fetch");
+    return res.json();
+  });
 
-export const useEquipments = (): UseEquipmentsReturn => {
-  const [equipments, setEquipments] = useState<Equipment[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  const fetchEquipments = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const response = await fetch("/api/equipments");
-      if (!response.ok) {
-        throw new Error("Failed to fetch equipments");
-      }
-
-      const data: EquipmentResponse = await response.json();
-      setEquipments(data.data || []);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err : new Error("Failed to fetch equipments"),
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchEquipments();
-  }, []);
-
-  const mutate = () => {
-    fetchEquipments();
-  };
+export const useEquipments = () => {
+  const { data, error, isLoading, mutate } = useSWR<EquipmentResponse>(
+    "/api/equipments",
+    fetcher,
+    {
+      revalidateOnFocus: true,
+      refreshInterval: 0, 
+    },
+  );
 
   return {
-    equipments,
+    equipments: data?.data ?? [],
+    meta: data?.meta ?? null,
     isLoading,
     error,
     mutate,

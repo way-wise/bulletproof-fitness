@@ -1,15 +1,15 @@
 "use client";
-import { TCardType } from "@/lib/dataTypes";
-import ExLibraryCard from "./ExLibraryCard";
-import FilterSection from "./FilterSection";
 import {
   Drawer,
-  DrawerTrigger,
+  DrawerClose,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-  DrawerClose,
+  DrawerTrigger,
 } from "@/components/ui/drawer";
+import { TCardType } from "@/lib/dataTypes";
+import ExLibraryCard from "./ExLibraryCard";
+import FilterSection from "./FilterSection";
 
 export const seedData: TCardType[] = [
   {
@@ -157,6 +157,7 @@ export const seedData: TCardType[] = [
     videoUrl: "https://www.youtube.com/embed/QKHxkZo9Yt8",
   },
 ];
+
 const ExCardsSection = () => {
   return (
     <div className="min-h-screen bg-gray-50">
@@ -169,26 +170,36 @@ const ExCardsSection = () => {
           </div>
 
           <div className="w-full">
-            <div className="mb-8 flex justify-between items-center">
-              <h1 className="text-left text-lg md:text-xl lg:text-3xl font-bold text-gray-900">
+            <div className="mb-8 flex items-center justify-between">
+              <h1 className="text-left text-lg font-bold text-gray-900 md:text-xl lg:text-3xl">
                 EXERCISE LIBRARY
               </h1>
               <Drawer direction="right">
                 <DrawerTrigger asChild>
-                  <button className="text-sm lg:hidden inline-flex items-center gap-2 text-gray-500 border px-2 py-1 rounded-md hover:bg-gray-50 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
+                  <button className="inline-flex items-center gap-2 rounded-md border px-2 py-1 text-sm text-gray-500 transition-colors hover:bg-gray-50 lg:hidden">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      className="size-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
+                      />
                     </svg>
-
                     Filter
                   </button>
                 </DrawerTrigger>
                 <DrawerContent side="right" className="w-80">
                   <DrawerHeader>
-                    <div className="flex items-center justify-between w-full">
+                    <div className="flex w-full items-center justify-between">
                       <DrawerTitle>Filters</DrawerTitle>
                       <DrawerClose asChild>
-                        <button className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+                        <button className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-none disabled:pointer-events-none">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -197,14 +208,18 @@ const ExCardsSection = () => {
                             stroke="currentColor"
                             className="h-4 w-4"
                           >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6 18L18 6M6 6l12 12"
+                            />
                           </svg>
                           <span className="sr-only">Close</span>
                         </button>
                       </DrawerClose>
                     </div>
                   </DrawerHeader>
-                  <div className="px-6 py-4 flex-1 overflow-y-auto">
+                  <div className="flex-1 overflow-y-auto px-6 py-4">
                     <FilterSection />
                   </div>
                 </DrawerContent>

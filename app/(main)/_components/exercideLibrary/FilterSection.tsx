@@ -10,11 +10,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { useBodyParts } from "@/hooks/useBodyParts";
+import { useEquipments } from "@/hooks/useEquipments";
+import { useRacks } from "@/hooks/useRacks";
 import { Star } from "lucide-react";
 import { useState } from "react";
 
 export default function ExerciseFilters() {
   const [rating, setRating] = useState(0);
+  const { equipments } = useEquipments();
+  const { bodyParts } = useBodyParts();
+  const { racks } = useRacks();
 
   return (
     <div className="bg-white px-4 py-6">
@@ -31,8 +37,11 @@ export default function ExerciseFilters() {
               <SelectValue placeholder="Filter by Body Part" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="chest">Chest</SelectItem>
-              <SelectItem value="back">Back</SelectItem>
+              {bodyParts.map((bodyPart) => (
+                <SelectItem key={bodyPart.id} value={bodyPart.id}>
+                  {bodyPart.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -45,8 +54,11 @@ export default function ExerciseFilters() {
               <SelectValue placeholder="Filter by Equipment" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="dumbbell">Dumbbell</SelectItem>
-              <SelectItem value="barbell">Barbell</SelectItem>
+              {equipments.map((equipment) => (
+                <SelectItem key={equipment.id} value={equipment.id}>
+                  {equipment.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -73,8 +85,11 @@ export default function ExerciseFilters() {
               <SelectValue placeholder="Filter By Rack" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="rack-1">Rack 1</SelectItem>
-              <SelectItem value="rack-2">Rack 2</SelectItem>
+              {racks.map((rack) => (
+                <SelectItem key={rack.id} value={rack.id}>
+                  {rack.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
