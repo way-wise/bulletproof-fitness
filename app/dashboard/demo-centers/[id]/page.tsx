@@ -1,13 +1,14 @@
 import { DemoCenterDetails } from "./demo-center-details";
 
 interface DemoCenterPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
-const DemoCenterPage = ({ params }: DemoCenterPageProps) => {
-  return <DemoCenterDetails id={params.id} />;
+const DemoCenterPage = async ({ params }: DemoCenterPageProps) => {
+  const { id } = await params;
+  return <DemoCenterDetails id={id} />;
 };
 
 export default DemoCenterPage;

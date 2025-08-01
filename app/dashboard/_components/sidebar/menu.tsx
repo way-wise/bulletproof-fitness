@@ -2,6 +2,7 @@ import {
   Building2,
   Dumbbell,
   LayoutGrid,
+  Play,
   Settings,
   UsersRound,
 } from "lucide-react";
@@ -52,6 +53,11 @@ const SidebarMenu = () => {
       title: "Racks",
       icon: <Dumbbell className="icon" />,
       url: "/dashboard/racks",
+    },
+    {
+      title: "YouTube Videos",
+      icon: <Play className="icon" />,
+      url: "/dashboard/youtube-videos",
     },
     {
       title: "Settings",
