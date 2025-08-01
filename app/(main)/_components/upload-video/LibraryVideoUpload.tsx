@@ -49,7 +49,7 @@ export default function LibraryVideoUpload() {
   const onSubmit = async (data: FormValues) => {
     try {
       setIsUploading(true);
-      setUploadProgress("Uploading video to Google Drive...");
+      setUploadProgress("Uploading video to ImageBB...");
 
       // Get the video file from the form
       const videoFile = form.getValues("video") as File;
@@ -57,6 +57,9 @@ export default function LibraryVideoUpload() {
         form.setError("video", { message: "Please select a video file" });
         return;
       }
+
+      console.log("Form data:", data);
+      console.log("Video file:", videoFile);
 
       // Create FormData for multipart upload
       const formData = new FormData();
@@ -67,15 +70,26 @@ export default function LibraryVideoUpload() {
       formData.append("height", data.height);
       formData.append("rack", data.rack);
 
-      // Send to Google Drive upload API
-      const response = await fetch("/api/google-drive-upload", {
+      console.log("FormData entries:");
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+
+      // Send to video upload API
+      const response = await fetch("/api/exercise-library", {
         method: "POST",
-        body: formData, // Don't set Content-Type header, let browser set it with boundary
+        body: formData,
       });
+      console.log("Response status:", response.status);
+      console.log(
+        "Response headers:",
+        Object.fromEntries(response.headers.entries()),
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to upload video");
+        console.error("API Error:", errorData);
+        throw new Error(errorData.message || "Failed to upload video");
       }
 
       const result = await response.json();
@@ -85,13 +99,13 @@ export default function LibraryVideoUpload() {
       form.reset();
       setFileName(null);
       setUploadProgress(
-        "Video uploaded to Google Drive successfully! It will be automatically uploaded to YouTube via Zapier.",
+        `Video uploaded successfully! Video URL: ${result.data.videoUrl}`,
       );
 
-      // Clear success message after 5 seconds
+      // Clear success message after 10 seconds
       setTimeout(() => {
         setUploadProgress("");
-      }, 5000);
+      }, 10000);
     } catch (error) {
       console.error("Error uploading video:", error);
       form.setError("root", {
