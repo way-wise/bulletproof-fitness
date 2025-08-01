@@ -51,10 +51,12 @@ const DemoCentersCards = () => {
     const demoCenters = data?.data || [];
 
     return demoCenters.filter((center: DemoCenterFromAPI) => {
-      // Only show published and non-blocked demo centers
-      if (!center.isPublic || center.blocked) {
-        return false;
-      }
+      // Search filter
+      const searchMatch =
+        searchTerm === "" ||
+        center.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        center.cityZip.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        center.address.toLowerCase().includes(searchTerm.toLowerCase());
 
       // Type filter
       const typeMatch =
@@ -70,9 +72,9 @@ const DemoCentersCards = () => {
             .includes(selectedEquipment.toLowerCase()),
         );
 
-      return typeMatch && equipmentMatch;
+      return searchMatch && typeMatch && equipmentMatch;
     });
-  }, [data, selectedType, selectedEquipment]);
+  }, [data, searchTerm, selectedType, selectedEquipment]);
 
   // Calculate pagination info
   const totalItems = data?.meta?.total || 0;
