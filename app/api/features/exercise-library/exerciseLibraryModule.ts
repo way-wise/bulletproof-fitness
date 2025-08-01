@@ -3,8 +3,7 @@ import { Hono } from "hono";
 import { exerciseLibraryService } from "./exerciseLibraryService";
 
 export const exerciseLibraryModule = new Hono();
-
-// GET endpoint to retrieve exercise library data (useful for Zapier)
+// exercise library video for dashbaord
 exerciseLibraryModule.get("/", async (c) => {
   try {
     const session = await getSession();

@@ -57,7 +57,7 @@ export const YouTubeVideoTable = () => {
   });
 
   // Get YouTube videos data with search
-  const url = `/api/youtube-videos?page=${pagination.pageIndex}&limit=${pagination.pageSize}&search=${encodeURIComponent(searchQuery)}`;
+  const url = `/api/exercise-library?page=${pagination.pageIndex}&limit=${pagination.pageSize}&search=${encodeURIComponent(searchQuery)}`;
   const { isValidating, data } = useSWR(url);
 
   // Debounced search

@@ -57,7 +57,17 @@ const SidebarMenu = () => {
     {
       title: "YouTube Videos",
       icon: <Play className="icon" />,
-      url: "/dashboard/youtube-videos",
+      baseUrl: "/dashboard",
+      submenu: [
+        {
+          title: "Exercise Library",
+          url: "/dashboard/exercise-library",
+        },
+        {
+          title: "Exercise Setup ",
+          url: "/dashboard/exercise-setup",
+        },
+      ],
     },
     {
       title: "Settings",

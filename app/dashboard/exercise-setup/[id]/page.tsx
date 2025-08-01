@@ -1,4 +1,4 @@
-import { YouTubeVideoDetails } from "./youtube-video-details";
+import { YouTubeVideoDetails } from "./exercise-setup-details";
 
 interface YouTubeVideoPageProps {
   params: Promise<{

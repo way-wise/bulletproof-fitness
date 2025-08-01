@@ -16,20 +16,20 @@ datasource db {
 }
 
 model users {
-  id            String         @id @default(ulid())
-  email         String         @unique
-  name          String
-  emailVerified Boolean
-  image         String?
-  role          String?
-  banned        Boolean?
-  banReason     String?
-  banExpires    Int?
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      sessions[]
-  accounts      accounts[]
-  youtubeVideos YouTubeVideo[]
+  id                    String                 @id @default(ulid())
+  email                 String                 @unique
+  name                  String
+  emailVerified         Boolean
+  image                 String?
+  role                  String?
+  banned                Boolean?
+  banReason             String?
+  banExpires            Int?
+  createdAt             DateTime
+  updatedAt             DateTime
+  sessions              sessions[]
+  accounts              accounts[]
+  youtubeVideos         YouTubeVideo[]
   exerciseLibraryVideos ExerciseLibraryVideo[]
 }
 
