@@ -40,13 +40,67 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function LibraryVideoUpload() {
   const [fileName, setFileName] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string>("");
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = (data: FormValues) => {
-    console.log({ ...data, video: fileName });
-    // TODO: Send to API
+  const onSubmit = async (data: FormValues) => {
+    try {
+      setIsUploading(true);
+      setUploadProgress("Uploading video to Google Drive...");
+
+      // Get the video file from the form
+      const videoFile = form.getValues("video") as File;
+      if (!videoFile) {
+        form.setError("video", { message: "Please select a video file" });
+        return;
+      }
+
+      // Create FormData for multipart upload
+      const formData = new FormData();
+      formData.append("video", videoFile);
+      formData.append("title", data.title);
+      formData.append("equipment", data.equipment);
+      formData.append("bodyPart", data.bodyPart);
+      formData.append("height", data.height);
+      formData.append("rack", data.rack);
+
+      // Send to Google Drive upload API
+      const response = await fetch("/api/google-drive-upload", {
+        method: "POST",
+        body: formData, // Don't set Content-Type header, let browser set it with boundary
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to upload video");
+      }
+
+      const result = await response.json();
+      console.log("Video uploaded successfully:", result);
+
+      // Reset form
+      form.reset();
+      setFileName(null);
+      setUploadProgress(
+        "Video uploaded to Google Drive successfully! It will be automatically uploaded to YouTube via Zapier.",
+      );
+
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setUploadProgress("");
+      }, 5000);
+    } catch (error) {
+      console.error("Error uploading video:", error);
+      form.setError("root", {
+        message:
+          error instanceof Error ? error.message : "Failed to upload video",
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -237,9 +291,26 @@ export default function LibraryVideoUpload() {
           )}
         />
 
+        {/* Error/Success Messages */}
+        {form.formState.errors.root && (
+          <div className="rounded-md bg-red-50 p-4 text-red-700">
+            {form.formState.errors.root.message}
+          </div>
+        )}
+
+        {uploadProgress && !form.formState.errors.root && (
+          <div className="rounded-md bg-green-50 p-4 text-green-700">
+            {uploadProgress}
+          </div>
+        )}
+
         <div className="flex justify-center">
-          <Button type="submit" className="w-full md:w-40">
-            Submit
+          <Button
+            type="submit"
+            className="w-full md:w-40"
+            disabled={isUploading}
+          >
+            {isUploading ? "Uploading..." : "Submit"}
           </Button>
         </div>
       </form>

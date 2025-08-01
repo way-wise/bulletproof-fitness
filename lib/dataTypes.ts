@@ -87,11 +87,17 @@ export interface DemoCenterFromAPI {
 export type ExerciseLibraryVideo = {
   id: string;
   title: string;
-  description: string;
   videoUrl: string;
+  equipment: string;
+  bodyPart: string;
+  height: string;
+  rack: string;
+  userId: string;
   isPublic: boolean;
   blocked: boolean;
   blockReason?: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 // YouTube Video Types
