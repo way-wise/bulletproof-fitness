@@ -98,7 +98,7 @@ export const YouTubeVideoTable = () => {
       setBlockVideoModalOpen(false);
       blockVideoForm.reset();
       mutate(url);
-    } catch (error) {
+    } catch {
       toast.error("Failed to block video");
     }
   };
@@ -124,7 +124,7 @@ export const YouTubeVideoTable = () => {
       toast.success("Video unblocked successfully");
       setUnblockVideoModalOpen(false);
       mutate(url);
-    } catch (error) {
+    } catch {
       toast.error("Failed to unblock video");
     }
   };
@@ -154,7 +154,7 @@ export const YouTubeVideoTable = () => {
       );
       setPublishVideoModalOpen(false);
       mutate(url);
-    } catch (error) {
+    } catch {
       toast.error("Failed to update video status");
     }
   };
@@ -186,21 +186,12 @@ export const YouTubeVideoTable = () => {
       setDeleteModalOpen(false);
       deleteVideoForm.reset();
       mutate(url);
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete video");
     }
   };
 
-  // Get status badge for video
-  const getStatusBadge = (video: YouTubeVideo) => {
-    if (video.blocked) {
-      return <Badge variant="destructive">Blocked</Badge>;
-    }
-    if (!video.isPublic) {
-      return <Badge variant="secondary">Private</Badge>;
-    }
-    return <Badge variant="success">Published</Badge>;
-  };
+  // Remove unused getStatusBadge function
 
   // Table columns
   const columns: ColumnDef<YouTubeVideo>[] = [

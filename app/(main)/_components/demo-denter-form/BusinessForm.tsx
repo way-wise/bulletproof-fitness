@@ -51,10 +51,6 @@ export default function BusinessForm() {
   const { equipments, isLoading } = useEquipments();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleBack = () => {
-    window.history.back();
-  };
-
   const form = useForm<BusinessFormValues>({
     resolver: zodResolver(businessFormSchema),
     defaultValues: {

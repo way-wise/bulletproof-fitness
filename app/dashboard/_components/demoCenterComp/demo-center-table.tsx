@@ -99,7 +99,7 @@ export const DemoCenterTable = () => {
       setBlockDemoCenterModalOpen(false);
       blockDemoCenterForm.reset();
       mutate(url);
-    } catch (error) {
+    } catch {
       toast.error("Failed to block demo center");
     }
   };
@@ -125,7 +125,7 @@ export const DemoCenterTable = () => {
       toast.success("Demo center unblocked successfully");
       setUnblockDemoCenterModalOpen(false);
       mutate(url);
-    } catch (error) {
+    } catch {
       toast.error("Failed to unblock demo center");
     }
   };
@@ -155,7 +155,7 @@ export const DemoCenterTable = () => {
       );
       setPublishModalOpen(false);
       mutate(url);
-    } catch (error) {
+    } catch {
       toast.error("Failed to update demo center status");
     }
   };
@@ -187,20 +187,9 @@ export const DemoCenterTable = () => {
       setDeleteModalOpen(false);
       deleteForm.reset();
       mutate(url);
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete demo center");
     }
-  };
-
-  // Get status badge for demo center
-  const getStatusBadge = (demoCenter: DemoCenter) => {
-    if (demoCenter.blocked) {
-      return <Badge variant="destructive">Blocked</Badge>;
-    }
-    if (!demoCenter.isPublic) {
-      return <Badge variant="secondary">Private</Badge>;
-    }
-    return <Badge variant="success">Published</Badge>;
   };
 
   // Table columns

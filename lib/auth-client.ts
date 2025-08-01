@@ -35,7 +35,7 @@ const extendedAdmin = {
 
       const data = await response.json();
       return { data };
-    } catch (error) {
+    } catch {
       return { error: { message: "Network error occurred" } };
     }
   },
@@ -59,7 +59,7 @@ const extendedAdmin = {
 
       const data = await response.json();
       return { data };
-    } catch (error) {
+    } catch {
       return { error: { message: "Network error occurred" } };
     }
   },
@@ -79,7 +79,7 @@ const extendedAdmin = {
 
       const data = await response.json();
       return { data };
-    } catch (error) {
+    } catch {
       return { error: { message: "Network error occurred" } };
     }
   },
@@ -115,7 +115,7 @@ const extendedAdmin = {
 
       const data = await response.json();
       return { data };
-    } catch (error) {
+    } catch {
       return { error: { message: "Network error occurred" } };
     }
   },
@@ -146,7 +146,7 @@ const extendedAdmin = {
 
       const data = await response.json();
       return { data };
-    } catch (error) {
+    } catch {
       return { error: { message: "Network error occurred" } };
     }
   },
@@ -170,7 +170,7 @@ const extendedAdmin = {
 
       const data = await response.json();
       return { data };
-    } catch (error) {
+    } catch {
       return { error: { message: "Network error occurred" } };
     }
   },
@@ -190,7 +190,7 @@ const extendedAdmin = {
 
       const data = await response.json();
       return { data };
-    } catch (error) {
+    } catch {
       return { error: { message: "Network error occurred" } };
     }
   },
@@ -226,7 +226,7 @@ const extendedAdmin = {
 
       const data = await response.json();
       return { data };
-    } catch (error) {
+    } catch {
       return { error: { message: "Network error occurred" } };
     }
   },
