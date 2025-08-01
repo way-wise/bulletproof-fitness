@@ -29,7 +29,7 @@ export const DemoCenterDetails = ({ id }: DemoCenterDetailsProps) => {
         }
         const data = await response.json();
         setDemoCenter(data);
-      } catch (error) {
+      } catch {
         toast.error("Failed to load demo center details");
         router.push("/dashboard/demo-centers");
       } finally {

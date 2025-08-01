@@ -8,10 +8,9 @@ import { equipmentModule } from "../features/equipments/equipmentModule";
 import authModule from "../features/auth/authModule";
 import { bodyPartsModule } from "../features/bodyParts/bodyPartsModule";
 import { demoCenterModule } from "../features/demo-centers/demoCentersModule";
-import { exerciseLibraryVideoModule } from "../features/exercise-library-videos/exerciseLibraryVideoModule";
+import { exerciseLibraryModule } from "../features/exercise-library/exerciseLibraryModule";
 import { racksModule } from "../features/racks/racksModule";
 import userModule from "../features/users/userModule";
-import youtubeVideoModule from "../features/youtube-videos/youtubeVideoModule";
 
 // Hono init
 const app = new Hono().basePath("/api");
@@ -29,8 +28,8 @@ app.route("/equipments", equipmentModule);
 app.route("/body-parts", bodyPartsModule);
 app.route("/racks", racksModule);
 app.route("/demo-centers", demoCenterModule);
-app.route("/youtube-videos", youtubeVideoModule);
-app.route("/exercise-library-videos", exerciseLibraryVideoModule);
+app.route("/exercise-library", exerciseLibraryModule);
+
 // Not found
 app.notFound((c) => {
   return c.json(

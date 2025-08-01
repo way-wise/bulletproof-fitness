@@ -44,10 +44,6 @@ export default function ResidentialForm() {
   const { equipments, isLoading } = useEquipments();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleBack = () => {
-    window.history.back();
-  };
-
   const form = useForm<ResidentialFormValues>({
     resolver: zodResolver(residentialFormSchema),
     defaultValues: {
