@@ -30,6 +30,7 @@ model users {
   sessions      sessions[]
   accounts      accounts[]
   youtubeVideos YouTubeVideo[]
+  exerciseLibraryVideos ExerciseLibraryVideo[]
 }
 
 model sessions {
@@ -249,6 +250,26 @@ model YouTubeVideo {
   @@index([isPublic, blocked])
   @@index([category])
   @@index([status])
+}
+
+model ExerciseLibraryVideo {
+  id          String   @id @default(ulid())
+  title       String
+  videoUrl    String
+  equipment   String
+  bodyPart    String
+  height      String
+  rack        String
+  userId      String
+  user        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPublic    Boolean  @default(false)
+  blocked     Boolean  @default(false)
+  blockReason String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([isPublic, blocked])
 }
 
 // model exerciseLibrary {
