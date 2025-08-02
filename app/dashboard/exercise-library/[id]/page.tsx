@@ -1,14 +1,15 @@
-import { YouTubeVideoDetails } from "./exercise-library-details";
+import { ExerciseLibraryVideoDetails } from "./exercise-library-details";
 
-interface YouTubeVideoPageProps {
+interface ExerciseLibraryVideoPageProps {
   params: Promise<{
     id: string;
   }>;
 }
-
-const YouTubeVideoPage = async ({ params }: YouTubeVideoPageProps) => {
+const ExerciseLibraryVideoPage = async ({
+  params,
+}: ExerciseLibraryVideoPageProps) => {
   const { id } = await params;
-  return <YouTubeVideoDetails id={id} />;
+  return <ExerciseLibraryVideoDetails id={id} />;
 };
 
-export default YouTubeVideoPage;
+export default ExerciseLibraryVideoPage;

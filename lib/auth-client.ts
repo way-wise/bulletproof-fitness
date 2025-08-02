@@ -120,8 +120,8 @@ const extendedAdmin = {
     }
   },
 
-  // YouTube Video Management Methods
-  blockYouTubeVideo: async ({
+  // Exercise Library Video Management Methods
+  blockExerciseLibraryVideo: async ({
     videoId,
     blockReason,
   }: {
@@ -129,13 +129,16 @@ const extendedAdmin = {
     blockReason: string;
   }) => {
     try {
-      const response = await fetch("/api/youtube-videos/block", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `/api/exercise-library/dashboard/${videoId}/block`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ blockReason }),
         },
-        body: JSON.stringify({ videoId, blockReason }),
-      });
+      );
 
       if (!response.ok) {
         const error = await response.json();
@@ -151,15 +154,17 @@ const extendedAdmin = {
     }
   },
 
-  unblockYouTubeVideo: async ({ videoId }: { videoId: string }) => {
+  unblockExerciseLibraryVideo: async ({ videoId }: { videoId: string }) => {
     try {
-      const response = await fetch("/api/youtube-videos/unblock", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `/api/exercise-library/dashboard/${videoId}/unblock`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-        body: JSON.stringify({ videoId }),
-      });
+      );
 
       if (!response.ok) {
         const error = await response.json();
@@ -175,11 +180,14 @@ const extendedAdmin = {
     }
   },
 
-  deleteYouTubeVideo: async ({ videoId }: { videoId: string }) => {
+  deleteExerciseLibraryVideo: async ({ videoId }: { videoId: string }) => {
     try {
-      const response = await fetch(`/api/youtube-videos/${videoId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/exercise-library/dashboard/${videoId}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (!response.ok) {
         const error = await response.json();
@@ -195,7 +203,7 @@ const extendedAdmin = {
     }
   },
 
-  updateYouTubeVideoStatus: async ({
+  updateExerciseLibraryVideoStatus: async ({
     videoId,
     isPublic,
     blocked,
@@ -207,13 +215,16 @@ const extendedAdmin = {
     blockReason?: string;
   }) => {
     try {
-      const response = await fetch(`/api/youtube-videos/${videoId}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `/api/exercise-library/dashboard/${videoId}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ isPublic, blocked, blockReason }),
         },
-        body: JSON.stringify({ isPublic, blocked, blockReason }),
-      });
+      );
 
       if (!response.ok) {
         const error = await response.json();

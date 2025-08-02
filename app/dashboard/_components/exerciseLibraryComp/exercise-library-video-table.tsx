@@ -2,7 +2,6 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
 import {
   DropdownMenu,
@@ -23,8 +22,9 @@ import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { Textarea } from "@/components/ui/textarea";
 import { admin } from "@/lib/auth-client";
-import { YouTubeVideo } from "@/lib/dataTypes";
+import { ExerciseLibraryVideo } from "@/lib/dataTypes";
 import { formatDate } from "@/lib/date-format";
+import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import {
   Ban,
@@ -55,18 +55,18 @@ export const ExerciseLibraryVideoTable = () => {
   const [videoId, setVideoId] = useState<string | undefined>("");
   const [searchQuery, setSearchQuery] = useState("");
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 1,
+    pageIndex: 0,
     pageSize: 10,
   });
 
-  // Get YouTube videos data with search
-  const url = `/api/exercise-library?page=${pagination.pageIndex}&limit=${pagination.pageSize}&search=${encodeURIComponent(searchQuery)}`;
+  // Get exercise library videos data with search
+  const url = `/api/exercise-library/dashboard?page=${pagination.pageIndex + 1}&limit=${pagination.pageSize}&search=${encodeURIComponent(searchQuery)}`;
   const { isValidating, data } = useSWR(url);
 
   // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {
-      setPagination((prev) => ({ ...prev, pageIndex: 1 }));
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
     }, 500);
 
     return () => clearTimeout(timer);
@@ -87,7 +87,7 @@ export const ExerciseLibraryVideoTable = () => {
     }
 
     try {
-      const { error } = await admin.blockYouTubeVideo({
+      const { error } = await admin.blockExerciseLibraryVideo({
         videoId,
         blockReason: formData.blockReason,
       });
@@ -115,7 +115,7 @@ export const ExerciseLibraryVideoTable = () => {
     }
 
     try {
-      const { error } = await admin.unblockYouTubeVideo({
+      const { error } = await admin.unblockExerciseLibraryVideo({
         videoId,
       });
 
@@ -140,7 +140,7 @@ export const ExerciseLibraryVideoTable = () => {
     }
 
     try {
-      const { error } = await admin.updateYouTubeVideoStatus({
+      const { error } = await admin.updateExerciseLibraryVideoStatus({
         videoId,
         isPublic: isPublic,
       });
@@ -173,7 +173,7 @@ export const ExerciseLibraryVideoTable = () => {
     }
 
     try {
-      const { error, data } = await admin.deleteYouTubeVideo({
+      const { error, data } = await admin.deleteExerciseLibraryVideo({
         videoId,
       });
 
@@ -197,26 +197,16 @@ export const ExerciseLibraryVideoTable = () => {
   // Remove unused getStatusBadge function
 
   // Table columns
-  const columns: ColumnDef<YouTubeVideo>[] = [
+  const columns: ColumnDef<ExerciseLibraryVideo>[] = [
     {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
+      id: "number",
+      header: "#",
+      cell: ({ row, table }) => {
+        // Calculate the row number based on pagination
+        const pageIndex = table.getState().pagination.pageIndex || 0;
+        const pageSize = table.getState().pagination.pageSize || 10;
+        return <span>{pageIndex * pageSize + row.index + 1}</span>;
+      },
     },
     {
       header: "Title",
@@ -228,50 +218,101 @@ export const ExerciseLibraryVideoTable = () => {
       ),
     },
     {
-      header: "Category",
-      accessorKey: "category",
-    },
-    {
-      header: "Privacy",
-      accessorKey: "privacy",
+      header: "Equipment",
+      accessorKey: "equipment",
       cell: ({ row }) => {
-        const privacy = row.original.privacy;
-        return (
-          <Badge variant={privacy === "public" ? "success" : "secondary"}>
-            {privacy}
-          </Badge>
-        );
+        const equipment = row.original.equipment;
+        if (!equipment) return "-";
+
+        try {
+          const equipmentArray = JSON.parse(equipment);
+          if (!Array.isArray(equipmentArray) || equipmentArray.length === 0)
+            return "-";
+
+          return (
+            <div className="flex flex-wrap gap-1">
+              {equipmentArray.slice(0, 2).map((item, index) => (
+                <Badge key={index} variant="secondary" className="text-xs">
+                  {item}
+                </Badge>
+              ))}
+              {equipmentArray.length > 2 && (
+                <Badge variant="default" className="text-xs">
+                  +{equipmentArray.length - 2} more
+                </Badge>
+              )}
+            </div>
+          );
+        } catch {
+          return equipment || "-";
+        }
       },
     },
     {
-      header: "Status",
-      accessorKey: "status",
+      header: "Body Part",
+      accessorKey: "bodyPart",
       cell: ({ row }) => {
-        const status = row.original.status;
-        return (
-          <Badge
-            variant={
-              status === "uploaded"
-                ? "success"
-                : status === "processing"
-                  ? "secondary"
-                  : "destructive"
-            }
-          >
-            {status}
-          </Badge>
-        );
+        const bodyPart = row.original.bodyPart;
+        if (!bodyPart) return "-";
+
+        try {
+          const bodyPartArray = JSON.parse(bodyPart);
+          if (!Array.isArray(bodyPartArray) || bodyPartArray.length === 0)
+            return "-";
+
+          return (
+            <div className="flex flex-wrap gap-1">
+              {bodyPartArray.slice(0, 2).map((item, index) => (
+                <Badge key={index} variant="secondary" className="text-xs">
+                  {item}
+                </Badge>
+              ))}
+              {bodyPartArray.length > 2 && (
+                <Badge variant="default" className="text-xs">
+                  +{bodyPartArray.length - 2} more
+                </Badge>
+              )}
+            </div>
+          );
+        } catch {
+          return bodyPart || "-";
+        }
       },
     },
     {
-      header: "Views",
-      accessorKey: "viewCount",
-      cell: ({ row }) => row.original.viewCount.toLocaleString(),
+      header: "Height",
+      accessorKey: "height",
+      cell: ({ row }) => row.original.height || "-",
     },
     {
-      header: "Likes",
-      accessorKey: "likeCount",
-      cell: ({ row }) => row.original.likeCount.toLocaleString(),
+      header: "Rack",
+      accessorKey: "rack",
+      cell: ({ row }) => {
+        const rack = row.original.rack;
+        if (!rack) return "-";
+
+        try {
+          const rackArray = JSON.parse(rack);
+          if (!Array.isArray(rackArray) || rackArray.length === 0) return "-";
+
+          return (
+            <div className="flex flex-wrap gap-1">
+              {rackArray.slice(0, 2).map((item, index) => (
+                <Badge key={index} variant="secondary" className="text-xs">
+                  {item}
+                </Badge>
+              ))}
+              {rackArray.length > 2 && (
+                <Badge variant="default" className="text-xs">
+                  +{rackArray.length - 2} more
+                </Badge>
+              )}
+            </div>
+          );
+        } catch {
+          return rack || "-";
+        }
+      },
     },
     {
       header: "Published",
@@ -305,24 +346,7 @@ export const ExerciseLibraryVideoTable = () => {
         );
       },
     },
-    {
-      header: "Block Reason",
-      accessorKey: "blockReason",
-      cell: ({ row }) => {
-        return row.original.blockReason ? (
-          <div className="max-w-xs truncate" title={row.original.blockReason}>
-            {row.original.blockReason}
-          </div>
-        ) : (
-          <span className="text-muted-foreground">-</span>
-        );
-      },
-    },
-    {
-      header: "Upload Date",
-      accessorKey: "uploadDate",
-      cell: ({ row }) => formatDate(row.original.uploadDate),
-    },
+
     {
       header: "Created At",
       accessorKey: "createdAt",
@@ -352,7 +376,7 @@ export const ExerciseLibraryVideoTable = () => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href={`/dashboard/exercise-setup/${id}`}>
+                  <Link href={`/dashboard/exercise-library/${id}`}>
                     <Eye className="mr-2 h-4 w-4" />
                     <span>View</span>
                   </Link>
@@ -423,10 +447,10 @@ export const ExerciseLibraryVideoTable = () => {
   return (
     <>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-medium">Exercise Library</h1>
+        <h1 className="text-2xl font-medium">Exercise Library Videos</h1>
         <Button onClick={() => setAddExerciseModalOpen(true)}>
           <Plus />
-          <span>Add Exercise</span>
+          <span>Add Exercise Video</span>
         </Button>
       </div>
       <div className="rounded-xl border bg-card p-6">
@@ -576,28 +600,35 @@ export const ExerciseLibraryVideoTable = () => {
         </Form>
       </Modal>
       {/* Exercise Creation Modal */}
-      <Modal
-        isOpen={addExerciseModalOpen}
+      <Dialog
+        open={addExerciseModalOpen}
         onClose={() => setAddExerciseModalOpen(false)}
-        isPending={false}
-        title=""
+        className="relative z-50"
       >
-        <div className="flex justify-between gap-3 pb-5">
-          <div className="flex items-center gap-2">
-            <p className="text-2xl font-bold">Upload Exercise Video</p>
-          </div>
-          <Button
-            type="button"
-            onClick={() => setAddExerciseModalOpen(false)}
-            variant="secondary"
-          >
-            Cancel
-          </Button>
+        <DialogBackdrop className="fixed inset-0 bg-black/75" />
+        <div className="fixed inset-0 flex size-full items-center justify-center p-4">
+          <DialogPanel className="w-full max-w-4xl rounded-lg bg-card shadow-xl">
+            <div className="flex justify-between gap-3 border-b p-5">
+              <div className="flex items-center gap-2">
+                <p className="text-2xl font-bold">Upload Exercise Video</p>
+              </div>
+              <Button
+                type="button"
+                onClick={() => setAddExerciseModalOpen(false)}
+                variant="secondary"
+              >
+                Cancel
+              </Button>
+            </div>
+            <div className="max-h-[80vh] overflow-y-auto p-5">
+              <LibraryVideoUpload
+                setAddExerciseModalOpen={setAddExerciseModalOpen}
+                mutateUrl={url}
+              />
+            </div>
+          </DialogPanel>
         </div>
-        <div className="mx-auto max-h-[80vh] overflow-y-auto">
-          <LibraryVideoUpload />
-        </div>
-      </Modal>
+      </Dialog>
       {/* Delete Video Modal */}
       <Modal
         isOpen={deleteModalOpen}

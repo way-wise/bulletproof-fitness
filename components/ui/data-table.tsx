@@ -1,15 +1,5 @@
 "use client";
 
-import * as React from "react";
-import {
-  type ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  OnChangeFn,
-  PaginationState,
-  useReactTable,
-} from "@tanstack/react-table";
-import { PaginatedData } from "@/lib/dataTypes";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -18,8 +8,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { PaginatedData } from "@/lib/dataTypes";
+import {
+  type ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  OnChangeFn,
+  PaginationState,
+  useReactTable,
+} from "@tanstack/react-table";
 import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import * as React from "react";
 import Spinner from "./spinner";
 
 // Table Props Interface
@@ -52,7 +52,7 @@ export const DataTable = <TData, TValue>({
     state: {
       rowSelection,
       pagination: {
-        pageIndex: pagination.pageIndex - 1,
+        pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
       },
     },
@@ -65,7 +65,7 @@ export const DataTable = <TData, TValue>({
 
   // Handle limit change
   const handleLimitChange = (value: string) => {
-    onPaginationChange({ pageIndex: 1, pageSize: Number(value) });
+    onPaginationChange({ pageIndex: 0, pageSize: Number(value) });
   };
 
   return (

@@ -15,10 +15,17 @@ export const exerciseLibraryService = {
       data: {
         title: data.title,
         videoUrl: data.videoUrl,
-        equipment: data.equipment,
-        bodyPart: data.bodyPart,
-        height: data.height || null,
-        rack: data.rack || null,
+        equipment:
+          data.equipment && data.equipment.length > 0
+            ? JSON.stringify(data.equipment)
+            : null,
+        bodyPart:
+          data.bodyPart && data.bodyPart.length > 0
+            ? JSON.stringify(data.bodyPart)
+            : null,
+        height: data.height && data.height.trim() !== "" ? data.height : null,
+        rack:
+          data.rack && data.rack.length > 0 ? JSON.stringify(data.rack) : null,
         userId: data.userId,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -26,6 +33,208 @@ export const exerciseLibraryService = {
     });
 
     return bodyPart;
+  },
+
+  // Get all exercise library videos for dashboard (admin)
+  getAllExerciseLibraryVideos: async (page = 1, limit = 10, search = "") => {
+    try {
+      const skip = (page - 1) * limit;
+
+      // Build where clause for search
+      const where = search
+        ? {
+            OR: [
+              { title: { contains: search, mode: "insensitive" } },
+              { equipment: { contains: search, mode: "insensitive" } },
+              { bodyPart: { contains: search, mode: "insensitive" } },
+              { rack: { contains: search, mode: "insensitive" } },
+            ],
+          }
+        : {};
+
+      // Get total count
+      const total = await prisma.exerciseLibraryVideo.count({ where });
+
+      // Get paginated data
+      const exercises = await prisma.exerciseLibraryVideo.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      });
+
+      return {
+        data: exercises,
+        meta: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      };
+    } catch (error) {
+      console.error("Error fetching all exercise library videos:", error);
+      throw new Error("Failed to fetch exercise library videos.");
+    }
+  },
+
+  // Get single exercise library video by ID
+  getExerciseLibraryVideoById: async (id: string) => {
+    try {
+      const exercise = await prisma.exerciseLibraryVideo.findUnique({
+        where: { id },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      });
+
+      if (!exercise) {
+        throw new Error("Exercise library video not found");
+      }
+
+      return exercise;
+    } catch (error) {
+      console.error("Error fetching exercise library video:", error);
+      throw new Error("Failed to fetch exercise library video.");
+    }
+  },
+
+  // Update exercise library video
+  updateExerciseLibraryVideo: async (
+    id: string,
+    data: InferType<typeof exerciseLibrarySchemaAdmin>,
+  ) => {
+    try {
+      const exercise = await prisma.exerciseLibraryVideo.update({
+        where: { id },
+        data: {
+          title: data.title,
+          videoUrl: data.videoUrl,
+          equipment:
+            data.equipment && data.equipment.length > 0
+              ? JSON.stringify(data.equipment)
+              : null,
+          bodyPart:
+            data.bodyPart && data.bodyPart.length > 0
+              ? JSON.stringify(data.bodyPart)
+              : null,
+          height: data.height && data.height.trim() !== "" ? data.height : null,
+          rack:
+            data.rack && data.rack.length > 0
+              ? JSON.stringify(data.rack)
+              : null,
+          updatedAt: new Date(),
+        },
+      });
+
+      return exercise;
+    } catch (error) {
+      console.error("Error updating exercise library video:", error);
+      throw new Error("Failed to update exercise library video.");
+    }
+  },
+
+  // Delete exercise library video
+  deleteExerciseLibraryVideo: async (id: string) => {
+    try {
+      const exercise = await prisma.exerciseLibraryVideo.delete({
+        where: { id },
+      });
+
+      return exercise;
+    } catch (error) {
+      console.error("Error deleting exercise library video:", error);
+      throw new Error("Failed to delete exercise library video.");
+    }
+  },
+
+  // Block exercise library video
+  blockExerciseLibraryVideo: async (id: string, blockReason: string) => {
+    try {
+      const exercise = await prisma.exerciseLibraryVideo.update({
+        where: { id },
+        data: {
+          blocked: true,
+          blockReason,
+          updatedAt: new Date(),
+        },
+      });
+
+      return exercise;
+    } catch (error) {
+      console.error("Error blocking exercise library video:", error);
+      throw new Error("Failed to block exercise library video.");
+    }
+  },
+
+  // Unblock exercise library video
+  unblockExerciseLibraryVideo: async (id: string) => {
+    try {
+      const exercise = await prisma.exerciseLibraryVideo.update({
+        where: { id },
+        data: {
+          blocked: false,
+          blockReason: null,
+          updatedAt: new Date(),
+        },
+      });
+
+      return exercise;
+    } catch (error) {
+      console.error("Error unblocking exercise library video:", error);
+      throw new Error("Failed to unblock exercise library video.");
+    }
+  },
+
+  // Update exercise library video status (publish/unpublish)
+  updateExerciseLibraryVideoStatus: async (
+    id: string,
+    data: { isPublic?: boolean; blocked?: boolean; blockReason?: string },
+  ) => {
+    try {
+      const updateData: any = {
+        updatedAt: new Date(),
+      };
+
+      if (data.isPublic !== undefined) {
+        updateData.isPublic = data.isPublic;
+      }
+
+      if (data.blocked !== undefined) {
+        updateData.blocked = data.blocked;
+      }
+
+      if (data.blockReason !== undefined) {
+        updateData.blockReason = data.blockReason;
+      }
+
+      const exercise = await prisma.exerciseLibraryVideo.update({
+        where: { id },
+        data: updateData,
+      });
+
+      return exercise;
+    } catch (error) {
+      console.error("Error updating exercise library video status:", error);
+      throw new Error("Failed to update exercise library video status.");
+    }
   },
 
   createExerciseLibrary: async (
@@ -132,7 +341,7 @@ export const exerciseLibraryService = {
     }
   },
 
-  // Get exercise library data for a user
+  // Get exercise library data for a user (public access)
   getExerciseLibrary: async (userId: string) => {
     try {
       const exercises = await prisma.exerciseLibraryVideo.findMany({
