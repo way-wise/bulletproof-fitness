@@ -46,7 +46,7 @@ export const demoCenterQuerySchema = object({
   location: string().optional(),
   range: number().optional(),
   buildingType: string().optional(),
-  equipments: array().of(string()).optional(),
+  equipments: string().optional(),
   page: number().integer().min(1).default(1),
   limit: number().integer().min(1).max(100).default(10),
 });

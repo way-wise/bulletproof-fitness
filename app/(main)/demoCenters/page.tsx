@@ -15,15 +15,20 @@ import {
 } from "@/components/ui/select";
 import MapDemoCenter from "../_components/demo-centers/MapDemoCenter";
 import DemoCentersCards from "../_components/demo-centers/DemoCentersCards";
-import { DemoCenterQuery } from "@/schema/demoCenters";
-import { PaginationQuery } from "@/schema/paginationSchema";
 import { toast } from "sonner";
-import ReactSelect from "react-select";
 import { MultiSelect } from "@/components/ui/multi-select";
 
+interface DemoCenterFilters {
+  location: string;
+  buildingType: string;
+  equipments: string[];
+  range: number;
+  page: number;
+  limit: number;
+}
+
 export default function DemoCenterPage() {
-  // Filter state management following user table pattern
-  const [filters, setFilters] = useState<DemoCenterQuery & PaginationQuery>({
+  const [filters, setFilters] = useState<DemoCenterFilters>({
     location: "",
     buildingType: "",
     equipments: [],

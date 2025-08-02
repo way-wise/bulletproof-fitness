@@ -16,6 +16,7 @@ export const demoCentersService = {
   getDemoCenters: async (query: DemoCenterQuery) => {
     const { skip, take, page, limit } = getPaginationQuery(query);
     const { location, range, buildingType, equipments } = query;
+    const equipmentsIds = equipments?.split(",");
 
     let filteredDemoCenters = [];
     let total = 0;
@@ -27,11 +28,11 @@ export const demoCentersService = {
     }
 
     // Equipment filter
-    if (equipments?.length) {
+    if (equipmentsIds?.length) {
       whereFilter.demoCenterEquipments = {
         some: {
           equipmentId: {
-            in: equipments,
+            in: equipmentsIds,
           },
         },
       };
