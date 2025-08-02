@@ -44,10 +44,10 @@ export const exerciseLibraryService = {
       const where = search
         ? {
             OR: [
-              { title: { contains: search, mode: "insensitive" } },
-              { equipment: { contains: search, mode: "insensitive" } },
-              { bodyPart: { contains: search, mode: "insensitive" } },
-              { rack: { contains: search, mode: "insensitive" } },
+              { title: { contains: search, mode: "insensitive" as const } },
+              { equipment: { contains: search, mode: "insensitive" as const } },
+              { bodyPart: { contains: search, mode: "insensitive" as const } },
+              { rack: { contains: search, mode: "insensitive" as const } },
             ],
           }
         : {};
@@ -209,7 +209,12 @@ export const exerciseLibraryService = {
     data: { isPublic?: boolean; blocked?: boolean; blockReason?: string },
   ) => {
     try {
-      const updateData: any = {
+      const updateData: {
+        updatedAt: Date;
+        isPublic?: boolean;
+        blocked?: boolean;
+        blockReason?: string;
+      } = {
         updatedAt: new Date(),
       };
 
@@ -275,10 +280,19 @@ export const exerciseLibraryService = {
       const created = await prisma.exerciseLibraryVideo.create({
         data: {
           title: data.title,
-          equipment: data.equipment,
-          bodyPart: data.bodyPart,
+          equipment:
+            data.equipment && data.equipment.length > 0
+              ? JSON.stringify(data.equipment)
+              : null,
+          bodyPart:
+            data.bodyPart && data.bodyPart.length > 0
+              ? JSON.stringify(data.bodyPart)
+              : null,
           height: data.height,
-          rack: data.rack,
+          rack:
+            data.rack && data.rack.length > 0
+              ? JSON.stringify(data.rack)
+              : null,
           videoUrl: uploadResult.secure_url,
           userId: data.userId,
         },
@@ -342,34 +356,174 @@ export const exerciseLibraryService = {
   },
 
   // Get exercise library data for a user (public access)
-  getExerciseLibrary: async (userId: string) => {
+  getExerciseLibrary: async () => {
     try {
-      const exercises = await prisma.exerciseLibraryVideo.findMany({
-        where: {
-          userId: userId,
-          isPublic: true,
-          blocked: false,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        select: {
-          id: true,
-          title: true,
-          videoUrl: true,
-          equipment: true,
-          bodyPart: true,
-          height: true,
-          rack: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      });
+      const exercises = await prisma.exerciseLibraryVideo.findMany({});
 
       return exercises;
     } catch (error) {
       console.error("Error fetching exercise library:", error);
       throw new Error("Failed to fetch exercise library data.");
+    }
+  },
+
+  // Get exercise library with comprehensive filters and pagination
+  getExerciseLibraryWithFilters: async (params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    bodyPart?: string;
+    equipment?: string;
+    rack?: string;
+    username?: string;
+    minHeight?: number;
+    maxHeight?: number;
+    rating?: number;
+    sortBy?: "title" | "createdAt" | "views" | "likes";
+    sortOrder?: "asc" | "desc";
+  }) => {
+    try {
+      const {
+        page = 1,
+        limit = 12,
+        search = "",
+        bodyPart = "",
+        equipment = "",
+        rack = "",
+        username = "",
+        minHeight = 0,
+        maxHeight = 85,
+        rating = 0,
+        sortBy = "createdAt",
+        sortOrder = "desc",
+      } = params;
+
+      const skip = (page - 1) * limit;
+
+      // Build comprehensive where clause
+      const where: any = {
+        isPublic: true,
+        blocked: false,
+      };
+
+      // Search filter
+      if (search) {
+        where.OR = [
+          { title: { contains: search, mode: "insensitive" as const } },
+          { equipment: { contains: search, mode: "insensitive" as const } },
+          { bodyPart: { contains: search, mode: "insensitive" as const } },
+          { rack: { contains: search, mode: "insensitive" as const } },
+        ];
+      }
+
+      // Body part filter
+      if (bodyPart) {
+        where.bodyPart = { contains: bodyPart, mode: "insensitive" as const };
+      }
+
+      // Equipment filter
+      if (equipment) {
+        where.equipment = { contains: equipment, mode: "insensitive" as const };
+      }
+
+      // Rack filter
+      if (rack) {
+        where.rack = { contains: rack, mode: "insensitive" as const };
+      }
+
+      // Username filter
+      if (username) {
+        where.user = {
+          name: { contains: username, mode: "insensitive" as const },
+        };
+      }
+
+      // Height filter
+      if (minHeight > 0 || maxHeight < 85) {
+        where.AND = [{ height: { not: null } }, { height: { not: "" } }];
+      }
+
+      // Get total count
+      const total = await prisma.exerciseLibraryVideo.count({
+        where,
+      });
+
+      // Get paginated data with user info
+      const exercises = await prisma.exerciseLibraryVideo.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: {
+          [sortBy]: sortOrder,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      });
+
+      // Transform data to include parsed JSON and additional fields
+      const transformedExercises = exercises
+        .map((exercise) => {
+          const parsedEquipment = exercise.equipment
+            ? JSON.parse(exercise.equipment)
+            : [];
+          const parsedBodyPart = exercise.bodyPart
+            ? JSON.parse(exercise.bodyPart)
+            : [];
+          const parsedRack = exercise.rack ? JSON.parse(exercise.rack) : [];
+
+          // Calculate height in inches if it exists
+          let heightInInches = null;
+          if (exercise.height) {
+            const heightMatch = exercise.height.match(/(\d+(?:\.\d+)?)/);
+            if (heightMatch) {
+              heightInInches = parseFloat(heightMatch[1]);
+            }
+          }
+
+          // Apply height filter after parsing
+          if ((minHeight > 0 || maxHeight < 85) && heightInInches !== null) {
+            if (heightInInches < minHeight || heightInInches > maxHeight) {
+              return null;
+            }
+          }
+
+          return {
+            ...exercise,
+            equipment: parsedEquipment,
+            bodyPart: parsedBodyPart,
+            rack: parsedRack,
+            heightInInches,
+            // Mock data for demo (replace with real data when available)
+            views: Math.floor(Math.random() * 1000) + 100,
+            likes: Math.floor(Math.random() * 50),
+            comments: Math.floor(Math.random() * 10),
+            saves: Math.floor(Math.random() * 20),
+            rating: (Math.random() * 5).toFixed(1),
+          };
+        })
+        .filter(Boolean);
+
+      return {
+        data: transformedExercises,
+        meta: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+          hasNextPage: page < Math.ceil(total / limit),
+          hasPrevPage: page > 1,
+        },
+      };
+    } catch (error) {
+      console.error("Error fetching exercise library with filters:", error);
+      throw new Error("Failed to fetch exercise library data with filters.");
     }
   },
 };

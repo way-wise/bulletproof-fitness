@@ -447,7 +447,9 @@ export const ExerciseLibraryVideoTable = () => {
   return (
     <>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-medium">Exercise Library Videos</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Exercise Library Videos
+        </h1>
         <Button onClick={() => setAddExerciseModalOpen(true)}>
           <Plus />
           <span>Add Exercise Video</span>

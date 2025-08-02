@@ -1,3 +1,5 @@
+import { ExerciseSetupDetails } from "./exercise-setup-details";
+
 interface YouTubeVideoPageProps {
   params: Promise<{
     id: string;
@@ -6,7 +8,7 @@ interface YouTubeVideoPageProps {
 
 const YouTubeVideoPage = async ({ params }: YouTubeVideoPageProps) => {
   const { id } = await params;
-  return <div>Exercise Setup Details</div>;
+  return <ExerciseSetupDetails id={id} />;
 };
 
 export default YouTubeVideoPage;

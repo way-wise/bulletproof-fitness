@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/date-format";
-import { ExerciseSetup } from "@/prisma/generated/client";
 import { ArrowLeft, ExternalLink, Play } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -14,20 +13,63 @@ interface ExerciseSetupDetailsProps {
   id: string;
 }
 
+// Type for ExerciseSetup with user relation
+interface ExerciseSetupWithUser {
+  id: string;
+  title: string;
+  videoUrl: string;
+  equipment: string | null;
+  bodyPart: string | null;
+  height: string | null;
+  rack: string | null;
+  userId: string;
+  isPublic: boolean;
+  blocked: boolean;
+  blockReason: string | null;
+  isolatorHole: string | null;
+  yellow: string | null;
+  green: string | null;
+  blue: string | null;
+  red: string | null;
+  purple: string | null;
+  orange: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
 export const ExerciseSetupDetails = ({ id }: ExerciseSetupDetailsProps) => {
-  const [exerciseSetup, setExerciseSetup] = useState<ExerciseSetup | null>(
-    null,
-  );
+  const [exerciseSetup, setExerciseSetup] =
+    useState<ExerciseSetupWithUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchVideo = async () => {
+      console.log("Fetching exercise setup with id:", id);
       try {
-        const response = await fetch(`/api/exercise-setup/dashboard/${id}`);
+        const response = await fetch(`/api/exercise-setup/dashboard/${id}`, {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        console.log("Response status:", response.status);
+
         if (!response.ok) {
-          throw new Error("Failed to fetch video");
+          const errorData = await response.json().catch(() => ({}));
+          console.error("API Error:", errorData);
+          throw new Error(
+            `Failed to fetch video: ${response.status} ${errorData.message || ""}`,
+          );
         }
+
         const data = await response.json();
+        console.log("API Response data:", data);
         setExerciseSetup(data.data);
       } catch (error) {
         toast.error("Failed to load video details");
@@ -48,7 +90,7 @@ export const ExerciseSetupDetails = ({ id }: ExerciseSetupDetailsProps) => {
     );
   }
 
-  if (!video) {
+  if (!exerciseSetup) {
     return (
       <div className="flex h-64 items-center justify-center">
         <div className="text-lg text-red-600">Video not found</div>
@@ -56,31 +98,21 @@ export const ExerciseSetupDetails = ({ id }: ExerciseSetupDetailsProps) => {
     );
   }
 
-  const formatDuration = (seconds?: number) => {
-    if (!seconds) return "Unknown";
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-
-    if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-    }
-    return `${minutes}:${secs.toString().padStart(2, "0")}`;
-  };
-
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="outline" size="sm" asChild>
-          <Link href="/dashboard/youtube-videos">
+          <Link href="/dashboard/exercise-setup">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Videos
+            Back to Exercise Setup
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{video.title}</h1>
-          <p className="text-muted-foreground">Video Details</p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {exerciseSetup.title}
+          </h1>
+          <p className="text-muted-foreground">Exercise Setup Details</p>
         </div>
       </div>
 
@@ -101,12 +133,12 @@ export const ExerciseSetupDetails = ({ id }: ExerciseSetupDetailsProps) => {
                   <p className="mb-2 text-muted-foreground">Video Preview</p>
                   <Button asChild>
                     <Link
-                      href={video.videoUrl}
+                      href={exerciseSetup.videoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       <ExternalLink className="mr-2 h-4 w-4" />
-                      Watch on YouTube
+                      Watch Video
                     </Link>
                   </Button>
                 </div>
@@ -114,70 +146,200 @@ export const ExerciseSetupDetails = ({ id }: ExerciseSetupDetailsProps) => {
             </CardContent>
           </Card>
 
-          {/* Video Information */}
+          {/* Exercise Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Video Information</CardTitle>
+              <CardTitle>Exercise Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h3 className="mb-2 font-semibold">Description</h3>
-                <p className="text-muted-foreground">
-                  {video.description || "No description available"}
-                </p>
+                <h3 className="mb-2 font-semibold">Equipment</h3>
+                <div className="flex flex-wrap gap-2">
+                  {exerciseSetup.equipment ? (
+                    (() => {
+                      try {
+                        const equipmentArray = JSON.parse(
+                          exerciseSetup.equipment,
+                        );
+                        return Array.isArray(equipmentArray) ? (
+                          equipmentArray.map((item, index) => (
+                            <Badge key={index} variant="secondary">
+                              {item}
+                            </Badge>
+                          ))
+                        ) : (
+                          <Badge variant="secondary">
+                            {exerciseSetup.equipment}
+                          </Badge>
+                        );
+                      } catch {
+                        return (
+                          <Badge variant="secondary">
+                            {exerciseSetup.equipment}
+                          </Badge>
+                        );
+                      }
+                    })()
+                  ) : (
+                    <span className="text-muted-foreground">
+                      No equipment specified
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div>
-                <h3 className="mb-2 font-semibold">Tags</h3>
+                <h3 className="mb-2 font-semibold">Body Parts</h3>
                 <div className="flex flex-wrap gap-2">
-                  {video.tags.length > 0 ? (
-                    video.tags.map((tag, index) => (
-                      <Badge key={index} variant="secondary">
-                        {tag}
-                      </Badge>
-                    ))
+                  {exerciseSetup.bodyPart ? (
+                    (() => {
+                      try {
+                        const bodyPartArray = JSON.parse(
+                          exerciseSetup.bodyPart,
+                        );
+                        return Array.isArray(bodyPartArray) ? (
+                          bodyPartArray.map((item, index) => (
+                            <Badge key={index} variant="secondary">
+                              {item}
+                            </Badge>
+                          ))
+                        ) : (
+                          <Badge variant="secondary">
+                            {exerciseSetup.bodyPart}
+                          </Badge>
+                        );
+                      } catch {
+                        return (
+                          <Badge variant="secondary">
+                            {exerciseSetup.bodyPart}
+                          </Badge>
+                        );
+                      }
+                    })()
                   ) : (
-                    <span className="text-muted-foreground">No tags</span>
+                    <span className="text-muted-foreground">
+                      No body parts specified
+                    </span>
                   )}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <h3 className="mb-1 font-semibold">Category</h3>
-                  <p className="text-muted-foreground">{video.category}</p>
-                </div>
-                <div>
-                  <h3 className="mb-1 font-semibold">Privacy</h3>
-                  <Badge
-                    variant={
-                      video.privacy === "public" ? "success" : "secondary"
-                    }
-                  >
-                    {video.privacy}
-                  </Badge>
-                </div>
-                <div>
-                  <h3 className="mb-1 font-semibold">Status</h3>
-                  <Badge
-                    variant={
-                      video.status === "uploaded"
-                        ? "success"
-                        : video.status === "processing"
-                          ? "secondary"
-                          : "destructive"
-                    }
-                  >
-                    {video.status}
-                  </Badge>
-                </div>
-                <div>
-                  <h3 className="mb-1 font-semibold">Duration</h3>
+                  <h3 className="mb-1 font-semibold">Height</h3>
                   <p className="text-muted-foreground">
-                    {formatDuration(video.duration)}
+                    {exerciseSetup.height || "Not specified"}
                   </p>
                 </div>
+                <div>
+                  <h3 className="mb-1 font-semibold">Rack</h3>
+                  <div className="flex flex-wrap gap-1">
+                    {exerciseSetup.rack ? (
+                      (() => {
+                        try {
+                          const rackArray = JSON.parse(exerciseSetup.rack);
+                          return Array.isArray(rackArray) ? (
+                            rackArray.map((item, index) => (
+                              <Badge
+                                key={index}
+                                variant="secondary"
+                                className="text-xs"
+                              >
+                                {item}
+                              </Badge>
+                            ))
+                          ) : (
+                            <Badge variant="secondary" className="text-xs">
+                              {exerciseSetup.rack}
+                            </Badge>
+                          );
+                        } catch {
+                          return (
+                            <Badge variant="secondary" className="text-xs">
+                              {exerciseSetup.rack}
+                            </Badge>
+                          );
+                        }
+                      })()
+                    ) : (
+                      <span className="text-muted-foreground">
+                        Not specified
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
+
+              {/* Pump Numbers */}
+              {(exerciseSetup.yellow ||
+                exerciseSetup.green ||
+                exerciseSetup.blue ||
+                exerciseSetup.red ||
+                exerciseSetup.purple ||
+                exerciseSetup.orange ||
+                exerciseSetup.isolatorHole) && (
+                <div>
+                  <h3 className="mb-2 font-semibold">Pump Numbers</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {exerciseSetup.yellow && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">Yellow:</span>
+                        <span className="text-sm font-medium">
+                          {exerciseSetup.yellow}
+                        </span>
+                      </div>
+                    )}
+                    {exerciseSetup.green && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">Green:</span>
+                        <span className="text-sm font-medium">
+                          {exerciseSetup.green}
+                        </span>
+                      </div>
+                    )}
+                    {exerciseSetup.blue && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">Blue:</span>
+                        <span className="text-sm font-medium">
+                          {exerciseSetup.blue}
+                        </span>
+                      </div>
+                    )}
+                    {exerciseSetup.red && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">Red:</span>
+                        <span className="text-sm font-medium">
+                          {exerciseSetup.red}
+                        </span>
+                      </div>
+                    )}
+                    {exerciseSetup.purple && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">Purple:</span>
+                        <span className="text-sm font-medium">
+                          {exerciseSetup.purple}
+                        </span>
+                      </div>
+                    )}
+                    {exerciseSetup.orange && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">Orange:</span>
+                        <span className="text-sm font-medium">
+                          {exerciseSetup.orange}
+                        </span>
+                      </div>
+                    )}
+                    {exerciseSetup.isolatorHole && (
+                      <div className="flex justify-between">
+                        <span className="text-sm">Isolator Hole:</span>
+                        <span className="text-sm font-medium">
+                          {exerciseSetup.isolatorHole}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -192,51 +354,28 @@ export const ExerciseSetupDetails = ({ id }: ExerciseSetupDetailsProps) => {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <span>Published</span>
-                <Badge variant={video.isPublic ? "success" : "secondary"}>
-                  {video.isPublic ? "Yes" : "No"}
+                <Badge
+                  variant={exerciseSetup.isPublic ? "success" : "secondary"}
+                >
+                  {exerciseSetup.isPublic ? "Yes" : "No"}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span>Blocked</span>
-                <Badge variant={video.blocked ? "destructive" : "secondary"}>
-                  {video.blocked ? "Yes" : "No"}
+                <Badge
+                  variant={exerciseSetup.blocked ? "destructive" : "secondary"}
+                >
+                  {exerciseSetup.blocked ? "Yes" : "No"}
                 </Badge>
               </div>
-              {video.blockReason && (
+              {exerciseSetup.blockReason && (
                 <div>
                   <span className="text-sm font-medium">Block Reason</span>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {video.blockReason}
+                    {exerciseSetup.blockReason}
                   </p>
                 </div>
               )}
-            </CardContent>
-          </Card>
-
-          {/* Statistics */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Statistics</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span>Views</span>
-                <span className="font-semibold">
-                  {video.viewCount.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Likes</span>
-                <span className="font-semibold">
-                  {video.likeCount.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Comments</span>
-                <span className="font-semibold">
-                  {video.commentCount.toLocaleString()}
-                </span>
-              </div>
             </CardContent>
           </Card>
 
@@ -247,42 +386,28 @@ export const ExerciseSetupDetails = ({ id }: ExerciseSetupDetailsProps) => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <span className="text-sm font-medium">Video ID</span>
+                <span className="text-sm font-medium">Exercise ID</span>
                 <p className="mt-1 font-mono text-sm text-muted-foreground">
-                  {video.videoId}
+                  {exerciseSetup.id}
                 </p>
               </div>
-              <div>
-                <span className="text-sm font-medium">Upload Date</span>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {formatDate(video.uploadDate)}
-                </p>
-              </div>
-              {video.publishedAt && (
-                <div>
-                  <span className="text-sm font-medium">Published At</span>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {formatDate(video.publishedAt)}
-                  </p>
-                </div>
-              )}
               <div>
                 <span className="text-sm font-medium">Created</span>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {formatDate(video.createdAt)}
+                  {formatDate(exerciseSetup.createdAt)}
                 </p>
               </div>
               <div>
                 <span className="text-sm font-medium">Last Updated</span>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {formatDate(video.updatedAt)}
+                  {formatDate(exerciseSetup.updatedAt)}
                 </p>
               </div>
             </CardContent>
           </Card>
 
           {/* User Information */}
-          {video.user && (
+          {exerciseSetup.user && (
             <Card>
               <CardHeader>
                 <CardTitle>Uploaded By</CardTitle>
@@ -291,13 +416,13 @@ export const ExerciseSetupDetails = ({ id }: ExerciseSetupDetailsProps) => {
                 <div>
                   <span className="text-sm font-medium">Name</span>
                   <p className="text-sm text-muted-foreground">
-                    {video.user.name}
+                    {exerciseSetup.user.name}
                   </p>
                 </div>
                 <div>
                   <span className="text-sm font-medium">Email</span>
                   <p className="text-sm text-muted-foreground">
-                    {video.user.email}
+                    {exerciseSetup.user.email}
                   </p>
                 </div>
               </CardContent>
