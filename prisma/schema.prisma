@@ -175,6 +175,8 @@ model DemoCenter {
   address              String
   contact              String
   cityZip              String
+  lat                  Float?
+  lng                  Float?
   bio                  String
   image                String
   availability         String?

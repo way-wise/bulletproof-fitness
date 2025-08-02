@@ -1,4 +1,4 @@
-import { array, boolean, object, string } from "yup";
+import { array, boolean, InferType, number, object, string } from "yup";
 
 // Demo Center Schema
 export const demoCenterSchema = object({
@@ -40,3 +40,13 @@ export const blockDemoCenterSchema = object({
 export const unblockDemoCenterSchema = object({
   demoCenterId: string().required("Demo center ID is required"),
 });
+
+// Demo Center Query Schema
+export const demoCenterQuerySchema = object({
+  location: string().optional(),
+  range: number().optional(),
+  buildingType: string().optional(),
+  equipment: string().optional(),
+});
+
+export type DemoCenterQuery = InferType<typeof demoCenterQuerySchema>;

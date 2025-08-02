@@ -1,126 +1,114 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import GoogleMapWithMarkers from "./GoogleMapWithMarkers";
+import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
+import { useMemo } from "react";
 
-// Type for demo center from API
-interface DemoCenterFromAPI {
-  id: string;
-  buildingType: string;
-  name: string;
-  address: string;
-  contact: string;
-  cityZip: string;
-  bio: string;
-  image: string;
-  availability?: string;
-  weekdays: string[];
-  weekends: string[];
-  weekdayOpen?: string;
-  weekdayClose?: string;
-  weekendOpen?: string;
-  weekendClose?: string;
-  createdAt: string;
-  updatedAt: string;
-  demoCenterEquipments: Array<{
-    id: string;
-    equipment: {
-      id: string;
-      name: string;
-    };
-  }>;
-}
+// Google Maps API Key
+const Maps_API_KEY = process.env.NEXT_PUBLIC_Maps_API_KEY;
 
-const MapDemoCenter = () => {
-  const [demoCenters, setDemoCenters] = useState<DemoCenterFromAPI[]>([]);
-  const [googleMapsApiKey, setGoogleMapsApiKey] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [apiKeyError, setApiKeyError] = useState<string | null>(null);
+// Define map container styles
+const containerStyle = {
+  width: "100%",
+  height: "100%",
+};
 
-  // Fetch Google Maps API key from server
-  useEffect(() => {
-    const fetchApiKey = async () => {
-      try {
-        const response = await fetch("/api/config/google-maps");
-        if (!response.ok) {
-          throw new Error("Failed to fetch API key");
-        }
-        const data = await response.json();
-        setGoogleMapsApiKey(data.apiKey);
-      } catch (err) {
-        console.error("Error fetching Google Maps API key:", err);
-        setApiKeyError(err instanceof Error ? err.message : "Failed to load API key");
-      }
-    };
+const MapDemoCenter: React.FC<{
+  data: any;
+  isLoading: boolean;
+  error: any;
+}> = ({ data, isLoading, error }) => {
+  const demoCenters = data?.data || [];
+  const searchLocationFromBackend = data?.meta?.searchLocation;
+  const range = data?.meta?.range;
 
-    fetchApiKey();
-  }, []);
+  const defaultCenter = useMemo(() => ({ lat: 39.8283, lng: -98.5795 }), []); // Center of USA
+  const mapCenter = searchLocationFromBackend
+    ? searchLocationFromBackend
+    : defaultCenter;
 
-  // Fetch demo centers from API
-  useEffect(() => {
-    const fetchDemoCenters = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch("/api/demo-centers");
-        if (!response.ok) {
-          throw new Error("Failed to fetch demo centers");
-        }
-        const data = await response.json();
-        setDemoCenters(data.data || []);
-      } catch (err) {
-        console.error("Error fetching demo centers:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  let zoom = 4; // Default USA zoom
+  if (searchLocationFromBackend && range) {
+    if (range <= 5) zoom = 12;
+    else if (range <= 10) zoom = 11;
+    else if (range <= 25) zoom = 10;
+    else if (range <= 50) zoom = 9;
+    else if (range <= 100) zoom = 8;
+    else zoom = 7;
+  }
 
-    fetchDemoCenters();
-  }, []);
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: Maps_API_KEY!,
+    id: "google-map-script",
+  });
 
-
+  const loadingState = isLoading || !isLoaded;
+  const combinedError = error || loadError;
 
   return (
-    <div>
-      {/* API Key Error Display */}
-      {apiKeyError && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-red-800">
-              Google Maps Configuration Error
-            </h3>
-            <p className="text-sm text-red-700">
-              {apiKeyError === "Failed to fetch API key" 
-                ? "Please set GOOGLE_MAPS_API_KEY in your environment variables"
-                : apiKeyError
-              }
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Map Container */}
-      <div className="w-full rounded border">
-        {isLoading ? (
-          <div className="flex h-[500px] w-full items-center justify-center bg-gray-100">
-            <div className="text-center text-gray-600">
-              <div className="mb-2 text-2xl">📍</div>
-              <div className="text-lg font-semibold">Loading Demo Centers...</div>
-              <div className="text-sm">Please wait while we fetch the locations</div>
+    <div className="relative h-96 w-full overflow-hidden rounded-lg bg-muted">
+      {/* Content overlay */}
+      <div className="relative z-10 h-full">
+        {loadingState ? (
+          <div className="flex h-full items-center justify-center">
+            <div className="text-center">
+              <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>
+              <p className="text-sm font-medium text-muted-foreground">
+                Loading map...
+              </p>
             </div>
           </div>
-        ) : googleMapsApiKey ? (
-          <GoogleMapWithMarkers
-            demoCenters={demoCenters}
-            apiKey={googleMapsApiKey}
-          />
+        ) : combinedError ? (
+          <div className="flex h-full items-center justify-center">
+            <div className="rounded-lg bg-white/80 p-4 text-center backdrop-blur-sm">
+              <p className="font-medium text-red-600">Error loading map</p>
+              <p className="mt-1 text-sm text-red-500">
+                {combinedError instanceof Error
+                  ? combinedError.message
+                  : "Please check your API key and try again."}
+              </p>
+            </div>
+          </div>
+        ) : demoCenters.length === 0 ? (
+          <div className="flex h-full items-center justify-center">
+            <div className="rounded-lg bg-white/80 p-6 text-center backdrop-blur-sm">
+              <div className="mb-2 text-4xl">🗺️</div>
+              <div className="text-lg font-semibold text-gray-700">
+                No locations found
+              </div>
+              <div className="text-sm text-gray-500">
+                Try adjusting your search criteria
+              </div>
+            </div>
+          </div>
         ) : (
-          <div className="flex h-[500px] w-full items-center justify-center bg-gray-100">
-            <div className="text-center text-gray-600">
-              <div className="mb-2 text-2xl">🗺️</div>
-              <div className="text-lg font-semibold">Loading Google Maps...</div>
-              <div className="text-sm">Fetching API configuration</div>
-            </div>
-          </div>
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={mapCenter}
+            zoom={zoom}
+            options={{ disableDefaultUI: true }}
+          >
+            {/* Marker for the user's search location */}
+            {searchLocationFromBackend && (
+              <Marker
+                position={searchLocationFromBackend}
+                icon={{
+                  url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+                }}
+                title="Your search location"
+              />
+            )}
+
+            {/* Markers for each demo center */}
+            {demoCenters.map((center: any) =>
+              center.lat && center.lng ? (
+                <Marker
+                  key={center.id}
+                  position={{ lat: center.lat, lng: center.lng }}
+                  title={center.name}
+                />
+              ) : null,
+            )}
+          </GoogleMap>
         )}
       </div>
     </div>
