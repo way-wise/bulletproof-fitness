@@ -28,7 +28,7 @@ export const demoCentersService = {
     }
 
     // Equipment filter
-    if (equipmentsIds?.length) {
+    if (equipments && equipmentsIds?.length) {
       whereFilter.demoCenterEquipments = {
         some: {
           equipmentId: {
