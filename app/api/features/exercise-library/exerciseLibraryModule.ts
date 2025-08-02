@@ -1,10 +1,11 @@
 import { getSession } from "@/lib/auth";
-import { Hono } from "hono";
+import { exerciseLibrarySchemaAdmin } from "@/schema/exerciseLibrarySchema";
+import { Hono, type Context } from "hono";
+import { validateInput } from "../../lib/validateInput";
 import { exerciseLibraryService } from "./exerciseLibraryService";
 
 export const exerciseLibraryModule = new Hono();
-
-// GET endpoint to retrieve exercise library data (useful for Zapier)
+// exercise library video for dashbaord
 exerciseLibraryModule.get("/", async (c) => {
   try {
     const session = await getSession();
@@ -41,6 +42,21 @@ exerciseLibraryModule.get("/", async (c) => {
   }
 });
 
+// // create library video from dashboard admin
+
+exerciseLibraryModule.post("/dashboard", async (c: Context) => {
+  const validatedBody = await validateInput({
+    type: "form",
+    schema: exerciseLibrarySchemaAdmin,
+    data: await c.req.formData(),
+  });
+  console.log(validatedBody);
+  const result =
+    await exerciseLibraryService.createExerciseLibraryAdmin(validatedBody);
+  return c.json(result);
+});
+
+// create library video from public
 exerciseLibraryModule.post("/", async (c) => {
   try {
     // Get current user session
@@ -64,11 +80,9 @@ exerciseLibraryModule.post("/", async (c) => {
       bodyPart: formData.get("bodyPart") as string,
       height: formData.get("height") as string,
       rack: formData.get("rack") as string,
-      video: formData.get("video") as File, // this will be a Blob/File
-      userId: session.user.id, // Get userId from session
+      video: formData.get("video") as File,
+      userId: session.user.id,
     };
-
-    console.log("validatedBody", validatedBody);
 
     // Validate required fields
     if (

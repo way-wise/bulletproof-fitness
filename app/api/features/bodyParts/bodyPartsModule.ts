@@ -20,8 +20,7 @@ bodyPartsModule.get("/", async (c: Context) => {
   });
 
   const result = await bodyPartsService.getBodyParts(validatedQuery);
-  console.log("result");
-  console.log(result);
+
   return c.json(result);
 });
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 export type Rack = {
   id: string;
@@ -18,45 +18,31 @@ export type RackResponse = {
 
 interface UseRacksReturn {
   racks: Rack[];
+  meta: RackResponse["meta"] | null;
   isLoading: boolean;
-  error: Error | null;
+  error: Error | undefined;
   mutate: () => void;
 }
 
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch racks");
+  return res.json();
+};
+
 export const useRacks = (): UseRacksReturn => {
-  const [racks, setRacks] = useState<Rack[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  const fetchRacks = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const response = await fetch("/api/racks");
-      if (!response.ok) {
-        throw new Error("Failed to fetch racks");
-      }
-
-      const data: RackResponse = await response.json();
-      setRacks(data.data || []);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error("Failed to fetch racks"));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchRacks();
-  }, []);
-
-  const mutate = () => {
-    fetchRacks();
-  };
+  const { data, error, isLoading, mutate } = useSWR<RackResponse>(
+    "/api/racks",
+    fetcher,
+    {
+      revalidateOnFocus: true,
+      refreshInterval: 0,
+    },
+  );
 
   return {
-    racks,
+    racks: data?.data ?? [],
+    meta: data?.meta ?? null,
     isLoading,
     error,
     mutate,

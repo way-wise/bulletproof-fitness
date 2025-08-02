@@ -55,7 +55,6 @@ export default function ExerciseSetupVideoForm() {
   });
 
   const onSubmit = (data: FormValues) => {
-    console.log({ ...data, video: fileName });
     // TODO: API call
   };
 

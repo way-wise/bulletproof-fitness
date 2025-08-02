@@ -32,8 +32,7 @@ demoCenterModule.get("/", async (c) => {
     : validatedQuery;
 
   const result = await demoCentersService.getDemoCenters(searchQuery);
-  console.log("result");
-  console.log(result);
+
   return c.json(result);
 });
 demoCenterModule.get("/dashboard", async (c) => {
@@ -51,8 +50,7 @@ demoCenterModule.get("/dashboard", async (c) => {
     : validatedQuery;
 
   const result = await demoCentersService.getDemoCentersDashboard(searchQuery);
-  console.log("result");
-  console.log(result);
+
   return c.json(result);
 });
 

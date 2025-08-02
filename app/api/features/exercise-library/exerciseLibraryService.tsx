@@ -1,9 +1,33 @@
 import cloudinary from "@/app/api/lib/cloudinary";
 import prisma from "@/lib/prisma";
-import { exerciseLibrarySchema } from "@/schema/exerciseLibrarySchema";
+import {
+  exerciseLibrarySchema,
+  exerciseLibrarySchemaAdmin,
+} from "@/schema/exerciseLibrarySchema";
 import { InferType } from "yup";
 
 export const exerciseLibraryService = {
+  createExerciseLibraryAdmin: async (
+    data: InferType<typeof exerciseLibrarySchemaAdmin>,
+  ) => {
+    console.log(data);
+    const bodyPart = await prisma.exerciseLibraryVideo.create({
+      data: {
+        title: data.title,
+        videoUrl: data.videoUrl,
+        equipment: data.equipment,
+        bodyPart: data.bodyPart,
+        height: data.height || null,
+        rack: data.rack || null,
+        userId: data.userId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+
+    return bodyPart;
+  },
+
   createExerciseLibrary: async (
     data: InferType<typeof exerciseLibrarySchema> & { video: File },
   ) => {
@@ -54,7 +78,7 @@ export const exerciseLibraryService = {
       console.log("Database save successful:", created.id);
 
       // 🔥 Trigger Zapier webhook (optional via env flag)
-      if (created?.id &&process.env.ZAPIER_WEBHOOK_URL) {
+      if (created?.id && process.env.ZAPIER_WEBHOOK_URL) {
         console.log("Sending data to Zapier...,created", created);
         try {
           const zapierResponse = await fetch(process.env.ZAPIER_WEBHOOK_URL, {

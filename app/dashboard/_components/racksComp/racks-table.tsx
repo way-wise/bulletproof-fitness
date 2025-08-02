@@ -52,7 +52,6 @@ const RacksTable = () => {
   // Get racks data
   const url = `/api/racks?page=${pagination.pageIndex}&limit=${pagination.pageSize}`;
   const { isValidating, data } = useSWR(url);
-  console.log(data);
 
   // Add Rack Form
   const addRackForm = useForm({
@@ -72,7 +71,6 @@ const RacksTable = () => {
         },
         body: JSON.stringify(values),
       });
-      console.log(response);
 
       if (!response.ok) {
         const errorData = await response.json();
