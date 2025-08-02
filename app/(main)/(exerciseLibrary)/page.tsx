@@ -107,7 +107,7 @@ const CardsPage = async ({ searchParams }: CardsPageProps) => {
 
   // Fetch initial data server-side
   const initialData = await getExerciseLibraryData(initialFilters);
-
+  console.log(initialData);
   return (
     <div className="text-center text-xl">
       <Suspense
