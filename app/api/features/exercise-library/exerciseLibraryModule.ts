@@ -1,7 +1,10 @@
 import { auth } from "@/lib/auth";
-import { exerciseLibrarySchemaAdmin } from "@/schema/exerciseLibrarySchema";
+import {
+  exerciseLibrarySchema,
+  exerciseLibrarySchemaAdmin,
+} from "@/schema/exerciseLibrarySchema";
 import { Hono, type Context } from "hono";
-import { validateInput } from "../../lib/validateInput";
+import { validateInput } from "@api/lib/validateInput";
 import { exerciseLibraryService } from "./exerciseLibraryService";
 
 export const exerciseLibraryModule = new Hono();
@@ -455,48 +458,11 @@ exerciseLibraryModule.get("/filtered", async (c) => {
 // create library video from public (unchanged)
 exerciseLibraryModule.post("/", async (c) => {
   try {
-    // Get current user session
-    const session = await getApiSession(c);
-    if (!session?.user?.id) {
-      return c.json(
-        {
-          success: false,
-          message: "Authentication required",
-        },
-        401,
-      );
-    }
-
-    const formData = await c.req.formData();
-
-    // Extract fields from formData
-    const validatedBody = {
-      title: formData.get("title") as string,
-      equipment: [(formData.get("equipment") as string) || ""],
-      bodyPart: [(formData.get("bodyPart") as string) || ""],
-      height: formData.get("height") as string,
-      rack: [(formData.get("rack") as string) || ""],
-      video: formData.get("video") as File,
-      userId: session.user.id,
-    };
-
-    // Validate required fields
-    if (
-      !validatedBody.title ||
-      !validatedBody.equipment ||
-      !validatedBody.bodyPart ||
-      !validatedBody.height ||
-      !validatedBody.rack ||
-      !validatedBody.video
-    ) {
-      return c.json(
-        {
-          success: false,
-          message: "All fields are required",
-        },
-        400,
-      );
-    }
+    const validatedBody = await validateInput({
+      type: "form",
+      schema: exerciseLibrarySchema,
+      data: c.req.parseBody(),
+    });
 
     const result =
       await exerciseLibraryService.createExerciseLibrary(validatedBody);
