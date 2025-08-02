@@ -47,6 +47,8 @@ export const demoCenterQuerySchema = object({
   range: number().optional(),
   buildingType: string().optional(),
   equipment: string().optional(),
+  page: number().integer().min(1).default(1),
+  limit: number().integer().min(1).max(100).default(10),
 });
 
 export type DemoCenterQuery = InferType<typeof demoCenterQuerySchema>;

@@ -4,7 +4,7 @@ import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
 import { useMemo } from "react";
 
 // Google Maps API Key
-const Maps_API_KEY = process.env.NEXT_PUBLIC_Maps_API_KEY;
+const Maps_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 // Define map container styles
 const containerStyle = {

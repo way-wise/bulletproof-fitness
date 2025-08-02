@@ -13,7 +13,7 @@ import { getGeoCodeAddress } from "@api/lib/getGeoCodeAddress";
 import { geoDistance } from "@api/lib/geoDistance";
 
 export const demoCentersService = {
-  getDemoCenters: async (query: PaginationQuery & DemoCenterQuery) => {
+  getDemoCenters: async (query: DemoCenterQuery) => {
     const { skip, take, page, limit } = getPaginationQuery(query);
     const { location, range, buildingType, equipment } = query;
 
@@ -35,6 +35,15 @@ export const demoCentersService = {
       };
     }
 
+    // Include the related equipment data in all queries
+    const includeClause = {
+      demoCenterEquipments: {
+        include: {
+          equipment: true,
+        },
+      },
+    };
+
     if (location && range) {
       const userLocation = await getGeoCodeAddress(location);
 
@@ -48,6 +57,7 @@ export const demoCentersService = {
       // Get all matching demo centers
       const allMatchingDemoCenters = await prisma.demoCenter.findMany({
         where: whereFilter,
+        include: includeClause,
         orderBy: {
           id: "desc",
         },
@@ -63,6 +73,7 @@ export const demoCentersService = {
           );
           return distance <= range;
         }
+
         return false;
       });
 
@@ -84,6 +95,7 @@ export const demoCentersService = {
       const [demoCenters, count] = await prisma.$transaction([
         prisma.demoCenter.findMany({
           where: whereFilter,
+          include: includeClause,
           skip,
           take,
           orderBy: { id: "desc" },

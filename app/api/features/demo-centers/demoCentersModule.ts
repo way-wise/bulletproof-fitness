@@ -23,6 +23,7 @@ demoCenterModule.get("/", async (c) => {
     schema: demoCenterQuerySchema,
     data: c.req.query(),
   });
+
   const result = await demoCentersService.getDemoCenters(validatedQuery);
   return c.json(result);
 });

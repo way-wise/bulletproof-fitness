@@ -13,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MapPin } from "lucide-react";
 import MapDemoCenter from "../_components/demo-centers/MapDemoCenter";
 import DemoCentersCards from "../_components/demo-centers/DemoCentersCards";
 import { DemoCenterQuery } from "@/schema/demoCenters";
