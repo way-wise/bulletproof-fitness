@@ -375,14 +375,50 @@ exerciseLibraryModule.patch("/dashboard/:id/status", async (c: Context) => {
   }
 });
 
-// exercise library video for public access (unchanged)
+// exercise library video for public access with filters
 exerciseLibraryModule.get("/", async (c) => {
   try {
-    const result = await exerciseLibraryService.getExerciseLibrary();
+    // Get query parameters
+    const page = parseInt(c.req.query("page") || "1");
+    const limit = parseInt(c.req.query("limit") || "20");
+    const search = c.req.query("search") || "";
+    const bodyPartIds = c.req.query("bodyPartIds") || "";
+    const equipmentIds = c.req.query("equipmentIds") || "";
+    const rackIds = c.req.query("rackIds") || "";
+    const username = c.req.query("username") || "";
+    const minHeight = parseInt(c.req.query("minHeight") || "0");
+    const maxHeight = parseInt(c.req.query("maxHeight") || "85");
+    const minRating = parseInt(c.req.query("minRating") || "0");
+
+    // Parse comma-separated IDs
+    const bodyPartIdsArray = bodyPartIds
+      ? bodyPartIds.split(",").filter(Boolean)
+      : [];
+    const equipmentIdsArray = equipmentIds
+      ? equipmentIds.split(",").filter(Boolean)
+      : [];
+    const rackIdsArray = rackIds ? rackIds.split(",").filter(Boolean) : [];
+
+    // Build filter parameters
+    const filterParams = {
+      page,
+      limit,
+      search,
+      bodyPartIds: bodyPartIdsArray,
+      equipmentIds: equipmentIdsArray,
+      rackIds: rackIdsArray,
+      username,
+      minHeight,
+      maxHeight,
+      minRating,
+    };
+
+    const result =
+      await exerciseLibraryService.getExerciseLibraryWithFilters(filterParams);
 
     return c.json({
       success: true,
-      data: result,
+      ...result,
     });
   } catch (error) {
     console.error("Error fetching exercise library:", error);

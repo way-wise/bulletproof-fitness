@@ -7,57 +7,68 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { TCardType } from "@/lib/dataTypes";
+import Spinner from "@/components/ui/spinner";
+import { useExerciseLibrary } from "@/hooks/useExerciseLibrary";
+import { ExerciseLibraryFilters, ExerciseLibraryItem } from "@/lib/dataTypes";
+import { useState } from "react";
 import ExLibraryCard from "./ExLibraryCard";
 import FilterSection from "./FilterSection";
 
-export const seedData: TCardType[] = [
-  {
-    id: 1,
-    title: "SEATED HIGH ROW",
-    category: "Back",
-    equipment: "Bulletproof Fitness Equipment",
-    views: 590,
-    likes: 3,
-    comments: 1,
-    label: "Yellow",
-    saves: 1,
-    videoUrl: "https://www.youtube.com/embed/nSrE8o1yJAk",
-  },
-  {
-    id: 2,
-    title: "AB CRUNCH",
-    category: "Abs",
-    equipment: "Bulletproof Fitness Equipment",
-    views: 1117,
-    likes: 0,
-    comments: 0,
-    label: "Green",
-    saves: 0,
-    videoUrl: "https://www.youtube.com/embed/YEThZcfmok4",
-  },
-  {
-    id: 3,
-    title: "CONCENTRATION CURL",
-    category: "Biceps",
-    equipment: "Bulletproof Fitness Equipment",
-    views: 906,
-    likes: 0,
-    comments: 0,
-    label: "Blue",
-    saves: 1,
-    videoUrl: "https://www.youtube.com/embed/zyvf2MpLl3M",
-  },
-];
+interface ExCardsSectionProps {
+  initialData?: ExerciseLibraryItem[];
+  initialFilters?: ExerciseLibraryFilters;
+}
 
-const ExCardsSection = () => {
+const ExCardsSection = ({
+  initialData,
+  initialFilters,
+}: ExCardsSectionProps) => {
+  const [filters, setFilters] = useState<ExerciseLibraryFilters>(
+    initialFilters || {},
+  );
+
+  const { exercises, meta, isLoading, error } = useExerciseLibrary(filters);
+
+  // Use initial data if loading and no current data
+  const displayData = exercises.length > 0 ? exercises : initialData || [];
+
+  const handleFiltersChange = (newFilters: ExerciseLibraryFilters) => {
+    setFilters(newFilters);
+  };
+
+  // Convert ExerciseLibraryItem to TCardType for compatibility with ExLibraryCard
+  const convertToCardType = (item: ExerciseLibraryItem) => ({
+    id: parseInt(item.id) || 0,
+    title: item.title,
+    category: item.bodyPart?.name || "Unknown",
+    equipment: item.equipment?.name || "Unknown",
+    views: item.views || 0,
+    likes: item.likes || 0,
+    comments: item.comments || 0,
+    saves: item.saves || 0,
+    label: item.label || "Default",
+    videoUrl: item.videoUrl,
+  });
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h2 className="mb-2 text-xl font-bold text-red-600">
+            Error Loading Exercises
+          </h2>
+          <p className="text-gray-600">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto py-8">
         <div className="flex flex-col gap-4 md:flex-row">
           <div className="hidden lg:block lg:w-full lg:max-w-[250px]">
             <div className="sticky top-20">
-              <FilterSection />
+              <FilterSection onFiltersChange={handleFiltersChange} />
             </div>
           </div>
 
@@ -65,6 +76,11 @@ const ExCardsSection = () => {
             <div className="mb-8 flex items-center justify-between">
               <h1 className="text-left text-lg font-bold text-gray-900 md:text-xl lg:text-3xl">
                 EXERCISE LIBRARY
+                {meta && (
+                  <span className="ml-2 text-sm font-normal text-gray-500">
+                    ({meta.total} exercises)
+                  </span>
+                )}
               </h1>
               <Drawer direction="right">
                 <DrawerTrigger asChild>
@@ -112,16 +128,46 @@ const ExCardsSection = () => {
                     </div>
                   </DrawerHeader>
                   <div className="flex-1 overflow-y-auto px-6 py-4">
-                    <FilterSection />
+                    <FilterSection onFiltersChange={handleFiltersChange} />
                   </div>
                 </DrawerContent>
               </Drawer>
             </div>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {seedData.map((item) => (
-                <ExLibraryCard key={item.id} item={item} />
-              ))}
-            </div>
+
+            {/* Loading State */}
+            {isLoading && displayData.length === 0 && (
+              <div className="flex items-center justify-center py-12">
+                <Spinner className="h-8 w-8" />
+              </div>
+            )}
+
+            {/* No Results */}
+            {!isLoading && displayData.length === 0 && (
+              <div className="py-12 text-center">
+                <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                  No exercises found
+                </h3>
+                <p className="text-gray-600">
+                  Try adjusting your filters or search terms.
+                </p>
+              </div>
+            )}
+
+            {/* Exercise Cards Grid */}
+            {displayData.length > 0 && (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {displayData.map((item) => (
+                  <ExLibraryCard key={item.id} item={convertToCardType(item)} />
+                ))}
+              </div>
+            )}
+
+            {/* Pagination Info */}
+            {meta && meta.total > 0 && (
+              <div className="mt-8 text-center text-sm text-gray-600">
+                Showing {displayData.length} of {meta.total} exercises
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -130,3 +176,6 @@ const ExCardsSection = () => {
 };
 
 export default ExCardsSection;
+
+// Remove seed data export since we're using real API data now
+// export const seedData = [...]; // REMOVED

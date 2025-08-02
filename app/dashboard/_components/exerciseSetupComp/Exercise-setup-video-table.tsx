@@ -87,7 +87,7 @@ export const ExerciseSetupVideoTable = () => {
     }
 
     try {
-      const { error } = await admin.blockExerciseLibraryVideo({
+      const { error } = await admin.exerciseSetup.block({
         videoId,
         blockReason: formData.blockReason,
       });
@@ -115,7 +115,7 @@ export const ExerciseSetupVideoTable = () => {
     }
 
     try {
-      const { error } = await admin.unblockExerciseLibraryVideo({
+      const { error } = await admin.exerciseSetup.unblock({
         videoId,
       });
 
@@ -140,7 +140,7 @@ export const ExerciseSetupVideoTable = () => {
     }
 
     try {
-      const { error } = await admin.updateExerciseLibraryVideoStatus({
+      const { error } = await admin.exerciseSetup.updateStatus({
         videoId,
         isPublic: isPublic,
       });
@@ -173,7 +173,7 @@ export const ExerciseSetupVideoTable = () => {
     }
 
     try {
-      const { error, data } = await admin.deleteExerciseLibraryVideo({
+      const { error } = await admin.exerciseSetup.delete({
         videoId,
       });
 
@@ -182,9 +182,7 @@ export const ExerciseSetupVideoTable = () => {
         return;
       }
 
-      if (data?.success) {
-        toast.success("Video deleted successfully");
-      }
+      toast.success("Video deleted successfully");
 
       setDeleteModalOpen(false);
       deleteVideoForm.reset();

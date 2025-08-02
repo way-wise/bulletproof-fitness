@@ -372,13 +372,13 @@ export const exerciseLibraryService = {
     page?: number;
     limit?: number;
     search?: string;
-    bodyPart?: string;
-    equipment?: string;
-    rack?: string;
+    bodyPartIds?: string[];
+    equipmentIds?: string[];
+    rackIds?: string[];
     username?: string;
     minHeight?: number;
     maxHeight?: number;
-    rating?: number;
+    minRating?: number;
     sortBy?: "title" | "createdAt" | "views" | "likes";
     sortOrder?: "asc" | "desc";
   }) => {
@@ -387,13 +387,13 @@ export const exerciseLibraryService = {
         page = 1,
         limit = 12,
         search = "",
-        bodyPart = "",
-        equipment = "",
-        rack = "",
+        bodyPartIds = [],
+        equipmentIds = [],
+        rackIds = [],
         username = "",
         minHeight = 0,
         maxHeight = 85,
-        rating = 0,
+        minRating = 0,
         sortBy = "createdAt",
         sortOrder = "desc",
       } = params;
@@ -417,18 +417,24 @@ export const exerciseLibraryService = {
       }
 
       // Body part filter
-      if (bodyPart) {
-        where.bodyPart = { contains: bodyPart, mode: "insensitive" as const };
+      if (bodyPartIds.length > 0) {
+        where.OR = bodyPartIds.map((id) => ({
+          bodyPart: { contains: id, mode: "insensitive" as const },
+        }));
       }
 
       // Equipment filter
-      if (equipment) {
-        where.equipment = { contains: equipment, mode: "insensitive" as const };
+      if (equipmentIds.length > 0) {
+        where.OR = equipmentIds.map((id) => ({
+          equipment: { contains: id, mode: "insensitive" as const },
+        }));
       }
 
       // Rack filter
-      if (rack) {
-        where.rack = { contains: rack, mode: "insensitive" as const };
+      if (rackIds.length > 0) {
+        where.OR = rackIds.map((id) => ({
+          rack: { contains: id, mode: "insensitive" as const },
+        }));
       }
 
       // Username filter
@@ -494,18 +500,49 @@ export const exerciseLibraryService = {
             }
           }
 
+          // Apply rating filter (using mock rating for now)
+          if (minRating > 0) {
+            const mockRating = Math.random() * 5;
+            if (mockRating < minRating) {
+              return null;
+            }
+          }
+
           return {
-            ...exercise,
-            equipment: parsedEquipment,
-            bodyPart: parsedBodyPart,
-            rack: parsedRack,
-            heightInInches,
+            id: exercise.id,
+            title: exercise.title,
+            videoUrl: exercise.videoUrl,
+            equipment: {
+              id: parsedEquipment[0]?.id || "default",
+              name: parsedEquipment[0]?.name || "Unknown Equipment",
+            },
+            bodyPart: {
+              id: parsedBodyPart[0]?.id || "default",
+              name: parsedBodyPart[0]?.name || "Unknown Body Part",
+            },
+            rack: parsedRack[0]
+              ? {
+                  id: parsedRack[0]?.id || "default",
+                  name: parsedRack[0]?.name || "Unknown Rack",
+                }
+              : undefined,
+            height: heightInInches || 0,
+            userId: exercise.userId,
+            user: exercise.user,
             // Mock data for demo (replace with real data when available)
             views: Math.floor(Math.random() * 1000) + 100,
             likes: Math.floor(Math.random() * 50),
             comments: Math.floor(Math.random() * 10),
             saves: Math.floor(Math.random() * 20),
-            rating: (Math.random() * 5).toFixed(1),
+            rating: Math.floor(Math.random() * 5) + 1,
+            label: ["Yellow", "Green", "Blue", "Red"][
+              Math.floor(Math.random() * 4)
+            ],
+            isPublic: exercise.isPublic,
+            blocked: exercise.blocked,
+            blockReason: exercise.blockReason,
+            createdAt: exercise.createdAt.toISOString(),
+            updatedAt: exercise.updatedAt.toISOString(),
           };
         })
         .filter(Boolean);

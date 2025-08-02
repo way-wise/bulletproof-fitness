@@ -276,7 +276,7 @@ exerciseSetupModule.post("/dashboard/:id/block", async (c: Context) => {
       );
     }
 
-    const result = await exerciseSetupService.blockExerciseLibraryVideo(
+    const result = await exerciseSetupService.blockExerciseSetupVideo(
       id,
       blockReason,
     );
@@ -316,7 +316,7 @@ exerciseSetupModule.post("/dashboard/:id/unblock", async (c: Context) => {
     }
 
     const id = c.req.param("id");
-    const result = await exerciseSetupService.unblockExerciseLibraryVideo(id);
+    const result = await exerciseSetupService.unblockExerciseSetupVideo(id);
 
     return c.json({
       success: true,
@@ -356,7 +356,7 @@ exerciseSetupModule.patch("/dashboard/:id/status", async (c: Context) => {
     const body = await c.req.json();
     const { isPublic, blocked, blockReason } = body;
 
-    const result = await exerciseSetupService.updateExerciseLibraryVideoStatus(
+    const result = await exerciseSetupService.updateExerciseSetupVideoStatus(
       id,
       {
         isPublic,

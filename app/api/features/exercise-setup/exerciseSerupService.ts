@@ -185,8 +185,8 @@ export const exerciseSetupService = {
     }
   },
 
-  // Block exercise library video
-  blockExerciseLibraryVideo: async (id: string, blockReason: string) => {
+  // Block exercise setup video
+  blockExerciseSetupVideo: async (id: string, blockReason: string) => {
     try {
       const exercise = await prisma.exerciseSetup.update({
         where: { id },
@@ -204,8 +204,8 @@ export const exerciseSetupService = {
     }
   },
 
-  // Unblock exercise library video
-  unblockExerciseLibraryVideo: async (id: string) => {
+  // Unblock exercise setup video
+  unblockExerciseSetupVideo: async (id: string) => {
     try {
       const exercise = await prisma.exerciseSetup.update({
         where: { id },
@@ -240,8 +240,8 @@ export const exerciseSetupService = {
     }
   },
 
-  // Update exercise library video status (publish/unpublish)
-  updateExerciseLibraryVideoStatus: async (
+  // Update exercise setup video status (publish/unpublish)
+  updateExerciseSetupVideoStatus: async (
     id: string,
     data: { isPublic?: boolean; blocked?: boolean; blockReason?: string },
   ) => {
