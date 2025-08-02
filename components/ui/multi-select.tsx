@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Check, X } from "lucide-react";
+import { Check, ChevronDown, X } from "lucide-react";
 import { useState } from "react";
 
 interface Option {
@@ -30,6 +30,7 @@ interface MultiSelectProps {
   selected: string[];
   onChange: (value: string[]) => void;
   className?: string;
+  triggerClassName?: string;
 }
 
 export const MultiSelect = ({
@@ -38,6 +39,7 @@ export const MultiSelect = ({
   selected,
   onChange,
   className,
+  triggerClassName,
 }: MultiSelectProps) => {
   const [open, setOpen] = useState(false);
 
@@ -57,15 +59,17 @@ export const MultiSelect = ({
             variant="outline"
             role="combobox"
             className={cn(
-              "w-full justify-between rounded-sm py-4 text-[14px]",
+              "w-full justify-between rounded-sm text-[14px]",
+              triggerClassName,
               selected.length === 0 && "text-muted-foreground",
             )}
           >
             {selected.length > 0 ? `${selected.length} selected` : placeholder}
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
 
-        <PopoverContent className="w-full p-0">
+        <PopoverContent className="p-0">
           <Command>
             <CommandInput placeholder="Search..." className="h-9" />
             <CommandEmpty>No option found.</CommandEmpty>
@@ -78,7 +82,7 @@ export const MultiSelect = ({
                     onSelect={() => toggleItem(option.value)}
                     className="cursor-pointer"
                   >
-                    <div className="mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary">
+                    <div className="flex h-4 w-4 items-center justify-center rounded-sm border border-primary">
                       {selected.includes(option.value) ? (
                         <Check className="h-4 w-4" />
                       ) : null}

@@ -15,7 +15,7 @@ import { geoDistance } from "@api/lib/geoDistance";
 export const demoCentersService = {
   getDemoCenters: async (query: DemoCenterQuery) => {
     const { skip, take, page, limit } = getPaginationQuery(query);
-    const { location, range, buildingType, equipment } = query;
+    const { location, range, buildingType, equipments } = query;
 
     let filteredDemoCenters = [];
     let total = 0;
@@ -27,10 +27,12 @@ export const demoCentersService = {
     }
 
     // Equipment filter
-    if (equipment) {
+    if (equipments?.length) {
       whereFilter.demoCenterEquipments = {
         some: {
-          equipmentId: equipment,
+          equipmentId: {
+            in: equipments,
+          },
         },
       };
     }
