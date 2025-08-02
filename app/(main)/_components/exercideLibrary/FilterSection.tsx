@@ -2,13 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { MultiSelect } from "@/components/ui/multi-select";
 import { Slider } from "@/components/ui/slider";
 import { useBodyParts } from "@/hooks/useBodyParts";
 import { useEquipments } from "@/hooks/useEquipments";
@@ -18,6 +12,10 @@ import { useState } from "react";
 
 export default function ExerciseFilters() {
   const [rating, setRating] = useState(0);
+  const [selectedBodyParts, setSelectedBodyParts] = useState<string[]>([]);
+  const [selectedEquipments, setSelectedEquipments] = useState<string[]>([]);
+  const [selectedRacks, setSelectedRacks] = useState<string[]>([]);
+
   const { equipments } = useEquipments();
   const { bodyParts } = useBodyParts();
   const { racks } = useRacks();
@@ -32,35 +30,31 @@ export default function ExerciseFilters() {
         {/* Body Part Filter */}
         <div className="flex flex-col items-start space-y-1">
           <Label className="text-[16px] font-bold">Filter By Body Part</Label>
-          <Select>
-            <SelectTrigger className="w-full rounded-sm py-4 text-[14px]">
-              <SelectValue placeholder="Filter by Body Part" />
-            </SelectTrigger>
-            <SelectContent>
-              {bodyParts.map((bodyPart) => (
-                <SelectItem key={bodyPart.id} value={bodyPart.id}>
-                  {bodyPart.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <MultiSelect
+            options={bodyParts.map((bodyPart) => ({
+              value: bodyPart.id,
+              label: bodyPart.name,
+            }))}
+            selected={selectedBodyParts}
+            onChange={setSelectedBodyParts}
+            placeholder="Filter by Body Part"
+            className="w-full [&>button]:rounded-sm [&>button]:py-4 [&>button]:text-[14px]"
+          />
         </div>
 
         {/* Equipment Filter */}
         <div className="flex flex-col items-start space-y-1">
           <Label className="text-[16px] font-bold">Filter By Equipment</Label>
-          <Select>
-            <SelectTrigger className="w-full rounded-sm py-4 text-[14px]">
-              <SelectValue placeholder="Filter by Equipment" />
-            </SelectTrigger>
-            <SelectContent>
-              {equipments.map((equipment) => (
-                <SelectItem key={equipment.id} value={equipment.id}>
-                  {equipment.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <MultiSelect
+            options={equipments.map((equipment) => ({
+              value: equipment.id,
+              label: equipment.name,
+            }))}
+            selected={selectedEquipments || []}
+            onChange={setSelectedEquipments}
+            placeholder="Filter by Equipment"
+            className="w-full [&>button]:rounded-sm [&>button]:py-4 [&>button]:text-[14px]"
+          />
         </div>
 
         {/* Ratings Filter */}
@@ -80,18 +74,16 @@ export default function ExerciseFilters() {
         {/* Rack Filter */}
         <div className="flex flex-col items-start space-y-1">
           <Label className="text-[16px] font-bold">Filter By Rack</Label>
-          <Select>
-            <SelectTrigger className="w-full rounded-sm py-4 text-[14px]">
-              <SelectValue placeholder="Filter By Rack" />
-            </SelectTrigger>
-            <SelectContent>
-              {racks.map((rack) => (
-                <SelectItem key={rack.id} value={rack.id}>
-                  {rack.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <MultiSelect
+            options={racks.map((rack) => ({
+              value: rack.id,
+              label: rack.name,
+            }))}
+            selected={selectedRacks}
+            onChange={setSelectedRacks}
+            placeholder="Filter By Rack"
+            className="w-full [&>button]:rounded-sm [&>button]:py-4 [&>button]:text-[14px]"
+          />
         </div>
 
         {/* Username Filter */}

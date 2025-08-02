@@ -1,6 +1,7 @@
 import {
   Building2,
   Dumbbell,
+  Home,
   LayoutGrid,
   Play,
   Settings,
@@ -16,6 +17,11 @@ const SidebarMenu = () => {
       title: "Dashboard",
       icon: <LayoutGrid className="icon" />,
       url: "/dashboard",
+    },
+    {
+      title: "Back to Home",
+      icon: <Home className="icon" />,
+      url: "/",
     },
     {
       title: "Users",

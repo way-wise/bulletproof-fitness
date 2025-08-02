@@ -1,6 +1,10 @@
 import { auth } from "@/lib/auth";
-import { exerciseSetupSchemaAdmin } from "@/schema/exerciseSetupSchema";
+import {
+  exerciseSetupSchema,
+  exerciseSetupSchemaAdmin,
+} from "@/schema/exerciseSetupSchema";
 import { Hono, type Context } from "hono";
+import { InferType } from "yup";
 import { validateInput } from "../../lib/validateInput";
 import { exerciseSetupService } from "./exerciseSerupService";
 
@@ -395,9 +399,7 @@ exerciseSetupModule.get("/", async (c) => {
       );
     }
 
-    const result = await exerciseSetupService.getExerciseLibrary(
-      session.user.id,
-    );
+    const result = await exerciseSetupService.getExerciseSetup(session.user.id);
 
     return c.json({
       success: true,
@@ -438,13 +440,21 @@ exerciseSetupModule.post("/", async (c) => {
     // Extract fields from formData
     const validatedBody = {
       title: formData.get("title") as string,
-      equipment: formData.get("equipment") as string,
-      bodyPart: formData.get("bodyPart") as string,
+      equipment: [(formData.get("equipment") as string) || ""],
+      bodyPart: [(formData.get("bodyPart") as string) || ""],
       height: formData.get("height") as string,
-      rack: formData.get("rack") as string,
+      rack: [(formData.get("rack") as string) || ""],
       video: formData.get("video") as File,
       userId: session.user.id,
-    };
+      // Pump by numbers fields
+      isolatorHole: (formData.get("isolatorHole") as string) || null,
+      yellow: (formData.get("yellow") as string) || null,
+      green: (formData.get("green") as string) || null,
+      blue: (formData.get("blue") as string) || null,
+      red: (formData.get("red") as string) || null,
+      purple: (formData.get("purple") as string) || null,
+      orange: (formData.get("orange") as string) || null,
+    } as InferType<typeof exerciseSetupSchema> & { video: File };
 
     // Validate required fields
     if (
@@ -465,11 +475,11 @@ exerciseSetupModule.post("/", async (c) => {
     }
 
     const result =
-      await exerciseSetupService.createExerciseLibrary(validatedBody);
+      await exerciseSetupService.createExerciseSetupAdmin(validatedBody);
 
     return c.json({
       success: true,
-      message: "Exercise library created successfully",
+      message: "Exercise setup created successfully",
       data: result,
     });
   } catch (error) {
@@ -480,7 +490,7 @@ exerciseSetupModule.post("/", async (c) => {
         message:
           error instanceof Error
             ? error.message
-            : "Failed to create exercise library",
+            : "Failed to create exercise setup",
       },
       500,
     );

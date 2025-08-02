@@ -378,20 +378,7 @@ exerciseLibraryModule.patch("/dashboard/:id/status", async (c: Context) => {
 // exercise library video for public access (unchanged)
 exerciseLibraryModule.get("/", async (c) => {
   try {
-    const session = await getApiSession(c);
-    if (!session?.user?.id) {
-      return c.json(
-        {
-          success: false,
-          message: "Authentication required",
-        },
-        401,
-      );
-    }
-
-    const result = await exerciseLibraryService.getExerciseLibrary(
-      session.user.id,
-    );
+    const result = await exerciseLibraryService.getExerciseLibrary();
 
     return c.json({
       success: true,
@@ -406,6 +393,59 @@ exerciseLibraryModule.get("/", async (c) => {
           error instanceof Error
             ? error.message
             : "Failed to fetch exercise library",
+      },
+      500,
+    );
+  }
+});
+
+// Get exercise library with filters and pagination (public access)
+exerciseLibraryModule.get("/filtered", async (c) => {
+  try {
+    // Get query parameters
+    const page = parseInt(c.req.query("page") || "1");
+    const limit = parseInt(c.req.query("limit") || "12");
+    const search = c.req.query("search") || "";
+    const bodyPart = c.req.query("bodyPart") || "";
+    const equipment = c.req.query("equipment") || "";
+    const rack = c.req.query("rack") || "";
+    const username = c.req.query("username") || "";
+    const minHeight = parseInt(c.req.query("minHeight") || "0");
+    const maxHeight = parseInt(c.req.query("maxHeight") || "85");
+    const rating = parseInt(c.req.query("rating") || "0");
+    const sortBy =
+      (c.req.query("sortBy") as "title" | "createdAt" | "views" | "likes") ||
+      "createdAt";
+    const sortOrder = (c.req.query("sortOrder") as "asc" | "desc") || "desc";
+
+    const result = await exerciseLibraryService.getExerciseLibraryWithFilters({
+      page,
+      limit,
+      search,
+      bodyPart,
+      equipment,
+      rack,
+      username,
+      minHeight,
+      maxHeight,
+      rating,
+      sortBy,
+      sortOrder,
+    });
+
+    return c.json({
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    console.error("Error fetching filtered exercise library:", error);
+    return c.json(
+      {
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch filtered exercise library",
       },
       500,
     );
@@ -432,10 +472,10 @@ exerciseLibraryModule.post("/", async (c) => {
     // Extract fields from formData
     const validatedBody = {
       title: formData.get("title") as string,
-      equipment: formData.get("equipment") as string,
-      bodyPart: formData.get("bodyPart") as string,
+      equipment: [(formData.get("equipment") as string) || ""],
+      bodyPart: [(formData.get("bodyPart") as string) || ""],
       height: formData.get("height") as string,
-      rack: formData.get("rack") as string,
+      rack: [(formData.get("rack") as string) || ""],
       video: formData.get("video") as File,
       userId: session.user.id,
     };
