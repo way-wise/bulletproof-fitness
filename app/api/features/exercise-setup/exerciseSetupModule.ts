@@ -44,7 +44,11 @@ exerciseSetupModule.get("/dashboard", async (c) => {
       search,
     );
 
-    return c.json(result);
+    return c.json({
+      success: true,
+      data: result.data,
+      meta: result.meta,
+    });
   } catch (error) {
     console.error("Error fetching exercise library:", error);
     return c.json(

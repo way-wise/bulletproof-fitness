@@ -3,15 +3,6 @@ import { ExerciseLibraryVideoTable } from "../_components/exerciseLibraryComp/ex
 export default function ExerciseLibraryPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Exercise Library Videos
-        </h1>
-        <p className="text-muted-foreground">
-          Manage your exercise library videos, control visibility, and monitor
-          performance.
-        </p>
-      </div>
       <ExerciseLibraryVideoTable />
     </div>
   );

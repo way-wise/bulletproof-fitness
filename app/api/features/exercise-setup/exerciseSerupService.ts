@@ -66,13 +66,22 @@ export const exerciseSetupService = {
       // Get total count
       const total = await prisma.exerciseSetup.count({ where });
 
-      // Get paginated data
+      // Get paginated data with user relation
       const exercises = await prisma.exerciseSetup.findMany({
         where,
         skip,
         take: limit,
         orderBy: {
           createdAt: "desc",
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
         },
       });
 
@@ -82,7 +91,6 @@ export const exerciseSetupService = {
           total,
           page,
           limit,
-          totalPages: Math.ceil(total / limit),
         },
       };
     } catch (error) {
@@ -94,7 +102,6 @@ export const exerciseSetupService = {
   // Get single exercise library video by ID
   getExerciseSetupVideoById: async (id: string) => {
     try {
-      console.log("id", id);
       const exercise = await prisma.exerciseSetup.findUnique({
         where: { id },
         include: {
@@ -108,14 +115,17 @@ export const exerciseSetupService = {
         },
       });
 
+      console.log("Database query result:", exercise);
+
       if (!exercise) {
-        throw new Error("Exercise library video not found");
+        console.log("No exercise setup found with id:", id);
+        throw new Error("Exercise setup video not found");
       }
 
       return exercise;
     } catch (error) {
-      console.error("Error fetching exercise library video:", error);
-      throw new Error("Failed to fetch exercise library video.");
+      console.error("Error fetching exercise setup video:", error);
+      throw new Error("Failed to fetch exercise setup video.");
     }
   },
 

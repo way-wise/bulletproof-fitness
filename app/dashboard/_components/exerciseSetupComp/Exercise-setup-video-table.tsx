@@ -410,7 +410,7 @@ export const ExerciseSetupVideoTable = () => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href={`/dashboard/exercise-library/${id}`}>
+                  <Link href={`/dashboard/exercise-setup/${id}`}>
                     <Eye className="mr-2 h-4 w-4" />
                     <span>View</span>
                   </Link>
@@ -481,7 +481,9 @@ export const ExerciseSetupVideoTable = () => {
   return (
     <>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-medium">Exercise Setup Videos</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Exercise Setup Videos
+        </h1>
         <Button onClick={() => setAddExerciseModalOpen(true)}>
           <Plus />
           <span>Add Setup Video</span>

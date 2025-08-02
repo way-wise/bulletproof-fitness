@@ -130,7 +130,7 @@ const extendedAdmin = {
   }) => {
     try {
       const response = await fetch(
-        `/api/exercise-library/dashboard/${videoId}/block`,
+        `/api/exercise-setup/dashboard/${videoId}/block`,
         {
           method: "POST",
           headers: {
@@ -157,7 +157,7 @@ const extendedAdmin = {
   unblockExerciseLibraryVideo: async ({ videoId }: { videoId: string }) => {
     try {
       const response = await fetch(
-        `/api/exercise-library/dashboard/${videoId}/unblock`,
+        `/api/exercise-setup/dashboard/${videoId}/unblock`,
         {
           method: "POST",
           headers: {
@@ -182,12 +182,9 @@ const extendedAdmin = {
 
   deleteExerciseLibraryVideo: async ({ videoId }: { videoId: string }) => {
     try {
-      const response = await fetch(
-        `/api/exercise-library/dashboard/${videoId}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const response = await fetch(`/api/exercise-setup/dashboard/${videoId}`, {
+        method: "DELETE",
+      });
 
       if (!response.ok) {
         const error = await response.json();
@@ -216,7 +213,7 @@ const extendedAdmin = {
   }) => {
     try {
       const response = await fetch(
-        `/api/exercise-library/dashboard/${videoId}/status`,
+        `/api/exercise-setup/dashboard/${videoId}/status`,
         {
           method: "PATCH",
           headers: {

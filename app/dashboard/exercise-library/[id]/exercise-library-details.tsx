@@ -233,65 +233,6 @@ export const ExerciseLibraryVideoDetails = ({
           </Card>
 
           {/* Exercise Information */}
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Status Overview */}
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5 text-gray-600" />
-                Status Overview
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Publication Status */}
-              <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-800/50 dark:hover:bg-gray-800">
-                <div className="flex items-center gap-2">
-                  {video.isPublic ? (
-                    <Globe className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <Lock className="h-4 w-4 text-orange-600" />
-                  )}
-                  <span className="text-sm font-medium">Publication</span>
-                </div>
-                <Badge variant={video.isPublic ? "success" : "secondary"}>
-                  {video.isPublic ? "Published" : "Private"}
-                </Badge>
-              </div>
-
-              {/* Block Status */}
-              <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-800/50 dark:hover:bg-gray-800">
-                <div className="flex items-center gap-2">
-                  {video.blocked ? (
-                    <Ban className="h-4 w-4 text-red-600" />
-                  ) : (
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                  )}
-                  <span className="text-sm font-medium">Status</span>
-                </div>
-                <Badge variant={video.blocked ? "destructive" : "success"}>
-                  {video.blocked ? "Blocked" : "Active"}
-                </Badge>
-              </div>
-
-              {/* Block Reason */}
-              {video.blockReason && (
-                <div className="rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/20">
-                  <div className="mb-2 flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                    <span className="text-sm font-medium text-red-800 dark:text-red-200">
-                      Block Reason
-                    </span>
-                  </div>
-                  <p className="text-sm text-red-700 dark:text-red-300">
-                    {video.blockReason}
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -392,9 +333,68 @@ export const ExerciseLibraryVideoDetails = ({
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Status Overview */}
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5 text-gray-600" />
+                Status Overview
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Publication Status */}
+              <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-800/50 dark:hover:bg-gray-800">
+                <div className="flex items-center gap-2">
+                  {video.isPublic ? (
+                    <Globe className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <Lock className="h-4 w-4 text-orange-600" />
+                  )}
+                  <span className="text-sm font-medium">Publication</span>
+                </div>
+                <Badge variant={video.isPublic ? "success" : "secondary"}>
+                  {video.isPublic ? "Published" : "Private"}
+                </Badge>
+              </div>
+
+              {/* Block Status */}
+              <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-800/50 dark:hover:bg-gray-800">
+                <div className="flex items-center gap-2">
+                  {video.blocked ? (
+                    <Ban className="h-4 w-4 text-red-600" />
+                  ) : (
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  )}
+                  <span className="text-sm font-medium">Status</span>
+                </div>
+                <Badge variant={video.blocked ? "destructive" : "success"}>
+                  {video.blocked ? "Blocked" : "Active"}
+                </Badge>
+              </div>
+
+              {/* Block Reason */}
+              {video.blockReason && (
+                <div className="rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/20">
+                  <div className="mb-2 flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-red-600" />
+                    <span className="text-sm font-medium text-red-800 dark:text-red-200">
+                      Block Reason
+                    </span>
+                  </div>
+                  <p className="text-sm text-red-700 dark:text-red-300">
+                    {video.blockReason}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Metadata */}
-          {/* <Card className="shadow-lg">
+          <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Database className="h-5 w-5 text-blue-600" />
@@ -417,7 +417,7 @@ export const ExerciseLibraryVideoDetails = ({
                 </div>
               </div>
             </CardContent>
-          </Card> */}
+          </Card>
 
           {/* Timestamps */}
           <Card className="shadow-lg">
