@@ -38,7 +38,7 @@ export default function ExerciseFilters() {
             selected={selectedBodyParts}
             onChange={setSelectedBodyParts}
             placeholder="Filter by Body Part"
-            className="w-full [&>button]:rounded-sm [&>button]:py-4 [&>button]:text-[14px]"
+            className="w-full"
           />
         </div>
 
@@ -53,7 +53,7 @@ export default function ExerciseFilters() {
             selected={selectedEquipments || []}
             onChange={setSelectedEquipments}
             placeholder="Filter by Equipment"
-            className="w-full [&>button]:rounded-sm [&>button]:py-4 [&>button]:text-[14px]"
+            className="w-full"
           />
         </div>
 
@@ -82,7 +82,7 @@ export default function ExerciseFilters() {
             selected={selectedRacks}
             onChange={setSelectedRacks}
             placeholder="Filter By Rack"
-            className="w-full [&>button]:rounded-sm [&>button]:py-4 [&>button]:text-[14px]"
+            className="w-full"
           />
         </div>
 
