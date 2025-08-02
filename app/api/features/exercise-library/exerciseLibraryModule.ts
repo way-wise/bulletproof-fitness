@@ -412,7 +412,7 @@ exerciseLibraryModule.get("/", async (c) => {
       maxHeight,
       minRating,
     };
-
+    console.log(filterParams);
     const result =
       await exerciseLibraryService.getExerciseLibraryWithFilters(filterParams);
 
