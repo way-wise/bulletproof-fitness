@@ -44,9 +44,9 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
-import LibraryVideoUpload from "./create-ex-lib-admin";
+import ExerciseSetupVideoUploadForm from "./ExerciseSetupVideoUploadForm";
 
-export const ExerciseLibraryVideoTable = () => {
+export const ExerciseSetupVideoTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [blockVideoModalOpen, setBlockVideoModalOpen] = useState(false);
   const [unblockVideoModalOpen, setUnblockVideoModalOpen] = useState(false);
@@ -60,7 +60,7 @@ export const ExerciseLibraryVideoTable = () => {
   });
 
   // Get exercise library videos data with search
-  const url = `/api/exercise-library/dashboard?page=${pagination.pageIndex + 1}&limit=${pagination.pageSize}&search=${encodeURIComponent(searchQuery)}`;
+  const url = `/api/exercise-setup/dashboard?page=${pagination.pageIndex + 1}&limit=${pagination.pageSize}&search=${encodeURIComponent(searchQuery)}`;
   const { isValidating, data } = useSWR(url);
 
   // Debounced search
@@ -315,6 +315,40 @@ export const ExerciseLibraryVideoTable = () => {
       },
     },
     {
+      header: "Pump Numbers",
+      accessorKey: "pumpNumbers",
+      cell: ({ row }) => {
+        const { yellow, green, blue, red, purple, orange, isolatorHole } =
+          row.original;
+        const pumpValues = [
+          { label: "Yellow", value: yellow },
+          { label: "Green", value: green },
+          { label: "Blue", value: blue },
+          { label: "Red", value: red },
+          { label: "Purple", value: purple },
+          { label: "Orange", value: orange },
+          { label: "Isolator", value: isolatorHole },
+        ].filter((item) => item.value && item.value !== "Not Used");
+
+        if (pumpValues.length === 0) return "-";
+
+        return (
+          <div className="flex flex-wrap gap-1">
+            {pumpValues.slice(0, 3).map((item, index) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {item.label}: {item.value}
+              </Badge>
+            ))}
+            {pumpValues.length > 3 && (
+              <Badge variant="default" className="text-xs">
+                +{pumpValues.length - 3} more
+              </Badge>
+            )}
+          </div>
+        );
+      },
+    },
+    {
       header: "Published",
       accessorKey: "isPublic",
       cell: ({ row }) => {
@@ -447,10 +481,10 @@ export const ExerciseLibraryVideoTable = () => {
   return (
     <>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-medium">Exercise Library Videos</h1>
+        <h1 className="text-2xl font-medium">Exercise Setup Videos</h1>
         <Button onClick={() => setAddExerciseModalOpen(true)}>
           <Plus />
-          <span>Add Exercise Video</span>
+          <span>Add Setup Video</span>
         </Button>
       </div>
       <div className="rounded-xl border bg-card p-6">
@@ -610,7 +644,9 @@ export const ExerciseLibraryVideoTable = () => {
           <DialogPanel className="w-full max-w-4xl rounded-lg bg-card shadow-xl">
             <div className="flex justify-between gap-3 border-b p-5">
               <div className="flex items-center gap-2">
-                <p className="text-2xl font-bold">Upload Exercise Video</p>
+                <p className="text-2xl font-bold">
+                  Upload Exercise Setup Video
+                </p>
               </div>
               <Button
                 type="button"
@@ -621,7 +657,7 @@ export const ExerciseLibraryVideoTable = () => {
               </Button>
             </div>
             <div className="max-h-[80vh] overflow-y-auto p-5">
-              <LibraryVideoUpload
+              <ExerciseSetupVideoUploadForm
                 setAddExerciseModalOpen={setAddExerciseModalOpen}
                 mutateUrl={url}
               />

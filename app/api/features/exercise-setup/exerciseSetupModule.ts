@@ -1,10 +1,10 @@
 import { auth } from "@/lib/auth";
-import { exerciseLibrarySchemaAdmin } from "@/schema/exerciseLibrarySchema";
+import { exerciseSetupSchemaAdmin } from "@/schema/exerciseSetupSchema";
 import { Hono, type Context } from "hono";
 import { validateInput } from "../../lib/validateInput";
-import { exerciseLibraryService } from "./exerciseLibraryService";
+import { exerciseSetupService } from "./exerciseSerupService";
 
-export const exerciseLibraryModule = new Hono();
+export const exerciseSetupModule = new Hono();
 
 // Helper function to get session from API request
 const getApiSession = async (c: Context) => {
@@ -20,7 +20,7 @@ const getApiSession = async (c: Context) => {
 };
 
 // Get all exercise library videos for dashboard (admin)
-exerciseLibraryModule.get("/dashboard", async (c) => {
+exerciseSetupModule.get("/dashboard", async (c) => {
   try {
     const session = await getApiSession(c);
     if (!session?.user?.id) {
@@ -38,7 +38,7 @@ exerciseLibraryModule.get("/dashboard", async (c) => {
     const limit = parseInt(c.req.query("limit") || "10");
     const search = c.req.query("search") || "";
 
-    const result = await exerciseLibraryService.getAllExerciseLibraryVideos(
+    const result = await exerciseSetupService.getAllExerciseSetupVideos(
       page,
       limit,
       search,
@@ -61,7 +61,7 @@ exerciseLibraryModule.get("/dashboard", async (c) => {
 });
 
 // Get single exercise library video by ID
-exerciseLibraryModule.get("/dashboard/:id", async (c) => {
+exerciseSetupModule.get("/dashboard/:id", async (c) => {
   try {
     const session = await getApiSession(c);
     if (!session?.user?.id) {
@@ -75,7 +75,7 @@ exerciseLibraryModule.get("/dashboard/:id", async (c) => {
     }
 
     const id = c.req.param("id");
-    const result = await exerciseLibraryService.getExerciseLibraryVideoById(id);
+    const result = await exerciseSetupService.getExerciseSetupVideoById(id);
 
     return c.json({
       success: true,
@@ -97,7 +97,7 @@ exerciseLibraryModule.get("/dashboard/:id", async (c) => {
 });
 
 // Create exercise library video from dashboard admin
-exerciseLibraryModule.post("/dashboard", async (c: Context) => {
+exerciseSetupModule.post("/dashboard", async (c: Context) => {
   try {
     // Get current user session
     const session = await getApiSession(c);
@@ -122,13 +122,13 @@ exerciseLibraryModule.post("/dashboard", async (c: Context) => {
 
     const validatedBody = await validateInput({
       type: "form",
-      schema: exerciseLibrarySchemaAdmin,
+      schema: exerciseSetupSchemaAdmin,
       data: dataWithUserId,
     });
 
     console.log(validatedBody);
     const result =
-      await exerciseLibraryService.createExerciseLibraryAdmin(validatedBody);
+      await exerciseSetupService.createExerciseSetupAdmin(validatedBody);
 
     return c.json({
       success: true,
@@ -151,7 +151,7 @@ exerciseLibraryModule.post("/dashboard", async (c: Context) => {
 });
 
 // Update exercise library video
-exerciseLibraryModule.put("/dashboard/:id", async (c: Context) => {
+exerciseSetupModule.put("/dashboard/:id", async (c: Context) => {
   try {
     const session = await getApiSession(c);
     if (!session?.user?.id) {
@@ -174,11 +174,11 @@ exerciseLibraryModule.put("/dashboard/:id", async (c: Context) => {
 
     const validatedBody = await validateInput({
       type: "form",
-      schema: exerciseLibrarySchemaAdmin,
+      schema: exerciseSetupSchemaAdmin,
       data: dataWithUserId,
     });
 
-    const result = await exerciseLibraryService.updateExerciseLibraryVideo(
+    const result = await exerciseSetupService.updateExerciseLibraryVideo(
       id,
       validatedBody,
     );
@@ -204,7 +204,7 @@ exerciseLibraryModule.put("/dashboard/:id", async (c: Context) => {
 });
 
 // Delete exercise library video
-exerciseLibraryModule.delete("/dashboard/:id", async (c: Context) => {
+exerciseSetupModule.delete("/dashboard/:id", async (c: Context) => {
   try {
     const session = await getApiSession(c);
     if (!session?.user?.id) {
@@ -218,7 +218,7 @@ exerciseLibraryModule.delete("/dashboard/:id", async (c: Context) => {
     }
 
     const id = c.req.param("id");
-    const result = await exerciseLibraryService.deleteExerciseLibraryVideo(id);
+    const result = await exerciseSetupService.deleteExerciseLibraryVideo(id);
 
     return c.json({
       success: true,
@@ -241,7 +241,7 @@ exerciseLibraryModule.delete("/dashboard/:id", async (c: Context) => {
 });
 
 // Block exercise library video
-exerciseLibraryModule.post("/dashboard/:id/block", async (c: Context) => {
+exerciseSetupModule.post("/dashboard/:id/block", async (c: Context) => {
   try {
     const session = await getApiSession(c);
     if (!session?.user?.id) {
@@ -268,7 +268,7 @@ exerciseLibraryModule.post("/dashboard/:id/block", async (c: Context) => {
       );
     }
 
-    const result = await exerciseLibraryService.blockExerciseLibraryVideo(
+    const result = await exerciseSetupService.blockExerciseLibraryVideo(
       id,
       blockReason,
     );
@@ -294,7 +294,7 @@ exerciseLibraryModule.post("/dashboard/:id/block", async (c: Context) => {
 });
 
 // Unblock exercise library video
-exerciseLibraryModule.post("/dashboard/:id/unblock", async (c: Context) => {
+exerciseSetupModule.post("/dashboard/:id/unblock", async (c: Context) => {
   try {
     const session = await getApiSession(c);
     if (!session?.user?.id) {
@@ -308,7 +308,7 @@ exerciseLibraryModule.post("/dashboard/:id/unblock", async (c: Context) => {
     }
 
     const id = c.req.param("id");
-    const result = await exerciseLibraryService.unblockExerciseLibraryVideo(id);
+    const result = await exerciseSetupService.unblockExerciseLibraryVideo(id);
 
     return c.json({
       success: true,
@@ -331,7 +331,7 @@ exerciseLibraryModule.post("/dashboard/:id/unblock", async (c: Context) => {
 });
 
 // Publish/Unpublish exercise library video
-exerciseLibraryModule.patch("/dashboard/:id/status", async (c: Context) => {
+exerciseSetupModule.patch("/dashboard/:id/status", async (c: Context) => {
   try {
     const session = await getApiSession(c);
     if (!session?.user?.id) {
@@ -348,12 +348,14 @@ exerciseLibraryModule.patch("/dashboard/:id/status", async (c: Context) => {
     const body = await c.req.json();
     const { isPublic, blocked, blockReason } = body;
 
-    const result =
-      await exerciseLibraryService.updateExerciseLibraryVideoStatus(id, {
+    const result = await exerciseSetupService.updateExerciseLibraryVideoStatus(
+      id,
+      {
         isPublic,
         blocked,
         blockReason,
-      });
+      },
+    );
 
     return c.json({
       success: true,
@@ -376,7 +378,7 @@ exerciseLibraryModule.patch("/dashboard/:id/status", async (c: Context) => {
 });
 
 // exercise library video for public access (unchanged)
-exerciseLibraryModule.get("/", async (c) => {
+exerciseSetupModule.get("/", async (c) => {
   try {
     const session = await getApiSession(c);
     if (!session?.user?.id) {
@@ -389,7 +391,7 @@ exerciseLibraryModule.get("/", async (c) => {
       );
     }
 
-    const result = await exerciseLibraryService.getExerciseLibrary(
+    const result = await exerciseSetupService.getExerciseLibrary(
       session.user.id,
     );
 
@@ -413,7 +415,7 @@ exerciseLibraryModule.get("/", async (c) => {
 });
 
 // create library video from public (unchanged)
-exerciseLibraryModule.post("/", async (c) => {
+exerciseSetupModule.post("/", async (c) => {
   try {
     // Get current user session
     const session = await getApiSession(c);
@@ -459,7 +461,7 @@ exerciseLibraryModule.post("/", async (c) => {
     }
 
     const result =
-      await exerciseLibraryService.createExerciseLibrary(validatedBody);
+      await exerciseSetupService.createExerciseLibrary(validatedBody);
 
     return c.json({
       success: true,

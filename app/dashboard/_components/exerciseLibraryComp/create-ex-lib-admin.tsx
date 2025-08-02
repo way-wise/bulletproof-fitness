@@ -10,35 +10,35 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { MultiSelect } from "@/components/ui/multi-select";
 import { useBodyParts } from "@/hooks/useBodyParts";
 import { useEquipments } from "@/hooks/useEquipments";
-
 import { useRacks } from "@/hooks/useRacks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { mutate } from "swr";
 import * as z from "zod";
 
 const formSchema = z.object({
   videoUrl: z.string().url("Please enter a valid YouTube URL"),
   title: z.string().min(1, "Video title is required"),
-  equipment: z.string().optional().nullable(),
-  bodyPart: z.string().optional().nullable(),
-  height: z.string().optional().nullable(),
-  rack: z.string().optional().nullable(),
+  equipment: z.array(z.string()).default([]),
+  bodyPart: z.array(z.string()).default([]),
+  height: z.string().optional(),
+  rack: z.array(z.string()).default([]),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-export default function LibraryVideoUpload() {
+export default function LibraryVideoUpload({
+  setAddExerciseModalOpen,
+  mutateUrl,
+}: {
+  setAddExerciseModalOpen: (value: boolean) => void;
+  mutateUrl: string;
+}) {
   const [isUploading, setIsUploading] = useState(false);
   const { bodyParts } = useBodyParts();
   const { racks } = useRacks();
@@ -46,18 +46,34 @@ export default function LibraryVideoUpload() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      videoUrl: "",
+      title: "",
+      equipment: [],
+      bodyPart: [],
+      height: "",
+      rack: [],
+    },
   });
 
   const onSubmit = async (data: FormValues) => {
     try {
       setIsUploading(true);
 
+      // Send arrays directly to backend
+      const submitData = {
+        ...data,
+        equipment: data.equipment.length > 0 ? data.equipment : [],
+        bodyPart: data.bodyPart.length > 0 ? data.bodyPart : [],
+        rack: data.rack.length > 0 ? data.rack : [],
+      };
+
       const response = await fetch("/api/exercise-library/dashboard", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(submitData),
       });
 
       if (!response.ok) {
@@ -68,10 +84,14 @@ export default function LibraryVideoUpload() {
       const result = await response.json();
       toast.success("Video submitted successfully!");
       form.reset();
+
+      // Revalidate the exercise library data to show the new entry
+      mutate(mutateUrl);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Submission failed");
     } finally {
       setIsUploading(false);
+      setAddExerciseModalOpen(false);
     }
   };
 
@@ -123,21 +143,18 @@ export default function LibraryVideoUpload() {
             name="equipment"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Equipment *</FormLabel>
-                <Select onValueChange={field.onChange}>
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select equipment" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {equipments.map((equipment) => (
-                      <SelectItem key={equipment.id} value={equipment.name}>
-                        {equipment.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <FormLabel>Equipment</FormLabel>
+                <FormControl>
+                  <MultiSelect
+                    options={equipments.map((equipment) => ({
+                      value: equipment.name,
+                      label: equipment.name,
+                    }))}
+                    selected={field.value || []}
+                    onChange={field.onChange}
+                    placeholder="Select equipment"
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -151,21 +168,18 @@ export default function LibraryVideoUpload() {
             name="bodyPart"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Body Part *</FormLabel>
-                <Select onValueChange={field.onChange}>
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select body part" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {bodyParts.map((bodyPart) => (
-                      <SelectItem key={bodyPart.id} value={bodyPart.name}>
-                        {bodyPart.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <FormLabel>Body Part</FormLabel>
+                <FormControl>
+                  <MultiSelect
+                    options={bodyParts.map((bodyPart) => ({
+                      value: bodyPart.name,
+                      label: bodyPart.name,
+                    }))}
+                    selected={field.value || []}
+                    onChange={field.onChange}
+                    placeholder="Select body parts"
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -175,7 +189,7 @@ export default function LibraryVideoUpload() {
             name="height"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>User Height *</FormLabel>
+                <FormLabel>User Height</FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="Height in inches" />
                 </FormControl>
@@ -191,21 +205,18 @@ export default function LibraryVideoUpload() {
           name="rack"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Rack *</FormLabel>
-              <Select onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select rack" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {racks.map((rack) => (
-                    <SelectItem key={rack.id} value={rack.name}>
-                      {rack.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormLabel>Rack</FormLabel>
+              <FormControl>
+                <MultiSelect
+                  options={racks.map((rack) => ({
+                    value: rack.name,
+                    label: rack.name,
+                  }))}
+                  selected={field.value || []}
+                  onChange={field.onChange}
+                  placeholder="Select racks"
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

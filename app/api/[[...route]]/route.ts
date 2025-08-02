@@ -9,6 +9,7 @@ import authModule from "../features/auth/authModule";
 import { bodyPartsModule } from "../features/bodyParts/bodyPartsModule";
 import { demoCenterModule } from "../features/demo-centers/demoCentersModule";
 import { exerciseLibraryModule } from "../features/exercise-library/exerciseLibraryModule";
+import { exerciseSetupModule } from "../features/exercise-setup/exerciseSetupModule";
 import { racksModule } from "../features/racks/racksModule";
 import userModule from "../features/users/userModule";
 
@@ -29,6 +30,7 @@ app.route("/body-parts", bodyPartsModule);
 app.route("/racks", racksModule);
 app.route("/demo-centers", demoCenterModule);
 app.route("/exercise-library", exerciseLibraryModule);
+app.route("/exercise-setup", exerciseSetupModule);
 
 // Not found
 app.notFound((c) => {
