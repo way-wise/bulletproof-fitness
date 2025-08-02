@@ -34,6 +34,7 @@ import {
   MoreVertical,
   Pencil,
   Play,
+  Plus,
   Search,
   Trash,
   XCircle,
@@ -43,12 +44,14 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
+import LibraryVideoUpload from "./create-ex-lib-admin";
 
-export const YouTubeVideoTable = () => {
+export const ExerciseLibraryVideoTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [blockVideoModalOpen, setBlockVideoModalOpen] = useState(false);
   const [unblockVideoModalOpen, setUnblockVideoModalOpen] = useState(false);
   const [publishVideoModalOpen, setPublishVideoModalOpen] = useState(false);
+  const [addExerciseModalOpen, setAddExerciseModalOpen] = useState(false);
   const [videoId, setVideoId] = useState<string | undefined>("");
   const [searchQuery, setSearchQuery] = useState("");
   const [pagination, setPagination] = useState<PaginationState>({
@@ -349,7 +352,7 @@ export const YouTubeVideoTable = () => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href={`/dashboard/youtube-videos/${id}`}>
+                  <Link href={`/dashboard/exercise-setup/${id}`}>
                     <Eye className="mr-2 h-4 w-4" />
                     <span>View</span>
                   </Link>
@@ -419,6 +422,13 @@ export const YouTubeVideoTable = () => {
 
   return (
     <>
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-2xl font-medium">Exercise Library</h1>
+        <Button onClick={() => setAddExerciseModalOpen(true)}>
+          <Plus />
+          <span>Add Exercise</span>
+        </Button>
+      </div>
       <div className="rounded-xl border bg-card p-6">
         <div className="flex items-center justify-between gap-4 pb-6">
           <div className="relative max-w-xs">
@@ -565,7 +575,29 @@ export const YouTubeVideoTable = () => {
           </form>
         </Form>
       </Modal>
-
+      {/* Exercise Creation Modal */}
+      <Modal
+        isOpen={addExerciseModalOpen}
+        onClose={() => setAddExerciseModalOpen(false)}
+        isPending={false}
+        title=""
+      >
+        <div className="flex justify-between gap-3 pb-5">
+          <div className="flex items-center gap-2">
+            <p className="text-2xl font-bold">Upload Exercise Video</p>
+          </div>
+          <Button
+            type="button"
+            onClick={() => setAddExerciseModalOpen(false)}
+            variant="secondary"
+          >
+            Cancel
+          </Button>
+        </div>
+        <div className="mx-auto max-h-[80vh] overflow-y-auto">
+          <LibraryVideoUpload />
+        </div>
+      </Modal>
       {/* Delete Video Modal */}
       <Modal
         isOpen={deleteModalOpen}

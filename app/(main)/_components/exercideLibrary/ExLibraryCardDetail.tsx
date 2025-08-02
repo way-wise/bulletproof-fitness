@@ -35,10 +35,9 @@ export default function ExerciseDetailPage({
 }: {
   exerciseLibraryId: string;
 }) {
-  console.log(typeof exerciseLibraryId);
   const [rating, setRating] = useState(0);
   const data = seedData.find((item) => item.id === parseInt(exerciseLibraryId));
-  console.log(data?.id);
+
   if (!data) {
     return <div>Exercise not found</div>;
   }

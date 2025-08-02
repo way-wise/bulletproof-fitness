@@ -10,7 +10,7 @@ export const equipmentService = {
   // Get all equipments
   getEquipments: async (query: PaginationQuery) => {
     const session = await getSession();
-    console.log(session);
+
     const { skip, take, page, limit } = getPaginationQuery(query);
     const [equipments, total] = await prisma.$transaction([
       prisma.equipment.findMany({
@@ -35,7 +35,6 @@ export const equipmentService = {
 
   // Create equipment
   createEquipment: async (data: InferType<typeof equipmentSchema>) => {
-    console.log(data);
     const equipment = await prisma.equipment.create({
       data: {
         name: data.name,
@@ -43,7 +42,6 @@ export const equipmentService = {
         updatedAt: new Date(),
       },
     });
-    console.log(equipment);
 
     return equipment;
   },

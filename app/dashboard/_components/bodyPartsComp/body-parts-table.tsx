@@ -52,7 +52,6 @@ const BodyPartsTable = () => {
   // Get equipments data
   const url = `/api/body-parts?page=${pagination.pageIndex}&limit=${pagination.pageSize}`;
   const { isValidating, data } = useSWR(url);
-  console.log(data);
 
   // Add Equipment Form
   const addBodyPartForm = useForm({
@@ -74,7 +73,6 @@ const BodyPartsTable = () => {
         },
         body: JSON.stringify(values),
       });
-      console.log(response);
 
       if (!response.ok) {
         const errorData = await response.json();

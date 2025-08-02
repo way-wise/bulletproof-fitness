@@ -52,7 +52,6 @@ const EquipmentsTable = () => {
   // Get equipments data
   const url = `/api/equipments?page=${pagination.pageIndex}&limit=${pagination.pageSize}`;
   const { isValidating, data } = useSWR(url);
-  console.log(data);
 
   // Add Equipment Form
   const addEquipmentForm = useForm({
@@ -74,7 +73,6 @@ const EquipmentsTable = () => {
         },
         body: JSON.stringify(values),
       });
-      console.log(response);
 
       if (!response.ok) {
         const errorData = await response.json();

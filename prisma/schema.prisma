@@ -256,10 +256,10 @@ model ExerciseLibraryVideo {
   id          String   @id @default(ulid())
   title       String
   videoUrl    String
-  equipment   String
-  bodyPart    String
-  height      String
-  rack        String
+  equipment   String?
+  bodyPart    String?
+  height      String?
+  rack        String?
   userId      String
   user        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
   isPublic    Boolean  @default(false)

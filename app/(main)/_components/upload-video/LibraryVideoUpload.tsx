@@ -58,9 +58,6 @@ export default function LibraryVideoUpload() {
         return;
       }
 
-      console.log("Form data:", data);
-      console.log("Video file:", videoFile);
-
       // Create FormData for multipart upload
       const formData = new FormData();
       formData.append("video", videoFile);
@@ -70,9 +67,7 @@ export default function LibraryVideoUpload() {
       formData.append("height", data.height);
       formData.append("rack", data.rack);
 
-      console.log("FormData entries:");
       for (const [key, value] of formData.entries()) {
-        console.log(key, value);
       }
 
       // Send to video upload API

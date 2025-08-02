@@ -10,7 +10,7 @@ export const bodyPartsService = {
   // Get all equipments
   getBodyParts: async (query: PaginationQuery) => {
     const session = await getSession();
-    console.log(session);
+
     const { skip, take, page, limit } = getPaginationQuery(query);
     const [bodyParts, total] = await prisma.$transaction([
       prisma.bodyPart.findMany({
@@ -35,7 +35,6 @@ export const bodyPartsService = {
 
   // Create equipment
   createBodyPart: async (data: InferType<typeof bodyPartSchema>) => {
-    console.log(data);
     const bodyPart = await prisma.bodyPart.create({
       data: {
         name: data.name,
@@ -43,7 +42,6 @@ export const bodyPartsService = {
         updatedAt: new Date(),
       },
     });
-    console.log(bodyPart);
 
     return bodyPart;
   },

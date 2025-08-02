@@ -14,7 +14,7 @@ export const demoCentersService = {
   // Get all demo centers
   getDemoCenters: async (query: PaginationQuery & { search?: string }) => {
     const session = await getSession();
-    console.log(session);
+
     const { skip, take, page, limit } = getPaginationQuery(query);
 
     // Build search filter
@@ -93,7 +93,7 @@ export const demoCentersService = {
     query: PaginationQuery & { search?: string },
   ) => {
     const session = await getSession();
-    console.log(session);
+
     const { skip, take, page, limit } = getPaginationQuery(query);
 
     // Build search filter
@@ -166,8 +166,6 @@ export const demoCentersService = {
 
   // Create demo center
   createDemoCenter: async (data: InferType<typeof demoCenterSchema>) => {
-    console.log(data);
-
     // Find the equipment by name to get its ID
     const equipment = await prisma.equipment.findFirst({
       where: {

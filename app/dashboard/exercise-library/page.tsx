@@ -1,4 +1,4 @@
-import { YouTubeVideoTable } from "../_components/exerciseLibraryComp/exercise-library-video-table";
+import { ExerciseLibraryVideoTable } from "../_components/exerciseLibraryComp/exercise-library-video-table";
 
 export default function YouTubeVideosPage() {
   return (
@@ -10,7 +10,7 @@ export default function YouTubeVideosPage() {
           performance.
         </p>
       </div>
-      <YouTubeVideoTable />
+      <ExerciseLibraryVideoTable />
     </div>
   );
 }

@@ -20,8 +20,7 @@ equipmentModule.get("/", async (c) => {
   });
 
   const result = await equipmentService.getEquipments(validatedQuery);
-  console.log("result");
-  console.log(result);
+
   return c.json(result);
 });
 

@@ -3,19 +3,21 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { YouTubeVideo } from "@/lib/dataTypes";
 import { formatDate } from "@/lib/date-format";
+import { ExerciseSetup } from "@/prisma/generated/client";
 import { ArrowLeft, ExternalLink, Play } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-interface YouTubeVideoDetailsProps {
+interface ExerciseSetupDetailsProps {
   id: string;
 }
 
-export const YouTubeVideoDetails = ({ id }: YouTubeVideoDetailsProps) => {
-  const [video, setVideo] = useState<YouTubeVideo | null>(null);
+export const ExerciseSetupDetails = ({ id }: ExerciseSetupDetailsProps) => {
+  const [exerciseSetup, setExerciseSetup] = useState<ExerciseSetup | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,7 +28,7 @@ export const YouTubeVideoDetails = ({ id }: YouTubeVideoDetailsProps) => {
           throw new Error("Failed to fetch video");
         }
         const data = await response.json();
-        setVideo(data.data);
+        setExerciseSetup(data.data);
       } catch (error) {
         toast.error("Failed to load video details");
         console.error("Error fetching video:", error);

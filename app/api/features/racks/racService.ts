@@ -10,7 +10,7 @@ export const racksService = {
   // Get all racks
   getRacks: async (query: PaginationQuery) => {
     const session = await getSession();
-    console.log(session);
+
     const { skip, take, page, limit } = getPaginationQuery(query);
     const [racks, total] = await prisma.$transaction([
       prisma.rack.findMany({
@@ -35,7 +35,6 @@ export const racksService = {
 
   // Create rack
   createRack: async (data: InferType<typeof rackSchema>) => {
-    console.log(data);
     const rack = await prisma.rack.create({
       data: {
         name: data.name,
@@ -43,7 +42,6 @@ export const racksService = {
         updatedAt: new Date(),
       },
     });
-    console.log(rack);
 
     return rack;
   },

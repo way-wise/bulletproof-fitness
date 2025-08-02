@@ -1,6 +1,6 @@
-import prisma from "../lib/prisma";
 import { faker } from "@faker-js/faker";
 import { hashPassword } from "better-auth/crypto";
+import prisma from "../lib/prisma";
 
 async function main(total: number) {
   await prisma.$transaction(async (tx) => {
@@ -37,8 +37,6 @@ async function main(total: number) {
         updatedAt: new Date(),
       })),
     });
-
-    console.log(`Created ${total} users with accounts successfully`);
   });
 }
 
