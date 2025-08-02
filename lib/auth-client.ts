@@ -2,6 +2,7 @@ import { adminClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import { demoCenterAdmin } from "./admin/demoCenter";
 import { exerciseLibraryAdmin } from "./admin/exerciseLibrary";
+import { exerciseSetupAdmin } from "./admin/exerciseSetup";
 
 const baseAuthClient = createAuthClient({
   plugins: [adminClient()],
@@ -13,6 +14,7 @@ export const admin = {
   ...baseAuthClient.admin,
   demoCenter: demoCenterAdmin,
   exerciseLibrary: exerciseLibraryAdmin,
+  exerciseSetup: exerciseSetupAdmin,
 };
 
 // import { adminClient } from "better-auth/client/plugins";
