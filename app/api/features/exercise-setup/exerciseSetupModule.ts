@@ -276,7 +276,7 @@ exerciseSetupModule.post("/dashboard/:id/block", async (c: Context) => {
       );
     }
 
-    const result = await exerciseSetupService.blockExerciseLibraryVideo(
+    const result = await exerciseSetupService.blockExerciseSetupVideo(
       id,
       blockReason,
     );
@@ -316,7 +316,7 @@ exerciseSetupModule.post("/dashboard/:id/unblock", async (c: Context) => {
     }
 
     const id = c.req.param("id");
-    const result = await exerciseSetupService.unblockExerciseLibraryVideo(id);
+    const result = await exerciseSetupService.unblockExerciseSetupVideo(id);
 
     return c.json({
       success: true,
@@ -356,7 +356,7 @@ exerciseSetupModule.patch("/dashboard/:id/status", async (c: Context) => {
     const body = await c.req.json();
     const { isPublic, blocked, blockReason } = body;
 
-    const result = await exerciseSetupService.updateExerciseLibraryVideoStatus(
+    const result = await exerciseSetupService.updateExerciseSetupVideoStatus(
       id,
       {
         isPublic,
@@ -388,22 +388,47 @@ exerciseSetupModule.patch("/dashboard/:id/status", async (c: Context) => {
 // exercise library video for public access (unchanged)
 exerciseSetupModule.get("/", async (c) => {
   try {
-    const session = await getApiSession(c);
-    if (!session?.user?.id) {
-      return c.json(
-        {
-          success: false,
-          message: "Authentication required",
-        },
-        401,
-      );
-    }
+    // Get query parameters
+    const page = parseInt(c.req.query("page") || "1");
+    const limit = parseInt(c.req.query("limit") || "20");
+    const search = c.req.query("search") || "";
+    const bodyPartIds = c.req.query("bodyPartIds") || "";
+    const equipmentIds = c.req.query("equipmentIds") || "";
+    const rackIds = c.req.query("rackIds") || "";
+    const username = c.req.query("username") || "";
+    const minHeight = parseInt(c.req.query("minHeight") || "0");
+    const maxHeight = parseInt(c.req.query("maxHeight") || "85");
+    const minRating = parseInt(c.req.query("minRating") || "0");
 
-    const result = await exerciseSetupService.getExerciseSetup(session.user.id);
+    // Parse comma-separated IDs
+    const bodyPartIdsArray = bodyPartIds
+      ? bodyPartIds.split(",").filter(Boolean)
+      : [];
+    const equipmentIdsArray = equipmentIds
+      ? equipmentIds.split(",").filter(Boolean)
+      : [];
+    const rackIdsArray = rackIds ? rackIds.split(",").filter(Boolean) : [];
+
+    // Build filter parameters
+    const filterParams = {
+      page,
+      limit,
+      search,
+      bodyPartIds: bodyPartIdsArray,
+      equipmentIds: equipmentIdsArray,
+      rackIds: rackIdsArray,
+      username,
+      minHeight,
+      maxHeight,
+      minRating,
+    };
+    console.log(filterParams);
+    const result =
+      await exerciseSetupService.getExerciseSetupWithFilters(filterParams);
 
     return c.json({
       success: true,
-      data: result,
+      ...result,
     });
   } catch (error) {
     console.error("Error fetching exercise library:", error);

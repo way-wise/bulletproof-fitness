@@ -8,7 +8,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import Spinner from "@/components/ui/spinner";
-import { useExerciseLibrary } from "@/hooks/useExerciseLibrary";
+import { useExerciseSetup } from "@/hooks/useExerciseSetup";
 import { ExerciseLibraryFilters, ExerciseLibraryItem } from "@/lib/dataTypes";
 import { useState } from "react";
 import ExLibraryCard from "./ExLibraryCard";
@@ -19,7 +19,7 @@ interface ExCardsSectionProps {
   initialFilters?: ExerciseLibraryFilters;
 }
 
-const ExCardsSection = ({
+const ExSetupCardsSection = ({
   initialData,
   initialFilters,
 }: ExCardsSectionProps) => {
@@ -27,7 +27,7 @@ const ExCardsSection = ({
     initialFilters || {},
   );
 
-  const { exercises, meta, isLoading, error } = useExerciseLibrary(filters);
+  const { exercises, meta, isLoading, error } = useExerciseSetup(filters);
 
   // Use initial data if loading and no current data
   const displayData = exercises.length > 0 ? exercises : initialData || [];
@@ -75,7 +75,7 @@ const ExCardsSection = ({
           <div className="w-full">
             <div className="mb-8 flex items-center justify-between">
               <h1 className="text-left text-lg font-bold text-gray-900 md:text-xl lg:text-3xl">
-                EXERCISE LIBRARY
+                EXERCISE SETUP
                 {meta && (
                   <span className="ml-2 text-sm font-normal text-gray-500">
                     ({meta.total} exercises)
@@ -175,7 +175,7 @@ const ExCardsSection = ({
   );
 };
 
-export default ExCardsSection;
+export default ExSetupCardsSection;
 
 // Remove seed data export since we're using real API data now
 // export const seedData = [...]; // REMOVED

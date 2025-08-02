@@ -378,14 +378,50 @@ exerciseLibraryModule.patch("/dashboard/:id/status", async (c: Context) => {
   }
 });
 
-// exercise library video for public access (unchanged)
+// exercise library video for public access with filters
 exerciseLibraryModule.get("/", async (c) => {
   try {
-    const result = await exerciseLibraryService.getExerciseLibrary();
+    // Get query parameters
+    const page = parseInt(c.req.query("page") || "1");
+    const limit = parseInt(c.req.query("limit") || "20");
+    const search = c.req.query("search") || "";
+    const bodyPartIds = c.req.query("bodyPartIds") || "";
+    const equipmentIds = c.req.query("equipmentIds") || "";
+    const rackIds = c.req.query("rackIds") || "";
+    const username = c.req.query("username") || "";
+    const minHeight = parseInt(c.req.query("minHeight") || "0");
+    const maxHeight = parseInt(c.req.query("maxHeight") || "85");
+    const minRating = parseInt(c.req.query("minRating") || "0");
+
+    // Parse comma-separated IDs
+    const bodyPartIdsArray = bodyPartIds
+      ? bodyPartIds.split(",").filter(Boolean)
+      : [];
+    const equipmentIdsArray = equipmentIds
+      ? equipmentIds.split(",").filter(Boolean)
+      : [];
+    const rackIdsArray = rackIds ? rackIds.split(",").filter(Boolean) : [];
+
+    // Build filter parameters
+    const filterParams = {
+      page,
+      limit,
+      search,
+      bodyPartIds: bodyPartIdsArray,
+      equipmentIds: equipmentIdsArray,
+      rackIds: rackIdsArray,
+      username,
+      minHeight,
+      maxHeight,
+      minRating,
+    };
+    console.log(filterParams);
+    const result =
+      await exerciseLibraryService.getExerciseLibraryWithFilters(filterParams);
 
     return c.json({
       success: true,
-      data: result,
+      ...result,
     });
   } catch (error) {
     console.error("Error fetching exercise library:", error);
@@ -403,57 +439,57 @@ exerciseLibraryModule.get("/", async (c) => {
 });
 
 // Get exercise library with filters and pagination (public access)
-exerciseLibraryModule.get("/filtered", async (c) => {
-  try {
-    // Get query parameters
-    const page = parseInt(c.req.query("page") || "1");
-    const limit = parseInt(c.req.query("limit") || "12");
-    const search = c.req.query("search") || "";
-    const bodyPart = c.req.query("bodyPart") || "";
-    const equipment = c.req.query("equipment") || "";
-    const rack = c.req.query("rack") || "";
-    const username = c.req.query("username") || "";
-    const minHeight = parseInt(c.req.query("minHeight") || "0");
-    const maxHeight = parseInt(c.req.query("maxHeight") || "85");
-    const rating = parseInt(c.req.query("rating") || "0");
-    const sortBy =
-      (c.req.query("sortBy") as "title" | "createdAt" | "views" | "likes") ||
-      "createdAt";
-    const sortOrder = (c.req.query("sortOrder") as "asc" | "desc") || "desc";
+// exerciseLibraryModule.get("/filtered", async (c) => {
+//   try {
+//     // Get query parameters
+//     const page = parseInt(c.req.query("page") || "1");
+//     const limit = parseInt(c.req.query("limit") || "12");
+//     const search = c.req.query("search") || "";
+//     const bodyPart = c.req.query("bodyPart") || "";
+//     const equipment = c.req.query("equipment") || "";
+//     const rack = c.req.query("rack") || "";
+//     const username = c.req.query("username") || "";
+//     const minHeight = parseInt(c.req.query("minHeight") || "0");
+//     const maxHeight = parseInt(c.req.query("maxHeight") || "85");
+//     const rating = parseInt(c.req.query("rating") || "0");
+//     const sortBy =
+//       (c.req.query("sortBy") as "title" | "createdAt" | "views" | "likes") ||
+//       "createdAt";
+//     const sortOrder = (c.req.query("sortOrder") as "asc" | "desc") || "desc";
 
-    const result = await exerciseLibraryService.getExerciseLibraryWithFilters({
-      page,
-      limit,
-      search,
-      bodyPart,
-      equipment,
-      rack,
-      username,
-      minHeight,
-      maxHeight,
-      rating,
-      sortBy,
-      sortOrder,
-    });
+//     const result = await exerciseLibraryService.getExerciseLibraryWithFilters({
+//       page,
+//       limit,
+//       search,
+//       bodyPart,
+//       equipment,
+//       rack,
+//       username,
+//       minHeight,
+//       maxHeight,
+//       rating,
+//       sortBy,
+//       sortOrder,
+//     });
 
-    return c.json({
-      success: true,
-      ...result,
-    });
-  } catch (error) {
-    console.error("Error fetching filtered exercise library:", error);
-    return c.json(
-      {
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch filtered exercise library",
-      },
-      500,
-    );
-  }
-});
+//     return c.json({
+//       success: true,
+//       ...result,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching filtered exercise library:", error);
+//     return c.json(
+//       {
+//         success: false,
+//         message:
+//           error instanceof Error
+//             ? error.message
+//             : "Failed to fetch filtered exercise library",
+//       },
+//       500,
+//     );
+//   }
+// });
 
 // create library video from public (unchanged)
 exerciseLibraryModule.post("/", async (c) => {

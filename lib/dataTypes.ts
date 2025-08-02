@@ -21,6 +21,71 @@ export type TCardType = {
   videoUrl: string;
 };
 
+export type ExerciseLibraryItem = {
+  id: string;
+  title: string;
+  videoUrl: string;
+  equipment: {
+    id: string;
+    name: string;
+  };
+  bodyPart: {
+    id: string;
+    name: string;
+  };
+  rack?: {
+    id: string;
+    name: string;
+  };
+  height: number;
+  userId: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  views: number;
+  likes: number;
+  comments: number;
+  saves: number;
+  rating: number;
+  label: string;
+  isPublic: boolean;
+  blocked: boolean;
+  blockReason?: string;
+  isolatorHole?: string;
+  yellow?: string;
+  green?: string;
+  blue?: string;
+  red?: string;
+  purple?: string;
+  orange?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ExerciseLibraryResponse = {
+  data: ExerciseLibraryItem[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+  };
+};
+
+export type ExerciseLibraryFilters = {
+  bodyPartIds?: string[];
+  equipmentIds?: string[];
+  rackIds?: string[];
+  username?: string;
+  minHeight?: number;
+  maxHeight?: number;
+  minRating?: number;
+  search?: string;
+  page?: number;
+  limit?: number;
+};
+
 export type DemoCenter = {
   id: string;
   buildingType: string;

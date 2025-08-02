@@ -52,13 +52,13 @@ const buildQueryString = (filters: ExerciseLibraryFilters): string => {
   return params.toString();
 };
 
-export const useExerciseLibrary = (
+export const useExerciseSetup = (
   filters: ExerciseLibraryFilters = {},
 ): UseExerciseLibraryReturn => {
   const queryString = useMemo(() => buildQueryString(filters), [filters]);
 
   const { data, error, isLoading, mutate } = useSWR<ExerciseLibraryResponse>(
-    `/api/exercise-library${queryString ? `?${queryString}` : ""}`,
+    `/api/exercise-setup${queryString ? `?${queryString}` : ""}`,
 
     {
       revalidateOnReconnect: true,
@@ -78,4 +78,4 @@ export const useExerciseLibrary = (
 };
 
 // For backward compatibility
-export const useExerciseData = useExerciseLibrary;
+export const useExerciseData = useExerciseSetup;
