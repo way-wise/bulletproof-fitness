@@ -23,7 +23,7 @@ export const ExerciseSetupDetails = ({ id }: ExerciseSetupDetailsProps) => {
   useEffect(() => {
     const fetchVideo = async () => {
       try {
-        const response = await fetch(`/api/youtube-videos/${id}`);
+        const response = await fetch(`/api/exercise-setup/dashboard/${id}`);
         if (!response.ok) {
           throw new Error("Failed to fetch video");
         }

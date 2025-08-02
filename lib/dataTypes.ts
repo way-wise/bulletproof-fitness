@@ -96,6 +96,14 @@ export type ExerciseLibraryVideo = {
   isPublic: boolean;
   blocked: boolean;
   blockReason?: string;
+  // Pump by numbers fields
+  isolatorHole?: string;
+  yellow?: string;
+  green?: string;
+  blue?: string;
+  red?: string;
+  purple?: string;
+  orange?: string;
   createdAt: Date;
   updatedAt: Date;
 };
