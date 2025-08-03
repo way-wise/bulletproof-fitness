@@ -143,7 +143,19 @@ const ExCardsSection = ({
             {displayData.length > 0 && (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {displayData.map((item) => (
-                  <ExLibraryCard key={item.id} item={item} />
+                  <ExLibraryCard
+                    type="lib"
+                    key={item.id}
+                    id={item.id}
+                    title={item.title}
+                    url={item.videoUrl || ""}
+                    bodypart={item.bodyPart?.name || ""}
+                    author={item.user?.name || ""}
+                    views={item.contentStats[0].totalViews}
+                    likes={item.contentStats[0].totalLikes}
+                    averageRating={item.contentStats[0].avgRating}
+                    dislikes={item.contentStats[0].totalDislikes}
+                  />
                 ))}
               </div>
             )}

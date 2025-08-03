@@ -50,6 +50,8 @@ export const actionService = {
     if (!session) throw new Error("Unauthorized");
     const userId = session.user.id;
 
+    console.log("contentId", contentId, "key", key, "type", type);
+
     const isLibrary = key === "lib";
 
     const content = await (isLibrary
@@ -106,11 +108,21 @@ export const actionService = {
   async giveRating(contentId: string, key: "setup" | "lib", rating: number) {
     const session = await getSession();
     if (!session) throw new Error("Unauthorized");
+
     const userId = session.user.id;
     if (rating < 1 || rating > 5)
       throw new Error("Rating must be between 1 and 5");
 
     const isLibrary = key === "lib";
+
+    console.log("contentId", contentId, "key", key, "rating", rating);
+    const contentExists = isLibrary
+      ? await prisma.exerciseLibraryVideo.findUnique({
+          where: { id: contentId },
+        })
+      : await prisma.exerciseSetup.findUnique({ where: { id: contentId } });
+
+    if (!contentExists) throw new Error("Content not found");
 
     const whereClause = isLibrary
       ? { userId, libraryId: contentId }
@@ -126,13 +138,15 @@ export const actionService = {
         data: { rating },
       });
     } else {
-      await prisma.userRating.create({
+      const ratingRecord = await prisma.userRating.create({
         data: {
           userId,
           rating,
           ...(isLibrary ? { libraryId: contentId } : { exerciseId: contentId }),
         },
       });
+
+      if (!ratingRecord) throw new Error("Failed to create rating record");
 
       await awardPointsToUser(
         userId,
@@ -145,21 +159,27 @@ export const actionService = {
     const ratings = await prisma.userRating.findMany({
       where: isLibrary ? { libraryId: contentId } : { exerciseId: contentId },
     });
+
     const avg = ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
 
     const contentStats = await prisma.contentStats.findFirst({
       where: isLibrary ? { libraryId: contentId } : { exerciseId: contentId },
     });
 
-    await prisma.contentStats.upsert({
-      where: { id: contentStats?.id ?? "__new" },
-      update: { avgRating: avg },
-      create: {
-        id: crypto.randomUUID(),
-        ...(isLibrary ? { libraryId: contentId } : { exerciseId: contentId }),
-        avgRating: avg,
-      },
-    });
+    if (contentStats) {
+      await prisma.contentStats.update({
+        where: { id: contentStats.id },
+        data: { avgRating: avg },
+      });
+    } else {
+      await prisma.contentStats.create({
+        data: {
+          id: crypto.randomUUID(),
+          ...(isLibrary ? { libraryId: contentId } : { exerciseId: contentId }),
+          avgRating: avg,
+        },
+      });
+    }
   },
 
   async recordView(contentId: string, key: "setup" | "lib") {

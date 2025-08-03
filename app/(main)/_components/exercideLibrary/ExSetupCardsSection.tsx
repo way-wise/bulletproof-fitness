@@ -13,6 +13,7 @@ import { ExerciseLibraryFilters, ExerciseLibraryItem } from "@/lib/dataTypes";
 import { useState } from "react";
 import SetupCard from "../exerciseSetup/SetupCard";
 import FilterSection from "./FilterSection";
+import ExLibraryCard from "./ExLibraryCard";
 
 interface ExCardsSectionProps {
   initialData?: ExerciseLibraryItem[];
@@ -35,6 +36,8 @@ const ExSetupCardsSection = ({
   const handleFiltersChange = (newFilters: ExerciseLibraryFilters) => {
     setFilters(newFilters);
   };
+
+  console.log("exercises", exercises);
 
   if (error) {
     return (
@@ -143,7 +146,19 @@ const ExSetupCardsSection = ({
             {displayData.length > 0 && (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {displayData.map((item) => (
-                  <SetupCard key={item.id} item={item} />
+                  <ExLibraryCard
+                    type="setup"
+                    key={item.id}
+                    id={item.id}
+                    title={item.title}
+                    url={item.videoUrl || ""}
+                    bodypart={item.bodyPart?.name || ""}
+                    author={item.user?.name || ""}
+                    views={item.contentStats[0].totalViews}
+                    likes={item.contentStats[0].totalLikes}
+                    averageRating={item.contentStats[0].avgRating}
+                    dislikes={item.contentStats[0].totalDislikes}
+                  />
                 ))}
               </div>
             )}

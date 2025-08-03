@@ -7,6 +7,8 @@ const ExerciseSetupDetailPage = async ({
 }) => {
   const { exerciseSetupId } = await params;
 
+  console.log("Exercise Setup ID:", exerciseSetupId);
+
   return (
     <div>
       <ExerciseSetupDetails exerciseSetupId={exerciseSetupId} />

@@ -7,6 +7,8 @@ const CardPage = async ({
 }) => {
   const { exerciseLibraryId } = await params;
 
+  console.log("Exercise Library ID:", exerciseLibraryId);
+
   return <ExLibraryCardDetail exerciseLibraryId={exerciseLibraryId} />;
 };
 
