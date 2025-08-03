@@ -33,9 +33,16 @@ interface DemoCenterWithCoords {
   lng?: number;
 }
 
+interface Coordinates {
+  lat: number;
+  lng: number;
+}
+
 interface GoogleMapWithMarkersProps {
   demoCenters: DemoCenterWithCoords[];
   apiKey: string;
+  userLocation?: Coordinates | null;
+  searchLocation?: Coordinates | null;
 }
 
 const mapContainerStyle = {
@@ -54,6 +61,8 @@ const defaultZoom = 4;
 const GoogleMapWithMarkers: React.FC<GoogleMapWithMarkersProps> = ({
   demoCenters,
   apiKey,
+  userLocation,
+  searchLocation,
 }) => {
   const [selectedCenter, setSelectedCenter] = useState<DemoCenterWithCoords | null>(null);
   const [centersWithCoords, setCentersWithCoords] = useState<DemoCenterWithCoords[]>([]);
@@ -148,13 +157,25 @@ const GoogleMapWithMarkers: React.FC<GoogleMapWithMarkersProps> = ({
     );
   }
 
+  // Determine map center and zoom based on location state
+  const getMapCenter = () => {
+    if (userLocation) return userLocation;
+    if (searchLocation) return searchLocation;
+    return defaultCenter;
+  };
+
+  const getMapZoom = () => {
+    if (userLocation || searchLocation) return 10;
+    return defaultZoom;
+  };
+
   return (
     <div className="w-full rounded border">
       <LoadScript googleMapsApiKey={apiKey}>
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
-          center={defaultCenter}
-          zoom={defaultZoom}
+          center={getMapCenter()}
+          zoom={getMapZoom()}
           options={{
             zoomControl: true,
             streetViewControl: true,
@@ -162,6 +183,7 @@ const GoogleMapWithMarkers: React.FC<GoogleMapWithMarkersProps> = ({
             fullscreenControl: true,
           }}
         >
+          {/* Demo Center Markers */}
           {centersWithCoords.map((center) => (
             <Marker
               key={center.id}
@@ -170,6 +192,30 @@ const GoogleMapWithMarkers: React.FC<GoogleMapWithMarkersProps> = ({
               title={center.name}
             />
           ))}
+
+          {/* User Location Marker */}
+          {userLocation && (
+            <Marker
+              position={userLocation}
+              title="Your Location"
+              icon={{
+                url: "data:image/svg+xml;charset=UTF-8,%3csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='10' cy='10' r='8' fill='%234285f4'/%3e%3ccircle cx='10' cy='10' r='3' fill='white'/%3e%3c/svg%3e",
+                scaledSize: new window.google.maps.Size(20, 20),
+              }}
+            />
+          )}
+
+          {/* Search Location Marker */}
+          {searchLocation && (
+            <Marker
+              position={searchLocation}
+              title="Search Location"
+              icon={{
+                url: "data:image/svg+xml;charset=UTF-8,%3csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='10' cy='10' r='8' fill='%23ea4335'/%3e%3ccircle cx='10' cy='10' r='3' fill='white'/%3e%3c/svg%3e",
+                scaledSize: new window.google.maps.Size(20, 20),
+              }}
+            />
+          )}
 
           {selectedCenter && (
             <InfoWindow

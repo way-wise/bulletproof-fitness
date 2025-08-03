@@ -22,6 +22,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import useSWR from "swr";
+import { MultiSelect } from "@/components/ui/multi-select";
 
 const MAX_FILE_SIZE = 1024 * 1024 * 1024; // 1GB
 
@@ -30,7 +32,7 @@ const formSchema = z.object({
     message: "Video must not exceed 1GB",
   }),
   title: z.string().min(1, "Video title is required"),
-  equipment: z.string().min(1, "Please select equipment"),
+  equipments: z.array(z.string()).min(1, "Please select equipment"),
   bodyPart: z.string().min(1, "Please select a body part"),
   height: z.string().min(1, "Please enter your height"),
   rack: z.string().min(1, "Please select a rack"),
@@ -45,6 +47,14 @@ export default function LibraryVideoUpload() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   });
+
+  // Get equipments
+  const equipmentsUrl = `/api/equipments/all`;
+  const {
+    data: equipments,
+    error: equipmentsError,
+    isValidating: equipmentsIsValidating,
+  } = useSWR(equipmentsUrl);
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -62,33 +72,23 @@ export default function LibraryVideoUpload() {
       const formData = new FormData();
       formData.append("video", videoFile);
       formData.append("title", data.title);
-      formData.append("equipment", data.equipment);
+      formData.append("equipments", JSON.stringify(data.equipments));
       formData.append("bodyPart", data.bodyPart);
       formData.append("height", data.height);
       formData.append("rack", data.rack);
-
-      for (const [key, value] of formData.entries()) {
-      }
 
       // Send to video upload API
       const response = await fetch("/api/exercise-library", {
         method: "POST",
         body: formData,
       });
-      console.log("Response status:", response.status);
-      console.log(
-        "Response headers:",
-        Object.fromEntries(response.headers.entries()),
-      );
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("API Error:", errorData);
         throw new Error(errorData.message || "Failed to upload video");
       }
 
       const result = await response.json();
-      console.log("Video uploaded successfully:", result);
 
       // Reset form
       form.reset();
@@ -102,7 +102,6 @@ export default function LibraryVideoUpload() {
         setUploadProgress("");
       }, 10000);
     } catch (error) {
-      console.error("Error uploading video:", error);
       form.setError("root", {
         message:
           error instanceof Error ? error.message : "Failed to upload video",
@@ -203,24 +202,22 @@ export default function LibraryVideoUpload() {
           />
           <FormField
             control={form.control}
-            name="equipment"
+            name="equipments"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Equipment *</FormLabel>
-                <Select onValueChange={field.onChange}>
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select equipment" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="Adjustable Handles">
-                      Adjustable Handles
-                    </SelectItem>
-                    <SelectItem value="Dumbbells">Dumbbells</SelectItem>
-                    <SelectItem value="Kettlebells">Kettlebells</SelectItem>
-                  </SelectContent>
-                </Select>
+                <FormLabel>Equipments </FormLabel>
+                <MultiSelect
+                  options={
+                    equipments?.map((equipment: any) => ({
+                      value: equipment.id,
+                      label: equipment.name,
+                    })) || []
+                  }
+                  selected={(field.value || []) as string[]}
+                  onChange={(value) => field.onChange(value)}
+                  placeholder="Select Equipments"
+                  className="w-full"
+                />
                 <p className="mt-2 text-xs text-muted-foreground">
                   Select the equipment used in your video.You can select
                   multiple pieces of equipment if multiple pieces are used.

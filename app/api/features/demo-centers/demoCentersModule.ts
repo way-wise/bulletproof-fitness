@@ -1,6 +1,7 @@
 import {
   blockDemoCenterSchema,
   demoCenterSchema,
+  demoCenterQuerySchema,
   unblockDemoCenterSchema,
   updateDemoCenterStatusSchema,
 } from "@/schema/demoCenters";
@@ -11,30 +12,22 @@ import { validateInput } from "../../lib/validateInput";
 import { demoCentersService } from "./demoCentersService";
 
 export const demoCenterModule = new Hono();
-
 /*
   @route    GET: /demo-centers
   @access   private
   @desc     Get all demo centers
 */
 demoCenterModule.get("/", async (c) => {
-  const query = c.req.query();
-
   const validatedQuery = await validateInput({
     type: "query",
-    schema: paginationQuerySchema,
-    data: query,
+    schema: demoCenterQuerySchema,
+    data: c.req.query(),
   });
 
-  // Add search parameter if present
-  const searchQuery = query.search
-    ? { ...validatedQuery, search: query.search }
-    : validatedQuery;
-
-  const result = await demoCentersService.getDemoCenters(searchQuery);
-
+  const result = await demoCentersService.getDemoCenters(validatedQuery);
   return c.json(result);
 });
+
 demoCenterModule.get("/dashboard", async (c) => {
   const query = c.req.query();
 

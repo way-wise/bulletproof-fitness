@@ -25,12 +25,25 @@ model users {
   banned               Boolean?
   banReason            String?
   banExpires           Int?
+  totalPoints          Float                  @default(0)
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
   sessions             sessions[]
   accounts             accounts[]
   exerciseSetups       ExerciseSetup[]
   ExerciseLibraryVideo ExerciseLibraryVideo[]
+  views                UserView[]
+  ratings              UserRating[]
+  reactions            UserReaction[]
+  rewardPoints         RewardPoints[]
+
+  @@index([email])
+  @@index([emailVerified])
+  @@index([role])
+  @@index([banned])
+  @@index([banExpires])
+  @@index([totalPoints])
+  @@index([name])
 }
 
 model sessions {
@@ -78,16 +91,6 @@ model verifications {
   @@index([identifier])
 }
 
-// model ExerciseLibrary {
-//   id              String           @id @default(ulid())
-//   title           String
-//   createdAt       DateTime         @default(now())
-//   updatedAt       DateTime         @updatedAt
-//   exLibBodyParts  ExLibBodyPart[]
-//   exLibEquipments ExLibEquipment[]
-//   exLibRaks       ExLibRak[]
-// }
-
 model BodyPart {
   id              String            @id @default(ulid())
   name            String
@@ -116,6 +119,69 @@ model Rack {
   ExSetupRak ExSetupRak[]
 }
 
+model ExSetupBodyPart {
+  id         String        @id @default(ulid())
+  exSetupId  String
+  exSetup    ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
+  bodyPartId String
+  bodyPart   BodyPart      @relation(fields: [bodyPartId], references: [id], onDelete: Cascade)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+model ExSetupEquipment {
+  id          String        @id @default(ulid())
+  exSetupId   String
+  exSetup     ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
+  equipmentId String
+  equipment   Equipment     @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model ExSetupRak {
+  id        String        @id @default(ulid())
+  exSetupId String
+  exSetup   ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
+  rackId    String
+  rack      Rack          @relation(fields: [rackId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model ExerciseSetup {
+  id           String   @id @default(ulid())
+  title        String
+  videoUrl     String
+  height       String?
+  userId       String
+  user         users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPublic     Boolean  @default(false)
+  blocked      Boolean  @default(false)
+  blockReason  String?
+  // Pump by numbers fields
+  isolatorHole String?
+  yellow       String?
+  green        String?
+  blue         String?
+  red          String?
+  purple       String?
+  orange       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  contentStats     ContentStats[]
+  views            UserView[]
+  ratings          UserRating[]
+  reactions        UserReaction[]
+  ExSetupBodyPart  ExSetupBodyPart[]
+  ExSetupEquipment ExSetupEquipment[]
+  ExSetupRak       ExSetupRak[]
+
+  @@index([userId])
+  @@index([isPublic, blocked])
+}
+
 model DemoCenter {
   id                   String                @id @default(ulid())
   buildingType         String
@@ -123,6 +189,8 @@ model DemoCenter {
   address              String
   contact              String
   cityZip              String
+  lat                  Float?
+  lng                  Float?
   bio                  String
   image                String
   availability         String?
@@ -138,6 +206,10 @@ model DemoCenter {
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
   demoCenterEquipments DemoCenterEquipment[]
+
+  @@index([isPublic, blocked])
+  @@index([lat, lng])
+  @@index([weekdays, weekends])
 }
 
 model DemoCenterEquipment {
@@ -192,65 +264,115 @@ model ExerciseLibraryVideo {
   blockReason    String?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
+  contentStats   ContentStats[]
+  views          UserView[]
+  ratings        UserRating[]
+  reactions      UserReaction[]
   ExLibBodyPart  ExLibBodyPart[]
   ExLibEquipment ExLibEquipment[]
   ExLibRak       ExLibRak[]
 
   @@index([userId])
+  @@index([title])
   @@index([isPublic, blocked])
 }
 
-model ExSetupBodyPart {
-  id         String        @id @default(ulid())
-  exSetupId  String
-  exSetup    ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
-  bodyPartId String
-  bodyPart   BodyPart      @relation(fields: [bodyPartId], references: [id], onDelete: Cascade)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+model ContentStats {
+  id            String                @id @default(ulid())
+  exerciseId    String?
+  exercise      ExerciseSetup?        @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  libraryId     String?
+  library       ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: Cascade)
+  totalViews    Int                   @default(0)
+  totalLikes    Int                   @default(0)
+  totalDislikes Int                   @default(0)
+  avgRating     Float                 @default(0.0)
+  updatedAt     DateTime              @updatedAt
+
+  @@unique([exerciseId, libraryId])
+  @@index([exerciseId, libraryId])
+  @@map("content_stats")
 }
 
-model ExSetupEquipment {
-  id          String        @id @default(ulid())
-  exSetupId   String
-  exSetup     ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
-  equipmentId String
-  equipment   Equipment     @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+model RewardPoints {
+  id          String   @id @default(ulid())
+  userId      String
+  user        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  points      Int      @default(0)
+  message     String?
+  icon        String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@map("reward_points")
 }
 
-model ExSetupRak {
-  id        String        @id @default(ulid())
-  exSetupId String
-  exSetup   ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
-  rackId    String
-  rack      Rack          @relation(fields: [rackId], references: [id], onDelete: Cascade)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+model UserView {
+  id     String  @id @default(ulid())
+  userId String?
+  user   users?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  exerciseId String?
+  exercise   ExerciseSetup? @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
+
+  libraryId String?
+  library   ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: SetNull)
+  viewedAt  DateTime              @default(now())
+  sessionId String?
+  ipAddress String?
+  userAgent String?
+
+  @@unique([userId, exerciseId, libraryId])
+  @@index([userId, exerciseId, libraryId])
+  @@index([sessionId])
+  @@index([ipAddress])
+  @@map("views")
 }
 
-model ExerciseSetup {
-  id               String             @id @default(ulid())
-  title            String
-  videoUrl         String
-  height           String
-  userId           String
-  user             users              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  isPublic         Boolean            @default(false)
-  blocked          Boolean            @default(false)
-  blockReason      String?
-  // Pump by numbers fields
-  isolatorHole     String?
-  yellow           String?
-  green            String?
-  blue             String?
-  red              String?
-  purple           String?
-  orange           String?
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  ExSetupBodyPart  ExSetupBodyPart[]
-  ExSetupEquipment ExSetupEquipment[]
-  ExSetupRak       ExSetupRak[]
+model UserRating {
+  id     String @id @default(ulid())
+  userId String
+  user   users  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  exerciseId String?
+  exercise   ExerciseSetup? @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
+
+  libraryId String?
+  library   ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: SetNull)
+  rating    Int // Validate 1–5 in service/DTO layer
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, exerciseId, libraryId])
+  @@index([userId, exerciseId, libraryId])
+  @@map("ratings")
+}
+
+model UserReaction {
+  id     String @id @default(ulid())
+  userId String
+  user   users  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  reaction ReactionType
+
+  exerciseId String?
+  exercise   ExerciseSetup? @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
+
+  libraryId String?
+  library   ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId]) // One reaction per user per content
+  @@index([userId, exerciseId, libraryId])
+  @@map("reactions")
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
 }

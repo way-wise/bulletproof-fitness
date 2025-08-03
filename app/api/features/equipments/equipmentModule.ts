@@ -8,6 +8,16 @@ import { equipmentService } from "./equipmentService";
 export const equipmentModule = new Hono();
 
 /*
+  @route    GET: /equipments/all
+  @access   private
+  @desc     Get all equipments (Non-paginated)
+*/
+equipmentModule.get("/all", async (c) => {
+  const result = await equipmentService.getAllEquipments();
+  return c.json(result);
+});
+
+/*
   @route    GET: /equipments
   @access   private
   @desc     Get all equipments

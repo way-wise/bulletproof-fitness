@@ -1,16 +1,23 @@
-import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { equipmentSchema } from "@/schema/equipment";
 import { PaginationQuery } from "@/schema/paginationSchema";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
-import { getPaginationQuery } from "../../lib/pagination";
+import { getPaginationQuery } from "@api/lib/pagination";
 
 export const equipmentService = {
   // Get all equipments
-  getEquipments: async (query: PaginationQuery) => {
-    const session = await getSession();
+  getAllEquipments: async () => {
+    const equipments = await prisma.equipment.findMany({
+      orderBy: {
+        id: "desc",
+      },
+    });
 
+    return equipments;
+  },
+  // Get all equipments (Paginated)
+  getEquipments: async (query: PaginationQuery) => {
     const { skip, take, page, limit } = getPaginationQuery(query);
     const [equipments, total] = await prisma.$transaction([
       prisma.equipment.findMany({

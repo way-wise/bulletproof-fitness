@@ -1,4 +1,3 @@
-import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import {
   blockDemoCenterSchema,
@@ -8,92 +7,122 @@ import {
 import { PaginationQuery } from "@/schema/paginationSchema";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
-import { getPaginationQuery } from "../../lib/pagination";
+import { getPaginationQuery } from "@api/lib/pagination";
+import { DemoCenterQuery } from "@/schema/demoCenters";
+import { getGeoCodeAddress } from "@api/lib/getGeoCodeAddress";
+import { geoDistance } from "@api/lib/geoDistance";
 
 export const demoCentersService = {
-  // Get all demo centers
-  getDemoCenters: async (query: PaginationQuery & { search?: string }) => {
-    const session = await getSession();
-
+  getDemoCenters: async (query: DemoCenterQuery) => {
     const { skip, take, page, limit } = getPaginationQuery(query);
+    const { location, range, buildingType, equipments } = query;
+    const equipmentsIds = equipments?.split(",");
 
-    // Build search filter
-    const searchFilter = {
-      // Exclude demo centers where isPublic is false AND blocked is true
-      NOT: {
-        isPublic: false,
-        blocked: true,
+    let filteredDemoCenters = [];
+    let total = 0;
+
+    // Building type filter
+    const whereFilter: any = {};
+    if (buildingType) {
+      whereFilter.buildingType = buildingType;
+    }
+
+    // Equipment filter
+    if (equipments && equipmentsIds?.length) {
+      whereFilter.demoCenterEquipments = {
+        some: {
+          equipmentId: {
+            in: equipmentsIds,
+          },
+        },
+      };
+    }
+
+    // Include the related equipment data in all queries
+    const includeClause = {
+      demoCenterEquipments: {
+        include: {
+          equipment: true,
+        },
       },
-      ...(query.search
-        ? {
-            OR: [
-              {
-                name: { contains: query.search, mode: "insensitive" as const },
-              },
-              {
-                buildingType: {
-                  contains: query.search,
-                  mode: "insensitive" as const,
-                },
-              },
-              {
-                contact: {
-                  contains: query.search,
-                  mode: "insensitive" as const,
-                },
-              },
-              {
-                address: {
-                  contains: query.search,
-                  mode: "insensitive" as const,
-                },
-              },
-              {
-                cityZip: {
-                  contains: query.search,
-                  mode: "insensitive" as const,
-                },
-              },
-            ],
-          }
-        : {}),
     };
 
-    const [demoCenters, total] = await prisma.$transaction([
-      prisma.demoCenter.findMany({
-        where: searchFilter,
-        skip,
-        take,
+    if (location && range) {
+      const userLocation = await getGeoCodeAddress(location);
+
+      if (!userLocation) {
+        return {
+          data: [],
+          meta: { page, limit, total: 0, searchLocation: null, range: null },
+        };
+      }
+
+      // Get all matching demo centers
+      const allMatchingDemoCenters = await prisma.demoCenter.findMany({
+        where: whereFilter,
+        include: includeClause,
         orderBy: {
           id: "desc",
         },
-        include: {
-          demoCenterEquipments: {
-            include: {
-              equipment: true,
-            },
-          },
+      });
+
+      const nearbyDemoCenters = allMatchingDemoCenters.filter((center) => {
+        if (center.lat && center.lng) {
+          const distance = geoDistance(
+            userLocation.lat,
+            userLocation.lng,
+            center.lat,
+            center.lng,
+          );
+          return distance <= range;
+        }
+
+        return false;
+      });
+
+      filteredDemoCenters = nearbyDemoCenters.slice(skip, skip + take);
+      total = nearbyDemoCenters.length;
+
+      // Returning the user's geocoded location and range in the metadata
+      return {
+        data: filteredDemoCenters,
+        meta: {
+          page,
+          limit,
+          total,
+          searchLocation: userLocation,
+          range,
         },
-      }),
-      prisma.demoCenter.count({
-        where: searchFilter,
-      }),
-    ]);
+      };
+    } else {
+      const [demoCenters, count] = await prisma.$transaction([
+        prisma.demoCenter.findMany({
+          where: whereFilter,
+          include: includeClause,
+          skip,
+          take,
+          orderBy: { id: "desc" },
+        }),
+        prisma.demoCenter.count({ where: whereFilter }),
+      ]);
+      filteredDemoCenters = demoCenters;
+      total = count;
+    }
 
     return {
-      data: demoCenters,
+      data: filteredDemoCenters,
       meta: {
         page,
         limit,
         total,
+        searchLocation: null,
+        range: null,
       },
     };
   },
   getDemoCentersDashboard: async (
     query: PaginationQuery & { search?: string },
   ) => {
-    const session = await getSession();
-
     const { skip, take, page, limit } = getPaginationQuery(query);
 
     // Build search filter
