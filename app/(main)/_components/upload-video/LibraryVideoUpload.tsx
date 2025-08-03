@@ -11,21 +11,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { MultiSelect } from "@/components/ui/multi-select";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useSession } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { X } from "lucide-react";
+import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
-import { X } from "lucide-react";
 import useSWR from "swr";
-import { useSession } from "@/lib/auth-client";
+import * as z from "zod";
 
 const formSchema = z.object({
   video: z.string().min(1, "Video is required"),
@@ -123,11 +116,13 @@ export default function LibraryVideoUpload() {
           <FormLabel className="mb-2 block">Video Upload *</FormLabel>
           {fileResource ? (
             <div className="relative flex w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-4 text-center text-sm text-muted-foreground">
-              <video
-                src={fileResource?.secure_url || ""}
-                className="h-[270px] w-full"
-                controls
-              />
+              {fileResource && typeof fileResource === "object" ? (
+                <video
+                  src={fileResource.secure_url}
+                  className="h-[270px] w-full"
+                  controls
+                />
+              ) : null}
               <Button
                 size="icon"
                 variant="secondary"
@@ -157,8 +152,12 @@ export default function LibraryVideoUpload() {
                 }}
                 uploadPreset="exercise-library"
                 onSuccess={(result, { widget }) => {
-                  setFileResource(result?.info);
-                  form.setValue("video", result?.info?.secure_url);
+                  if (result?.info && typeof result.info !== "string") {
+                    setFileResource(result.info);
+                    form.setValue("video", result.info.secure_url);
+                  } else {
+                    console.error("Invalid file resource");
+                  }
                   widget.close();
                 }}
                 onQueuesEnd={(result, { widget }) => {

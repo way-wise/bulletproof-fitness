@@ -106,7 +106,6 @@ export default function ExerciseSetupVideoUploadForm({
         throw new Error(errorData.message || "Failed to submit video data");
       }
 
-      const result = await response.json();
       toast.success("Setup video submitted successfully!");
       form.reset();
 

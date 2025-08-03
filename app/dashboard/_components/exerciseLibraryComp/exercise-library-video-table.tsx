@@ -176,7 +176,7 @@ export const ExerciseLibraryVideoTable = () => {
     }
 
     try {
-      const { error, data } = await admin.exerciseLibrary.delete({
+      const { error } = await admin.exerciseLibrary.delete({
         videoId,
       });
 

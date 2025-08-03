@@ -3,17 +3,15 @@
 "use client";
 
 import { useState } from "react";
-import useSWR, { mutate } from "swr";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { InferType } from "yup";
 import { toast } from "sonner";
+import useSWR, { mutate } from "swr";
+import { InferType } from "yup";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
-import { DataTable } from "@/components/ui/data-table";
 import {
   Select,
   SelectContent,
@@ -37,12 +35,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDate } from "@/lib/date-format";
 import { rewardsSchema } from "@/schema/rewardsSchema";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
-import { Pencil, Plus, ToggleLeft, ToggleRight } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { Pencil, Plus } from "lucide-react";
 
 export type TReward = InferType<typeof rewardsSchema> & {
   id: string;

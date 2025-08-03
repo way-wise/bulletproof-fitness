@@ -156,7 +156,6 @@ export default function UpdateLibraryVideo({
         throw new Error(errorData.message || "Failed to update video data");
       }
 
-      const result = await response.json();
       toast.success("Video updated successfully!");
       form.reset();
 

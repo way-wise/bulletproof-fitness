@@ -31,6 +31,7 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url, token }) => {
       emailEvents.emit(EmailEventType.VERIFY_EMAIL, {
         email: user.email,
+        url,
         token,
       });
     },

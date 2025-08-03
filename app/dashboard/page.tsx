@@ -144,7 +144,7 @@ const DashboardOverviewPage = () => {
             Dashboard Overview
           </h1>
           <p className="text-muted-foreground">
-            Welcome back! Here's what's happening with your fitness platform
+            Welcome back! Heres whats happening with your fitness platform
             today.
           </p>
         </div>

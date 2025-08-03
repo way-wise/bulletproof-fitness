@@ -1,15 +1,14 @@
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { PaginationQuery } from "@/schema/paginationSchema";
-import { getPaginationQuery } from "../../lib/pagination";
-import { create } from "domain";
-import { Reward } from "@/schema/rewardsSchema";
 import { RewardType } from "@/prisma/generated/enums";
+import { PaginationQuery } from "@/schema/paginationSchema";
+import { Reward } from "@/schema/rewardsSchema";
+import { getPaginationQuery } from "../../lib/pagination";
 
 export const rewardService = {
   getAllRewards: async (query: PaginationQuery) => {
     const session = await getSession();
-
+    if (!session) throw new Error("Unauthorized");
     const { skip, take, page, limit } = getPaginationQuery(query);
     const [rewards, total] = await prisma.$transaction([
       prisma.rewardPoints.findMany({
