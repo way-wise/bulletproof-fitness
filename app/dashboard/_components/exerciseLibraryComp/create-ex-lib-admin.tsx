@@ -147,7 +147,7 @@ export default function LibraryVideoUpload({
                 <FormControl>
                   <MultiSelect
                     options={equipments.map((equipment) => ({
-                      value: equipment.name,
+                      value: equipment.id,
                       label: equipment.name,
                     }))}
                     selected={field.value || []}
@@ -172,7 +172,7 @@ export default function LibraryVideoUpload({
                 <FormControl>
                   <MultiSelect
                     options={bodyParts.map((bodyPart) => ({
-                      value: bodyPart.name,
+                      value: bodyPart.id,
                       label: bodyPart.name,
                     }))}
                     selected={field.value || []}
@@ -209,7 +209,7 @@ export default function LibraryVideoUpload({
               <FormControl>
                 <MultiSelect
                   options={racks.map((rack) => ({
-                    value: rack.name,
+                    value: rack.id,
                     label: rack.name,
                   }))}
                   selected={field.value || []}
