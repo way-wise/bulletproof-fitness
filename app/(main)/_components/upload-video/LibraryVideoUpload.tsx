@@ -24,13 +24,24 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import useSWR from "swr";
 import { MultiSelect } from "@/components/ui/multi-select";
+import {
+  CldUploadWidget,
+  CldVideoPlayer,
+  CloudinaryUploadWidgetInfo,
+} from "next-cloudinary";
+import { X } from "lucide-react";
 
 const MAX_FILE_SIZE = 1024 * 1024 * 1024; // 1GB
 
 const formSchema = z.object({
-  video: z.any().refine((file) => file && file.size <= MAX_FILE_SIZE, {
-    message: "Video must not exceed 1GB",
-  }),
+  video: z
+    .any()
+    .refine((file) => file, {
+      message: "Video is required",
+    })
+    .refine((file) => file && file.size <= MAX_FILE_SIZE, {
+      message: "Video must not exceed 1GB",
+    }),
   title: z.string().min(1, "Video title is required"),
   equipments: z.array(z.string()).min(1, "Please select equipment"),
   bodyPart: z.string().min(1, "Please select a body part"),
@@ -41,7 +52,9 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function LibraryVideoUpload() {
-  const [fileName, setFileName] = useState<string | null>(null);
+  const [fileResource, setFileResource] = useState<
+    CloudinaryUploadWidgetInfo | undefined | string
+  >(undefined);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string>("");
   const form = useForm<FormValues>({
@@ -58,8 +71,10 @@ export default function LibraryVideoUpload() {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      setIsUploading(true);
-      setUploadProgress("Uploading video to ImageBB...");
+      if (!fileResource) {
+        form.setError("video", { message: "Please upload a video" });
+        return;
+      }
 
       // Get the video file from the form
       const videoFile = form.getValues("video") as File;
@@ -76,6 +91,7 @@ export default function LibraryVideoUpload() {
       formData.append("bodyPart", data.bodyPart);
       formData.append("height", data.height);
       formData.append("rack", data.rack);
+      formData.append("video", fileResource?.secure_url || "");
 
       // Send to video upload API
       const response = await fetch("/api/exercise-library", {
@@ -91,16 +107,8 @@ export default function LibraryVideoUpload() {
       const result = await response.json();
 
       // Reset form
+      setFileResource(undefined);
       form.reset();
-      setFileName(null);
-      setUploadProgress(
-        `Video uploaded successfully! Video URL: ${result.data.videoUrl}`,
-      );
-
-      // Clear success message after 10 seconds
-      setTimeout(() => {
-        setUploadProgress("");
-      }, 10000);
     } catch (error) {
       form.setError("root", {
         message:
@@ -108,16 +116,6 @@ export default function LibraryVideoUpload() {
       });
     } finally {
       setIsUploading(false);
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && file.size <= MAX_FILE_SIZE) {
-      form.setValue("video", file);
-      setFileName(file.name);
-    } else {
-      form.setError("video", { message: "File size exceeds 1GB" });
     }
   };
 
@@ -131,38 +129,66 @@ export default function LibraryVideoUpload() {
           Upload Exercise Library Video
         </h1>
 
-        {/* Video Upload */}
-        <FormField
-          control={form.control}
-          name="video"
-          render={() => (
-            <FormItem>
-              <FormLabel>Video Upload *</FormLabel>
-              <div
-                className={cn(
-                  "flex h-32 cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-4 text-center text-sm text-muted-foreground",
-                  fileName && "border-primary",
-                )}
-                onClick={() => document.getElementById("video-upload")?.click()}
+        <div>
+          <FormLabel className="mb-2 block">Video Upload *</FormLabel>
+          {fileResource ? (
+            <div className="relative flex w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-4 text-center text-sm text-muted-foreground">
+              <video
+                src={fileResource?.secure_url || ""}
+                className="h-[270px] w-full"
+                controls
+              />
+              <Button
+                size="icon"
+                variant="secondary"
+                onClick={async () => {
+                  setFileResource(undefined);
+                  form.setValue("video", undefined);
+                  await fetch(`/api/sign-upload/${fileResource?.public_id}`, {
+                    method: "DELETE",
+                  });
+                }}
+                className="absolute top-2 right-2"
               >
-                {fileName ? (
-                  <p className="text-primary">{fileName}</p>
-                ) : (
-                  <p>Click or drag a file to this area to upload</p>
-                )}
-                <p className="mt-2 text-xs">Video upload cannot exceed 1GB.</p>
-                <input
-                  id="video-upload"
-                  type="file"
-                  accept="video/*"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-              </div>
-              <FormMessage />
-            </FormItem>
+                <X />
+              </Button>
+            </div>
+          ) : (
+            <>
+              <CldUploadWidget
+                signatureEndpoint="/api/sign-upload"
+                options={{
+                  sources: ["local"],
+                  maxFiles: 1,
+                  multiple: false,
+                  maxFileSize: 1024 * 1024 * 1024,
+                  resourceType: "video",
+                  theme: "white",
+                }}
+                uploadPreset="exercise-library"
+                onSuccess={(result, { widget }) => {
+                  setFileResource(result?.info);
+                  widget.close();
+                }}
+                onQueuesEnd={(result, { widget }) => {
+                  widget.close();
+                }}
+              >
+                {({ open }) => {
+                  return (
+                    <button
+                      onClick={() => open()}
+                      className="my-2 flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-4 text-center text-sm text-muted-foreground"
+                    >
+                      Video Upload
+                    </button>
+                  );
+                }}
+              </CldUploadWidget>
+              <FormMessage>{form.formState.errors.video?.message}</FormMessage>
+            </>
           )}
-        />
+        </div>
 
         {/* Title & Equipment */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
