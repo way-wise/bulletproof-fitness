@@ -45,6 +45,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import ExerciseSetupVideoUploadForm from "./ExerciseSetupVideoUploadForm";
+import { UpdateSetupVideo } from "./UPdateSetupVideo";
 
 export const ExerciseSetupVideoTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -52,6 +53,7 @@ export const ExerciseSetupVideoTable = () => {
   const [unblockVideoModalOpen, setUnblockVideoModalOpen] = useState(false);
   const [publishVideoModalOpen, setPublishVideoModalOpen] = useState(false);
   const [addExerciseModalOpen, setAddExerciseModalOpen] = useState(false);
+  const [updateExerciseModalOpen, setUpdateExerciseModalOpen] = useState(false);
   const [videoId, setVideoId] = useState<string | undefined>("");
   const [searchQuery, setSearchQuery] = useState("");
   const [pagination, setPagination] = useState<PaginationState>({
@@ -413,7 +415,12 @@ export const ExerciseSetupVideoTable = () => {
                     <span>View</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setVideoId(id);
+                    setUpdateExerciseModalOpen(true);
+                  }}
+                >
                   <Pencil className="mr-2 h-4 w-4" />
                   <span>Edit</span>
                 </DropdownMenuItem>
@@ -665,6 +672,14 @@ export const ExerciseSetupVideoTable = () => {
           </DialogPanel>
         </div>
       </Dialog>
+
+      {/* Update Exercise Modal */}
+      <UpdateSetupVideo
+        isOpen={updateExerciseModalOpen}
+        onClose={() => setUpdateExerciseModalOpen(false)}
+        videoId={videoId || null}
+        mutateUrl={url}
+      />
       {/* Delete Video Modal */}
       <Modal
         isOpen={deleteModalOpen}
