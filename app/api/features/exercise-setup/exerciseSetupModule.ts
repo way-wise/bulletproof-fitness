@@ -73,6 +73,8 @@ exerciseSetupModule.get("/dashboard/:id", async (c) => {
   try {
     const id = c.req.param("id");
 
+    console.log("Single ID", id);
+
     const result = await exerciseSetupService.getExerciseSetupVideoById(id);
 
     return c.json({

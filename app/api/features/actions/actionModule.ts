@@ -14,6 +14,8 @@ const app = new Hono();
 app.post("/react", async (c) => {
   const body = await c.req.json();
 
+  console.log("Body", body);
+
   const schema = object({
     contentId: string().required(),
     key: mixed<"setup" | "lib">().oneOf(["setup", "lib"]).required(),
@@ -43,6 +45,9 @@ app.post("/rate", async (c) => {
     rating: number().min(1).max(5).required(),
   });
 
+  if (body.rating < 1 || body.rating > 5) throw new Error("Invalid rating");
+
+  console.log("Rating", body.rating);
   const validated = await validateInput({ type: "form", schema, data: body });
 
   await actionService.giveRating(

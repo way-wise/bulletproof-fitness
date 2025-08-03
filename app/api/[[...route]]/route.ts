@@ -13,7 +13,11 @@ import { exerciseSetupModule } from "../features/exercise-setup/exerciseSetupMod
 import { racksModule } from "../features/racks/racksModule";
 import rewardModule from "../features/rewards/rewardModule";
 import userModule from "../features/users/userModule";
+
+import actionModule from "../features/actions/actionModule";
+
 import signUploadModule from "../features/sign-upload/signUploadModule";
+
 
 // Hono init
 const app = new Hono().basePath("/api");
@@ -33,7 +37,12 @@ app.route("/racks", racksModule);
 app.route("/demo-centers", demoCenterModule);
 app.route("/exercise-library", exerciseLibraryModule);
 app.route("/exercise-setup", exerciseSetupModule);
+
+app.route("/rewards", rewardModule);
+app.route("/action", actionModule);
+
 app.route("/sign-upload", signUploadModule);
+
 
 // Not found
 app.notFound((c) => {

@@ -1,4 +1,5 @@
 import cloudinary from "@/app/api/lib/cloudinary";
+import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import {
   exerciseLibrarySchema,
@@ -165,6 +166,7 @@ export const exerciseLibraryService = {
 
   // Get single exercise library video by ID
   getExerciseLibraryVideoById: async (id: string) => {
+    const session = await getSession();
     try {
       const exercise = await prisma.exerciseLibraryVideo.findUnique({
         where: { id },
@@ -191,12 +193,52 @@ export const exerciseLibraryService = {
               rack: true,
             },
           },
+          contentStats: true,
+          views: true,
         },
       });
 
       if (!exercise) {
         throw new Error("Exercise library video not found");
       }
+
+      if (session?.user?.id && session?.session?.id) {
+        const { id: userId } = session.user;
+        const { id: sessionId, ipAddress, userAgent } = session.session;
+
+        const existView = await prisma.userView.findFirst({
+          where: {
+            libraryId: id,
+            userId,
+            sessionId,
+          },
+        });
+
+        if (!existView) {
+          await prisma.userView.create({
+            data: {
+              libraryId: id,
+              userId,
+              sessionId,
+              ipAddress,
+              userAgent,
+              viewedAt: new Date(),
+            },
+          });
+
+          const contentStats = await prisma.contentStats.findFirst({
+            where: { exerciseId: id },
+          });
+
+          await prisma.contentStats.upsert({
+            where: { id: contentStats?.id ?? "__new" },
+            update: { totalViews: { increment: 1 } },
+            create: { libraryId: id, totalViews: 1 },
+          });
+        }
+      }
+
+      console.log("exercise", exercise);
 
       return exercise;
     } catch (error) {
@@ -555,6 +597,7 @@ export const exerciseLibraryService = {
               rack: true,
             },
           },
+          contentStats: true,
         },
       });
 
@@ -614,6 +657,7 @@ export const exerciseLibraryService = {
             height: heightInInches || 0,
             userId: exercise.userId,
             user: exercise.user,
+            contentStats: exercise.contentStats,
             // Mock data for demo (replace with real data when available)
             views: Math.floor(Math.random() * 1000) + 100,
             likes: Math.floor(Math.random() * 50),

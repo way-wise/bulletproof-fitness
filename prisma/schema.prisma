@@ -335,7 +335,6 @@ model UserView {
   ipAddress String?
   userAgent String?
 
-  @@unique([userId, exerciseId, libraryId])
   @@index([userId, exerciseId, libraryId])
   @@index([sessionId])
   @@index([ipAddress])

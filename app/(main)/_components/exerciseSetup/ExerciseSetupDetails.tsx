@@ -111,6 +111,37 @@ export default function ExerciseSetupDetails({
       /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
     )?.[1] || null;
 
+  const handleSubmitRating = async (value: number) => {
+    if (!exerciseSetupId) return;
+
+    try {
+      const res = await fetch("/api/action/rate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contentId: exerciseSetupId,
+          key: "setup",
+          rating: value,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to submit rating");
+      }
+
+      setRating(value); // Set only after successful submission
+      alert("Thanks for your rating!");
+    } catch (error: any) {
+      console.error("Rating error:", error);
+      alert(error.message || "Something went wrong.");
+    }
+  };
+
+  console.log("libraryData", libraryData);
+
   return (
     <div className="mx-auto max-w-[1200px] px-6 py-14 font-sans text-[17px] leading-relaxed text-[#222]">
       {/* Video & Info Section */}
@@ -202,7 +233,7 @@ export default function ExerciseSetupDetails({
             <Star
               key={s}
               className={`h-7 w-7 cursor-pointer transition-colors ${rating >= s ? "fill-yellow-500 stroke-yellow-500" : "stroke-gray-400"}`}
-              onClick={() => setRating(s)}
+              onClick={() => handleSubmitRating(s)}
             />
           ))}
         </div>
