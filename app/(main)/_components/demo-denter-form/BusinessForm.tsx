@@ -19,23 +19,18 @@ import {
    SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-// import { useEquipments } from "@/hooks/useEquipments";
-import { uploadImageToImgBB } from "@/lib/imageUpload";
-import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { UseFormReturn } from "react-hook-form";
 import * as z from "zod";
 
-const businessFormSchema = z.object({
+export const businessFormSchema = z.object({
   buildingType: z.literal("BUSINESS"),
   name: z.string().min(1, "Business name is required"),
   address: z.string().min(1, "Address is required"),
   contact: z.string().min(1, "Contact information is required"),
   cityZip: z.string().min(1, "City/Zip is required"),
   equipment: z.string().min(1, "Equipment selection is required"),
-  availability: z.string().optional(),
+  availability: z.string().min(1, "Availability is required"),
   bio: z.string().min(1, "Bio is required"),
   weekdays: z.array(z.string()).optional(),
   weekends: z.array(z.string()).optional(),
@@ -45,148 +40,25 @@ const businessFormSchema = z.object({
   weekendClose: z.string().optional(),
 });
 
-type BusinessFormValues = z.infer<typeof businessFormSchema>;
+export type BusinessFormValues = z.infer<typeof businessFormSchema>;
 
-export default function BusinessForm() {
-   const [file, setFile] = useState<File | null>(null);
-   const [preview, setPreview] = useState<string | null>(null);
-   // const { equipments, isLoading } = useEquipments();
-   const [isSubmitting, setIsSubmitting] = useState(false);
-   const [showAgreement, setShowAgreement] = useState(false);
-   const [agreementWidgetId, setAgreementWidgetId] = useState<string | null>(null);
-   const [submittedFormData, setSubmittedFormData] = useState<BusinessFormValues | null>(null);
+interface BusinessFormProps {
+   onSubmit: (data: BusinessFormValues) => void;
+   isSubmitting: boolean;
+   setIsSubmitting: (isSubmitting: boolean) => void;
+   file: File | null;
+   setFile: (file: File | null) => void;
+   form: UseFormReturn<BusinessFormValues>;
+   equipments: { id: string; name: string }[];
+   isLoading: boolean;
+   preview: string | null;
+   setPreview: (preview: string | null) => void;
+   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+   removeImage: () => void;
+   generateTimeOptions: () => React.ReactNode[];
+}
 
-   // zod resolver
-  const form = useForm<BusinessFormValues>({
-    resolver: zodResolver(businessFormSchema),
-    defaultValues: {
-      buildingType: "BUSINESS",
-      weekdays: [],
-      weekends: [],
-    },
-  });
-
-   const equipments = [
-      { id: "1", name: "Equipment 1" },
-      { id: "2", name: "Equipment 2" },
-      { id: "3", name: "Equipment 3" },
-    ];
-    const isLoading = false;
-
-  const onSubmit = async (data: BusinessFormValues) => {
-    if (!file) {
-      toast.error("Please upload a facility photo");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      // Upload image
-      const imageUrl = await uploadImageToImgBB(file);
-      if (!imageUrl) {
-        toast.error("Failed to upload image");
-        return;
-      }
-
-      // Prepare form data
-      const formData = {...data, image: imageUrl};
-
-      //  Submit to API
-      const response = await fetch("/api/demo-centers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      const responseText = await response.text();
-       
-      if (!response.ok) {
-         let errorMessage = "Failed to submit form";
-         try {
-           const errorData = JSON.parse(responseText);
-           errorMessage = errorData.message || errorData.validationError?.message || "Failed to submit form";
-         } catch (e) {
-           errorMessage = responseText || "Failed to submit form";
-         }
-         throw new Error(errorMessage);
-       }
-       
-      setAgreementWidgetId("CBFCIBAA3AAABLblqZhAOZCgwKvj8DKEzXVqmWXBtuqCzZpn6UpUGIiMutxmtR3A8oUMhEkiV1qWXbmz3pIU");
-      setShowAgreement(true);
-      setSubmittedFormData(formData);
-
-      toast.success("Business demo center submitted successfully!");
-      form.reset();
-      setFile(null);
-      setPreview(null);
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to submit form",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-   // handle file upload change
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFile(file);
-      setPreview(URL.createObjectURL(file));
-    }
-  };
-
-  // remove image from preview
-  const removeImage = () => {
-    setFile(null);
-    setPreview(null);
-  };
-
-  // generate time options for opening/closing times
-  function generateTimeOptions() {
-    const times = [];
-    for (let hour = 0; hour < 24; hour++) {
-      for (const min of [0, 30]) {
-        const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : "30"} ${hour < 12 ? "AM" : "PM"}`;
-        times.push(
-          <option key={display} value={display}>
-            {display}
-          </option>,
-        );
-      }
-    }
-    return times;
-  }
-   if (showAgreement && agreementWidgetId) {
-      return (
-         <div className="mx-auto max-w-6xl space-y-6 rounded-lg p-6">
-        <div className="mb-6">
-          <p className="mt-2 text-gray-600 text-center">
-            Please complete the below terms and conditions to be part of our Demo Center network.
-          </p>
-        </div>
-
-        <div className="relative">
-          <iframe
-            style={{
-              border: 0,
-              overflow: "hidden",
-              minHeight: "600px",
-              minWidth: "100%",
-            }}
-            src={`https://na2.documents.adobe.com/public/esignWidget?wid=${agreementWidgetId}&hosted=false`}
-            width="100%"
-            height="600"
-            frameBorder="0"
-            title="Adobe Sign Agreement"
-            className="rounded-lg shadow-lg"
-          />
-        </div>
-      </div>
-      )
-   }
+   export default function BusinessForm({ onSubmit, isSubmitting, form, equipments, isLoading, preview, handleFileChange, removeImage, generateTimeOptions}: BusinessFormProps) {
 
   // render the form
   return (

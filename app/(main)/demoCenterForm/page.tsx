@@ -3,11 +3,198 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEquipments } from "@/hooks/useEquipments";
+import { uploadImageToImgBB } from "@/lib/imageUpload";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Building2, Home } from "lucide-react";
-import BusinessForm from "../_components/demo-denter-form/BusinessForm";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import BusinessForm, { businessFormSchema, BusinessFormValues } from "../_components/demo-denter-form/BusinessForm";
 import ResidentialForm from "../_components/demo-denter-form/ResidentialForm";
 
+
 export default function DemoCenterFormPage() {
+   const [file, setFile] = useState<File | null>(null);
+   const [preview, setPreview] = useState<string | null>(null);
+   const [isSubmitting, setIsSubmitting] = useState(false);
+   const [showAgreement, setShowAgreement] = useState(false);
+   const [agreementWidgetId, setAgreementWidgetId] = useState<string | null>(null);
+   const [submittedFormData, setSubmittedFormData] = useState<BusinessFormValues | null>(null);
+
+   // get equipments
+   const { equipments, isLoading } = useEquipments();
+   
+   // zod resolver
+   const form = useForm<BusinessFormValues>({
+      resolver: zodResolver(businessFormSchema),
+      defaultValues: {
+        buildingType: "BUSINESS",
+        weekdays: [],
+        weekends: [],
+      },
+   });
+
+   // handle file upload change
+   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+         setFile(file);
+         setPreview(URL.createObjectURL(file));
+      }
+   };
+
+   // remove image from preview
+   const removeImage = () => {
+      setFile(null);
+      setPreview(null);
+   };
+
+   // generate time options for opening/closing times
+   function generateTimeOptions() {
+      const times = [];
+      for (let hour = 0; hour < 24; hour++) {
+         for (const min of [0, 30]) {
+            const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : "30"} ${hour < 12 ? "AM" : "PM"}`;
+            times.push(
+               <option key={display} value={display}>
+                  {display}
+               </option>,
+            );
+         }
+      }
+      return times;
+   }
+   
+   // handle form submission
+   const onSubmit = async (data: BusinessFormValues) => {
+      if (!file) {
+        toast.error("Please upload a facility photo");
+        return;
+      }
+  
+      setIsSubmitting(true);
+      try {
+        // Upload image
+        const imageUrl = await uploadImageToImgBB(file);
+        if (!imageUrl) {
+          toast.error("Failed to upload image");
+          return;
+        }
+  
+        // Prepare form data with required fields
+        const formData = {
+          ...data, 
+          image: imageUrl,
+          // Add required fields with default values for API
+          isPublic: false,
+          blocked: false,
+          blockReason: "Not blocked",
+        };
+  
+        //  Submit to API
+        const response = await fetch("/api/demo-centers", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+        const responseText = await response.text();
+         
+        if (!response.ok) {
+           let errorMessage = "Failed to submit form";
+           try {
+             const errorData = JSON.parse(responseText);
+             errorMessage = errorData.message || errorData.validationError?.message || "Failed to submit form";
+           } catch (e) {
+             errorMessage = responseText || "Failed to submit form";
+           }
+           throw new Error(errorMessage);
+         }
+         
+        setAgreementWidgetId("CBFCIBAA3AAABLblqZhAOZCgwKvj8DKEzXVqmWXBtuqCzZpn6UpUGIiMutxmtR3A8oUMhEkiV1qWXbmz3pIU");
+        setShowAgreement(true);
+        setSubmittedFormData(formData);
+  
+        toast.success("Business demo center submitted successfully!");
+        form.reset();
+        setFile(null);
+        setPreview(null);
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to submit form",
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
+   };
+
+   // render the agreement pdf
+   if (showAgreement && agreementWidgetId) {
+      return (
+         <div className="mx-auto max-w-6xl space-y-6 rounded-lg p-6">
+            <div className="mb-6">
+               <h2 className="text-2xl font-bold text-gray-900 text-center">
+                  Complete Your Agreement
+               </h2>
+               <p className="mt-2 text-gray-600 text-center">
+                  Please complete the below terms and conditions to be part of our Demo Center network.
+               </p>
+            </div>
+
+            <div className="relative">
+               <iframe
+                  style={{
+                     border: 0,
+                     overflow: "hidden",
+                     minHeight: "600px",
+                     minWidth: "100%",
+                  }}
+                  src={`https://na2.documents.adobe.com/public/esignWidget?wid=${agreementWidgetId}&hosted=false`}
+                  width="100%"
+                  height="600"
+                  frameBorder="0"
+                  title="Adobe Sign Agreement"
+                  className="rounded-lg shadow-lg"
+               />
+            </div>
+
+            <div className="flex gap-4 pt-4">
+               <button
+                  onClick={() => {
+                     setShowAgreement(false);
+                     setAgreementWidgetId(null);
+                     setSubmittedFormData(null);
+                  }}
+                  className="flex-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+               >
+                  ← Back to Form
+               </button>
+               <button
+                  onClick={() => window.open(`https://na2.documents.adobe.com/public/esignWidget?wid=${agreementWidgetId}&hosted=false`, '_blank')}
+                  className="flex-1 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+               >
+                  Open in New Tab
+               </button>
+            </div>
+
+            {submittedFormData && (
+               <div className="mt-6 rounded-lg bg-blue-50 p-4">
+                  <h3 className="font-semibold text-blue-900">Form Data Submitted:</h3>
+                  <div className="mt-2 text-sm text-blue-800">
+                     <p><strong>Business Name:</strong> {submittedFormData.name}</p>
+                     <p><strong>Contact:</strong> {submittedFormData.contact}</p>
+                     <p><strong>Address:</strong> {submittedFormData.address}</p>
+                     <p><strong>Equipment:</strong> {submittedFormData.equipment}</p>
+                  </div>
+               </div>
+            )}
+         </div>
+      )
+   }
+
+   // render the form
   return (
     <div className="container mx-auto max-w-4xl p-6">
       <div className="mb-8 text-center">
@@ -45,7 +232,21 @@ export default function DemoCenterFormPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <BusinessForm />
+              <BusinessForm 
+                form={form} 
+                equipments={equipments} 
+                isLoading={isLoading} 
+                preview={preview} 
+                setPreview={setPreview} 
+                onSubmit={onSubmit} 
+                isSubmitting={isSubmitting} 
+                setIsSubmitting={setIsSubmitting} 
+                file={file} 
+                setFile={setFile}
+                handleFileChange={handleFileChange}
+                removeImage={removeImage}
+                generateTimeOptions={generateTimeOptions}
+              />
             </CardContent>
           </Card>
         </TabsContent>
