@@ -100,8 +100,6 @@ export default function LibraryVideoUpload({
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to submit video data");
       }
-
-      const result = await response.json();
       toast.success("Video submitted successfully!");
       form.reset();
 

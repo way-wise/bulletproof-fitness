@@ -72,7 +72,6 @@ interface UpdateDemoCenterProps {
 }
 
 export default function UpdateDemoCenter({
-  isOpen,
   onClose,
   demoCenter,
   onUpdate,

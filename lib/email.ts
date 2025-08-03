@@ -10,23 +10,26 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function sendVerificationEmail(to: string, token: string) {
-  const link = `${process.env.APP_URL}/verify?token=${token}`;
-
+export async function sendVerificationEmail(
+  to: string,
+  token: string,
+  url: string,
+) {
+  console.log(token);
   await transporter.sendMail({
     from: process.env.EMAIL_FROM!,
     to,
     subject: "Verify Your Email",
-    text: `Verify your email address by visiting: ${link}`,
+    text: `Verify your email address by visiting: ${url} `,
     html: `
       <div style="font-family:sans-serif;">
         <h2>Verify your email</h2>
         <p>Click below to verify your email address. This link will expire in 1 hour.</p>
-        <a href="${link}" style="display:inline-block;margin-top:10px;padding:10px 15px;background:#0070f3;color:white;text-decoration:none;border-radius:5px;">
+        <a href="${url}" style="display:inline-block;margin-top:10px;padding:10px 15px;background:#0070f3;color:white;text-decoration:none;border-radius:5px;">
           Verify Email
         </a>
         <p>If the button doesn't work, copy and paste this URL into your browser:</p>
-        <p>${link}</p>
+        <p>${url}</p>
         <hr />
         <small>If you didn't request this, you can safely ignore this email.</small>
       </div>

@@ -9,8 +9,6 @@ import { getPaginationQuery } from "../../lib/pagination";
 export const bodyPartsService = {
   // Get all equipments
   getBodyParts: async (query: PaginationQuery) => {
-    const session = await getSession();
-
     const { skip, take, page, limit } = getPaginationQuery(query);
     const [bodyParts, total] = await prisma.$transaction([
       prisma.bodyPart.findMany({

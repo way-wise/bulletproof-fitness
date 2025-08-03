@@ -23,8 +23,8 @@ export default function DemoCenterFormPage() {
   const [agreementWidgetId, setAgreementWidgetId] = useState<string | null>(
     null,
   );
-  const [submittedFormData, setSubmittedFormData] =
-    useState<BusinessFormValues | null>(null);
+  // const [submittedFormData, setSubmittedFormData] =
+  //   useState<BusinessFormValues | null>(null);
 
   // get equipments
   const { equipments, isLoading } = useEquipments();
@@ -115,6 +115,7 @@ export default function DemoCenterFormPage() {
             errorData.validationError?.message ||
             "Failed to submit form";
         } catch (e) {
+          console.log(e);
           errorMessage = responseText || "Failed to submit form";
         }
         throw new Error(errorMessage);
@@ -124,7 +125,7 @@ export default function DemoCenterFormPage() {
         "CBFCIBAA3AAABLblqZhAOZCgwKvj8DKEzXVqmWXBtuqCzZpn6UpUGIiMutxmtR3A8oUMhEkiV1qWXbmz3pIU",
       );
       setShowAgreement(true);
-      setSubmittedFormData(formData);
+      // setSubmittedFormData(formData);
 
       toast.success("Business demo center submitted successfully!");
       form.reset();

@@ -148,7 +148,7 @@ export const UpdateSetupVideo = ({
     if (isOpen && videoId) {
       fetchVideoData();
     }
-  }, [isOpen, videoId]);
+  }, [isOpen, videoId, fetchVideoData]);
 
   const onSubmit = async (data: FormValues) => {
     if (!videoId) return;

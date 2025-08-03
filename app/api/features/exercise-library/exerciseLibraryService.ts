@@ -1,8 +1,6 @@
-import cloudinary from "@/app/api/lib/cloudinary";
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import {
-  exerciseLibrarySchema,
   exerciseLibrarySchemaAdmin,
   exerciseLibrarySchemaType,
 } from "@/schema/exerciseLibrarySchema";
@@ -417,32 +415,32 @@ export const exerciseLibraryService = {
     }
   },
 
-  createExerciseLibrary: async (
-    data: exerciseLibrarySchemaType,
-  ) => {
-      if(!zapierExerciseTriggerHook){
-        throw new HTTPException(500, { message: "Zapier exercise trigger hook not found" });
-      }
-
-      const response = await fetch(zapierExerciseTriggerHook, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+  createExerciseLibrary: async (data: exerciseLibrarySchemaType) => {
+    if (!zapierExerciseTriggerHook) {
+      throw new HTTPException(500, {
+        message: "Zapier exercise trigger hook not found",
       });
+    }
 
-      if(!response.ok){
-        throw new HTTPException(500, { message: "Zapier call failed" });
-      }
+    const response = await fetch(zapierExerciseTriggerHook, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
-      const result = await response.json();
-      
-      return {
-        success: true,
-        message: "Video uploaded successfully, awaiting approval",
-        data: result,
-      };
+    if (!response.ok) {
+      throw new HTTPException(500, { message: "Zapier call failed" });
+    }
+
+    const result = await response.json();
+
+    return {
+      success: true,
+      message: "Video uploaded successfully, awaiting approval",
+      data: result,
+    };
   },
 
   // Get exercise library data for a user (public access)

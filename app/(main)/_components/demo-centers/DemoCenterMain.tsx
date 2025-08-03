@@ -51,7 +51,7 @@ export default function DemoCenterMain() {
   const equipmentsUrl = `/api/equipments/all`;
   const {
     data: equipments,
-    error: equipmentsError,
+
     isValidating: equipmentsIsValidating,
   } = useSWR(equipmentsUrl);
 

@@ -9,8 +9,6 @@ import { getPaginationQuery } from "../../lib/pagination";
 export const racksService = {
   // Get all racks
   getRacks: async (query: PaginationQuery) => {
-    const session = await getSession();
-
     const { skip, take, page, limit } = getPaginationQuery(query);
     const [racks, total] = await prisma.$transaction([
       prisma.rack.findMany({
