@@ -1,15 +1,15 @@
-import ExerciseLIbraryDetails from "../../_components/exerciseSetup/ExerciseLIbraryDetails";
+import ExerciseSetupDetails from "../../_components/exerciseSetup/ExerciseSetupDetails";
 
 const ExerciseSetupDetailPage = async ({
   params,
 }: {
-  params: Promise<{ exerciseLibraryId: string }>;
+  params: Promise<{ exerciseSetupId: string }>;
 }) => {
-  const { exerciseLibraryId } = await params;
-  console.log(exerciseLibraryId);
+  const { exerciseSetupId } = await params;
+  console.log(exerciseSetupId);
   return (
     <div>
-      <ExerciseLIbraryDetails exerciseLibraryId={exerciseLibraryId} />
+      <ExerciseSetupDetails exerciseSetupId={exerciseSetupId} />
     </div>
   );
 };

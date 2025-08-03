@@ -71,18 +71,8 @@ exerciseSetupModule.get("/dashboard", async (c) => {
 // Get single exercise library video by ID
 exerciseSetupModule.get("/dashboard/:id", async (c) => {
   try {
-    const session = await getApiSession(c);
-    if (!session?.user?.id) {
-      return c.json(
-        {
-          success: false,
-          message: "Authentication required",
-        },
-        401,
-      );
-    }
-
     const id = c.req.param("id");
+    console.log("id", id);
     const result = await exerciseSetupService.getExerciseSetupVideoById(id);
 
     return c.json({

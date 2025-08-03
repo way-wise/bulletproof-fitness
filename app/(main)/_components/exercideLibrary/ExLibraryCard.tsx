@@ -5,13 +5,18 @@ import { Eye, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 
 const ExLibraryCard = ({ item }: { item: ExerciseLibraryItem }) => {
-  console.log(item);
+  const videoUrl = item?.videoUrl || "";
+  const videoId =
+    videoUrl.match(
+      /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+    )?.[1] || null;
+
   return (
     <div>
       <CardUI className="overflow-hidden rounded-none border-none shadow-none">
         <div className="relative aspect-video rounded-none shadow-none">
           <iframe
-            src={item.videoUrl}
+            src={`https://www.youtube.com/embed/${videoId}`}
             title={item.title}
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

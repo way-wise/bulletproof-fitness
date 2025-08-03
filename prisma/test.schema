@@ -1,3 +1,262 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client"
+  previewFeatures = ["relationJoins"]
+  output          = "generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id                   String                 @id @default(ulid())
+  email                String                 @unique
+  name                 String
+  emailVerified        Boolean
+  image                String?
+  role                 String?
+  banned               Boolean?
+  banReason            String?
+  banExpires           Int?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  sessions             sessions[]
+  accounts             accounts[]
+  exerciseSetups       ExerciseSetup[]
+  ExerciseLibraryVideo ExerciseLibraryVideo[]
+}
+
+model sessions {
+  id             String   @id @default(ulid())
+  expiresAt      DateTime
+  token          String   @unique
+  impersonatedBy String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  user           users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, token])
+}
+
+model accounts {
+  id                    String    @id @default(ulid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model verifications {
+  id         String    @id @default(ulid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@index([identifier])
+}
+
+// model ExerciseLibrary {
+//   id              String           @id @default(ulid())
+//   title           String
+//   createdAt       DateTime         @default(now())
+//   updatedAt       DateTime         @updatedAt
+//   exLibBodyParts  ExLibBodyPart[]
+//   exLibEquipments ExLibEquipment[]
+//   exLibRaks       ExLibRak[]
+// }
+
+model BodyPart {
+  id              String            @id @default(ulid())
+  name            String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  exLibBodyParts  ExLibBodyPart[]
+  ExSetupBodyPart ExSetupBodyPart[]
+}
+
+model Equipment {
+  id                   String                @id @default(ulid())
+  name                 String
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  exLibEquipments      ExLibEquipment[]
+  demoCenterEquipments DemoCenterEquipment[]
+  ExSetupEquipment     ExSetupEquipment[]
+}
+
+model Rack {
+  id         String       @id @default(ulid())
+  name       String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  exLibRaks  ExLibRak[]
+  ExSetupRak ExSetupRak[]
+}
+
+model DemoCenter {
+  id                   String                @id @default(ulid())
+  buildingType         String
+  name                 String
+  address              String
+  contact              String
+  cityZip              String
+  bio                  String
+  image                String
+  availability         String?
+  weekdays             String[]
+  weekends             String[]
+  weekdayOpen          String?
+  weekdayClose         String?
+  weekendOpen          String?
+  weekendClose         String?
+  isPublic             Boolean               @default(false)
+  blocked              Boolean               @default(false)
+  blockReason          String?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  demoCenterEquipments DemoCenterEquipment[]
+}
+
+model DemoCenterEquipment {
+  id           String     @id @default(ulid())
+  demoCenterId String
+  demoCenter   DemoCenter @relation(fields: [demoCenterId], references: [id], onDelete: Cascade)
+  equipmentId  String
+  equipment    Equipment  @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  createdAt    DateTime
+  updatedAt    DateTime
+}
+
+model ExLibBodyPart {
+  id          String               @id @default(ulid())
+  exLibraryId String
+  exLibrary   ExerciseLibraryVideo @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
+  bodyPartId  String
+  bodyPart    BodyPart             @relation(fields: [bodyPartId], references: [id], onDelete: Cascade)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+
+model ExLibEquipment {
+  id          String               @id @default(ulid())
+  exLibraryId String
+  exLibrary   ExerciseLibraryVideo @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
+  equipmentId String
+  equipment   Equipment            @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+
+model ExLibRak {
+  id          String               @id @default(ulid())
+  exLibraryId String
+  exLibrary   ExerciseLibraryVideo @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
+  rackId      String
+  rack        Rack                 @relation(fields: [rackId], references: [id], onDelete: Cascade)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+
+model ExerciseLibraryVideo {
+  id             String           @id @default(ulid())
+  title          String
+  videoUrl       String
+  height         String?
+  userId         String
+  user           users            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPublic       Boolean          @default(false)
+  blocked        Boolean          @default(false)
+  blockReason    String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  ExLibBodyPart  ExLibBodyPart[]
+  ExLibEquipment ExLibEquipment[]
+  ExLibRak       ExLibRak[]
+
+  @@index([userId])
+  @@index([isPublic, blocked])
+}
+
+model ExSetupBodyPart {
+  id         String        @id @default(ulid())
+  exSetupId  String
+  exSetup    ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
+  bodyPartId String
+  bodyPart   BodyPart      @relation(fields: [bodyPartId], references: [id], onDelete: Cascade)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+model ExSetupEquipment {
+  id          String        @id @default(ulid())
+  exSetupId   String
+  exSetup     ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
+  equipmentId String
+  equipment   Equipment     @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model ExSetupRak {
+  id        String        @id @default(ulid())
+  exSetupId String
+  exSetup   ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
+  rackId    String
+  rack      Rack          @relation(fields: [rackId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model ExerciseSetup {
+  id               String             @id @default(ulid())
+  title            String
+  videoUrl         String
+  height           String
+  userId           String
+  user             users              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPublic         Boolean            @default(false)
+  blocked          Boolean            @default(false)
+  blockReason      String?
+  // Pump by numbers fields
+  isolatorHole     String?
+  yellow           String?
+  green            String?
+  blue             String?
+  red              String?
+  purple           String?
+  orange           String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  ExSetupBodyPart  ExSetupBodyPart[]
+  ExSetupEquipment ExSetupEquipment[]
+  ExSetupRak       ExSetupRak[]
+}
+
+
+
 import cloudinary from "@/app/api/lib/cloudinary";
 import prisma from "@/lib/prisma";
 import {
@@ -22,7 +281,7 @@ export const exerciseLibraryService = {
           // Create junction table records for equipment
           ExLibEquipment: {
             create:
-              (data.equipments?.filter(Boolean) as string[])?.map(
+              (data.equipment?.filter(Boolean) as string[])?.map(
                 (equipmentId) => ({
                   equipmentId: equipmentId,
                 }),
@@ -233,7 +492,7 @@ export const exerciseLibraryService = {
           // Create new junction table records for equipment
           ExLibEquipment: {
             create:
-              (data.equipments?.filter(Boolean) as string[])?.map(
+              (data.equipment?.filter(Boolean) as string[])?.map(
                 (equipmentId) => ({
                   equipmentId: equipmentId,
                 }),
@@ -417,7 +676,7 @@ export const exerciseLibraryService = {
           // Create junction table records for equipment
           ExLibEquipment: {
             create:
-              (data.equipments?.filter(Boolean) as string[])?.map(
+              (data.equipment?.filter(Boolean) as string[])?.map(
                 (equipmentId) => ({
                   equipmentId: equipmentId,
                 }),

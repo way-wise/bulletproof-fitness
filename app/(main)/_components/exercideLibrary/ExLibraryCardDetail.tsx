@@ -4,32 +4,21 @@ import { Star } from "lucide-react";
 import { useState } from "react";
 import useSWR from "swr";
 import ContactUs from "./ContactUs";
-
-const pumpData = [
-  { label: "Yellow", desc: "ISOLATOR seat/pad", value: 3 },
-  {
-    label: "Green",
-    desc: "ISOLATOR lever arm, the number you have set on the circle cam",
-    value: 6,
-  },
-  {
-    label: "Blue",
-    desc: "ISOLATOR lever arm, the hole number that the attachment is at",
-    value: 3,
-  },
-  {
-    label: "Red",
-    desc: "ISOLATOR weight arm lever arm, the hole number that the weight arm is placed on",
-    value: 4,
-  },
-  {
-    label: "Orange",
-    desc: "the hole number that the attachment is at on the lever arm",
-    value: 5,
-  },
-  { label: "Not Used", desc: "", value: null },
-];
-
+type TBodyPart = {
+  bodyPart?: {
+    name: string;
+  };
+};
+type TEquipment = {
+  equipment?: {
+    name: string;
+  };
+};
+type TRack = {
+  rack?: {
+    name: string;
+  };
+};
 export default function ExerciseDetailPage({
   exerciseLibraryId,
 }: {
@@ -50,14 +39,19 @@ export default function ExerciseDetailPage({
     fetcher,
   );
   const libraryData = data?.data;
-  console.log(libraryData);
+  const videoUrl = libraryData?.videoUrl || "";
+  const videoId =
+    videoUrl.match(
+      /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+    )?.[1] || null;
+
   return (
     <div className="mx-auto max-w-[1200px] px-6 py-14 font-sans text-[17px] leading-relaxed text-[#222]">
       {/* Video & Info Section */}
       <div className="grid items-start gap-10 md:grid-cols-2">
         <div className="aspect-video w-full overflow-hidden rounded shadow-md">
           <iframe
-            src={libraryData?.videoUrl}
+            src={`https://www.youtube.com/embed/${videoId}`}
             title="Exercise Video"
             className="h-full w-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -71,12 +65,26 @@ export default function ExerciseDetailPage({
           </h1>
           <ul className="space-y-1.5 text-[16px]">
             <li>
+              <strong>Body Part:</strong>{" "}
+              {libraryData?.ExLibBodyPart?.map(
+                (item: TBodyPart) => item?.bodyPart?.name,
+              ).join(", ")}
+            </li>
+            <li>
+              <strong>Equipment Used:</strong>{" "}
+              {libraryData?.ExLibEquipment?.map(
+                (item: TEquipment) => item?.equipment?.name,
+              ).join(", ")}
+            </li>
+            <li>
               <strong>User Height In Inches:</strong>{" "}
               {libraryData?.height || "N/A"}
             </li>
             <li>
               <strong>Rack Used:</strong>{" "}
-              {libraryData?.rack.map((item: string) => item).join(", ")}
+              {libraryData?.ExLibRak?.map(
+                (item: TRack) => item?.rack?.name,
+              ).join(", ")}
             </li>
             <li>
               <strong>Note:</strong> For ISOLATOR videos, the number holes high
