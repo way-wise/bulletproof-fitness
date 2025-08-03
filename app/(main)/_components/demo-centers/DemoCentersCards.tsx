@@ -19,7 +19,7 @@ interface DemoCentersCardsProps {
       }
     | undefined;
   isLoading: boolean;
-  error: any;
+  error: Error | null;
 }
 
 const DemoCentersCards: React.FC<DemoCentersCardsProps> = ({

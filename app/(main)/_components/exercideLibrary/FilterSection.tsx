@@ -179,7 +179,7 @@ export default function ExerciseFilters({
           <Label className="text-[16px] font-bold">Filter By Body Part</Label>
           <MultiSelect
             options={bodyParts.map((bodyPart) => ({
-              value: bodyPart.name,
+              value: bodyPart.id,
               label: bodyPart.name,
             }))}
             selected={selectedBodyParts}
@@ -194,7 +194,7 @@ export default function ExerciseFilters({
           <Label className="text-[16px] font-bold">Filter By Equipment</Label>
           <MultiSelect
             options={equipments.map((equipment) => ({
-              value: equipment.name,
+              value: equipment.id,
               label: equipment.name,
             }))}
             selected={selectedEquipments || []}
@@ -234,7 +234,7 @@ export default function ExerciseFilters({
           <Label className="text-[16px] font-bold">Filter By Rack</Label>
           <MultiSelect
             options={racks.map((rack) => ({
-              value: rack.name,
+              value: rack.id,
               label: rack.name,
             }))}
             selected={selectedRacks}
