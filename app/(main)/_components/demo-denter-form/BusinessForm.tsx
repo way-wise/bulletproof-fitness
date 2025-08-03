@@ -3,23 +3,23 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+   Form,
+   FormControl,
+   FormField,
+   FormItem,
+   FormLabel,
+   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+   Select,
+   SelectContent,
+   SelectItem,
+   SelectTrigger,
+   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useEquipments } from "@/hooks/useEquipments";
+// import { useEquipments } from "@/hooks/useEquipments";
 import { uploadImageToImgBB } from "@/lib/imageUpload";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
@@ -48,9 +48,15 @@ const businessFormSchema = z.object({
 type BusinessFormValues = z.infer<typeof businessFormSchema>;
 
 export default function BusinessForm() {
-  const { equipments, isLoading } = useEquipments();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+   const [file, setFile] = useState<File | null>(null);
+   const [preview, setPreview] = useState<string | null>(null);
+   // const { equipments, isLoading } = useEquipments();
+   const [isSubmitting, setIsSubmitting] = useState(false);
+   const [showAgreement, setShowAgreement] = useState(false);
+   const [agreementWidgetId, setAgreementWidgetId] = useState<string | null>(null);
+   const [submittedFormData, setSubmittedFormData] = useState<BusinessFormValues | null>(null);
 
+   // zod resolver
   const form = useForm<BusinessFormValues>({
     resolver: zodResolver(businessFormSchema),
     defaultValues: {
@@ -60,8 +66,12 @@ export default function BusinessForm() {
     },
   });
 
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+   const equipments = [
+      { id: "1", name: "Equipment 1" },
+      { id: "2", name: "Equipment 2" },
+      { id: "3", name: "Equipment 3" },
+    ];
+    const isLoading = false;
 
   const onSubmit = async (data: BusinessFormValues) => {
     if (!file) {
@@ -79,12 +89,9 @@ export default function BusinessForm() {
       }
 
       // Prepare form data
-      const formData = {
-        ...data,
-        image: imageUrl,
-      };
+      const formData = {...data, image: imageUrl};
 
-      // Submit to API
+      //  Submit to API
       const response = await fetch("/api/demo-centers", {
         method: "POST",
         headers: {
@@ -92,11 +99,22 @@ export default function BusinessForm() {
         },
         body: JSON.stringify(formData),
       });
-
+      const responseText = await response.text();
+       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to submit form");
-      }
+         let errorMessage = "Failed to submit form";
+         try {
+           const errorData = JSON.parse(responseText);
+           errorMessage = errorData.message || errorData.validationError?.message || "Failed to submit form";
+         } catch (e) {
+           errorMessage = responseText || "Failed to submit form";
+         }
+         throw new Error(errorMessage);
+       }
+       
+      setAgreementWidgetId("CBFCIBAA3AAABLblqZhAOZCgwKvj8DKEzXVqmWXBtuqCzZpn6UpUGIiMutxmtR3A8oUMhEkiV1qWXbmz3pIU");
+      setShowAgreement(true);
+      setSubmittedFormData(formData);
 
       toast.success("Business demo center submitted successfully!");
       form.reset();
@@ -111,6 +129,7 @@ export default function BusinessForm() {
     }
   };
 
+   // handle file upload change
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -119,11 +138,13 @@ export default function BusinessForm() {
     }
   };
 
+  // remove image from preview
   const removeImage = () => {
     setFile(null);
     setPreview(null);
   };
 
+  // generate time options for opening/closing times
   function generateTimeOptions() {
     const times = [];
     for (let hour = 0; hour < 24; hour++) {
@@ -138,7 +159,36 @@ export default function BusinessForm() {
     }
     return times;
   }
+   if (showAgreement && agreementWidgetId) {
+      return (
+         <div className="mx-auto max-w-6xl space-y-6 rounded-lg p-6">
+        <div className="mb-6">
+          <p className="mt-2 text-gray-600 text-center">
+            Please complete the below terms and conditions to be part of our Demo Center network.
+          </p>
+        </div>
 
+        <div className="relative">
+          <iframe
+            style={{
+              border: 0,
+              overflow: "hidden",
+              minHeight: "600px",
+              minWidth: "100%",
+            }}
+            src={`https://na2.documents.adobe.com/public/esignWidget?wid=${agreementWidgetId}&hosted=false`}
+            width="100%"
+            height="600"
+            frameBorder="0"
+            title="Adobe Sign Agreement"
+            className="rounded-lg shadow-lg"
+          />
+        </div>
+      </div>
+      )
+   }
+
+  // render the form
   return (
     <Form {...form}>
       <form
@@ -275,7 +325,8 @@ export default function BusinessForm() {
                     equipments.map((equipment) => (
                       <SelectItem key={equipment.id} value={equipment.name}>
                         {equipment.name}
-                      </SelectItem>
+                       </SelectItem>
+                       
                     ))
                   )}
                 </SelectContent>
