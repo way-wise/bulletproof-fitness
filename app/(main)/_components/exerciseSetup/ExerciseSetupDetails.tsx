@@ -6,7 +6,21 @@ import { Star } from "lucide-react";
 import { useState } from "react";
 import useSWR from "swr";
 import ContactUs from "../exercideLibrary/ContactUs";
-
+type TBodyPart = {
+  bodyPart?: {
+    name: string;
+  };
+};
+type TEquipment = {
+  equipment?: {
+    name: string;
+  };
+};
+type TRack = {
+  rack?: {
+    name: string;
+  };
+};
 const pumpData = [
   { label: "Yellow", desc: "ISOLATOR seat/pad", value: 3 },
   {
@@ -31,11 +45,52 @@ const pumpData = [
   },
   { label: "Not Used", desc: "", value: null },
 ];
+const pumpColors = [
+  {
+    key: "yellow",
+    label: "Yellow",
+    img: "/assets/seat-apd-pbn-1.webp",
+    desc: "Set on the circle cam",
+  },
+  {
+    key: "green",
+    label: "Green",
+    img: "/assets/lever-arm-pbn-2.webp",
+    desc: "Set on the circle cam",
+  },
+  {
+    key: "blue",
+    label: "Blue",
 
-export default function ExerciseDetailPage({
-  exerciseLibraryId,
+    img: "/assets/lever-arm-pbn-1-1.webp",
+    desc: "Attachment lever arm",
+  },
+  {
+    key: "red",
+    label: "Red",
+
+    img: "/assets/weight-arm-lever-arm-png-1.webp",
+    desc: "ISOLATOR lever arm hole position",
+  },
+  {
+    key: "purple",
+    label: "Purple",
+
+    img: "/assets/lla-cam-pbn.png",
+    desc: "Long Lever Arm circle cam",
+  },
+  {
+    key: "orange",
+    label: "Orange",
+
+    img: "/assets/lla-arm-pbn.png",
+    desc: "Long Lever Arm hole position",
+  },
+];
+export default function ExerciseSetupDetails({
+  exerciseSetupId,
 }: {
-  exerciseLibraryId: string;
+  exerciseSetupId: string;
 }) {
   const [rating, setRating] = useState(0);
 
@@ -46,20 +101,23 @@ export default function ExerciseDetailPage({
     });
 
   const { data, error, isLoading } = useSWR(
-    exerciseLibraryId
-      ? `/api/exercise-setup/dashboard/${exerciseLibraryId}`
-      : null,
+    exerciseSetupId ? `/api/exercise-setup/dashboard/${exerciseSetupId}` : null,
     fetcher,
   );
   const libraryData = data?.data;
-  console.log(libraryData);
+  const videoUrl = libraryData?.videoUrl || "";
+  const videoId =
+    videoUrl.match(
+      /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+    )?.[1] || null;
+
   return (
     <div className="mx-auto max-w-[1200px] px-6 py-14 font-sans text-[17px] leading-relaxed text-[#222]">
       {/* Video & Info Section */}
       <div className="grid items-start gap-10 md:grid-cols-2">
         <div className="aspect-video w-full overflow-hidden rounded shadow-md">
           <iframe
-            src={data?.videoUrl}
+            src={`https://www.youtube.com/embed/${videoId}`}
             title="Exercise Video"
             className="h-full w-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -69,23 +127,29 @@ export default function ExerciseDetailPage({
 
         <div className="space-y-5">
           <h1 className="text-3xl leading-snug font-bold uppercase">
-            {data?.title}
+            {libraryData?.title}
           </h1>
           <ul className="space-y-1.5 text-[16px]">
             <li>
               <strong>Body Part:</strong>{" "}
-              {libraryData?.bodyPart.map((item: string) => item).join(", ")}
+              {libraryData?.ExSetupBodyPart?.map(
+                (item: TBodyPart) => item?.bodyPart?.name,
+              ).join(", ")}
             </li>
             <li>
               <strong>Equipment Used:</strong>{" "}
-              {libraryData?.equipment.map((item: string) => item).join(", ")}
+              {libraryData?.ExSetupEquipment?.map(
+                (item: TEquipment) => item?.equipment?.name,
+              ).join(", ")}
             </li>
             <li>
               <strong>User Height In Inches:</strong> 63
             </li>
             <li>
               <strong>Rack Used:</strong>{" "}
-              {libraryData?.rack.map((item: string) => item).join(", ")}
+              {libraryData?.ExSetupRak?.map(
+                (item: TRack) => item?.rack?.name,
+              ).join(", ")}
             </li>
             <li>
               <strong>Note:</strong> For ISOLATOR videos, the number holes high
@@ -102,22 +166,29 @@ export default function ExerciseDetailPage({
       <div className="mt-16">
         <h2 className="mb-6 text-2xl font-bold uppercase">Pump-By-Numbers:</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-          {pumpData.map((item, i) => (
-            <Card key={i} className="border border-gray-300">
-              <CardContent className="flex items-start gap-5 p-6">
-                <div className="h-[64px] w-[52px] flex-shrink-0 rounded bg-gray-200" />
-                <div className="text-base">
-                  <p className="font-medium">
-                    <span className="font-semibold">{item.label}</span>
-                    {item.label !== "Not Used" && ` (${item.desc})`}:
-                    <span className="ml-1 font-bold">
-                      {item.value ?? "Not Used"}
-                    </span>
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {pumpColors.map((item, i) => {
+            const value = data?.[item.key as keyof typeof data];
+            return (
+              <Card key={i} className="border border-gray-300">
+                <CardContent className="flex items-start gap-5 p-6">
+                  <img
+                    src={item.img}
+                    alt={item.label}
+                    className="h-[64px] w-[52px] rounded object-cover"
+                  />
+                  <div className="text-base">
+                    <p className="font-medium">
+                      <span className="font-semibold">{item.label}</span>
+                      {item.label !== "Not Used" && ` (${item.desc})`}:{" "}
+                      <span className="ml-1 font-bold">
+                        {value ?? "Not Used"}
+                      </span>
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </div>
 
@@ -140,7 +211,7 @@ export default function ExerciseDetailPage({
           No votes so far! Be the first to rate this post.
         </p>
 
-        <ContactUs exerciseLibraryId={exerciseLibraryId} />
+        <ContactUs exerciseLibraryId={exerciseSetupId} />
       </div>
     </div>
   );

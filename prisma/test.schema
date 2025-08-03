@@ -1,11 +1,268 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client"
+  previewFeatures = ["relationJoins"]
+  output          = "generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id                   String                 @id @default(ulid())
+  email                String                 @unique
+  name                 String
+  emailVerified        Boolean
+  image                String?
+  role                 String?
+  banned               Boolean?
+  banReason            String?
+  banExpires           Int?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  sessions             sessions[]
+  accounts             accounts[]
+  exerciseSetups       ExerciseSetup[]
+  ExerciseLibraryVideo ExerciseLibraryVideo[]
+}
+
+model sessions {
+  id             String   @id @default(ulid())
+  expiresAt      DateTime
+  token          String   @unique
+  impersonatedBy String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  user           users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, token])
+}
+
+model accounts {
+  id                    String    @id @default(ulid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model verifications {
+  id         String    @id @default(ulid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@index([identifier])
+}
+
+// model ExerciseLibrary {
+//   id              String           @id @default(ulid())
+//   title           String
+//   createdAt       DateTime         @default(now())
+//   updatedAt       DateTime         @updatedAt
+//   exLibBodyParts  ExLibBodyPart[]
+//   exLibEquipments ExLibEquipment[]
+//   exLibRaks       ExLibRak[]
+// }
+
+model BodyPart {
+  id              String            @id @default(ulid())
+  name            String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  exLibBodyParts  ExLibBodyPart[]
+  ExSetupBodyPart ExSetupBodyPart[]
+}
+
+model Equipment {
+  id                   String                @id @default(ulid())
+  name                 String
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  exLibEquipments      ExLibEquipment[]
+  demoCenterEquipments DemoCenterEquipment[]
+  ExSetupEquipment     ExSetupEquipment[]
+}
+
+model Rack {
+  id         String       @id @default(ulid())
+  name       String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  exLibRaks  ExLibRak[]
+  ExSetupRak ExSetupRak[]
+}
+
+model DemoCenter {
+  id                   String                @id @default(ulid())
+  buildingType         String
+  name                 String
+  address              String
+  contact              String
+  cityZip              String
+  bio                  String
+  image                String
+  availability         String?
+  weekdays             String[]
+  weekends             String[]
+  weekdayOpen          String?
+  weekdayClose         String?
+  weekendOpen          String?
+  weekendClose         String?
+  isPublic             Boolean               @default(false)
+  blocked              Boolean               @default(false)
+  blockReason          String?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  demoCenterEquipments DemoCenterEquipment[]
+}
+
+model DemoCenterEquipment {
+  id           String     @id @default(ulid())
+  demoCenterId String
+  demoCenter   DemoCenter @relation(fields: [demoCenterId], references: [id], onDelete: Cascade)
+  equipmentId  String
+  equipment    Equipment  @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  createdAt    DateTime
+  updatedAt    DateTime
+}
+
+model ExLibBodyPart {
+  id          String               @id @default(ulid())
+  exLibraryId String
+  exLibrary   ExerciseLibraryVideo @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
+  bodyPartId  String
+  bodyPart    BodyPart             @relation(fields: [bodyPartId], references: [id], onDelete: Cascade)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+
+model ExLibEquipment {
+  id          String               @id @default(ulid())
+  exLibraryId String
+  exLibrary   ExerciseLibraryVideo @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
+  equipmentId String
+  equipment   Equipment            @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+
+model ExLibRak {
+  id          String               @id @default(ulid())
+  exLibraryId String
+  exLibrary   ExerciseLibraryVideo @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
+  rackId      String
+  rack        Rack                 @relation(fields: [rackId], references: [id], onDelete: Cascade)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+
+model ExerciseLibraryVideo {
+  id             String           @id @default(ulid())
+  title          String
+  videoUrl       String
+  height         String?
+  userId         String
+  user           users            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPublic       Boolean          @default(false)
+  blocked        Boolean          @default(false)
+  blockReason    String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  ExLibBodyPart  ExLibBodyPart[]
+  ExLibEquipment ExLibEquipment[]
+  ExLibRak       ExLibRak[]
+
+  @@index([userId])
+  @@index([isPublic, blocked])
+}
+
+model ExSetupBodyPart {
+  id         String        @id @default(ulid())
+  exSetupId  String
+  exSetup    ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
+  bodyPartId String
+  bodyPart   BodyPart      @relation(fields: [bodyPartId], references: [id], onDelete: Cascade)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+model ExSetupEquipment {
+  id          String        @id @default(ulid())
+  exSetupId   String
+  exSetup     ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
+  equipmentId String
+  equipment   Equipment     @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model ExSetupRak {
+  id        String        @id @default(ulid())
+  exSetupId String
+  exSetup   ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
+  rackId    String
+  rack      Rack          @relation(fields: [rackId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model ExerciseSetup {
+  id               String             @id @default(ulid())
+  title            String
+  videoUrl         String
+  height           String
+  userId           String
+  user             users              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPublic         Boolean            @default(false)
+  blocked          Boolean            @default(false)
+  blockReason      String?
+  // Pump by numbers fields
+  isolatorHole     String?
+  yellow           String?
+  green            String?
+  blue             String?
+  red              String?
+  purple           String?
+  orange           String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  ExSetupBodyPart  ExSetupBodyPart[]
+  ExSetupEquipment ExSetupEquipment[]
+  ExSetupRak       ExSetupRak[]
+}
+
+
+
 import cloudinary from "@/app/api/lib/cloudinary";
 import prisma from "@/lib/prisma";
 import {
   exerciseLibrarySchema,
   exerciseLibrarySchemaAdmin,
-  exerciseLibrarySchemaType,
 } from "@/schema/exerciseLibrarySchema";
-import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
 
 export const exerciseLibraryService = {
@@ -13,6 +270,8 @@ export const exerciseLibraryService = {
     data: InferType<typeof exerciseLibrarySchemaAdmin>,
   ) => {
     try {
+      console.log(data);
+
       const exerciseLibrary = await prisma.exerciseLibraryVideo.create({
         data: {
           title: data.title,
@@ -22,7 +281,7 @@ export const exerciseLibraryService = {
           // Create junction table records for equipment
           ExLibEquipment: {
             create:
-              (data.equipments?.filter(Boolean) as string[])?.map(
+              (data.equipment?.filter(Boolean) as string[])?.map(
                 (equipmentId) => ({
                   equipmentId: equipmentId,
                 }),
@@ -233,7 +492,7 @@ export const exerciseLibraryService = {
           // Create new junction table records for equipment
           ExLibEquipment: {
             create:
-              (data.equipments?.filter(Boolean) as string[])?.map(
+              (data.equipment?.filter(Boolean) as string[])?.map(
                 (equipmentId) => ({
                   equipmentId: equipmentId,
                 }),
@@ -374,10 +633,146 @@ export const exerciseLibraryService = {
   },
 
   createExerciseLibrary: async (
-    data: exerciseLibrarySchemaType,
+    data: InferType<typeof exerciseLibrarySchema> & { video: File },
   ) => {
-      // GET DATA WITH VIDEO URL AS WELL AND ZAP IT TO YOUTUBE
-      console.log("data", data);
+    try {
+      // Check Cloudinary environment variables
+      if (
+        !process.env.CLOUDINARY_CLOUD_NAME ||
+        !process.env.CLOUDINARY_API_KEY ||
+        !process.env.CLOUDINARY_API_SECRET
+      ) {
+        console.error("Missing Cloudinary environment variables");
+        throw new Error("Cloudinary configuration is missing");
+      }
+
+      console.log("Starting video upload process...");
+      console.log("Video file info:", {
+        name: data.video.name,
+        size: data.video.size,
+        type: data.video.type,
+      });
+
+      // Convert File to base64 Data URI
+      const buffer = await data.video.arrayBuffer();
+      const base64 = Buffer.from(buffer).toString("base64");
+      const dataURI = `data:${data.video.type};base64,${base64}`;
+
+      console.log("Uploading to Cloudinary...");
+      const uploadResult = await cloudinary.uploader.upload(dataURI, {
+        resource_type: "video",
+        folder: "exercise-library",
+      });
+
+      console.log("Cloudinary upload successful:", uploadResult.secure_url);
+
+      // Save to Prisma DB
+      const created = await prisma.exerciseLibraryVideo.create({
+        data: {
+          title: data.title,
+          height: data.height,
+          videoUrl: uploadResult.secure_url,
+          userId: data.userId,
+          // Create junction table records for equipment
+          ExLibEquipment: {
+            create:
+              (data.equipment?.filter(Boolean) as string[])?.map(
+                (equipmentId) => ({
+                  equipmentId: equipmentId,
+                }),
+              ) || [],
+          },
+          // Create junction table records for body parts
+          ExLibBodyPart: {
+            create:
+              (data.bodyPart?.filter(Boolean) as string[])?.map(
+                (bodyPartId) => ({
+                  bodyPartId: bodyPartId,
+                }),
+              ) || [],
+          },
+          // Create junction table records for racks
+          ExLibRak: {
+            create:
+              (data.rack?.filter(Boolean) as string[])?.map((rackId) => ({
+                rackId: rackId,
+              })) || [],
+          },
+        },
+        include: {
+          ExLibEquipment: {
+            include: {
+              equipment: true,
+            },
+          },
+          ExLibBodyPart: {
+            include: {
+              bodyPart: true,
+            },
+          },
+          ExLibRak: {
+            include: {
+              rack: true,
+            },
+          },
+        },
+      });
+
+      console.log("Database save successful:", created.id);
+
+      // 🔥 Trigger Zapier webhook (optional via env flag)
+      if (created?.id && process.env.ZAPIER_WEBHOOK_URL) {
+        console.log("Sending data to Zapier...,created", created);
+        try {
+          const zapierResponse = await fetch(process.env.ZAPIER_WEBHOOK_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              // Basic exercise info
+              title: created.title,
+              description: `Exercise using ${created.ExLibEquipment[0]?.equipment?.name || "Unknown Equipment"} for ${created.ExLibBodyPart[0]?.bodyPart?.name || "Unknown Body Part"}`,
+              videoUrl: created.videoUrl,
+              id: created.id,
+
+              // Additional metadata for Zapier
+              equipment: created.ExLibEquipment.map((eq) => eq.equipment.name),
+              bodyPart: created.ExLibBodyPart.map((bp) => bp.bodyPart.name),
+              height: created.height,
+              rack: created.ExLibRak.map((r) => r.rack.name),
+              userId: created.userId,
+              createdAt: created.createdAt,
+              updatedAt: created.updatedAt,
+
+              // Zapier-specific fields
+              event_type: "exercise_library_created",
+              source: "bulletproof_fitness_app",
+            }),
+            // Add timeout to prevent hanging
+            signal: AbortSignal.timeout(10000), // 10 second timeout
+          });
+
+          if (!zapierResponse.ok) {
+            console.warn(
+              `Zapier webhook failed with status: ${zapierResponse.status}`,
+            );
+          } else {
+            console.log("Zapier webhook sent successfully.");
+          }
+        } catch (zapierError) {
+          console.error("Zapier webhook error:", zapierError);
+          // Don't fail the main operation if Zapier fails
+        }
+      } else {
+        console.warn("Zapier webhook URL not set. Skipping...");
+      }
+
+      return created;
+    } catch (error) {
+      console.error("Upload or DB save error:", error);
+      throw new Error("Failed to upload and save exercise library data.");
+    }
   },
 
   // Get exercise library data for a user (public access)

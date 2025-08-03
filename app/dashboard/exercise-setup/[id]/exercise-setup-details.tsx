@@ -4,10 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/date-format";
-import { ArrowLeft, ExternalLink, Play } from "lucide-react";
+import { ArrowLeft, Play } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import useSWR from "swr";
 
 interface ExerciseSetupDetailsProps {
   id: string;
@@ -42,47 +42,38 @@ interface ExerciseSetupWithUser {
   };
 }
 
+const fetcher = async (url: string) => {
+  const response = await fetch(url, {
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(
+      `Failed to fetch: ${response.status} ${errorData.message || ""}`,
+    );
+  }
+
+  const data = await response.json();
+  return data.data; // return only the `exerciseSetup` part
+};
+
 export const ExerciseSetupDetails = ({ id }: ExerciseSetupDetailsProps) => {
-  const [exerciseSetup, setExerciseSetup] =
-    useState<ExerciseSetupWithUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const {
+    data: exerciseSetup,
+    error,
+    isLoading,
+  } = useSWR(id ? `/api/exercise-setup/dashboard/${id}` : null, fetcher, {
+    onError: (err) => {
+      console.error("Fetch error:", err);
+      toast.error("Failed to load video details");
+    },
+  });
 
-  useEffect(() => {
-    const fetchVideo = async () => {
-      console.log("Fetching exercise setup with id:", id);
-      try {
-        const response = await fetch(`/api/exercise-setup/dashboard/${id}`, {
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        console.log("Response status:", response.status);
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          console.error("API Error:", errorData);
-          throw new Error(
-            `Failed to fetch video: ${response.status} ${errorData.message || ""}`,
-          );
-        }
-
-        const data = await response.json();
-        console.log("API Response data:", data);
-        setExerciseSetup(data.data);
-      } catch (error) {
-        toast.error("Failed to load video details");
-        console.error("Error fetching video:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVideo();
-  }, [id]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <div className="text-lg">Loading video details...</div>
@@ -90,18 +81,23 @@ export const ExerciseSetupDetails = ({ id }: ExerciseSetupDetailsProps) => {
     );
   }
 
-  if (!exerciseSetup) {
+  if (error || !exerciseSetup) {
     return (
       <div className="flex h-64 items-center justify-center">
         <div className="text-lg text-red-600">Video not found</div>
       </div>
     );
   }
+  const videoUrl = exerciseSetup?.videoUrl || "";
+  const videoId =
+    videoUrl.match(
+      /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+    )?.[1] || null;
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col items-center gap-4 md:flex-row">
         <Button variant="outline" size="sm" asChild>
           <Link href="/dashboard/exercise-setup">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -129,19 +125,13 @@ export const ExerciseSetupDetails = ({ id }: ExerciseSetupDetailsProps) => {
             </CardHeader>
             <CardContent>
               <div className="flex aspect-video items-center justify-center rounded-lg bg-gray-100">
-                <div className="text-center">
-                  <p className="mb-2 text-muted-foreground">Video Preview</p>
-                  <Button asChild>
-                    <Link
-                      href={exerciseSetup.videoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      Watch Video
-                    </Link>
-                  </Button>
-                </div>
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  title="Exercise Video"
+                  className="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
               </div>
             </CardContent>
           </Card>

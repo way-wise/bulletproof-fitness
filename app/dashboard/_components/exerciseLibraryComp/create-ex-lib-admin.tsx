@@ -24,10 +24,10 @@ import * as z from "zod";
 const formSchema = z.object({
   videoUrl: z.string().url("Please enter a valid YouTube URL"),
   title: z.string().min(1, "Video title is required"),
-  equipment: z.array(z.string()).default([]),
-  bodyPart: z.array(z.string()).default([]),
+  equipment: z.array(z.string()),
+  bodyPart: z.array(z.string()),
   height: z.string().optional(),
-  rack: z.array(z.string()).default([]),
+  rack: z.array(z.string()),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -40,9 +40,17 @@ export default function LibraryVideoUpload({
   mutateUrl: string;
 }) {
   const [isUploading, setIsUploading] = useState(false);
-  const { bodyParts } = useBodyParts();
-  const { racks } = useRacks();
-  const { equipments } = useEquipments();
+  const {
+    bodyParts,
+    isLoading: bodyPartsLoading,
+    error: bodyPartsError,
+  } = useBodyParts();
+  const { racks, isLoading: racksLoading, error: racksError } = useRacks();
+  const {
+    equipments,
+    isLoading: equipmentsLoading,
+    error: equipmentsError,
+  } = useEquipments();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -56,6 +64,18 @@ export default function LibraryVideoUpload({
     },
   });
 
+  // Handle loading states
+  const isLoading = bodyPartsLoading || racksLoading || equipmentsLoading;
+
+  // Handle errors
+  if (bodyPartsError || racksError || equipmentsError) {
+    console.error("Error loading data:", {
+      bodyPartsError,
+      racksError,
+      equipmentsError,
+    });
+  }
+
   const onSubmit = async (data: FormValues) => {
     try {
       setIsUploading(true);
@@ -63,7 +83,7 @@ export default function LibraryVideoUpload({
       // Send arrays directly to backend
       const submitData = {
         ...data,
-        equipment: data.equipment.length > 0 ? data.equipment : [],
+        equipments: data.equipment.length > 0 ? data.equipment : [],
         bodyPart: data.bodyPart.length > 0 ? data.bodyPart : [],
         rack: data.rack.length > 0 ? data.rack : [],
       };
@@ -88,6 +108,7 @@ export default function LibraryVideoUpload({
       // Revalidate the exercise library data to show the new entry
       mutate(mutateUrl);
     } catch (error) {
+      console.error("Submission error:", error);
       toast.error(error instanceof Error ? error.message : "Submission failed");
     } finally {
       setIsUploading(false);
@@ -109,6 +130,7 @@ export default function LibraryVideoUpload({
                 <Input
                   {...field}
                   placeholder="https://www.youtube.com/watch?v=example"
+                  disabled={isUploading}
                 />
               </FormControl>
               <p className="text-xs text-muted-foreground">
@@ -129,7 +151,11 @@ export default function LibraryVideoUpload({
               <FormItem>
                 <FormLabel>Video Title *</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="E.g., Leg Extension" />
+                  <Input
+                    {...field}
+                    placeholder="E.g., Leg Extension"
+                    disabled={isUploading}
+                  />
                 </FormControl>
                 <p className="text-xs text-muted-foreground">
                   Name it with the exercise being performed.
@@ -152,7 +178,8 @@ export default function LibraryVideoUpload({
                     }))}
                     selected={field.value || []}
                     onChange={field.onChange}
-                    placeholder="Select equipment"
+                    placeholder={isLoading ? "Loading..." : "Select equipment"}
+                    disabled={isLoading || isUploading}
                   />
                 </FormControl>
                 <FormMessage />
@@ -177,7 +204,8 @@ export default function LibraryVideoUpload({
                     }))}
                     selected={field.value || []}
                     onChange={field.onChange}
-                    placeholder="Select body parts"
+                    placeholder={isLoading ? "Loading..." : "Select body parts"}
+                    disabled={isLoading || isUploading}
                   />
                 </FormControl>
                 <FormMessage />
@@ -191,7 +219,11 @@ export default function LibraryVideoUpload({
               <FormItem>
                 <FormLabel>User Height</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Height in inches" />
+                  <Input
+                    {...field}
+                    placeholder="Height in inches"
+                    disabled={isUploading}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -214,7 +246,8 @@ export default function LibraryVideoUpload({
                   }))}
                   selected={field.value || []}
                   onChange={field.onChange}
-                  placeholder="Select racks"
+                  placeholder={isLoading ? "Loading..." : "Select racks"}
+                  disabled={isLoading || isUploading}
                 />
               </FormControl>
               <FormMessage />
@@ -226,7 +259,7 @@ export default function LibraryVideoUpload({
         <div className="flex justify-center gap-3 py-4">
           <Button
             type="submit"
-            disabled={isUploading}
+            disabled={isUploading || isLoading}
             className="w-full cursor-pointer md:w-auto"
           >
             {isUploading ? "Submitting..." : "Submit"}

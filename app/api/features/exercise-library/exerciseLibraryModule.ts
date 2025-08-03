@@ -3,8 +3,8 @@ import {
   exerciseLibrarySchema,
   exerciseLibrarySchemaAdmin,
 } from "@/schema/exerciseLibrarySchema";
-import { Hono, type Context } from "hono";
 import { validateInput } from "@api/lib/validateInput";
+import { Hono, type Context } from "hono";
 import { exerciseLibraryService } from "./exerciseLibraryService";
 
 export const exerciseLibraryModule = new Hono();
@@ -118,7 +118,6 @@ exerciseLibraryModule.post("/dashboard", async (c: Context) => {
       data: dataWithUserId,
     });
 
-    console.log(validatedBody);
     const result =
       await exerciseLibraryService.createExerciseLibraryAdmin(validatedBody);
 
@@ -404,7 +403,7 @@ exerciseLibraryModule.get("/", async (c) => {
       maxHeight,
       minRating,
     };
-    console.log(filterParams);
+
     const result =
       await exerciseLibraryService.getExerciseLibraryWithFilters(filterParams);
 

@@ -1,4 +1,5 @@
 import {
+  BadgeCent,
   Building2,
   Dumbbell,
   Home,
@@ -31,6 +32,17 @@ const SidebarMenu = () => {
         {
           title: "All Users",
           url: "/dashboard/users",
+        },
+      ],
+    },
+    {
+      title: "Rewards",
+      icon: <BadgeCent className="icon" />,
+      baseUrl: "/dashboard/rewards",
+      submenu: [
+        {
+          title: "All Rewards",
+          url: "/dashboard/rewards",
         },
       ],
     },

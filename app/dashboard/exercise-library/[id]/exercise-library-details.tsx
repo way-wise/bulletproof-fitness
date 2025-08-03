@@ -1,46 +1,33 @@
 "use client";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ExerciseLibraryVideo } from "@/lib/dataTypes";
-import { formatDate } from "@/lib/date-format";
 import {
-  AlertTriangle,
   ArrowLeft,
-  Ban,
-  Calendar,
-  CheckCircle,
   Database,
   Dumbbell,
-  Globe,
-  Lock,
   Play,
   Ruler,
-  Settings,
   Target,
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import useSWR from "swr";
 
-interface ExerciseLibraryVideoDetailsProps {
-  id: string;
-}
-
-// Loading Skeleton Component
+// Responsive loading skeleton component
 const LoadingSkeleton = () => (
-  <div className="space-y-6">
+  <div className="space-y-4 sm:space-y-6">
     {/* Header Skeleton */}
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
         <Skeleton className="h-9 w-32" />
-        <div>
-          <Skeleton className="mb-2 h-8 w-64" />
-          <Skeleton className="h-4 w-48" />
+        <div className="space-y-2">
+          <Skeleton className="h-6 w-48 sm:h-8 sm:w-64" />
+          <Skeleton className="h-4 w-36 sm:w-48" />
         </div>
       </div>
       <div className="flex items-center gap-2">
@@ -49,9 +36,9 @@ const LoadingSkeleton = () => (
       </div>
     </div>
 
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 sm:gap-6 xl:grid-cols-3">
       {/* Main Content Skeleton */}
-      <div className="space-y-6 lg:col-span-2">
+      <div className="space-y-4 sm:space-y-6 xl:col-span-2">
         <Card>
           <CardHeader>
             <Skeleton className="h-6 w-32" />
@@ -65,7 +52,7 @@ const LoadingSkeleton = () => (
           <CardHeader>
             <Skeleton className="h-6 w-40" />
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4 sm:space-y-6">
             <div>
               <Skeleton className="mb-3 h-4 w-24" />
               <div className="flex flex-wrap gap-2">
@@ -87,7 +74,7 @@ const LoadingSkeleton = () => (
       </div>
 
       {/* Sidebar Skeleton */}
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {[1, 2, 3, 4].map((i) => (
           <Card key={i}>
             <CardHeader>
@@ -107,49 +94,28 @@ const LoadingSkeleton = () => (
   </div>
 );
 
+const fetcher = (url: string) =>
+  fetch(url).then((res) => {
+    if (!res.ok) throw new Error("Failed to fetch");
+    return res.json();
+  });
+
+interface ExerciseLibraryVideoDetailsProps {
+  id: string;
+}
+
 export const ExerciseLibraryVideoDetails = ({
   id,
 }: ExerciseLibraryVideoDetailsProps) => {
-  const [video, setVideo] = useState<ExerciseLibraryVideo | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, error, isLoading } = useSWR<{ data: ExerciseLibraryVideo }>(
+    `/api/exercise-library/dashboard/${id}`,
+    fetcher,
+    {
+      onError: () => toast.error("Failed to load video details"),
+    },
+  );
 
-  useEffect(() => {
-    const fetchVideo = async () => {
-      try {
-        const response = await fetch(`/api/exercise-library/dashboard/${id}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch video");
-        }
-        const data = await response.json();
-        setVideo(data.data);
-      } catch (error) {
-        toast.error("Failed to load video details");
-        console.error("Error fetching video:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVideo();
-  }, [id]);
-
-  if (loading) {
-    return <LoadingSkeleton />;
-  }
-
-  if (!video) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="text-center">
-          <XCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
-          <div className="mb-2 text-lg text-red-600">Video not found</div>
-          <p className="text-muted-foreground">
-            The requested video could not be found.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const video = data?.data;
 
   const parseJsonArray = (value: string | null) => {
     if (!value) return [];
@@ -160,106 +126,121 @@ export const ExerciseLibraryVideoDetails = ({
       return [];
     }
   };
+  const videoUrl = video?.videoUrl || "";
+  const videoId =
+    videoUrl.match(
+      /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+    )?.[1] || null;
 
-  const equipmentArray = parseJsonArray(video.equipment);
-  const bodyPartArray = parseJsonArray(video.bodyPart);
-  const rackArray = parseJsonArray(video.rack);
-  console.log(video.videoUrl);
+  const equipmentArray = parseJsonArray(video?.equipment ?? null);
+  const bodyPartArray = parseJsonArray(video?.bodyPart ?? null);
+  const rackArray = parseJsonArray(video?.rack ?? null);
+
+  if (isLoading) return <LoadingSkeleton />;
+
+  if (error || !video) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center px-4">
+        <div className="text-center">
+          <XCircle className="mx-auto mb-4 h-12 w-12 text-red-500 sm:h-16 sm:w-16" />
+          <div className="mb-2 text-lg font-semibold text-red-600 sm:text-xl">
+            Video not found
+          </div>
+          <p className="text-sm text-muted-foreground sm:text-base">
+            The requested video could not be found.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="animate-in space-y-6 duration-500 fade-in-0">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" asChild>
+    <div className="animate-in space-y-4 duration-500 fade-in-0 sm:space-y-6">
+      {/* Responsive Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <Button variant="outline" size="sm" asChild className="w-fit">
             <Link href="/dashboard/exercise-library">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Exercise Library
+              <span className="hidden sm:inline">Back to Exercise Library</span>
+              <span className="sm:hidden">Back</span>
             </Link>
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">{video.title}</h1>
-            <p className="text-muted-foreground">
+          <div className="space-y-1">
+            <h1 className="text-xl font-bold tracking-tight sm:text-2xl lg:text-3xl">
+              {video.title}
+            </h1>
+            <p className="text-sm text-muted-foreground sm:text-base">
               Exercise Library Video Details
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" asChild>
-            <Link
-              href={video.videoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Play className="mr-2 h-4 w-4" />
-              Watch Video
-            </Link>
-          </Button>
-        </div>
+        <Button variant="outline" size="sm" asChild className="w-fit">
+          <Link href={video.videoUrl} target="_blank">
+            <Play className="mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">Watch Video</span>
+            <span className="sm:hidden">Watch</span>
+          </Link>
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Main Content */}
-        <div className="space-y-6 lg:col-span-2">
-          {/* Video Preview Card */}
-          <Card className="overflow-hidden shadow-lg transition-shadow duration-300 hover:shadow-xl">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20">
-              <CardTitle className="flex items-center gap-2">
-                <Play className="h-5 w-5 text-blue-600" />
+      {/* Responsive Main Content */}
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 xl:grid-cols-3">
+        {/* Video Preview - Takes full width on mobile, 2/3 on xl+ */}
+        <div className="xl:col-span-2">
+          <Card>
+            <CardHeader className="pb-3 sm:pb-4">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Play className="h-4 w-4 text-blue-600 sm:h-5 sm:w-5" />
                 Video Preview
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-0">
-              <div className="relative flex aspect-video items-center justify-center overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
-                {/* <iframe
-                    className="h-full w-full"
-                    src={video.videoUrl.replace("watch?v=", "embed/")}
-                    title="Exercise Video"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  /> */}
-
+            <CardContent>
+              <div className="overflow-hidden rounded-lg">
                 <iframe
-                  width="560"
-                  height="315"
-                  src={video.videoUrl}
-                  title="YouTube video player"
+                  className="aspect-video w-full"
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  title="Exercise Video"
                   frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
-                ></iframe>
+                />
               </div>
             </CardContent>
           </Card>
+        </div>
 
-          {/* Exercise Information */}
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5 text-green-600" />
+        {/* Exercise Info - Takes full width on mobile, 1/3 on xl+ */}
+        <div className="xl:col-span-1">
+          <Card>
+            <CardHeader className="pb-3 sm:pb-4">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Target className="h-4 w-4 text-green-600 sm:h-5 sm:w-5" />
                 Exercise Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Equipment */}
+            <CardContent className="space-y-4 sm:space-y-6">
+              {/* Equipment Section */}
               <div>
                 <div className="mb-3 flex items-center gap-2">
                   <Dumbbell className="h-4 w-4 text-orange-600" />
-                  <h3 className="font-semibold">Equipment</h3>
+                  <h3 className="text-sm font-semibold sm:text-base">
+                    Equipment
+                  </h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {equipmentArray.length > 0 ? (
-                    equipmentArray.map((item, index) => (
+                    equipmentArray.map((item, i) => (
                       <Badge
-                        key={index}
-                        variant="secondary"
-                        className="bg-orange-100 text-orange-800 transition-colors hover:bg-orange-200 dark:bg-orange-900/20 dark:text-orange-300"
+                        key={i}
+                        className="bg-orange-100 text-xs text-orange-800 sm:text-sm"
                       >
                         {item}
                       </Badge>
                     ))
                   ) : (
-                    <span className="text-muted-foreground">
+                    <span className="text-sm text-muted-foreground">
                       No equipment specified
                     </span>
                   )}
@@ -268,25 +249,26 @@ export const ExerciseLibraryVideoDetails = ({
 
               <Separator />
 
-              {/* Body Parts */}
+              {/* Body Parts Section */}
               <div>
                 <div className="mb-3 flex items-center gap-2">
                   <Target className="h-4 w-4 text-red-600" />
-                  <h3 className="font-semibold">Target Body Parts</h3>
+                  <h3 className="text-sm font-semibold sm:text-base">
+                    Target Body Parts
+                  </h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {bodyPartArray.length > 0 ? (
-                    bodyPartArray.map((item, index) => (
+                    bodyPartArray.map((item, i) => (
                       <Badge
-                        key={index}
-                        variant="secondary"
-                        className="bg-red-100 text-red-800 transition-colors hover:bg-red-200 dark:bg-red-900/20 dark:text-red-300"
+                        key={i}
+                        className="bg-red-100 text-xs text-red-800 sm:text-sm"
                       >
                         {item}
                       </Badge>
                     ))
                   ) : (
-                    <span className="text-muted-foreground">
+                    <span className="text-sm text-muted-foreground">
                       No body parts specified
                     </span>
                   )}
@@ -295,36 +277,34 @@ export const ExerciseLibraryVideoDetails = ({
 
               <Separator />
 
-              {/* Height and Rack */}
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {/* Height and Rack Section */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-1">
                 <div>
-                  <div className="mb-3 flex items-center gap-2">
-                    <Ruler className="h-4 w-4 text-purple-600" />
-                    <h3 className="font-semibold">Height</h3>
-                  </div>
-                  <p className="text-muted-foreground">
-                    {video.height || "Not specified"}
+                  <h3 className="mb-1 flex items-center gap-2 text-xs font-medium sm:text-sm">
+                    <Ruler className="h-3 w-3 text-purple-600 sm:h-4 sm:w-4" />
+                    Height
+                  </h3>
+                  <p className="text-xs text-muted-foreground sm:text-sm">
+                    {video.height || "N/A"}
                   </p>
                 </div>
-
                 <div>
-                  <div className="mb-3 flex items-center gap-2">
-                    <Database className="h-4 w-4 text-indigo-600" />
-                    <h3 className="font-semibold">Rack</h3>
-                  </div>
+                  <h3 className="mb-1 flex items-center gap-2 text-xs font-medium sm:text-sm">
+                    <Database className="h-3 w-3 text-indigo-600 sm:h-4 sm:w-4" />
+                    Rack
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {rackArray.length > 0 ? (
-                      rackArray.map((item, index) => (
+                      rackArray.map((item, i) => (
                         <Badge
-                          key={index}
-                          variant="secondary"
-                          className="bg-indigo-100 text-indigo-800 transition-colors hover:bg-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-300"
+                          key={i}
+                          className="bg-indigo-100 text-xs text-indigo-800 sm:text-sm"
                         >
                           {item}
                         </Badge>
                       ))
                     ) : (
-                      <span className="text-muted-foreground">
+                      <span className="text-xs text-muted-foreground sm:text-sm">
                         No rack specified
                       </span>
                     )}
@@ -333,172 +313,6 @@ export const ExerciseLibraryVideoDetails = ({
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Status Overview */}
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5 text-gray-600" />
-                Status Overview
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Publication Status */}
-              <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-800/50 dark:hover:bg-gray-800">
-                <div className="flex items-center gap-2">
-                  {video.isPublic ? (
-                    <Globe className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <Lock className="h-4 w-4 text-orange-600" />
-                  )}
-                  <span className="text-sm font-medium">Publication</span>
-                </div>
-                <Badge variant={video.isPublic ? "success" : "secondary"}>
-                  {video.isPublic ? "Published" : "Private"}
-                </Badge>
-              </div>
-
-              {/* Block Status */}
-              <div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:bg-gray-800/50 dark:hover:bg-gray-800">
-                <div className="flex items-center gap-2">
-                  {video.blocked ? (
-                    <Ban className="h-4 w-4 text-red-600" />
-                  ) : (
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                  )}
-                  <span className="text-sm font-medium">Status</span>
-                </div>
-                <Badge variant={video.blocked ? "destructive" : "success"}>
-                  {video.blocked ? "Blocked" : "Active"}
-                </Badge>
-              </div>
-
-              {/* Block Reason */}
-              {video.blockReason && (
-                <div className="rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/20">
-                  <div className="mb-2 flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                    <span className="text-sm font-medium text-red-800 dark:text-red-200">
-                      Block Reason
-                    </span>
-                  </div>
-                  <p className="text-sm text-red-700 dark:text-red-300">
-                    {video.blockReason}
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Metadata */}
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Database className="h-5 w-5 text-blue-600" />
-                Metadata
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Video ID</span>
-                  <span className="font-mono text-sm text-muted-foreground">
-                    {video.id}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">User ID</span>
-                  <span className="font-mono text-sm text-muted-foreground">
-                    {video.userId}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Timestamps */}
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-purple-600" />
-                Timestamps
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Created</span>
-                  <span className="text-sm text-muted-foreground">
-                    {formatDate(video.createdAt)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Last Updated</span>
-                  <span className="text-sm text-muted-foreground">
-                    {formatDate(video.updatedAt)}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          {/* <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-gray-600" />
-                Quick Actions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start transition-colors hover:bg-blue-50 dark:hover:bg-blue-950/20"
-              >
-                <Edit className="mr-2 h-4 w-4" />
-                Edit Video
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start transition-colors hover:bg-green-50 dark:hover:bg-green-950/20"
-              >
-                <TrendingUp className="mr-2 h-4 w-4" />
-                View Analytics
-              </Button>
-              {video.blocked ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start text-green-600 transition-colors hover:bg-green-50 hover:text-green-700 dark:hover:bg-green-950/20"
-                >
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Unblock Video
-                </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/20"
-                >
-                  <Ban className="mr-2 h-4 w-4" />
-                  Block Video
-                </Button>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/20"
-              >
-                <Trash className="mr-2 h-4 w-4" />
-                Delete Video
-              </Button>
-            </CardContent>
-          </Card> */}
         </div>
       </div>
     </div>

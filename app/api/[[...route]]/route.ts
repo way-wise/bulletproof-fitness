@@ -11,6 +11,7 @@ import { demoCenterModule } from "../features/demo-centers/demoCentersModule";
 import { exerciseLibraryModule } from "../features/exercise-library/exerciseLibraryModule";
 import { exerciseSetupModule } from "../features/exercise-setup/exerciseSetupModule";
 import { racksModule } from "../features/racks/racksModule";
+import rewardModule from "../features/rewards/rewardModule";
 import userModule from "../features/users/userModule";
 import signUploadModule from "../features/sign-upload/signUploadModule";
 

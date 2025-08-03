@@ -31,6 +31,7 @@ interface MultiSelectProps {
   onChange: (value: string[]) => void;
   className?: string;
   triggerClassName?: string;
+  disabled?: boolean;
 }
 
 export const MultiSelect = ({
@@ -40,6 +41,7 @@ export const MultiSelect = ({
   onChange,
   className,
   triggerClassName,
+  disabled = false,
 }: MultiSelectProps) => {
   const [open, setOpen] = useState(false);
 
@@ -58,6 +60,7 @@ export const MultiSelect = ({
           <Button
             variant="outline"
             role="combobox"
+            disabled={disabled}
             className={cn(
               "w-full justify-between rounded-sm text-[14px]",
               triggerClassName,
