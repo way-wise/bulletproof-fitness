@@ -1,3 +1,4 @@
+import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { exerciseSetupSchemaAdmin } from "@/schema/exerciseSetupSchema";
 import { InferType } from "yup";
@@ -168,6 +169,7 @@ export const exerciseSetupService = {
 
   // Get single exercise setup video by ID
   getExerciseSetupVideoById: async (id: string) => {
+    const session = await getSession();
     try {
       console.log("id", id);
       const exercise = await prisma.exerciseSetup.findUnique({
@@ -195,6 +197,7 @@ export const exerciseSetupService = {
               rack: true,
             },
           },
+          contentStats: true,
         },
       });
 
@@ -203,6 +206,43 @@ export const exerciseSetupService = {
       if (!exercise) {
         console.log("No exercise setup found with id:", id);
         throw new Error("Exercise setup video not found");
+      }
+
+      if (session?.user?.id && session?.session?.id) {
+        const { id: userId } = session.user;
+        const { id: sessionId, ipAddress, userAgent } = session.session;
+
+        const existView = await prisma.userView.findFirst({
+          where: {
+            exerciseId: id,
+            userId,
+            sessionId,
+          },
+        });
+
+        if (!existView) {
+          console.log("New view");
+          await prisma.userView.create({
+            data: {
+              exerciseId: id,
+              userId,
+              sessionId,
+              ipAddress,
+              userAgent,
+              viewedAt: new Date(),
+            },
+          });
+
+          const contentStats = await prisma.contentStats.findFirst({
+            where: { exerciseId: id },
+          });
+
+          await prisma.contentStats.upsert({
+            where: { id: contentStats?.id ?? "__new" },
+            update: { totalViews: { increment: 1 } },
+            create: { exerciseId: id, totalViews: 1 },
+          });
+        }
       }
 
       return exercise;
@@ -755,6 +795,7 @@ export const exerciseSetupService = {
               rack: true,
             },
           },
+          contentStats: true,
         },
       });
 
@@ -813,6 +854,7 @@ export const exerciseSetupService = {
             height: heightInInches || 0,
             userId: exercise.userId,
             user: exercise.user,
+            contentStats: exercise.contentStats,
             views: Math.floor(Math.random() * 1000) + 100,
             likes: Math.floor(Math.random() * 50),
             comments: Math.floor(Math.random() * 10),

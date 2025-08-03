@@ -85,3 +85,25 @@ equipmentModule.delete("/:id", async (c) => {
   const result = await equipmentService.deleteEquipment(validatedParam.id);
   return c.json(result);
 });
+
+equipmentModule.put("/:id", async (c) => {
+  const validatedParam = await validateInput({
+    type: "param",
+    schema: object({
+      id: string().required(),
+    }),
+    data: c.req.param(),
+  });
+
+  const validatedBody = await validateInput({
+    type: "form",
+    schema: equipmentSchema,
+    data: await c.req.json(),
+  });
+
+  const result = await equipmentService.updateEquipment(
+    validatedParam.id,
+    validatedBody,
+  );
+  return c.json(result);
+});

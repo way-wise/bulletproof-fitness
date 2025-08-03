@@ -3,7 +3,7 @@ import { rackSchema } from "@/schema/rackSchema";
 import { Hono } from "hono";
 import { object, string } from "yup";
 import { validateInput } from "../../lib/validateInput";
-import { racksService } from "./racService";
+import { racksService } from "./rackService";
 
 export const racksModule = new Hono();
 
@@ -55,6 +55,33 @@ racksModule.get("/:id", async (c) => {
   });
 
   const result = await racksService.getRack(validatedParam.id);
+  return c.json(result);
+});
+
+/*
+  @route    PUT: /racks/:id
+  @access   private
+  @desc     Update rack by id
+*/
+racksModule.put("/:id", async (c) => {
+  const validatedParam = await validateInput({
+    type: "param",
+    schema: object({
+      id: string().required(),
+    }),
+    data: c.req.param(),
+  });
+
+  const validatedBody = await validateInput({
+    type: "form",
+    schema: rackSchema,
+    data: await c.req.json(),
+  });
+
+  const result = await racksService.updateRack(
+    validatedParam.id,
+    validatedBody,
+  );
   return c.json(result);
 });
 

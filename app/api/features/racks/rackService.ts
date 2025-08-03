@@ -63,6 +63,33 @@ export const racksService = {
     return rack;
   },
 
+  // Update rack by id
+  updateRack: async (id: string, data: InferType<typeof rackSchema>) => {
+    const rack = await prisma.rack.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!rack) {
+      throw new HTTPException(404, {
+        message: "Rack not found",
+      });
+    }
+
+    const updatedRack = await prisma.rack.update({
+      where: {
+        id,
+      },
+      data: {
+        name: data.name,
+        updatedAt: new Date(),
+      },
+    });
+
+    return updatedRack;
+  },
+
   // Delete rack by id
   deleteRack: async (id: string) => {
     const rack = await prisma.rack.findUnique({
