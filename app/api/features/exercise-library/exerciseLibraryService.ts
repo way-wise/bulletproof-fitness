@@ -1,5 +1,3 @@
-
-
 import cloudinary from "@/app/api/lib/cloudinary";
 import prisma from "@/lib/prisma";
 import {
@@ -13,8 +11,6 @@ export const exerciseLibraryService = {
     data: InferType<typeof exerciseLibrarySchemaAdmin>,
   ) => {
     try {
-      console.log(data);
-
       const exerciseLibrary = await prisma.exerciseLibraryVideo.create({
         data: {
           title: data.title,
@@ -24,7 +20,7 @@ export const exerciseLibraryService = {
           // Create junction table records for equipment
           ExLibEquipment: {
             create:
-              (data.equipment?.filter(Boolean) as string[])?.map(
+              (data.equipments?.filter(Boolean) as string[])?.map(
                 (equipmentId) => ({
                   equipmentId: equipmentId,
                 }),
@@ -235,7 +231,7 @@ export const exerciseLibraryService = {
           // Create new junction table records for equipment
           ExLibEquipment: {
             create:
-              (data.equipment?.filter(Boolean) as string[])?.map(
+              (data.equipments?.filter(Boolean) as string[])?.map(
                 (equipmentId) => ({
                   equipmentId: equipmentId,
                 }),
@@ -419,7 +415,7 @@ export const exerciseLibraryService = {
           // Create junction table records for equipment
           ExLibEquipment: {
             create:
-              (data.equipment?.filter(Boolean) as string[])?.map(
+              (data.equipments?.filter(Boolean) as string[])?.map(
                 (equipmentId) => ({
                   equipmentId: equipmentId,
                 }),
