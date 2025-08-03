@@ -18,37 +18,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import useSWR from "swr";
 import * as z from "zod";
-import useSWR from "swr";
-import { MultiSelect } from "@/components/ui/multi-select";
-import {
-  CldUploadWidget,
-  CldVideoPlayer,
-  CloudinaryUploadWidgetInfo,
-} from "next-cloudinary";
+import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
 import { X } from "lucide-react";
-
-const MAX_FILE_SIZE = 1024 * 1024 * 1024; // 1GB
+import useSWR from "swr";
+import { useSession } from "@/lib/auth-client";
 
 const formSchema = z.object({
-  video: z
-    .any()
-    .refine((file) => file, {
-      message: "Video is required",
-    })
-    .refine((file) => file && file.size <= MAX_FILE_SIZE, {
-      message: "Video must not exceed 1GB",
-    }),
+  video: z.string().min(1, "Video is required"),
   title: z.string().min(1, "Video title is required"),
   equipments: z.array(z.string()).min(1, "Please select equipment"),
-  bodyPart: z.string().min(1, "Please select a body part"),
+  bodyPart: z.array(z.string()).min(1, "Please select a body part"),
   height: z.string().min(1, "Please enter your height"),
-  rack: z.string().min(1, "Please select a rack"),
+  rack: z.array(z.string()).min(1, "Please select a rack"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -57,11 +42,13 @@ export default function LibraryVideoUpload() {
   const [fileResource, setFileResource] = useState<
     CloudinaryUploadWidgetInfo | undefined | string
   >(undefined);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<string>("");
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   });
+
+  const { data: session } = useSession();
+
+  console.log("error", form.formState.errors);
 
   // Get equipments
   const equipmentsUrl = `/api/equipments/all`;
@@ -71,54 +58,55 @@ export default function LibraryVideoUpload() {
     isValidating: equipmentsIsValidating,
   } = useSWR(equipmentsUrl);
 
+  // Get body parts
+  const bodyPartsUrl = `/api/body-parts`;
+  const {
+    data: bodyParts,
+    error: bodyPartsError,
+    isValidating: bodyPartsIsValidating,
+  } = useSWR(bodyPartsUrl);
+
+  // Get racks
+  const racksUrl = `/api/racks`;
+  const {
+    data: racks,
+    error: racksError,
+    isValidating: racksIsValidating,
+  } = useSWR(racksUrl);
+
   const onSubmit = async (data: FormValues) => {
-    try {
-      if (!fileResource) {
-        form.setError("video", { message: "Please upload a video" });
-        return;
-      }
-
-      // Get the video file from the form
-      const videoFile = form.getValues("video") as File;
-      if (!videoFile) {
-        form.setError("video", { message: "Please select a video file" });
-        return;
-      }
-
-      // Create FormData for multipart upload
-      const formData = new FormData();
-      formData.append("video", videoFile);
-      formData.append("title", data.title);
-      formData.append("equipments", JSON.stringify(data.equipments));
-      formData.append("bodyPart", data.bodyPart);
-      formData.append("height", data.height);
-      formData.append("rack", data.rack);
-      formData.append("video", fileResource?.secure_url || "");
-
-      // Send to video upload API
-      const response = await fetch("/api/exercise-library", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to upload video");
-      }
-
-      const result = await response.json();
-
-      // Reset form
-      setFileResource(undefined);
-      form.reset();
-    } catch (error) {
-      form.setError("root", {
-        message:
-          error instanceof Error ? error.message : "Failed to upload video",
-      });
-    } finally {
-      setIsUploading(false);
+    if (!fileResource) {
+      form.setError("video", { message: "Please upload a video" });
+      return;
     }
+
+    const formData = {
+      title: data.title,
+      equipments: data.equipments,
+      bodyPart: data.bodyPart,
+      height: data.height,
+      rack: data.rack,
+      video: fileResource?.secure_url,
+      userId: session?.user.id,
+    };
+
+    // Send to video upload API
+    const response = await fetch("/api/exercise-library", {
+      method: "POST",
+      body: JSON.stringify(formData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to upload video");
+    }
+
+    // Reset form
+    setFileResource(undefined);
+    form.reset();
   };
 
   return (
@@ -145,7 +133,7 @@ export default function LibraryVideoUpload() {
                 variant="secondary"
                 onClick={async () => {
                   setFileResource(undefined);
-                  form.setValue("video", undefined);
+                  form.setValue("video", "");
                   await fetch(`/api/sign-upload/${fileResource?.public_id}`, {
                     method: "DELETE",
                   });
@@ -170,6 +158,7 @@ export default function LibraryVideoUpload() {
                 uploadPreset="exercise-library"
                 onSuccess={(result, { widget }) => {
                   setFileResource(result?.info);
+                  form.setValue("video", result?.info?.secure_url);
                   widget.close();
                 }}
                 onQueuesEnd={(result, { widget }) => {
@@ -264,18 +253,18 @@ export default function LibraryVideoUpload() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Body Part *</FormLabel>
-                <Select onValueChange={field.onChange}>
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select body part" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="Abs">Abs</SelectItem>
-                    <SelectItem value="Arms">Arms</SelectItem>
-                    <SelectItem value="Legs">Legs</SelectItem>
-                  </SelectContent>
-                </Select>
+                <MultiSelect
+                  options={
+                    bodyParts?.data.map((bodyPart: any) => ({
+                      value: bodyPart.id,
+                      label: bodyPart.name,
+                    })) || []
+                  }
+                  selected={(field.value || []) as string[]}
+                  onChange={(value) => field.onChange(value)}
+                  placeholder="Select Body Part"
+                  className="w-full"
+                />
                 <FormMessage />
               </FormItem>
             )}
@@ -287,7 +276,11 @@ export default function LibraryVideoUpload() {
               <FormItem>
                 <FormLabel>User Height *</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Height in inches" />
+                  <Input
+                    type="number"
+                    {...field}
+                    placeholder="Height in inches"
+                  />
                 </FormControl>
                 <p className="mt-2 text-xs text-muted-foreground">
                   This is your height in inches.
@@ -305,46 +298,30 @@ export default function LibraryVideoUpload() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Rack *</FormLabel>
-              <Select onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select rack" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="Bells of Steel Hydra Series">
-                    Bells of Steel Hydra Series with 3x3 uprights & 5/8 holes
-                  </SelectItem>
-                  <SelectItem value="Rogue Monster Lite">
-                    Rogue Monster Lite
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+              <MultiSelect
+                options={
+                  racks?.data.map((rack: any) => ({
+                    value: rack.id,
+                    label: rack.name,
+                  })) || []
+                }
+                selected={(field.value || []) as string[]}
+                onChange={(value) => field.onChange(value)}
+                placeholder="Select Rack"
+                className="w-full"
+              />
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Error/Success Messages */}
-        {form.formState.errors.root && (
-          <div className="rounded-md bg-red-50 p-4 text-red-700">
-            {form.formState.errors.root.message}
-          </div>
-        )}
-
-        {uploadProgress && !form.formState.errors.root && (
-          <div className="rounded-md bg-green-50 p-4 text-green-700">
-            {uploadProgress}
-          </div>
-        )}
-
         <div className="flex justify-center">
           <Button
             type="submit"
             className="w-full md:w-40"
-            disabled={isUploading}
+            isLoading={form.formState.isSubmitting}
           >
-            {isUploading ? "Uploading..." : "Submit"}
+            Submit
           </Button>
         </div>
       </form>

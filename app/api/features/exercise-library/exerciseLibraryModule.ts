@@ -485,19 +485,13 @@ exerciseLibraryModule.post("/", async (c) => {
     const validatedBody = await validateInput({
       type: "form",
       schema: exerciseLibrarySchema,
-      data: c.req.parseBody(),
+      data: await c.req.json(),
     });
-
-    console.log("validatedBody", validatedBody);
 
     const result =
       await exerciseLibraryService.createExerciseLibrary(validatedBody);
 
-    return c.json({
-      success: true,
-      message: "Exercise library created successfully",
-      data: result,
-    });
+    return c.json(result);
   } catch (error) {
     console.error("Error in exercise library creation:", error);
     return c.json(

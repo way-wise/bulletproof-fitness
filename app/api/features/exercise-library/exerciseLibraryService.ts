@@ -8,6 +8,8 @@ import {
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
 
+const zapierExerciseTriggerHook = process.env.ZAPIER_EXERCISE_TRIGGER_HOOK;
+
 export const exerciseLibraryService = {
   createExerciseLibraryAdmin: async (
     data: InferType<typeof exerciseLibrarySchemaAdmin>,
@@ -376,8 +378,29 @@ export const exerciseLibraryService = {
   createExerciseLibrary: async (
     data: exerciseLibrarySchemaType,
   ) => {
-      // GET DATA WITH VIDEO URL AS WELL AND ZAP IT TO YOUTUBE
-      console.log("data", data);
+      if(!zapierExerciseTriggerHook){
+        throw new HTTPException(500, { message: "Zapier exercise trigger hook not found" });
+      }
+
+      const response = await fetch(zapierExerciseTriggerHook, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if(!response.ok){
+        throw new HTTPException(500, { message: "Zapier call failed" });
+      }
+
+      const result = await response.json();
+      
+      return {
+        success: true,
+        message: "Video uploaded successfully, awaiting approval",
+        data: result,
+      };
   },
 
   // Get exercise library data for a user (public access)
