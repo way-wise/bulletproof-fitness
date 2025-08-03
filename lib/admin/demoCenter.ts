@@ -17,4 +17,7 @@ export const demoCenterAdmin = {
     blockReason?: string;
   }) =>
     apiRequest(`/api/demo-centers/${data.demoCenterId}/status`, "PATCH", data),
+
+  update: (data: { demoCenterId: string; data: any }) =>
+    apiRequest(`/api/demo-centers/${data.demoCenterId}`, "PATCH", data.data),
 };

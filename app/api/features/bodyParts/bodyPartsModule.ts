@@ -58,6 +58,28 @@ bodyPartsModule.get("/:id", async (c: Context) => {
   return c.json(result);
 });
 
+bodyPartsModule.put("/:id", async (c) => {
+  const validatedParam = await validateInput({
+    type: "param",
+    schema: object({
+      id: string().required(),
+    }),
+    data: c.req.param(),
+  });
+
+  const validatedBody = await validateInput({
+    type: "form",
+    schema: bodyPartSchema,
+    data: await c.req.json(),
+  });
+
+  const result = await bodyPartsService.updateBodyPart(
+    validatedParam.id,
+    validatedBody,
+  );
+  return c.json(result);
+});
+
 /*
   @route    DELETE: /equipments/:id
   @access   private

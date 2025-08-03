@@ -25,13 +25,13 @@ import { formatDate } from "@/lib/date-format";
 import { equipmentSchema } from "@/schema/equipment";
 import { yupResolver } from "@hookform/resolvers/yup";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
-import { Eye, MoreVertical, Pencil, Plus, Trash } from "lucide-react";
-import Link from "next/link";
+import { MoreVertical, Pencil, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import { InferType } from "yup";
+import UpdateEquipments from "./UpdateEquipments";
 
 type TEquipment = {
   id?: string;
@@ -43,6 +43,10 @@ type TEquipment = {
 const EquipmentsTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [addEquipmentModalOpen, setAddEquipmentModalOpen] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [selectedEquipment, setSelectedEquipment] = useState<TEquipment | null>(
+    null,
+  );
   const [equipmentId, setEquipmentId] = useState<string | undefined>("");
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 1,
@@ -168,13 +172,12 @@ const EquipmentsTable = () => {
                 <MoreVertical />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-36">
-                <DropdownMenuItem asChild>
-                  <Link href={`/dashboard/equipments/${id}`}>
-                    <Eye />
-                    <span>View</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setUpdateModalOpen(true);
+                    setSelectedEquipment(row.original);
+                  }}
+                >
                   <Pencil />
                   <span>Edit</span>
                 </DropdownMenuItem>
@@ -300,6 +303,15 @@ const EquipmentsTable = () => {
           </form>
         </Form>
       </Modal>
+      <UpdateEquipments
+        isOpen={updateModalOpen}
+        onClose={() => {
+          setUpdateModalOpen(false);
+          setSelectedEquipment(null);
+        }}
+        equipment={selectedEquipment}
+        url={url}
+      />
     </>
   );
 };

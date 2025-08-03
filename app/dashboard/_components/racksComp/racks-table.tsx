@@ -25,13 +25,13 @@ import { formatDate } from "@/lib/date-format";
 import { rackSchema } from "@/schema/rackSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
-import { Eye, MoreVertical, Pencil, Plus, Trash } from "lucide-react";
-import Link from "next/link";
+import { MoreVertical, Pencil, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import { InferType } from "yup";
+import UpdateRacks from "./UpdateRacks";
 
 type TRack = {
   id?: string;
@@ -43,7 +43,9 @@ type TRack = {
 const RacksTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [addRackModalOpen, setAddRackModalOpen] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [rackId, setRackId] = useState<string | undefined>("");
+  const [selectedRack, setSelectedRack] = useState<TRack | null>(null);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 1,
     pageSize: 10,
@@ -166,13 +168,12 @@ const RacksTable = () => {
                 <MoreVertical />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-36">
-                <DropdownMenuItem asChild>
-                  <Link href={`/dashboard/racks/${id}`}>
-                    <Eye />
-                    <span>View</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSelectedRack(row.original);
+                    setUpdateModalOpen(true);
+                  }}
+                >
                   <Pencil />
                   <span>Edit</span>
                 </DropdownMenuItem>
@@ -298,6 +299,17 @@ const RacksTable = () => {
           </form>
         </Form>
       </Modal>
+
+      {/* Update Rack Modal */}
+      <UpdateRacks
+        isOpen={updateModalOpen}
+        onClose={() => {
+          setUpdateModalOpen(false);
+          setSelectedRack(null);
+        }}
+        rack={selectedRack}
+        url={url}
+      />
     </>
   );
 };

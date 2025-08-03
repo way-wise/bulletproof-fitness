@@ -25,13 +25,13 @@ import { formatDate } from "@/lib/date-format";
 import { bodyPartSchema } from "@/schema/bodyparts";
 import { yupResolver } from "@hookform/resolvers/yup";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
-import { Eye, MoreVertical, Pencil, Plus, Trash } from "lucide-react";
-import Link from "next/link";
+import { MoreVertical, Pencil, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import { InferType } from "yup";
+import UpdatesBodyParts from "./UpdatesBodyParts";
 
 type TBodyPart = {
   id?: string;
@@ -43,6 +43,10 @@ type TBodyPart = {
 const BodyPartsTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [addBodyPartModalOpen, setAddBodyPartModalOpen] = useState(false);
+  const [updateBodyPartModalOpen, setUpdateBodyPartModalOpen] = useState(false);
+  const [selectedBodyPart, setSelectedBodyPart] = useState<TBodyPart | null>(
+    null,
+  );
   const [bodyPartId, setBodyPartId] = useState<string | undefined>("");
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 1,
@@ -168,13 +172,12 @@ const BodyPartsTable = () => {
                 <MoreVertical />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-36">
-                <DropdownMenuItem asChild>
-                  <Link href={`/dashboard/equipments/${id}`}>
-                    <Eye />
-                    <span>View</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setUpdateBodyPartModalOpen(true);
+                    setSelectedBodyPart(row.original);
+                  }}
+                >
                   <Pencil />
                   <span>Edit</span>
                 </DropdownMenuItem>
@@ -300,6 +303,16 @@ const BodyPartsTable = () => {
           </form>
         </Form>
       </Modal>
+
+      <UpdatesBodyParts
+        isOpen={updateBodyPartModalOpen}
+        onClose={() => {
+          setUpdateBodyPartModalOpen(false);
+          setSelectedBodyPart(null);
+        }}
+        bodyPart={selectedBodyPart}
+        url={url}
+      />
     </>
   );
 };
