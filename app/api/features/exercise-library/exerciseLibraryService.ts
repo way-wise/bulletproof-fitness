@@ -4,7 +4,9 @@ import prisma from "@/lib/prisma";
 import {
   exerciseLibrarySchema,
   exerciseLibrarySchemaAdmin,
+  exerciseLibrarySchemaType,
 } from "@/schema/exerciseLibrarySchema";
+import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
 
 export const exerciseLibraryService = {
@@ -414,146 +416,10 @@ export const exerciseLibraryService = {
   },
 
   createExerciseLibrary: async (
-    data: InferType<typeof exerciseLibrarySchema> & { video: File },
+    data: exerciseLibrarySchemaType,
   ) => {
-    try {
-      // Check Cloudinary environment variables
-      if (
-        !process.env.CLOUDINARY_CLOUD_NAME ||
-        !process.env.CLOUDINARY_API_KEY ||
-        !process.env.CLOUDINARY_API_SECRET
-      ) {
-        console.error("Missing Cloudinary environment variables");
-        throw new Error("Cloudinary configuration is missing");
-      }
-
-      console.log("Starting video upload process...");
-      console.log("Video file info:", {
-        name: data.video.name,
-        size: data.video.size,
-        type: data.video.type,
-      });
-
-      // Convert File to base64 Data URI
-      const buffer = await data.video.arrayBuffer();
-      const base64 = Buffer.from(buffer).toString("base64");
-      const dataURI = `data:${data.video.type};base64,${base64}`;
-
-      console.log("Uploading to Cloudinary...");
-      const uploadResult = await cloudinary.uploader.upload(dataURI, {
-        resource_type: "video",
-        folder: "exercise-library",
-      });
-
-      console.log("Cloudinary upload successful:", uploadResult.secure_url);
-
-      // Save to Prisma DB
-      const created = await prisma.exerciseLibraryVideo.create({
-        data: {
-          title: data.title,
-          height: data.height,
-          videoUrl: uploadResult.secure_url,
-          userId: data.userId,
-          // Create junction table records for equipment
-          ExLibEquipment: {
-            create:
-              (data.equipments?.filter(Boolean) as string[])?.map(
-                (equipmentId) => ({
-                  equipmentId: equipmentId,
-                }),
-              ) || [],
-          },
-          // Create junction table records for body parts
-          ExLibBodyPart: {
-            create:
-              (data.bodyPart?.filter(Boolean) as string[])?.map(
-                (bodyPartId) => ({
-                  bodyPartId: bodyPartId,
-                }),
-              ) || [],
-          },
-          // Create junction table records for racks
-          ExLibRak: {
-            create:
-              (data.rack?.filter(Boolean) as string[])?.map((rackId) => ({
-                rackId: rackId,
-              })) || [],
-          },
-        },
-        include: {
-          ExLibEquipment: {
-            include: {
-              equipment: true,
-            },
-          },
-          ExLibBodyPart: {
-            include: {
-              bodyPart: true,
-            },
-          },
-          ExLibRak: {
-            include: {
-              rack: true,
-            },
-          },
-        },
-      });
-
-      console.log("Database save successful:", created.id);
-
-      // 🔥 Trigger Zapier webhook (optional via env flag)
-      if (created?.id && process.env.ZAPIER_WEBHOOK_URL) {
-        console.log("Sending data to Zapier...,created", created);
-        try {
-          const zapierResponse = await fetch(process.env.ZAPIER_WEBHOOK_URL, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              // Basic exercise info
-              title: created.title,
-              description: `Exercise using ${created.ExLibEquipment[0]?.equipment?.name || "Unknown Equipment"} for ${created.ExLibBodyPart[0]?.bodyPart?.name || "Unknown Body Part"}`,
-              videoUrl: created.videoUrl,
-              id: created.id,
-
-              // Additional metadata for Zapier
-              equipment: created.ExLibEquipment.map((eq) => eq.equipment.name),
-              bodyPart: created.ExLibBodyPart.map((bp) => bp.bodyPart.name),
-              height: created.height,
-              rack: created.ExLibRak.map((r) => r.rack.name),
-              userId: created.userId,
-              createdAt: created.createdAt,
-              updatedAt: created.updatedAt,
-
-              // Zapier-specific fields
-              event_type: "exercise_library_created",
-              source: "bulletproof_fitness_app",
-            }),
-            // Add timeout to prevent hanging
-            signal: AbortSignal.timeout(10000), // 10 second timeout
-          });
-
-          if (!zapierResponse.ok) {
-            console.warn(
-              `Zapier webhook failed with status: ${zapierResponse.status}`,
-            );
-          } else {
-            console.log("Zapier webhook sent successfully.");
-          }
-        } catch (zapierError) {
-          console.error("Zapier webhook error:", zapierError);
-          // Don't fail the main operation if Zapier fails
-        }
-      } else {
-        console.warn("Zapier webhook URL not set. Skipping...");
-      }
-
-      return created;
-    } catch (error) {
-      console.error("Upload or DB save error:", error);
-      throw new Error("Failed to upload and save exercise library data.");
-    }
+      // GET DATA WITH VIDEO URL AS WELL AND ZAP IT TO YOUTUBE
+      console.log("data", data);
   },
 
   // Get exercise library data for a user (public access)

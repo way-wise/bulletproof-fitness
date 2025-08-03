@@ -1,4 +1,4 @@
-import { array, mixed, object, string } from "yup";
+import { array, InferType, mixed, object, string } from "yup";
 
 // Exercise Library Schema for form validation
 export const exerciseLibrarySchema = object({
@@ -15,6 +15,8 @@ export const exerciseLibrarySchema = object({
   rack: array().of(string()).optional().default([]),
   userId: string().required("User ID is required"),
 });
+
+export type exerciseLibrarySchemaType = InferType<typeof exerciseLibrarySchema>;
 
 export const exerciseLibrarySchemaAdmin = object({
   title: string().required("Title is required"),

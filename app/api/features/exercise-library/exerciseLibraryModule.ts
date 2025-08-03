@@ -488,6 +488,8 @@ exerciseLibraryModule.post("/", async (c) => {
       data: c.req.parseBody(),
     });
 
+    console.log("validatedBody", validatedBody);
+
     const result =
       await exerciseLibraryService.createExerciseLibrary(validatedBody);
 
