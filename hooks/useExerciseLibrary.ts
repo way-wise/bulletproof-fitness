@@ -3,8 +3,7 @@ import {
   ExerciseLibraryItem,
   ExerciseLibraryResponse,
 } from "@/lib/dataTypes";
-import { useMemo } from "react";
-import useSWR from "swr";
+import { useCallback, useEffect, useState } from "react";
 
 interface UseExerciseLibraryReturn {
   exercises: ExerciseLibraryItem[];
@@ -55,18 +54,50 @@ const buildQueryString = (filters: ExerciseLibraryFilters): string => {
 export const useExerciseLibrary = (
   filters: ExerciseLibraryFilters = {},
 ): UseExerciseLibraryReturn => {
-  const queryString = useMemo(() => buildQueryString(filters), [filters]);
+  const [data, setData] = useState<ExerciseLibraryResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | undefined>(undefined);
 
-  const { data, error, isLoading, mutate } = useSWR<ExerciseLibraryResponse>(
-    `/api/exercise-library${queryString ? `?${queryString}` : ""}`,
+  const queryString = buildQueryString(filters);
 
-    {
-      revalidateOnReconnect: true,
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-      keepPreviousData: true,
-    },
-  );
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    setError(undefined);
+
+    try {
+      const url = `/api/exercise-library${queryString ? `?${queryString}` : ""}`;
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      // Handle the response structure from the API
+      if (result.success && result.data) {
+        setData({
+          data: result.data,
+          meta: result.meta,
+        });
+      } else {
+        setData(result);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("An error occurred"));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [queryString, filters]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const mutate = useCallback(() => {
+    fetchData();
+  }, [fetchData]);
 
   return {
     exercises: data?.data ?? [],

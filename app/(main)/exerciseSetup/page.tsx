@@ -80,7 +80,17 @@ async function getExerciseLibraryData(
       return null;
     }
 
-    return await response.json();
+    const result = await response.json();
+
+    // Handle the response structure from the API
+    if (result.success && result.data) {
+      return {
+        data: result.data,
+        meta: result.meta,
+      };
+    }
+
+    return result;
   } catch (error) {
     console.error("Error fetching exercise library data:", error);
     return null;
