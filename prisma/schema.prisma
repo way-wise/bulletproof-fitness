@@ -25,12 +25,25 @@ model users {
   banned               Boolean?
   banReason            String?
   banExpires           Int?
+  totalPoints          Float                 @default(0)
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
   sessions             sessions[]
   accounts             accounts[]
   exerciseSetups       ExerciseSetup[]
   ExerciseLibraryVideo ExerciseLibraryVideo[]
+  views                UserView[]
+  ratings              UserRating[]
+  reactions            UserReaction[]
+  rewardPoints         RewardPoints[]
+
+  @@index([email])
+  @@index([emailVerified])
+  @@index([role])
+  @@index([banned])
+  @@index([banExpires])
+  @@index([totalPoints])
+  @@index([name])
 }
 
 model sessions {
@@ -166,6 +179,15 @@ model ExerciseSetup {
   orange       String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  contentStats ContentStats[]
+  views       UserView[]
+  ratings     UserRating[]
+  reactions   UserReaction[]
+
+  @@index([userId])
+  @@index([isPublic, blocked])
+
 }
 
 model DemoCenter {
@@ -192,6 +214,9 @@ model DemoCenter {
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
   demoCenterEquipments DemoCenterEquipment[]
+  @@index([isPublic, blocked])
+  @@index([lat, lng])
+  @@index([weekdays, weekends])
 }
 
 model DemoCenterEquipment {
@@ -219,7 +244,116 @@ model ExerciseLibraryVideo {
   blockReason String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  contentStats ContentStats[]
+  views       UserView[]
+  ratings     UserRating[]
+  reactions   UserReaction[]
 
   @@index([userId])
+  @@index([title])
   @@index([isPublic, blocked])
+}
+
+
+model ContentStats {
+  id           String   @id @default(ulid())
+  exerciseId   String?
+  exercise     ExerciseSetup? @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  libraryId String?
+  library     ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: Cascade)
+  totalViews   Int      @default(0)
+  totalLikes   Int      @default(0)
+  totalDislikes Int     @default(0)
+  avgRating    Float    @default(0.0)
+  updatedAt    DateTime @updatedAt
+  @@index([exerciseId, libraryId])
+  @@unique([exerciseId, libraryId])
+  @@map("content_stats")
+}
+
+model RewardPoints {
+  id          String   @id @default(ulid())
+  userId      String
+  user        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  points      Int      @default(0)
+  message     String?
+  icon        String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([userId])
+  @@map("reward_points")
+}
+
+
+model UserView {
+  id          String         @id @default(ulid())
+  userId      String?
+  user        users?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  exerciseId  String?
+  exercise    ExerciseSetup? @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
+
+  libraryId   String?
+  library     ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: SetNull)
+  viewedAt    DateTime       @default(now())
+  sessionId   String?
+  ipAddress   String?
+  userAgent   String?
+
+  @@unique([userId, exerciseId, libraryId])
+  @@index([userId, exerciseId, libraryId])
+  @@index([sessionId])
+  @@index([ipAddress])
+  @@map("views")
+}
+
+
+model UserRating {
+  id          String         @id @default(ulid())
+  userId      String
+  user        users          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  exerciseId  String?
+  exercise    ExerciseSetup? @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
+
+  libraryId   String?
+  library     ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: SetNull)
+  rating      Int            // Validate 1–5 in service/DTO layer
+
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@unique([userId, exerciseId, libraryId])
+  @@index([userId, exerciseId, libraryId])
+  @@map("ratings")
+}
+
+
+model UserReaction {
+  id          String         @id @default(ulid())
+  userId      String
+  user        users          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  reaction    ReactionType
+
+  exerciseId  String?
+  exercise    ExerciseSetup? @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
+
+  libraryId   String?
+  library     ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@unique([userId]) // One reaction per user per content
+  @@index([userId, exerciseId, libraryId])
+  @@map("reactions")
+
+}
+
+
+enum ReactionType {
+  LIKE
+  DISLIKE
 }
