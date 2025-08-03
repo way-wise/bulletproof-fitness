@@ -11,8 +11,6 @@ export const exerciseLibraryService = {
     data: InferType<typeof exerciseLibrarySchemaAdmin>,
   ) => {
     try {
-      console.log(data);
-
       const exerciseLibrary = await prisma.exerciseLibraryVideo.create({
         data: {
           title: data.title,

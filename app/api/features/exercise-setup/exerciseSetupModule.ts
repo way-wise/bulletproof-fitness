@@ -72,7 +72,7 @@ exerciseSetupModule.get("/dashboard", async (c) => {
 exerciseSetupModule.get("/dashboard/:id", async (c) => {
   try {
     const id = c.req.param("id");
-    console.log("id", id);
+
     const result = await exerciseSetupService.getExerciseSetupVideoById(id);
 
     return c.json({
@@ -124,7 +124,6 @@ exerciseSetupModule.post("/dashboard", async (c: Context) => {
       data: dataWithUserId,
     });
 
-    console.log(validatedBody);
     const result =
       await exerciseSetupService.createExerciseSetupAdmin(validatedBody);
 
@@ -412,7 +411,7 @@ exerciseSetupModule.get("/", async (c) => {
       maxHeight,
       minRating,
     };
-    console.log(filterParams);
+
     const result =
       await exerciseSetupService.getExerciseSetupWithFilters(filterParams);
 

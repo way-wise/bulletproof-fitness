@@ -93,7 +93,7 @@ export default function ExerciseSetupDetails({
   exerciseSetupId: string;
 }) {
   const [rating, setRating] = useState(0);
-  console.log(exerciseSetupId);
+
   const fetcher = (url: string) =>
     fetch(url).then((res) => {
       if (!res.ok) throw new Error("Failed to fetch video");

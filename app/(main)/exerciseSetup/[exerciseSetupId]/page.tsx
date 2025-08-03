@@ -6,7 +6,7 @@ const ExerciseSetupDetailPage = async ({
   params: Promise<{ exerciseSetupId: string }>;
 }) => {
   const { exerciseSetupId } = await params;
-  console.log(exerciseSetupId);
+
   return (
     <div>
       <ExerciseSetupDetails exerciseSetupId={exerciseSetupId} />
