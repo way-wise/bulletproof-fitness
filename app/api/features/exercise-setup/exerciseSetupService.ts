@@ -169,6 +169,7 @@ export const exerciseSetupService = {
   // Get single exercise setup video by ID
   getExerciseSetupVideoById: async (id: string) => {
     try {
+      console.log("id", id);
       const exercise = await prisma.exerciseSetup.findUnique({
         where: { id },
         include: {
