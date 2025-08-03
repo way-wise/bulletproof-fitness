@@ -19,23 +19,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useEquipments } from "@/hooks/useEquipments";
-import { uploadImageToImgBB } from "@/lib/imageUpload";
-import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { UseFormReturn } from "react-hook-form";
 import * as z from "zod";
 
-const businessFormSchema = z.object({
+export const businessFormSchema = z.object({
   buildingType: z.literal("BUSINESS"),
   name: z.string().min(1, "Business name is required"),
   address: z.string().min(1, "Address is required"),
   contact: z.string().min(1, "Contact information is required"),
   cityZip: z.string().min(1, "City/Zip is required"),
   equipment: z.string().min(1, "Equipment selection is required"),
-  availability: z.string().optional(),
+  availability: z.string().min(1, "Availability is required"),
   bio: z.string().min(1, "Bio is required"),
   weekdays: z.array(z.string()).optional(),
   weekends: z.array(z.string()).optional(),
@@ -45,101 +40,36 @@ const businessFormSchema = z.object({
   weekendClose: z.string().optional(),
 });
 
-type BusinessFormValues = z.infer<typeof businessFormSchema>;
+export type BusinessFormValues = z.infer<typeof businessFormSchema>;
 
-export default function BusinessForm() {
-  const { equipments, isLoading } = useEquipments();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+interface BusinessFormProps {
+  onSubmit: (data: BusinessFormValues) => void;
+  isSubmitting: boolean;
+  setIsSubmitting: (isSubmitting: boolean) => void;
+  file: File | null;
+  setFile: (file: File | null) => void;
+  form: UseFormReturn<BusinessFormValues>;
+  equipments: { id: string; name: string }[];
+  isLoading: boolean;
+  preview: string | null;
+  setPreview: (preview: string | null) => void;
+  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  removeImage: () => void;
+  generateTimeOptions: () => React.ReactNode[];
+}
 
-  const form = useForm<BusinessFormValues>({
-    resolver: zodResolver(businessFormSchema),
-    defaultValues: {
-      buildingType: "BUSINESS",
-      weekdays: [],
-      weekends: [],
-    },
-  });
-
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-
-  const onSubmit = async (data: BusinessFormValues) => {
-    if (!file) {
-      toast.error("Please upload a facility photo");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      // Upload image
-      const imageUrl = await uploadImageToImgBB(file);
-      if (!imageUrl) {
-        toast.error("Failed to upload image");
-        return;
-      }
-      console.log(data);
-
-      // Prepare form data
-      const formData = {
-        ...data,
-        image: imageUrl,
-      };
-
-      // Submit to API
-      const response = await fetch("/api/demo-centers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to submit form");
-      }
-
-      toast.success("Business demo center submitted successfully!");
-      form.reset();
-      setFile(null);
-      setPreview(null);
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to submit form",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFile(file);
-      setPreview(URL.createObjectURL(file));
-    }
-  };
-
-  const removeImage = () => {
-    setFile(null);
-    setPreview(null);
-  };
-
-  function generateTimeOptions() {
-    const times = [];
-    for (let hour = 0; hour < 24; hour++) {
-      for (const min of [0, 30]) {
-        const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : "30"} ${hour < 12 ? "AM" : "PM"}`;
-        times.push(
-          <option key={display} value={display}>
-            {display}
-          </option>,
-        );
-      }
-    }
-    return times;
-  }
-
+export default function BusinessForm({
+  onSubmit,
+  isSubmitting,
+  form,
+  equipments,
+  isLoading,
+  preview,
+  handleFileChange,
+  removeImage,
+  generateTimeOptions,
+}: BusinessFormProps) {
+  // render the form
   return (
     <Form {...form}>
       <form
