@@ -251,6 +251,7 @@ model ExerciseLibraryVideo {
 
   @@index([userId])
   @@index([title])
+
   @@index([isPublic, blocked])
 }
 
@@ -276,13 +277,24 @@ model RewardPoints {
   userId      String
   user        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
   points      Int      @default(0)
-  message     String?
+  name        String?
+  isActive    Boolean  @default(true)
+  type        RewardType @default(LIKE)
   icon        String?
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   @@index([userId])
   @@map("reward_points")
+}
+
+enum RewardType {
+  LIKE
+  VIEW
+  RATING
+  SETUP 
+  DISLIKE
+  LIBRARY
 }
 
 
