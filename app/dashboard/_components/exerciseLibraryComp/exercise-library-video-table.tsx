@@ -45,6 +45,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import LibraryVideoUpload from "./create-ex-lib-admin";
+import UpdateLibraryVideo from "./UpdateLibraryVideo";
 
 export const ExerciseLibraryVideoTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -52,6 +53,8 @@ export const ExerciseLibraryVideoTable = () => {
   const [unblockVideoModalOpen, setUnblockVideoModalOpen] = useState(false);
   const [publishVideoModalOpen, setPublishVideoModalOpen] = useState(false);
   const [addExerciseModalOpen, setAddExerciseModalOpen] = useState(false);
+  const [updateExerciseModalOpen, setUpdateExerciseModalOpen] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const [videoId, setVideoId] = useState<string | undefined>("");
   const [searchQuery, setSearchQuery] = useState("");
   const [pagination, setPagination] = useState<PaginationState>({
@@ -379,7 +382,12 @@ export const ExerciseLibraryVideoTable = () => {
                     <span>View</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSelectedVideo(row.original);
+                    setUpdateExerciseModalOpen(true);
+                  }}
+                >
                   <Pencil className="mr-2 h-4 w-4" />
                   <span>Edit</span>
                 </DropdownMenuItem>
@@ -663,6 +671,18 @@ export const ExerciseLibraryVideoTable = () => {
           </form>
         </Form>
       </Modal>
+      {/* Update Exercise Modal */}
+      {selectedVideo && (
+        <UpdateLibraryVideo
+          video={selectedVideo}
+          isOpen={updateExerciseModalOpen}
+          onClose={() => {
+            setUpdateExerciseModalOpen(false);
+            setSelectedVideo(null);
+          }}
+          mutateUrl={url}
+        />
+      )}
     </>
   );
 };
