@@ -42,6 +42,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
+import UpdateDemoCenter from "./UpdateDemoCenter";
 
 export const DemoCenterTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -50,7 +51,10 @@ export const DemoCenterTable = () => {
   const [unblockDemoCenterModalOpen, setUnblockDemoCenterModalOpen] =
     useState(false);
   const [publishModalOpen, setPublishModalOpen] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [demoCenterId, setDemoCenterId] = useState<string | undefined>("");
+  const [selectedDemoCenter, setSelectedDemoCenter] =
+    useState<DemoCenter | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 1,
@@ -85,7 +89,7 @@ export const DemoCenterTable = () => {
     }
 
     try {
-      const { error } = await admin.blockDemoCenter({
+      const { error } = await admin.demoCenter.block({
         demoCenterId,
         blockReason: formData.blockReason,
       });
@@ -113,7 +117,7 @@ export const DemoCenterTable = () => {
     }
 
     try {
-      const { error } = await admin.unblockDemoCenter({
+      const { error } = await admin.demoCenter.unblock({
         demoCenterId,
       });
 
@@ -138,7 +142,7 @@ export const DemoCenterTable = () => {
     }
 
     try {
-      const { error } = await admin.updateDemoCenterStatus({
+      const { error } = await admin.demoCenter.updateStatus({
         demoCenterId,
         isPublic: isPublic,
       });
@@ -171,7 +175,7 @@ export const DemoCenterTable = () => {
     }
 
     try {
-      const { error, data } = await admin.deleteDemoCenter({
+      const { error, data } = await admin.demoCenter.delete({
         demoCenterId,
       });
 
@@ -180,7 +184,7 @@ export const DemoCenterTable = () => {
         return;
       }
 
-      if (data?.success) {
+      if (data) {
         toast.success("Demo center deleted successfully");
       }
 
@@ -301,7 +305,12 @@ export const DemoCenterTable = () => {
                     <span>View</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSelectedDemoCenter(row.original);
+                    setUpdateModalOpen(true);
+                  }}
+                >
                   <Pencil className="mr-2 h-4 w-4" />
                   <span>Edit</span>
                 </DropdownMenuItem>
@@ -555,6 +564,19 @@ export const DemoCenterTable = () => {
           </form>
         </Form>
       </Modal>
+
+      {/* Update Demo Center Modal */}
+      <UpdateDemoCenter
+        isOpen={updateModalOpen}
+        onClose={() => {
+          setUpdateModalOpen(false);
+          setSelectedDemoCenter(null);
+        }}
+        demoCenter={selectedDemoCenter}
+        onUpdate={() => {
+          mutate(url);
+        }}
+      />
     </>
   );
 };

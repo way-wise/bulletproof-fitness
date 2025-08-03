@@ -1,7 +1,7 @@
 import {
   blockDemoCenterSchema,
-  demoCenterSchema,
   demoCenterQuerySchema,
+  demoCenterSchema,
   unblockDemoCenterSchema,
   updateDemoCenterStatusSchema,
 } from "@/schema/demoCenters";
@@ -102,6 +102,33 @@ demoCenterModule.patch("/:id/status", async (c) => {
   });
 
   const result = await demoCentersService.updateDemoCenterStatus(
+    validatedParam.id,
+    validatedBody,
+  );
+  return c.json(result);
+});
+
+/*
+  @route    PATCH: /demo-centers/:id
+  @access   private
+  @desc     Update demo center
+*/
+demoCenterModule.patch("/:id", async (c) => {
+  const validatedParam = await validateInput({
+    type: "param",
+    schema: object({
+      id: string().required(),
+    }),
+    data: c.req.param(),
+  });
+
+  const validatedBody = await validateInput({
+    type: "form",
+    schema: demoCenterSchema,
+    data: await c.req.json(),
+  });
+
+  const result = await demoCentersService.updateDemoCenter(
     validatedParam.id,
     validatedBody,
   );

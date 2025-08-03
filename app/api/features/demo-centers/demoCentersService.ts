@@ -312,6 +312,85 @@ export const demoCentersService = {
     return updatedDemoCenter;
   },
 
+  // Update demo center
+  updateDemoCenter: async (
+    id: string,
+    data: InferType<typeof demoCenterSchema>,
+  ) => {
+    const demoCenter = await prisma.demoCenter.findUnique({
+      where: { id },
+    });
+
+    if (!demoCenter) {
+      throw new HTTPException(404, {
+        message: "Demo center not found",
+      });
+    }
+
+    // Find the equipment by name to get its ID
+    const equipment = await prisma.equipment.findFirst({
+      where: {
+        name: data.equipment,
+      },
+    });
+
+    if (!equipment) {
+      throw new HTTPException(400, {
+        message: `Equipment "${data.equipment}" not found`,
+      });
+    }
+
+    // Update demo center
+    const updatedDemoCenter = await prisma.demoCenter.update({
+      where: { id },
+      data: {
+        buildingType: data.buildingType,
+        name: data.name,
+        address: data.address,
+        contact: data.contact,
+        cityZip: data.cityZip,
+        bio: data.bio,
+        image: data.image,
+        availability: data.availability,
+        weekdays:
+          data.weekdays?.filter((day): day is string => Boolean(day)) || [],
+        weekends:
+          data.weekends?.filter((day): day is string => Boolean(day)) || [],
+        weekdayOpen: data.weekdayOpen,
+        weekdayClose: data.weekdayClose,
+        weekendOpen: data.weekendOpen,
+        weekendClose: data.weekendClose,
+        isPublic: data.isPublic || false,
+        blocked: data.blocked || false,
+        blockReason: data.blockReason,
+        updatedAt: new Date(),
+      },
+      include: {
+        demoCenterEquipments: {
+          include: {
+            equipment: true,
+          },
+        },
+      },
+    });
+
+    // Update equipment relationship
+    await prisma.demoCenterEquipment.deleteMany({
+      where: { demoCenterId: id },
+    });
+
+    await prisma.demoCenterEquipment.create({
+      data: {
+        demoCenterId: id,
+        equipmentId: equipment.id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+
+    return updatedDemoCenter;
+  },
+
   // Block demo center
   blockDemoCenter: async (data: InferType<typeof blockDemoCenterSchema>) => {
     const demoCenter = await prisma.demoCenter.findUnique({
