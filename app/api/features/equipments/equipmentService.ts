@@ -1,9 +1,9 @@
 import prisma from "@/lib/prisma";
 import { equipmentSchema } from "@/schema/equipment";
 import { PaginationQuery } from "@/schema/paginationSchema";
+import { getPaginationQuery } from "@api/lib/pagination";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
-import { getPaginationQuery } from "@api/lib/pagination";
 
 export const equipmentService = {
   // Get all equipments
@@ -94,5 +94,34 @@ export const equipmentService = {
       success: true,
       message: "Equipment deleted successfully",
     };
+  },
+  // Update equipment by id
+  updateEquipment: async (
+    id: string,
+    data: InferType<typeof equipmentSchema>,
+  ) => {
+    const equipment = await prisma.equipment.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!equipment) {
+      throw new HTTPException(404, {
+        message: "Equipment not found",
+      });
+    }
+
+    const updatedEquipment = await prisma.equipment.update({
+      where: {
+        id,
+      },
+      data: {
+        name: data.name,
+        updatedAt: new Date(),
+      },
+    });
+
+    return updatedEquipment;
   },
 };

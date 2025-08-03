@@ -1,4 +1,4 @@
-import EquipmentsTable from "./equipments-table";
+import EquipmentsTable from "../_components/equipments/equipments-table";
 
 const EquipmentsPage = async () => {
   return (

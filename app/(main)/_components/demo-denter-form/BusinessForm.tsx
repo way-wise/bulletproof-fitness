@@ -77,6 +77,7 @@ export default function BusinessForm() {
         toast.error("Failed to upload image");
         return;
       }
+      console.log(data);
 
       // Prepare form data
       const formData = {

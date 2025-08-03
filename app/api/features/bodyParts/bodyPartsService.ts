@@ -62,6 +62,35 @@ export const bodyPartsService = {
 
     return bodyPart;
   },
+  // Update rack by id
+  updateBodyPart: async (
+    id: string,
+    data: InferType<typeof bodyPartSchema>,
+  ) => {
+    const bodyPart = await prisma.bodyPart.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!bodyPart) {
+      throw new HTTPException(404, {
+        message: "Body Part not found",
+      });
+    }
+
+    const updatedBodyPart = await prisma.bodyPart.update({
+      where: {
+        id,
+      },
+      data: {
+        name: data.name,
+        updatedAt: new Date(),
+      },
+    });
+
+    return updatedBodyPart;
+  },
 
   // Delete equipment by id
   deleteBodyPart: async (id: string) => {

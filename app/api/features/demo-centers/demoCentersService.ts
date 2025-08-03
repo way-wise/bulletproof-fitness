@@ -196,6 +196,8 @@ export const demoCentersService = {
   // Create demo center
   createDemoCenter: async (data: InferType<typeof demoCenterSchema>) => {
     // Find the equipment by name to get its ID
+
+    console.log(data);
     const equipment = await prisma.equipment.findFirst({
       where: {
         name: data.equipment,
@@ -207,7 +209,6 @@ export const demoCentersService = {
         message: `Equipment "${data.equipment}" not found`,
       });
     }
-
     const demoCenter = await prisma.demoCenter.create({
       data: {
         buildingType: data.buildingType,
