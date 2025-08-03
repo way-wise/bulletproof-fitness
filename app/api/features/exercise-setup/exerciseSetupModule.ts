@@ -6,7 +6,7 @@ import {
 import { Hono, type Context } from "hono";
 import { InferType } from "yup";
 import { validateInput } from "../../lib/validateInput";
-import { exerciseSetupService } from "./exerciseSerupService";
+import { exerciseSetupService } from "./exerciseSetupService";
 
 export const exerciseSetupModule = new Hono();
 
@@ -186,7 +186,7 @@ exerciseSetupModule.put("/dashboard/:id", async (c: Context) => {
       data: dataWithUserId,
     });
 
-    const result = await exerciseSetupService.updateExerciseLibraryVideo(
+    const result = await exerciseSetupService.updateExerciseSetupVideo(
       id,
       validatedBody,
     );

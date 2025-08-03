@@ -20,7 +20,7 @@ type SearchParams = {
 };
 
 interface CardsPageProps {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }
 
 // Server-side data fetching function

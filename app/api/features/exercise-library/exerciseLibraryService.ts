@@ -10,44 +10,103 @@ export const exerciseLibraryService = {
   createExerciseLibraryAdmin: async (
     data: InferType<typeof exerciseLibrarySchemaAdmin>,
   ) => {
-    console.log(data);
-    const bodyPart = await prisma.exerciseLibraryVideo.create({
-      data: {
-        title: data.title,
-        videoUrl: data.videoUrl,
-        equipment:
-          data.equipment && data.equipment.length > 0
-            ? JSON.stringify(data.equipment)
-            : null,
-        bodyPart:
-          data.bodyPart && data.bodyPart.length > 0
-            ? JSON.stringify(data.bodyPart)
-            : null,
-        height: data.height && data.height.trim() !== "" ? data.height : null,
-        rack:
-          data.rack && data.rack.length > 0 ? JSON.stringify(data.rack) : null,
-        userId: data.userId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
+    try {
+      console.log(data);
 
-    return bodyPart;
+      const exerciseLibrary = await prisma.exerciseLibraryVideo.create({
+        data: {
+          title: data.title,
+          videoUrl: data.videoUrl,
+          height: data.height?.trim() || null,
+          userId: data.userId,
+          // Create junction table records for equipment
+          ExLibEquipment: {
+            create:
+              (data.equipment?.filter(Boolean) as string[])?.map(
+                (equipmentId) => ({
+                  equipmentId: equipmentId,
+                }),
+              ) || [],
+          },
+          // Create junction table records for body parts
+          ExLibBodyPart: {
+            create:
+              (data.bodyPart?.filter(Boolean) as string[])?.map(
+                (bodyPartId) => ({
+                  bodyPartId: bodyPartId,
+                }),
+              ) || [],
+          },
+          // Create junction table records for racks
+          ExLibRak: {
+            create:
+              (data.rack?.filter(Boolean) as string[])?.map((rackId) => ({
+                rackId: rackId,
+              })) || [],
+          },
+        },
+        include: {
+          ExLibEquipment: {
+            include: {
+              equipment: true,
+            },
+          },
+          ExLibBodyPart: {
+            include: {
+              bodyPart: true,
+            },
+          },
+          ExLibRak: {
+            include: {
+              rack: true,
+            },
+          },
+        },
+      });
+
+      return exerciseLibrary;
+    } catch (error) {
+      console.error("Error creating exercise library video:", error);
+      throw error;
+    }
   },
-
   // Get all exercise library videos for dashboard (admin)
   getAllExerciseLibraryVideos: async (page = 1, limit = 10, search = "") => {
     try {
       const skip = (page - 1) * limit;
 
       // Build where clause for search
-      const where = search
+      const where: any = search
         ? {
             OR: [
               { title: { contains: search, mode: "insensitive" as const } },
-              { equipment: { contains: search, mode: "insensitive" as const } },
-              { bodyPart: { contains: search, mode: "insensitive" as const } },
-              { rack: { contains: search, mode: "insensitive" as const } },
+              {
+                ExLibEquipment: {
+                  some: {
+                    equipment: {
+                      name: { contains: search, mode: "insensitive" as const },
+                    },
+                  },
+                },
+              },
+              {
+                ExLibBodyPart: {
+                  some: {
+                    bodyPart: {
+                      name: { contains: search, mode: "insensitive" as const },
+                    },
+                  },
+                },
+              },
+              {
+                ExLibRak: {
+                  some: {
+                    rack: {
+                      name: { contains: search, mode: "insensitive" as const },
+                    },
+                  },
+                },
+              },
             ],
           }
         : {};
@@ -55,7 +114,7 @@ export const exerciseLibraryService = {
       // Get total count
       const total = await prisma.exerciseLibraryVideo.count({ where });
 
-      // Get paginated data
+      // Get paginated data with junction tables
       const exercises = await prisma.exerciseLibraryVideo.findMany({
         where,
         skip,
@@ -69,6 +128,21 @@ export const exerciseLibraryService = {
               id: true,
               name: true,
               email: true,
+            },
+          },
+          ExLibEquipment: {
+            include: {
+              equipment: true,
+            },
+          },
+          ExLibBodyPart: {
+            include: {
+              bodyPart: true,
+            },
+          },
+          ExLibRak: {
+            include: {
+              rack: true,
             },
           },
         },
@@ -102,6 +176,21 @@ export const exerciseLibraryService = {
               email: true,
             },
           },
+          ExLibEquipment: {
+            include: {
+              equipment: true,
+            },
+          },
+          ExLibBodyPart: {
+            include: {
+              bodyPart: true,
+            },
+          },
+          ExLibRak: {
+            include: {
+              rack: true,
+            },
+          },
         },
       });
 
@@ -122,25 +211,67 @@ export const exerciseLibraryService = {
     data: InferType<typeof exerciseLibrarySchemaAdmin>,
   ) => {
     try {
+      // First, delete existing junction table records
+      await prisma.exLibEquipment.deleteMany({
+        where: { exLibraryId: id },
+      });
+      await prisma.exLibBodyPart.deleteMany({
+        where: { exLibraryId: id },
+      });
+      await prisma.exLibRak.deleteMany({
+        where: { exLibraryId: id },
+      });
+
+      // Then update the exercise library and create new junction table records
       const exercise = await prisma.exerciseLibraryVideo.update({
         where: { id },
         data: {
           title: data.title,
           videoUrl: data.videoUrl,
-          equipment:
-            data.equipment && data.equipment.length > 0
-              ? JSON.stringify(data.equipment)
-              : null,
-          bodyPart:
-            data.bodyPart && data.bodyPart.length > 0
-              ? JSON.stringify(data.bodyPart)
-              : null,
           height: data.height && data.height.trim() !== "" ? data.height : null,
-          rack:
-            data.rack && data.rack.length > 0
-              ? JSON.stringify(data.rack)
-              : null,
           updatedAt: new Date(),
+          // Create new junction table records for equipment
+          ExLibEquipment: {
+            create:
+              (data.equipment?.filter(Boolean) as string[])?.map(
+                (equipmentId) => ({
+                  equipmentId: equipmentId,
+                }),
+              ) || [],
+          },
+          // Create new junction table records for body parts
+          ExLibBodyPart: {
+            create:
+              (data.bodyPart?.filter(Boolean) as string[])?.map(
+                (bodyPartId) => ({
+                  bodyPartId: bodyPartId,
+                }),
+              ) || [],
+          },
+          // Create new junction table records for racks
+          ExLibRak: {
+            create:
+              (data.rack?.filter(Boolean) as string[])?.map((rackId) => ({
+                rackId: rackId,
+              })) || [],
+          },
+        },
+        include: {
+          ExLibEquipment: {
+            include: {
+              equipment: true,
+            },
+          },
+          ExLibBodyPart: {
+            include: {
+              bodyPart: true,
+            },
+          },
+          ExLibRak: {
+            include: {
+              rack: true,
+            },
+          },
         },
       });
 
@@ -280,21 +411,51 @@ export const exerciseLibraryService = {
       const created = await prisma.exerciseLibraryVideo.create({
         data: {
           title: data.title,
-          equipment:
-            data.equipment && data.equipment.length > 0
-              ? JSON.stringify(data.equipment)
-              : null,
-          bodyPart:
-            data.bodyPart && data.bodyPart.length > 0
-              ? JSON.stringify(data.bodyPart)
-              : null,
           height: data.height,
-          rack:
-            data.rack && data.rack.length > 0
-              ? JSON.stringify(data.rack)
-              : null,
           videoUrl: uploadResult.secure_url,
           userId: data.userId,
+          // Create junction table records for equipment
+          ExLibEquipment: {
+            create:
+              (data.equipment?.filter(Boolean) as string[])?.map(
+                (equipmentId) => ({
+                  equipmentId: equipmentId,
+                }),
+              ) || [],
+          },
+          // Create junction table records for body parts
+          ExLibBodyPart: {
+            create:
+              (data.bodyPart?.filter(Boolean) as string[])?.map(
+                (bodyPartId) => ({
+                  bodyPartId: bodyPartId,
+                }),
+              ) || [],
+          },
+          // Create junction table records for racks
+          ExLibRak: {
+            create:
+              (data.rack?.filter(Boolean) as string[])?.map((rackId) => ({
+                rackId: rackId,
+              })) || [],
+          },
+        },
+        include: {
+          ExLibEquipment: {
+            include: {
+              equipment: true,
+            },
+          },
+          ExLibBodyPart: {
+            include: {
+              bodyPart: true,
+            },
+          },
+          ExLibRak: {
+            include: {
+              rack: true,
+            },
+          },
         },
       });
 
@@ -312,15 +473,15 @@ export const exerciseLibraryService = {
             body: JSON.stringify({
               // Basic exercise info
               title: created.title,
-              description: `Exercise using ${created.equipment} for ${created.bodyPart}`,
+              description: `Exercise using ${created.ExLibEquipment[0]?.equipment?.name || "Unknown Equipment"} for ${created.ExLibBodyPart[0]?.bodyPart?.name || "Unknown Body Part"}`,
               videoUrl: created.videoUrl,
               id: created.id,
 
               // Additional metadata for Zapier
-              equipment: created.equipment,
-              bodyPart: created.bodyPart,
+              equipment: created.ExLibEquipment.map((eq) => eq.equipment.name),
+              bodyPart: created.ExLibBodyPart.map((bp) => bp.bodyPart.name),
               height: created.height,
-              rack: created.rack,
+              rack: created.ExLibRak.map((r) => r.rack.name),
               userId: created.userId,
               createdAt: created.createdAt,
               updatedAt: created.updatedAt,
@@ -404,49 +565,94 @@ export const exerciseLibraryService = {
       const where: any = {
         isPublic: true,
         blocked: false,
+        AND: [],
       };
 
       // Search filter
       if (search) {
-        where.OR = [
-          { title: { contains: search, mode: "insensitive" as const } },
-          { equipment: { contains: search, mode: "insensitive" as const } },
-          { bodyPart: { contains: search, mode: "insensitive" as const } },
-          { rack: { contains: search, mode: "insensitive" as const } },
-        ];
+        where.AND.push({
+          OR: [
+            { title: { contains: search, mode: "insensitive" as const } },
+            {
+              ExLibEquipment: {
+                some: {
+                  equipment: {
+                    name: { contains: search, mode: "insensitive" as const },
+                  },
+                },
+              },
+            },
+            {
+              ExLibBodyPart: {
+                some: {
+                  bodyPart: {
+                    name: { contains: search, mode: "insensitive" as const },
+                  },
+                },
+              },
+            },
+            {
+              ExLibRak: {
+                some: {
+                  rack: {
+                    name: { contains: search, mode: "insensitive" as const },
+                  },
+                },
+              },
+            },
+          ],
+        });
       }
 
       // Body part filter
       if (bodyPartIds.length > 0) {
-        where.OR = bodyPartIds.map((id) => ({
-          bodyPart: { contains: id, mode: "insensitive" as const },
-        }));
+        where.AND.push({
+          ExLibBodyPart: {
+            some: {
+              bodyPartId: { in: bodyPartIds },
+            },
+          },
+        });
       }
 
       // Equipment filter
       if (equipmentIds.length > 0) {
-        where.OR = equipmentIds.map((id) => ({
-          equipment: { contains: id, mode: "insensitive" as const },
-        }));
+        where.AND.push({
+          ExLibEquipment: {
+            some: {
+              equipmentId: { in: equipmentIds },
+            },
+          },
+        });
       }
 
       // Rack filter
       if (rackIds.length > 0) {
-        where.OR = rackIds.map((id) => ({
-          rack: { contains: id, mode: "insensitive" as const },
-        }));
+        where.AND.push({
+          ExLibRak: {
+            some: {
+              rackId: { in: rackIds },
+            },
+          },
+        });
       }
 
       // Username filter
       if (username) {
-        where.user = {
-          name: { contains: username, mode: "insensitive" as const },
-        };
+        where.AND.push({
+          user: {
+            name: { contains: username, mode: "insensitive" as const },
+          },
+        });
       }
 
-      // Height filter
+      // Height filter - only apply if we have height constraints
       if (minHeight > 0 || maxHeight < 85) {
-        where.AND = [{ height: { not: null } }, { height: { not: "" } }];
+        where.AND.push({
+          height: {
+            not: null,
+          },
+        });
       }
 
       // Get total count
@@ -454,7 +660,7 @@ export const exerciseLibraryService = {
         where,
       });
 
-      // Get paginated data with user info
+      // Get paginated data with user info and junction tables
       const exercises = await prisma.exerciseLibraryVideo.findMany({
         where,
         skip,
@@ -470,26 +676,37 @@ export const exerciseLibraryService = {
               email: true,
             },
           },
+          ExLibEquipment: {
+            include: {
+              equipment: true,
+            },
+          },
+          ExLibBodyPart: {
+            include: {
+              bodyPart: true,
+            },
+          },
+          ExLibRak: {
+            include: {
+              rack: true,
+            },
+          },
         },
       });
 
-      // Transform data to include parsed JSON and additional fields
+      // Transform data to include additional fields
       const transformedExercises = exercises
         .map((exercise) => {
-          const parsedEquipment = exercise.equipment
-            ? JSON.parse(exercise.equipment)
-            : [];
-          const parsedBodyPart = exercise.bodyPart
-            ? JSON.parse(exercise.bodyPart)
-            : [];
-          const parsedRack = exercise.rack ? JSON.parse(exercise.rack) : [];
-
-          // Calculate height in inches if it exists
-          let heightInInches = null;
-          if (exercise.height) {
-            const heightMatch = exercise.height.match(/(\d+(?:\.\d+)?)/);
+          // Parse height to inches
+          let heightInInches: number | null = null;
+          if (exercise.height && exercise.height.trim() !== "") {
+            const heightMatch = exercise.height.match(/(\d+)'(\d+)"/);
             if (heightMatch) {
-              heightInInches = parseFloat(heightMatch[1]);
+              const feet = parseInt(heightMatch[1]);
+              const inches = parseInt(heightMatch[2]);
+              heightInInches = feet * 12 + inches;
+            } else {
+              heightInInches = parseInt(exercise.height || "0", 10);
             }
           }
 
@@ -513,17 +730,21 @@ export const exerciseLibraryService = {
             title: exercise.title,
             videoUrl: exercise.videoUrl,
             equipment: {
-              id: parsedEquipment[0]?.id || "default",
-              name: parsedEquipment[0]?.name || "Unknown Equipment",
+              id: exercise.ExLibEquipment[0]?.equipment?.id || "default",
+              name:
+                exercise.ExLibEquipment[0]?.equipment?.name ||
+                "Unknown Equipment",
             },
             bodyPart: {
-              id: parsedBodyPart[0]?.id || "default",
-              name: parsedBodyPart[0]?.name || "Unknown Body Part",
+              id: exercise.ExLibBodyPart[0]?.bodyPart?.id || "default",
+              name:
+                exercise.ExLibBodyPart[0]?.bodyPart?.name ||
+                "Unknown Body Part",
             },
-            rack: parsedRack[0]
+            rack: exercise.ExLibRak[0]
               ? {
-                  id: parsedRack[0]?.id || "default",
-                  name: parsedRack[0]?.name || "Unknown Rack",
+                  id: exercise.ExLibRak[0].rack.id,
+                  name: exercise.ExLibRak[0].rack.name,
                 }
               : undefined,
             height: heightInInches || 0,
