@@ -1,9 +1,11 @@
 "use client";
 
+import { Card, CardContent } from "@/components/ui/card";
+
 import { Star } from "lucide-react";
 import { useState } from "react";
 import useSWR from "swr";
-import ContactUs from "./ContactUs";
+import ContactUs from "../exercideLibrary/ContactUs";
 
 const pumpData = [
   { label: "Yellow", desc: "ISOLATOR seat/pad", value: 3 },
@@ -45,7 +47,7 @@ export default function ExerciseDetailPage({
 
   const { data, error, isLoading } = useSWR(
     exerciseLibraryId
-      ? `/api/exercise-library/dashboard/${exerciseLibraryId}`
+      ? `/api/exercise-setup/dashboard/${exerciseLibraryId}`
       : null,
     fetcher,
   );
@@ -57,7 +59,7 @@ export default function ExerciseDetailPage({
       <div className="grid items-start gap-10 md:grid-cols-2">
         <div className="aspect-video w-full overflow-hidden rounded shadow-md">
           <iframe
-            src={libraryData?.videoUrl}
+            src={data?.videoUrl}
             title="Exercise Video"
             className="h-full w-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -67,12 +69,19 @@ export default function ExerciseDetailPage({
 
         <div className="space-y-5">
           <h1 className="text-3xl leading-snug font-bold uppercase">
-            {libraryData?.title}
+            {data?.title}
           </h1>
           <ul className="space-y-1.5 text-[16px]">
             <li>
-              <strong>User Height In Inches:</strong>{" "}
-              {libraryData?.height || "N/A"}
+              <strong>Body Part:</strong>{" "}
+              {libraryData?.bodyPart.map((item: string) => item).join(", ")}
+            </li>
+            <li>
+              <strong>Equipment Used:</strong>{" "}
+              {libraryData?.equipment.map((item: string) => item).join(", ")}
+            </li>
+            <li>
+              <strong>User Height In Inches:</strong> 63
             </li>
             <li>
               <strong>Rack Used:</strong>{" "}
@@ -84,8 +93,31 @@ export default function ExerciseDetailPage({
             </li>
           </ul>
           <div className="rounded border bg-gray-100 px-4 py-3 text-base">
-            Uploaded by: <strong>{libraryData?.user?.name}</strong>
+            Uploaded by: <strong>Bulletproof Fitness Equipment</strong>
           </div>
+        </div>
+      </div>
+
+      {/* Pump-By-Numbers */}
+      <div className="mt-16">
+        <h2 className="mb-6 text-2xl font-bold uppercase">Pump-By-Numbers:</h2>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
+          {pumpData.map((item, i) => (
+            <Card key={i} className="border border-gray-300">
+              <CardContent className="flex items-start gap-5 p-6">
+                <div className="h-[64px] w-[52px] flex-shrink-0 rounded bg-gray-200" />
+                <div className="text-base">
+                  <p className="font-medium">
+                    <span className="font-semibold">{item.label}</span>
+                    {item.label !== "Not Used" && ` (${item.desc})`}:
+                    <span className="ml-1 font-bold">
+                      {item.value ?? "Not Used"}
+                    </span>
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
 

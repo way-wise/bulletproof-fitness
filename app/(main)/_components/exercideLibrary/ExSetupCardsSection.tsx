@@ -11,7 +11,7 @@ import Spinner from "@/components/ui/spinner";
 import { useExerciseSetup } from "@/hooks/useExerciseSetup";
 import { ExerciseLibraryFilters, ExerciseLibraryItem } from "@/lib/dataTypes";
 import { useState } from "react";
-import ExLibraryCard from "./ExLibraryCard";
+import SetupCard from "../exerciseSetup/SetupCard";
 import FilterSection from "./FilterSection";
 
 interface ExCardsSectionProps {
@@ -35,21 +35,7 @@ const ExSetupCardsSection = ({
   const handleFiltersChange = (newFilters: ExerciseLibraryFilters) => {
     setFilters(newFilters);
   };
-
-  // Convert ExerciseLibraryItem to TCardType for compatibility with ExLibraryCard
-  const convertToCardType = (item: ExerciseLibraryItem) => ({
-    id: parseInt(item.id) || 0,
-    title: item.title,
-    category: item.bodyPart?.name || "Unknown",
-    equipment: item.equipment?.name || "Unknown",
-    views: item.views || 0,
-    likes: item.likes || 0,
-    comments: item.comments || 0,
-    saves: item.saves || 0,
-    label: item.label || "Default",
-    videoUrl: item.videoUrl,
-  });
-
+  console.log(displayData);
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
@@ -157,7 +143,7 @@ const ExSetupCardsSection = ({
             {displayData.length > 0 && (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {displayData.map((item) => (
-                  <ExLibraryCard key={item.id} item={convertToCardType(item)} />
+                  <SetupCard key={item.id} item={item} />
                 ))}
               </div>
             )}
@@ -176,6 +162,3 @@ const ExSetupCardsSection = ({
 };
 
 export default ExSetupCardsSection;
-
-// Remove seed data export since we're using real API data now
-// export const seedData = [...]; // REMOVED

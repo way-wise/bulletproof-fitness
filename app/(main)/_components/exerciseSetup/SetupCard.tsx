@@ -4,7 +4,7 @@ import { ExerciseLibraryItem } from "@/lib/dataTypes";
 import { Eye, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 
-const ExLibraryCard = ({ item }: { item: ExerciseLibraryItem }) => {
+const SetupCard = ({ item }: { item: ExerciseLibraryItem }) => {
   console.log(item);
   return (
     <div>
@@ -27,7 +27,7 @@ const ExLibraryCard = ({ item }: { item: ExerciseLibraryItem }) => {
           )}
           <p className="text-[16px] text-gray-500">{item.user?.name}</p>
 
-          <Link href={`/${item.id}`}>
+          <Link href={`/exerciseSetup/${item.id}`}>
             <h3 className="text-[20px] font-bold uppercase">{item.title}</h3>
           </Link>
           <div className="mt-[12px] flex items-center gap-6 text-[16px] text-primary">
@@ -51,4 +51,4 @@ const ExLibraryCard = ({ item }: { item: ExerciseLibraryItem }) => {
   );
 };
 
-export default ExLibraryCard;
+export default SetupCard;

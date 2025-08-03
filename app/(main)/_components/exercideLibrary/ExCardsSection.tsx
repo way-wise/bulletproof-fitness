@@ -36,20 +36,6 @@ const ExCardsSection = ({
     setFilters(newFilters);
   };
 
-  // Convert ExerciseLibraryItem to TCardType for compatibility with ExLibraryCard
-  const convertToCardType = (item: ExerciseLibraryItem) => ({
-    id: parseInt(item.id) || 0,
-    title: item.title,
-    category: item.bodyPart?.name || "Unknown",
-    equipment: item.equipment?.name || "Unknown",
-    views: item.views || 0,
-    likes: item.likes || 0,
-    comments: item.comments || 0,
-    saves: item.saves || 0,
-    label: item.label || "Default",
-    videoUrl: item.videoUrl,
-  });
-
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
@@ -157,7 +143,7 @@ const ExCardsSection = ({
             {displayData.length > 0 && (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {displayData.map((item) => (
-                  <ExLibraryCard key={item.id} item={convertToCardType(item)} />
+                  <ExLibraryCard key={item.id} item={item} />
                 ))}
               </div>
             )}

@@ -25,7 +25,7 @@ model users {
   banned               Boolean?
   banReason            String?
   banExpires           Int?
-  totalPoints          Float                 @default(0)
+  totalPoints          Float                  @default(0)
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
   sessions             sessions[]
@@ -91,22 +91,13 @@ model verifications {
   @@index([identifier])
 }
 
-model ExerciseLibrary {
-  id              String           @id @default(ulid())
-  title           String
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  exLibBodyParts  ExLibBodyPart[]
-  exLibEquipments ExLibEquipment[]
-  exLibRaks       ExLibRak[]
-}
-
 model BodyPart {
-  id             String          @id @default(ulid())
-  name           String
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  exLibBodyParts ExLibBodyPart[]
+  id              String            @id @default(ulid())
+  name            String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  exLibBodyParts  ExLibBodyPart[]
+  ExSetupBodyPart ExSetupBodyPart[]
 }
 
 model Equipment {
@@ -116,54 +107,53 @@ model Equipment {
   updatedAt            DateTime              @updatedAt
   exLibEquipments      ExLibEquipment[]
   demoCenterEquipments DemoCenterEquipment[]
+  ExSetupEquipment     ExSetupEquipment[]
 }
 
 model Rack {
-  id        String     @id @default(ulid())
-  name      String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  exLibRaks ExLibRak[]
+  id         String       @id @default(ulid())
+  name       String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  exLibRaks  ExLibRak[]
+  ExSetupRak ExSetupRak[]
 }
 
-model ExLibBodyPart {
-  id          String          @id @default(ulid())
-  exLibraryId String
-  exLibrary   ExerciseLibrary @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
-  bodyPartId  String
-  bodyPart    BodyPart        @relation(fields: [bodyPartId], references: [id], onDelete: Cascade)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+model ExSetupBodyPart {
+  id         String        @id @default(ulid())
+  exSetupId  String
+  exSetup    ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
+  bodyPartId String
+  bodyPart   BodyPart      @relation(fields: [bodyPartId], references: [id], onDelete: Cascade)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 }
 
-model ExLibEquipment {
-  id          String          @id @default(ulid())
-  exLibraryId String
-  exLibrary   ExerciseLibrary @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
+model ExSetupEquipment {
+  id          String        @id @default(ulid())
+  exSetupId   String
+  exSetup     ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
   equipmentId String
-  equipment   Equipment       @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  equipment   Equipment     @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
 
-model ExLibRak {
-  id          String          @id @default(ulid())
-  exLibraryId String
-  exLibrary   ExerciseLibrary @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
-  rackId      String
-  rack        Rack            @relation(fields: [rackId], references: [id], onDelete: Cascade)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+model ExSetupRak {
+  id        String        @id @default(ulid())
+  exSetupId String
+  exSetup   ExerciseSetup @relation(fields: [exSetupId], references: [id], onDelete: Cascade)
+  rackId    String
+  rack      Rack          @relation(fields: [rackId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
 
 model ExerciseSetup {
   id           String   @id @default(ulid())
   title        String
   videoUrl     String
-  equipment    String? // JSON string
-  bodyPart     String? // JSON string
   height       String?
-  rack         String? // JSON string
   userId       String
   user         users    @relation(fields: [userId], references: [id], onDelete: Cascade)
   isPublic     Boolean  @default(false)
@@ -180,14 +170,16 @@ model ExerciseSetup {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  contentStats ContentStats[]
-  views       UserView[]
-  ratings     UserRating[]
-  reactions   UserReaction[]
+  contentStats     ContentStats[]
+  views            UserView[]
+  ratings          UserRating[]
+  reactions        UserReaction[]
+  ExSetupBodyPart  ExSetupBodyPart[]
+  ExSetupEquipment ExSetupEquipment[]
+  ExSetupRak       ExSetupRak[]
 
   @@index([userId])
   @@index([isPublic, blocked])
-
 }
 
 model DemoCenter {
@@ -214,6 +206,7 @@ model DemoCenter {
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
   demoCenterEquipments DemoCenterEquipment[]
+
   @@index([isPublic, blocked])
   @@index([lat, lng])
   @@index([weekdays, weekends])
@@ -229,25 +222,55 @@ model DemoCenterEquipment {
   updatedAt    DateTime
 }
 
+model ExLibBodyPart {
+  id          String               @id @default(ulid())
+  exLibraryId String
+  exLibrary   ExerciseLibraryVideo @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
+  bodyPartId  String
+  bodyPart    BodyPart             @relation(fields: [bodyPartId], references: [id], onDelete: Cascade)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+
+model ExLibEquipment {
+  id          String               @id @default(ulid())
+  exLibraryId String
+  exLibrary   ExerciseLibraryVideo @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
+  equipmentId String
+  equipment   Equipment            @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+
+model ExLibRak {
+  id          String               @id @default(ulid())
+  exLibraryId String
+  exLibrary   ExerciseLibraryVideo @relation(fields: [exLibraryId], references: [id], onDelete: Cascade)
+  rackId      String
+  rack        Rack                 @relation(fields: [rackId], references: [id], onDelete: Cascade)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+
 model ExerciseLibraryVideo {
-  id          String   @id @default(ulid())
-  title       String
-  videoUrl    String
-  equipment   String?
-  bodyPart    String?
-  height      String?
-  rack        String?
-  userId      String
-  user        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  isPublic    Boolean  @default(false)
-  blocked     Boolean  @default(false)
-  blockReason String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  contentStats ContentStats[]
-  views       UserView[]
-  ratings     UserRating[]
-  reactions   UserReaction[]
+  id             String           @id @default(ulid())
+  title          String
+  videoUrl       String
+  height         String?
+  userId         String
+  user           users            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPublic       Boolean          @default(false)
+  blocked        Boolean          @default(false)
+  blockReason    String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  contentStats   ContentStats[]
+  views          UserView[]
+  ratings        UserRating[]
+  reactions      UserReaction[]
+  ExLibBodyPart  ExLibBodyPart[]
+  ExLibEquipment ExLibEquipment[]
+  ExLibRak       ExLibRak[]
 
   @@index([userId])
   @@index([title])
@@ -255,20 +278,20 @@ model ExerciseLibraryVideo {
   @@index([isPublic, blocked])
 }
 
-
 model ContentStats {
-  id           String   @id @default(ulid())
-  exerciseId   String?
-  exercise     ExerciseSetup? @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
-  libraryId String?
-  library     ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: Cascade)
-  totalViews   Int      @default(0)
-  totalLikes   Int      @default(0)
-  totalDislikes Int     @default(0)
-  avgRating    Float    @default(0.0)
-  updatedAt    DateTime @updatedAt
-  @@index([exerciseId, libraryId])
+  id            String                @id @default(ulid())
+  exerciseId    String?
+  exercise      ExerciseSetup?        @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  libraryId     String?
+  library       ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: Cascade)
+  totalViews    Int                   @default(0)
+  totalLikes    Int                   @default(0)
+  totalDislikes Int                   @default(0)
+  avgRating     Float                 @default(0.0)
+  updatedAt     DateTime              @updatedAt
+
   @@unique([exerciseId, libraryId])
+  @@index([exerciseId, libraryId])
   @@map("content_stats")
 }
 
@@ -284,6 +307,7 @@ model RewardPoints {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
   @@index([userId])
   @@map("reward_points")
 }
@@ -297,21 +321,20 @@ enum RewardType {
   LIBRARY
 }
 
-
 model UserView {
-  id          String         @id @default(ulid())
-  userId      String?
-  user        users?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  id     String  @id @default(ulid())
+  userId String?
+  user   users?  @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  exerciseId  String?
-  exercise    ExerciseSetup? @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
+  exerciseId String?
+  exercise   ExerciseSetup? @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
 
-  libraryId   String?
-  library     ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: SetNull)
-  viewedAt    DateTime       @default(now())
-  sessionId   String?
-  ipAddress   String?
-  userAgent   String?
+  libraryId String?
+  library   ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: SetNull)
+  viewedAt  DateTime              @default(now())
+  sessionId String?
+  ipAddress String?
+  userAgent String?
 
   @@unique([userId, exerciseId, libraryId])
   @@index([userId, exerciseId, libraryId])
@@ -320,50 +343,46 @@ model UserView {
   @@map("views")
 }
 
-
 model UserRating {
-  id          String         @id @default(ulid())
-  userId      String
-  user        users          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(ulid())
+  userId String
+  user   users  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  exerciseId  String?
-  exercise    ExerciseSetup? @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
+  exerciseId String?
+  exercise   ExerciseSetup? @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
 
-  libraryId   String?
-  library     ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: SetNull)
-  rating      Int            // Validate 1–5 in service/DTO layer
+  libraryId String?
+  library   ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: SetNull)
+  rating    Int // Validate 1–5 in service/DTO layer
 
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, exerciseId, libraryId])
   @@index([userId, exerciseId, libraryId])
   @@map("ratings")
 }
 
-
 model UserReaction {
-  id          String         @id @default(ulid())
-  userId      String
-  user        users          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(ulid())
+  userId String
+  user   users  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  reaction    ReactionType
+  reaction ReactionType
 
-  exerciseId  String?
-  exercise    ExerciseSetup? @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
+  exerciseId String?
+  exercise   ExerciseSetup? @relation(fields: [exerciseId], references: [id], onDelete: SetNull)
 
-  libraryId   String?
-  library     ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: SetNull)
+  libraryId String?
+  library   ExerciseLibraryVideo? @relation(fields: [libraryId], references: [id], onDelete: SetNull)
 
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId]) // One reaction per user per content
   @@index([userId, exerciseId, libraryId])
   @@map("reactions")
-
 }
-
 
 enum ReactionType {
   LIKE
