@@ -290,7 +290,6 @@ model ContentStats {
   avgRating     Float                 @default(0.0)
   updatedAt     DateTime              @updatedAt
 
-  @@unique([exerciseId, libraryId])
   @@index([exerciseId, libraryId])
   @@map("content_stats")
 }
