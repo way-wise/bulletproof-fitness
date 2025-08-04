@@ -1,6 +1,8 @@
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { Prisma } from "@/prisma/generated/client";
 import { ReactionType, RewardType } from "@/prisma/generated/enums";
+import { Console } from "console";
 
 async function getRewardPointValue(type: RewardType) {
   const reward = await prisma.rewardPoints.findFirst({
@@ -8,6 +10,12 @@ async function getRewardPointValue(type: RewardType) {
     orderBy: { createdAt: "desc" },
   });
   return reward?.points ?? 0;
+}
+
+function cleanWhere(where: Record<string, any>) {
+  return Object.fromEntries(
+    Object.entries(where).filter(([_, v]) => v !== undefined && v !== null),
+  );
 }
 
 async function awardPointsToUser(
@@ -66,14 +74,40 @@ export const actionService = {
     if (!content) throw new Error("Content not found");
 
     const whereClause = isLibrary
-      ? { userId, libraryId: contentId }
-      : { userId, exerciseId: contentId };
+      ? {
+          userId_libraryId: {
+            userId,
+            libraryId: contentId,
+          },
+        }
+      : {
+          userId_exerciseId: {
+            userId,
+            exerciseId: contentId,
+          },
+        };
 
-    const existingReaction = await prisma.userReaction.findFirst({
+    // const whereClause = {
+    //   userId: "PLyHcoGvTHg31LoQ4SzqBFi0ynQmecE0",
+    //   reaction: type as ReactionType,
+    //   exerciseId: "01K1SZ3ACYW6F1Y54M2C3N0B5G",
+    //   libraryId: null,
+    // };
+
+    const existingReaction = await prisma.userReaction.findUnique({
       where: whereClause,
     });
 
+    console.log("whereClause", whereClause);
+
+    console.log("Existing reaction", existingReaction);
+
     if (existingReaction) {
+      console.log("Updating existing reaction", {
+        userId,
+        reaction: type,
+        ...(isLibrary ? { libraryId: contentId } : { exerciseId: contentId }),
+      });
       throw new Error("You have already reacted with this type");
 
       //   await prisma.userReaction.update({

@@ -377,7 +377,9 @@ model UserReaction {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
  // One reaction per user per content
-  @@index([userId, exerciseId, libraryId])
+  @@unique([userId,exerciseId])
+  @@unique([userId, libraryId])
+
   @@map("reactions")
 }
 

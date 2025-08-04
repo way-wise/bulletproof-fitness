@@ -40,4 +40,26 @@ app.get("/:id", async (c) => {
   return c.json(result);
 });
 
+app.get("/:id/rewards", async (c) => {
+  const validatedParam = await validateInput({
+    type: "param",
+    schema: object({
+      id: string().required(),
+    }),
+    data: c.req.param(),
+  });
+
+  const validatedQuery = await validateInput({
+    type: "query",
+    schema: paginationQuerySchema,
+    data: c.req.query(),
+  });
+
+  const result = await userService.getUserRewards(
+    validatedParam.id,
+    validatedQuery,
+  );
+  return c.json(result);
+});
+
 export default app;
