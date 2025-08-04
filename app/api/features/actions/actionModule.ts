@@ -14,8 +14,6 @@ const app = new Hono();
 app.post("/react", async (c) => {
   const body = await c.req.json();
 
-  console.log("Body", body);
-
   const schema = object({
     contentId: string().required(),
     key: mixed<"setup" | "lib">().oneOf(["setup", "lib"]).required(),

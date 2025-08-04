@@ -17,6 +17,7 @@ async function awardPointsToUser(
   description: string,
 ) {
   const points = await getRewardPointValue(type);
+
   if (!points) return;
 
   await prisma.rewardPoints.create({
@@ -28,6 +29,11 @@ async function awardPointsToUser(
       description,
       isActive: true,
     },
+  });
+
+  console.log("Awarding points", {
+    userId,
+    points,
   });
 
   await prisma.users.update({
@@ -68,25 +74,32 @@ export const actionService = {
     });
 
     if (existingReaction) {
-      await prisma.userReaction.update({
-        where: { id: existingReaction.id },
-        data: { reaction: type },
-      });
-    } else {
-      await prisma.userReaction.create({
-        data: {
-          userId,
-          reaction: type,
-          ...(isLibrary ? { libraryId: contentId } : { exerciseId: contentId }),
-        },
-      });
+      throw new Error("You have already reacted with this type");
 
-      await awardPointsToUser(
-        userId,
-        RewardType.LIKE,
-        "Reaction",
-        `User reacted with ${type}`,
-      );
+      //   await prisma.userReaction.update({
+      //     where: { id: existingReaction.id },
+      //     data: { reaction: type },
+      //   });
+      //   await awardPointsToUser(
+      //     userId,
+      //     type === "LIKE" ? RewardType.LIKE : RewardType.DISLIKE,
+      //     "Reaction Update",
+      //     `User updated reaction to ${type}`,
+      //   );
+      // } else {
+      //   await prisma.userReaction.create({
+      //     data: {
+      //       userId,
+      //       reaction: type,
+      //       ...(isLibrary ? { libraryId: contentId } : { exerciseId: contentId }),
+      //     },
+      //   });
+
+      // console.log("Updating existing reaction", {
+      //   userId,
+      //   reaction: type,
+      //   ...(isLibrary ? { libraryId: contentId } : { exerciseId: contentId }),
+      // });
     }
 
     const statsField = type === "LIKE" ? "totalLikes" : "totalDislikes";
@@ -103,6 +116,12 @@ export const actionService = {
         [statsField]: 1,
       },
     });
+    await awardPointsToUser(
+      userId,
+      RewardType.LIKE,
+      "Reaction",
+      `User reacted with ${type}`,
+    );
   },
 
   async giveRating(contentId: string, key: "setup" | "lib", rating: number) {
