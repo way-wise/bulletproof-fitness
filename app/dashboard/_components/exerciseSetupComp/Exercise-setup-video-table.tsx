@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { Textarea } from "@/components/ui/textarea";
-import { admin } from "@/lib/auth-client";
+import { exerciseSetupAdmin } from "@/lib/admin/exerciseSetup";
 import { ExerciseLibraryVideo } from "@/lib/dataTypes";
 import { formatDate } from "@/lib/date-format";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
@@ -89,7 +89,7 @@ export const ExerciseSetupVideoTable = () => {
     }
 
     try {
-      const { error } = await admin.exerciseSetup.block({
+      const { error } = await exerciseSetupAdmin.block({
         videoId,
         blockReason: formData.blockReason,
       });
@@ -117,7 +117,7 @@ export const ExerciseSetupVideoTable = () => {
     }
 
     try {
-      const { error } = await admin.exerciseSetup.unblock({
+      const { error } = await exerciseSetupAdmin.unblock({
         videoId,
       });
 
@@ -142,7 +142,7 @@ export const ExerciseSetupVideoTable = () => {
     }
 
     try {
-      const { error } = await admin.exerciseSetup.updateStatus({
+      const { error } = await exerciseSetupAdmin.updateStatus({
         videoId,
         isPublic: isPublic,
       });
@@ -175,7 +175,7 @@ export const ExerciseSetupVideoTable = () => {
     }
 
     try {
-      const { error } = await admin.exerciseSetup.delete({
+      const { error } = await exerciseSetupAdmin.delete({
         videoId,
       });
 
@@ -674,6 +674,7 @@ export const ExerciseSetupVideoTable = () => {
       </Dialog>
 
       {/* Update Exercise Modal */}
+      {/* this model will be called from the data table. this is my mistake. i will fix it later. */}
       <UpdateSetupVideo
         isOpen={updateExerciseModalOpen}
         onClose={() => setUpdateExerciseModalOpen(false)}

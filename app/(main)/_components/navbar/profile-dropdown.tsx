@@ -73,12 +73,7 @@ export const ProfileDropdown = ({ session }: { session: Session }) => {
               <span>Dashboard</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/membershipAccount">
-              <UserRound aria-hidden="true" className="" />
-              <span className="">Membership Account</span>
-            </Link>
-          </DropdownMenuItem>
+
           <DropdownMenuItem asChild>
             <Link href="/profile">
               <UserRound aria-hidden="true" />
