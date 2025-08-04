@@ -28,8 +28,8 @@ export const exerciseLibrarySchemaAdmin = object({
 export const exerciseLibraryZapierSchema = object({
   youtube: string().required("Details of youtube video is required"),
   embedUrl: string().url("Invalid embed URL").required("Embed URL is required"),
-  playUrl: string().url("Invalid play URL").required("Play URL is required"),
-  publishedAt: string().optional().required("Published at is required"),
+  playUrl: string().url("Invalid play URL").optional(),
+  publishedAt: string().optional(),
 });
 
 export type exerciseLibraryZapierSchemaType = InferType<
