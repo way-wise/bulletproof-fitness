@@ -150,15 +150,17 @@ model ExSetupRak {
 }
 
 model ExerciseSetup {
-  id           String   @id @default(ulid())
+  id           String    @id @default(ulid())
   title        String
   videoUrl     String
   height       String?
   userId       String
-  user         users    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  isPublic     Boolean  @default(false)
-  blocked      Boolean  @default(false)
+  user         users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isPublic     Boolean   @default(false)
+  blocked      Boolean   @default(false)
   blockReason  String?
+  playUrl      String?
+  publishedAt  DateTime?
   // Pump by numbers fields
   isolatorHole String?
   yellow       String?
@@ -167,8 +169,8 @@ model ExerciseSetup {
   red          String?
   purple       String?
   orange       String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   contentStats     ContentStats[]
   views            UserView[]

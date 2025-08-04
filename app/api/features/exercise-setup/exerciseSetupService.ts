@@ -1,7 +1,10 @@
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { exerciseSetupSchemaAdmin } from "@/schema/exerciseSetupSchema";
+import { exerciseSetupSchema, exerciseSetupSchemaAdmin, exerciseSetupZapierSchemaType } from "@/schema/exerciseSetupSchema";
+import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
+
+const zapierSetupTriggerHook = process.env.ZAPIER_SETUP_TRIGGER_HOOK;
 
 export const exerciseSetupService = {
   createExerciseSetupAdmin: async (
@@ -526,212 +529,6 @@ export const exerciseSetupService = {
       throw new Error("Failed to update exercise library video status.");
     }
   },
-
-  // Get exercise setup videos public
-  // getExerciseSetupWithFilters: async (params: {
-  //   page?: number;
-  //   limit?: number;
-  //   search?: string;
-  //   bodyPartIds?: string[];
-  //   equipmentIds?: string[];
-  //   rackIds?: string[];
-  //   username?: string;
-  //   minHeight?: number;
-  //   maxHeight?: number;
-  //   minRating?: number;
-  //   sortBy?: "title" | "createdAt" | "views" | "likes";
-  //   sortOrder?: "asc" | "desc";
-  // }) => {
-  //   try {
-  //     const {
-  //       page = 1,
-  //       limit = 12,
-  //       search = "",
-  //       bodyPartIds = [],
-  //       equipmentIds = [],
-  //       rackIds = [],
-  //       username = "",
-  //       minHeight = 0,
-  //       maxHeight = 85,
-  //       minRating = 0,
-  //       sortBy = "createdAt",
-  //       sortOrder = "desc",
-  //     } = params;
-
-  //     const skip = (page - 1) * limit;
-
-  //     // Build comprehensive where clause
-  //     const where: {
-  //       isPublic: boolean;
-  //       blocked: boolean;
-  //       OR?: Array<{
-  //         title?: { contains: string; mode: "insensitive" };
-  //         equipment?: { has: string };
-  //         bodyPart?: { has: string };
-  //         rack?: { has: string };
-  //       }>;
-  //       AND?: Array<{
-  //         height?: { not: string };
-  //       }>;
-  //       user?: {
-  //         name: { contains: string; mode: "insensitive" };
-  //       };
-  //     } = {
-  //       isPublic: true,
-  //       blocked: false,
-  //     };
-
-  //     // Search filter
-  //     if (search) {
-  //       where.OR = [
-  //         { title: { contains: search, mode: "insensitive" as const } },
-  //         { equipment: { has: search } },
-  //         { bodyPart: { has: search } },
-  //         { rack: { has: search } },
-  //       ];
-  //     }
-
-  //     // Body part filter
-  //     if (bodyPartIds.length > 0) {
-  //       where.OR = bodyPartIds.map((id) => ({
-  //         bodyPart: { has: id },
-  //       }));
-  //     }
-
-  //     // Equipment filter
-  //     if (equipmentIds.length > 0) {
-  //       where.OR = equipmentIds.map((id) => ({
-  //         equipment: { has: id },
-  //       }));
-  //     }
-
-  //     // Rack filter
-  //     if (rackIds.length > 0) {
-  //       where.OR = rackIds.map((id) => ({
-  //         rack: { has: id },
-  //       }));
-  //     }
-
-  //     // Username filter
-  //     if (username) {
-  //       where.user = {
-  //         name: { contains: username, mode: "insensitive" as const },
-  //       };
-  //     }
-
-  //     // Height filter
-  //     if (minHeight > 0 || maxHeight < 85) {
-  //       where.AND = [{ height: { not: "" } }];
-  //     }
-
-  //     // Get total count
-  //     const total = await prisma.exerciseSetup.count({
-  //       where,
-  //     });
-
-  //     // Get paginated data with user info
-  //     const exercises = await prisma.exerciseSetup.findMany({
-  //       where,
-  //       skip,
-  //       take: limit,
-  //       orderBy: {
-  //         [sortBy]: sortOrder,
-  //       },
-  //       include: {
-  //         user: {
-  //           select: {
-  //             id: true,
-  //             name: true,
-  //             email: true,
-  //           },
-  //         },
-  //       },
-  //     });
-
-  //     // Transform data to include additional fields (no JSON.parse needed since fields are String[])
-  //     const transformedExercises = exercises
-  //       .map((exercise) => {
-  //         // Parse height to inches
-  //         let heightInInches: number | null = null;
-  //         if (exercise.height && exercise.height.trim() !== "") {
-  //           const heightMatch = exercise.height.match(/(\d+)'(\d+)"/);
-  //           if (heightMatch) {
-  //             const feet = parseInt(heightMatch[1]);
-  //             const inches = parseInt(heightMatch[2]);
-  //             heightInInches = feet * 12 + inches;
-  //           }
-  //         }
-
-  //         // Apply height filter after parsing
-  //         if ((minHeight > 0 || maxHeight < 85) && heightInInches !== null) {
-  //           if (heightInInches < minHeight || heightInInches > maxHeight) {
-  //             return null;
-  //           }
-  //         }
-
-  //         // Apply rating filter (using mock rating for now)
-  //         if (minRating > 0) {
-  //           const mockRating = Math.random() * 5;
-  //           if (mockRating < minRating) {
-  //             return null;
-  //           }
-  //         }
-
-  //         return {
-  //           id: exercise.id,
-  //           title: exercise.title,
-  //           videoUrl: exercise.videoUrl,
-  //           equipment: {
-  //             id: exercise.equipment[0] || "default",
-  //             name: exercise.equipment[0] || "Unknown Equipment",
-  //           },
-  //           bodyPart: {
-  //             id: exercise.bodyPart[0] || "default",
-  //             name: exercise.bodyPart[0] || "Unknown Body Part",
-  //           },
-  //           rack: exercise.rack[0]
-  //             ? {
-  //                 id: exercise.rack[0] || "default",
-  //                 name: exercise.rack[0] || "Unknown Rack",
-  //               }
-  //             : undefined,
-  //           height: heightInInches || 0,
-  //           userId: exercise.userId,
-  //           user: exercise.user,
-  //           // Mock data for demo (replace with real data when available)
-  //           views: Math.floor(Math.random() * 1000) + 100,
-  //           likes: Math.floor(Math.random() * 50),
-  //           comments: Math.floor(Math.random() * 10),
-  //           saves: Math.floor(Math.random() * 20),
-  //           rating: Math.floor(Math.random() * 5) + 1,
-  //           label: ["Yellow", "Green", "Blue", "Red"][
-  //             Math.floor(Math.random() * 4)
-  //           ],
-  //           isPublic: exercise.isPublic,
-  //           blocked: exercise.blocked,
-  //           blockReason: exercise.blockReason,
-  //           createdAt: exercise.createdAt.toISOString(),
-  //           updatedAt: exercise.updatedAt.toISOString(),
-  //         };
-  //       })
-  //       .filter(Boolean);
-
-  //     return {
-  //       data: transformedExercises,
-  //       meta: {
-  //         total,
-  //         page,
-  //         limit,
-  //         totalPages: Math.ceil(total / limit),
-  //         hasNextPage: page < Math.ceil(total / limit),
-  //         hasPrevPage: page > 1,
-  //       },
-  //     };
-  //   } catch (error) {
-  //     console.error("Error fetching exercise library with filters:", error);
-  //     throw new Error("Failed to fetch exercise library data with filters.");
-  //   }
-  // },
   getExerciseSetupWithFilters: async (params: {
     page?: number;
     limit?: number;
@@ -999,4 +796,109 @@ export const exerciseSetupService = {
       throw new Error("Failed to fetch exercise library data with filters.");
     }
   },
+    // Create exercise setup from public (Through Zapier)
+    createExerciseSetup: async (data: InferType<typeof exerciseSetupSchema>) => {
+      if (!zapierSetupTriggerHook) {
+        throw new HTTPException(500, {
+          message: "Zapier exercise trigger hook not found",
+        });
+      }
+  
+      const response = await fetch(zapierSetupTriggerHook, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+  
+      if (!response.ok) {
+        throw new HTTPException(500, { message: "Zapier call failed" });
+      }
+  
+      const result = await response.json();
+  
+      return {
+        success: true,
+        message: "Video uploaded successfully, awaiting approval",
+        data: result,
+      };
+    },
+  // Create exercise setup from public (Through Youtube to Zapier)
+  createExerciseSetupFromYoutube: async (rawData: exerciseSetupZapierSchemaType) => {
+        const parseYoutubeString = (youtubeString: string) => {
+          const pairs = youtubeString.split('|');
+          const result: Record<string, any> = {};
+          
+          // Parse the youtube description string into key-value pairs
+          pairs.forEach(pair => {
+            const [key, value] = pair.split(':').map(item => item.trim());
+            if (key && value !== undefined) {
+              result[key] = value;
+            }
+          });
+          
+          return result;
+        };
+        
+        // Extract data from the youtube string
+        const data = parseYoutubeString(rawData.youtube);
+  
+        // Helper function to convert string to array
+        const toArray = (value: any): string[] => {
+          if (!value) return [];
+          if (typeof value === 'string') {
+            return value.includes(',') 
+              ? value.split(',').map(item => item.trim()).filter(item => item.length > 0)
+              : [value.trim()].filter(item => item.length > 0);
+          }
+          return [];
+        };
+  
+        // Get arrays for relations
+        const equipments = toArray(data.equipments);
+        const bodyParts = toArray(data.bodyParts);
+        const racks = toArray(data.racks);
+  
+        // Create the exercise library video
+        const result = await prisma.exerciseSetup.create({
+          data: {
+            title: data.title,
+            videoUrl: rawData.embedUrl,
+            height: data.height,
+            playUrl: rawData.playUrl,
+            isPublic: true,
+            publishedAt: rawData.publishedAt,
+            isolatorHole: data.isolatorHole,
+            yellow: data.yellow,
+            green: data.green,
+            blue: data.blue,
+            red: data.red,
+            purple: data.purple,
+            orange: data.orange,
+            userId: data.userId,
+            ExSetupEquipment: {
+              create: equipments.map(equipmentId => ({
+                equipmentId: equipmentId,
+              })),
+            },
+            ExSetupBodyPart: {
+              create: bodyParts.map(bodyPartId => ({
+                bodyPartId: bodyPartId,
+              })),
+            },
+            ExSetupRak: {
+              create: racks.map(rackId => ({
+                rackId: rackId,
+              })),
+            },
+          },
+        });
+          
+        return {
+          success: true,
+          message: "A video post has been created on library",
+          data: result,
+        };
+    },
 };

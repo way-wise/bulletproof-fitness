@@ -424,6 +424,7 @@ export const exerciseLibraryService = {
     }
   },
 
+  // Create exercise library from public (Through Zapier)
   createExerciseLibrary: async (data: exerciseLibrarySchemaType) => {
     if (!zapierExerciseTriggerHook) {
       throw new HTTPException(500, {

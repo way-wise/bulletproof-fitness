@@ -482,67 +482,97 @@ exerciseSetupModule.get("/", async (c) => {
 });
 
 // create library video from public (unchanged)
+// exerciseSetupModule.post("/", async (c) => {
+//   try {
+//     // Get current user session
+//     const session = await getApiSession(c);
+//     if (!session?.user?.id) {
+//       return c.json(
+//         {
+//           success: false,
+//           message: "Authentication required",
+//         },
+//         401,
+//       );
+//     }
+
+//     const formData = await c.req.formData();
+
+//     // Extract fields from formData
+//     const validatedBody = {
+//       title: formData.get("title") as string,
+//       equipment: [(formData.get("equipment") as string) || ""],
+//       bodyPart: [(formData.get("bodyPart") as string) || ""],
+//       height: formData.get("height") as string,
+//       rack: [(formData.get("rack") as string) || ""],
+//       video: formData.get("video") as File,
+//       userId: session.user.id,
+//       // Pump by numbers fields
+//       isolatorHole: (formData.get("isolatorHole") as string) || null,
+//       yellow: (formData.get("yellow") as string) || null,
+//       green: (formData.get("green") as string) || null,
+//       blue: (formData.get("blue") as string) || null,
+//       red: (formData.get("red") as string) || null,
+//       purple: (formData.get("purple") as string) || null,
+//       orange: (formData.get("orange") as string) || null,
+//     } as InferType<typeof exerciseSetupSchema> & { video: File };
+
+//     // Validate required fields
+//     if (
+//       !validatedBody.title ||
+//       !validatedBody.equipment ||
+//       !validatedBody.bodyPart ||
+//       !validatedBody.height ||
+//       !validatedBody.rack ||
+//       !validatedBody.video
+//     ) {
+//       return c.json(
+//         {
+//           success: false,
+//           message: "All fields are required",
+//         },
+//         400,
+//       );
+//     }
+
+//     const result =
+//       await exerciseSetupService.createExerciseSetupAdmin(validatedBody);
+
+//     return c.json({
+//       success: true,
+//       message: "Exercise setup created successfully",
+//       data: result,
+//     });
+//   } catch (error) {
+//     console.error("Error in exercise library creation:", error);
+//     return c.json(
+//       {
+//         success: false,
+//         message:
+//           error instanceof Error
+//             ? error.message
+//             : "Failed to create exercise setup",
+//       },
+//       500,
+//     );
+//   }
+// });
+
+// Create exercise setup from public (Through Zapier)
 exerciseSetupModule.post("/", async (c) => {
   try {
-    // Get current user session
-    const session = await getApiSession(c);
-    if (!session?.user?.id) {
-      return c.json(
-        {
-          success: false,
-          message: "Authentication required",
-        },
-        401,
-      );
-    }
+    const validatedBody = await validateInput({
+      type: "form",
+      schema: exerciseSetupSchema,
+      data: await c.req.json(),
+    });
 
-    const formData = await c.req.formData();
-
-    // Extract fields from formData
-    const validatedBody = {
-      title: formData.get("title") as string,
-      equipment: [(formData.get("equipment") as string) || ""],
-      bodyPart: [(formData.get("bodyPart") as string) || ""],
-      height: formData.get("height") as string,
-      rack: [(formData.get("rack") as string) || ""],
-      video: formData.get("video") as File,
-      userId: session.user.id,
-      // Pump by numbers fields
-      isolatorHole: (formData.get("isolatorHole") as string) || null,
-      yellow: (formData.get("yellow") as string) || null,
-      green: (formData.get("green") as string) || null,
-      blue: (formData.get("blue") as string) || null,
-      red: (formData.get("red") as string) || null,
-      purple: (formData.get("purple") as string) || null,
-      orange: (formData.get("orange") as string) || null,
-    } as InferType<typeof exerciseSetupSchema> & { video: File };
-
-    // Validate required fields
-    if (
-      !validatedBody.title ||
-      !validatedBody.equipment ||
-      !validatedBody.bodyPart ||
-      !validatedBody.height ||
-      !validatedBody.rack ||
-      !validatedBody.video
-    ) {
-      return c.json(
-        {
-          success: false,
-          message: "All fields are required",
-        },
-        400,
-      );
-    }
+    console.log("Exercise Setup validatedBody", validatedBody);
 
     const result =
-      await exerciseSetupService.createExerciseSetupAdmin(validatedBody);
+      await exerciseSetupService.createExerciseSetup(validatedBody);
 
-    return c.json({
-      success: true,
-      message: "Exercise setup created successfully",
-      data: result,
-    });
+    return c.json(result);
   } catch (error) {
     console.error("Error in exercise library creation:", error);
     return c.json(
@@ -551,9 +581,16 @@ exerciseSetupModule.post("/", async (c) => {
         message:
           error instanceof Error
             ? error.message
-            : "Failed to create exercise setup",
+            : "Failed to create exercise library",
       },
       500,
     );
   }
+});
+
+// Create library video information when youtube video is published
+exerciseSetupModule.post("/youtube/callback", async (c) => {
+    const rawData = await c.req.json();
+    const result = await exerciseSetupService.createExerciseSetupFromYoutube(rawData);
+    return c.json(result);
 });

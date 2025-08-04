@@ -1,4 +1,4 @@
-import { array, object, string } from "yup";
+import { array, InferType, object, string } from "yup";
 
 export const exerciseSetupSchema = object({
   title: string().required("Title is required"),
@@ -35,3 +35,14 @@ export const exerciseSetupSchemaAdmin = object({
   purple: string().optional().nullable(),
   orange: string().optional().nullable(),
 });
+
+export const exerciseSetupZapierSchema = object({
+  youtube: string().required("Details of youtube video is required"),
+  embedUrl: string().url("Invalid embed URL").required("Embed URL is required"),
+  playUrl: string().url("Invalid play URL").optional(),
+  publishedAt: string().optional(),
+});
+
+export type exerciseSetupZapierSchemaType = InferType<
+  typeof exerciseSetupZapierSchema
+>;
