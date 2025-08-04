@@ -22,6 +22,8 @@ const UserDetails = ({ id }: { id: string }) => {
 
   const { data: user, isLoading } = useSWR(`/api/users/${id}`);
 
+  console.log("User Details", user);
+
   return (
     <>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">

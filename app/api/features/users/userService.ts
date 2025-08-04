@@ -41,6 +41,17 @@ export const userService = {
       where: {
         id,
       },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        totalPoints: true,
+        createdAt: true,
+        banned: true,
+        image: true,
+        role: true,
+        emailVerified: true,
+      },
     });
 
     if (!user) {
@@ -50,5 +61,47 @@ export const userService = {
     }
 
     return user;
+  },
+
+  getUserRewards: async (id: string, query: PaginationQuery) => {
+    const session = await getSession();
+    if (!session) throw new HTTPException(401, { message: "Unauthorized" });
+
+    const { skip, take, page, limit } = getPaginationQuery(query);
+
+    const user = await prisma.users.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        totalPoints: true,
+        rewardPoints: {
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            points: true,
+            createdAt: true,
+            description: true,
+            type: true,
+            isActive: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new HTTPException(404, { message: "User not found" });
+    }
+
+    return {
+      data: user.rewardPoints,
+      meta: {
+        page,
+        limit,
+        total: user.rewardPoints.length,
+      },
+    };
   },
 };
