@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import {
   exerciseLibrarySchemaAdmin,
   exerciseLibrarySchemaType,
+  exerciseLibraryZapierSchemaType,
 } from "@/schema/exerciseLibrarySchema";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
