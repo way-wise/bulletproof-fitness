@@ -256,12 +256,14 @@ model ExerciseLibraryVideo {
   id             String           @id @default(ulid())
   title          String
   videoUrl       String
-  height         String?
+  playUrl        String
+  height         Float
   userId         String
   user           users            @relation(fields: [userId], references: [id], onDelete: Cascade)
   isPublic       Boolean          @default(false)
   blocked        Boolean          @default(false)
   blockReason    String?
+  publishedAt    DateTime?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   contentStats   ContentStats[]
@@ -273,9 +275,11 @@ model ExerciseLibraryVideo {
   ExLibRak       ExLibRak[]
 
   @@index([userId])
+  @@index([height])
+  @@index([publishedAt])
   @@index([title])
-
-  @@index([isPublic, blocked])
+  @@index([isPublic])
+  @@index([blocked])
 }
 
 model ContentStats {
@@ -295,19 +299,21 @@ model ContentStats {
 }
 
 model RewardPoints {
-  id          String   @id @default(ulid())
+  id          String     @id @default(ulid())
   userId      String
-  user        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  points      Int      @default(0)
+  user        users      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  points      Int        @default(0)
   name        String?
-  isActive    Boolean  @default(true)
+  isActive    Boolean    @default(true)
   type        RewardType @default(LIKE)
   icon        String?
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   @@index([userId])
+  @@index([isActive])
+  @@index([type])
   @@map("reward_points")
 }
 
@@ -315,7 +321,7 @@ enum RewardType {
   LIKE
   VIEW
   RATING
-  SETUP 
+  SETUP
   DISLIKE
   LIBRARY
 }
@@ -376,10 +382,10 @@ model UserReaction {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
- // One reaction per user per content
-  @@unique([userId,exerciseId])
-  @@unique([userId, libraryId])
 
+  // One reaction per user per content
+  @@unique([userId, exerciseId])
+  @@unique([userId, libraryId])
   @@map("reactions")
 }
 

@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import {
   exerciseLibrarySchemaAdmin,
   exerciseLibrarySchemaType,
+  exerciseLibraryZapierSchemaType,
 } from "@/schema/exerciseLibrarySchema";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
@@ -720,5 +721,43 @@ export const exerciseLibraryService = {
       console.error("Error fetching exercise library with filters:", error);
       throw new Error("Failed to fetch exercise library data with filters.");
     }
+  },
+  createExerciseLibraryFromYoutube: async (data: exerciseLibraryZapierSchemaType) => {
+      const result = await prisma.exerciseLibraryVideo.create({
+        data: {
+          title: data.title,
+          videoUrl: data.embedUrl,
+          height: Number(data.height),
+          playUrl: data.playUrl,
+          isPublic: true,
+          publishedAt: data.publishedAt,
+          ExLibEquipment: {
+            connect: data.equipments?.map((equipmentId) => ({
+              id: equipmentId,
+            })) || [],
+          },
+          ExLibBodyPart: {
+            connect: data.bodyParts?.map((bodyPartId) => ({
+              id: bodyPartId,
+            })) || [],
+          },
+          ExLibRak: {
+            connect: data.racks?.map((rackId) => ({
+              id: rackId,
+            })) || [],
+          },
+          user: {
+            connect: {
+              id: data.userId,
+            },
+          },
+        },
+      });
+      
+      return {
+        success: true,
+        message: "A video post has been created on library",
+        data: result,
+      }
   },
 };

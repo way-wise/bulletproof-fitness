@@ -4,7 +4,6 @@ import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
 import { handle } from "hono/vercel";
 import { equipmentModule } from "../features/equipments/equipmentModule";
-
 import authModule from "../features/auth/authModule";
 import { bodyPartsModule } from "../features/bodyParts/bodyPartsModule";
 import { demoCenterModule } from "../features/demo-centers/demoCentersModule";
@@ -13,9 +12,7 @@ import { exerciseSetupModule } from "../features/exercise-setup/exerciseSetupMod
 import { racksModule } from "../features/racks/racksModule";
 import rewardModule from "../features/rewards/rewardModule";
 import userModule from "../features/users/userModule";
-
 import actionModule from "../features/actions/actionModule";
-
 import signUploadModule from "../features/sign-upload/signUploadModule";
 
 
@@ -37,10 +34,8 @@ app.route("/racks", racksModule);
 app.route("/demo-centers", demoCenterModule);
 app.route("/exercise-library", exerciseLibraryModule);
 app.route("/exercise-setup", exerciseSetupModule);
-
 app.route("/rewards", rewardModule);
 app.route("/action", actionModule);
-
 app.route("/sign-upload", signUploadModule);
 
 
