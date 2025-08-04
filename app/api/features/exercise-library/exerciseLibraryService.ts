@@ -195,15 +195,6 @@ export const exerciseLibraryService = {
             },
           },
           contentStats: true,
-          ratings: {
-            where: { userId: session?.user?.id },
-            orderBy: { createdAt: "desc" },
-            take: 1,
-            select: {
-              id: true,
-              rating: true,
-            },
-          },
         },
       });
 
@@ -479,6 +470,7 @@ export const exerciseLibraryService = {
     sortBy?: "title" | "createdAt" | "views" | "likes";
     sortOrder?: "asc" | "desc";
   }) => {
+    const session = await getSession();
     try {
       const {
         page = 1,
@@ -628,6 +620,16 @@ export const exerciseLibraryService = {
             },
           },
           contentStats: true,
+          reactions: {
+            where: { userId: session?.user?.id },
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            select: {
+              id: true,
+              userId: true,
+              reaction: true,
+            },
+          },
         },
       });
 
@@ -688,6 +690,8 @@ export const exerciseLibraryService = {
             userId: exercise.userId,
             user: exercise.user,
             contentStats: exercise.contentStats,
+            reactions:
+              exercise.reactions.length > 0 ? exercise.reactions : null,
             // Mock data for demo (replace with real data when available)
             views: Math.floor(Math.random() * 1000) + 100,
             likes: Math.floor(Math.random() * 50),
