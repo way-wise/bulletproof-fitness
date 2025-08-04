@@ -2,7 +2,6 @@ import {
   ExerciseLibraryFilters,
   ExerciseLibraryResponse,
 } from "@/lib/dataTypes";
-import { Suspense } from "react";
 import ExSetupCardsSection from "../_components/exercideLibrary/ExSetupCardsSection";
 
 // Type for search params
@@ -120,18 +119,10 @@ const CardsPage = async ({ searchParams }: CardsPageProps) => {
 
   return (
     <div className="text-center text-xl">
-      <Suspense
-        fallback={
-          <div className="flex min-h-screen items-center justify-center bg-gray-50">
-            Loading...
-          </div>
-        }
-      >
-        <ExSetupCardsSection
-          initialData={initialData?.data}
-          initialFilters={initialFilters}
-        />
-      </Suspense>
+      <ExSetupCardsSection
+        initialData={initialData?.data}
+        initialFilters={initialFilters}
+      />
     </div>
   );
 };
