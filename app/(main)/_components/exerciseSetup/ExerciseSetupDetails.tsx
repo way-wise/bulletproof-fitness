@@ -6,6 +6,7 @@ import { Star } from "lucide-react";
 import { useState } from "react";
 import useSWR from "swr";
 import ContactUs from "../exercideLibrary/ContactUs";
+import { toast } from "sonner";
 type TBodyPart = {
   bodyPart?: {
     name: string;
@@ -133,10 +134,10 @@ export default function ExerciseSetupDetails({
       }
 
       setRating(value); // Set only after successful submission
-      alert("Thanks for your rating!");
+      toast.success("Rating submitted successfully!");
     } catch (error: any) {
       console.error("Rating error:", error);
-      alert(error.message || "Something went wrong.");
+      toast.error(error.message || "Something went wrong.");
     }
   };
 
@@ -229,13 +230,32 @@ export default function ExerciseSetupDetails({
         <p className="text-base text-gray-500">Click on a star to rate it!</p>
 
         <div className="flex justify-center gap-2 py-4">
-          {[1, 2, 3, 4, 5].map((s) => (
-            <Star
-              key={s}
-              className={`h-7 w-7 cursor-pointer transition-colors ${rating >= s ? "fill-yellow-500 stroke-yellow-500" : "stroke-gray-400"}`}
-              onClick={() => handleSubmitRating(s)}
-            />
-          ))}
+          {libraryData?.ratings.length > 0 ? (
+            <div className="flex items-center gap-1">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <Star
+                  key={s}
+                  className={`h-7 w-7 cursor-pointer ${
+                    s <= libraryData.ratings[0].rating
+                      ? "fill-yellow-500 stroke-yellow-500"
+                      : "stroke-gray-400"
+                  }`}
+                />
+              ))}
+            </div>
+          ) : (
+            [1, 2, 3, 4, 5].map((s) => (
+              <Star
+                key={s}
+                className={`h-7 w-7 cursor-pointer transition-colors ${
+                  rating >= s
+                    ? "fill-yellow-500 stroke-yellow-500"
+                    : "stroke-gray-400"
+                }`}
+                onClick={() => handleSubmitRating(s)}
+              />
+            ))
+          )}
         </div>
 
         <p className="text-base text-gray-500">

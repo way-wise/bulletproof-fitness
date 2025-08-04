@@ -198,6 +198,15 @@ export const exerciseSetupService = {
             },
           },
           contentStats: true,
+          ratings: {
+            where: { userId: session?.user?.id },
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            select: {
+              id: true,
+              rating: true,
+            },
+          },
         },
       });
 
