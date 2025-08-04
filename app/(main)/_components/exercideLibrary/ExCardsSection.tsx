@@ -188,6 +188,3 @@ const ExCardsSection = ({
 };
 
 export default ExCardsSection;
-
-// Remove seed data export since we're using real API data now
-// export const seedData = [...]; // REMOVED
