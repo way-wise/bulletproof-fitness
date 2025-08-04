@@ -1,17 +1,12 @@
 "use client";
 
-import { InferType } from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { signUpSchema } from "@/schema/authSchema";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { FaGoogle, FaGithub } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
 } from "@/components/ui/card";
 import {
   Form,
@@ -22,13 +17,18 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { signUp } from "@/lib/auth-client";
 import { FormError } from "@/components/ui/form-error";
-import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { signUp } from "@/lib/auth-client";
+import { signUpSchema } from "@/schema/authSchema";
+import { yupResolver } from "@hookform/resolvers/yup";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { FaGithub, FaGoogle } from "react-icons/fa";
+import { toast } from "sonner";
+import { InferType } from "yup";
 
 const SignupForm = () => {
   const [pendingAuth, setPendingAuth] = useState<boolean>(false);
@@ -58,7 +58,7 @@ const SignupForm = () => {
         },
         onSuccess: () => {
           toast.success("Registration successful");
-          router.push("/dashboard");
+          router.push("/profile");
           router.refresh();
         },
         onError: (ctx) => {
