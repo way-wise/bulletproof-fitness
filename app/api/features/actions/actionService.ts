@@ -18,7 +18,7 @@ async function getRewardPointValue(type: RewardType) {
   return reward?.points ?? 0;
 }
 
-async function awardPointsToUser(
+export async function awardPointsToUser(
   userId: string,
   type: RewardType,
   name: string,
@@ -53,7 +53,7 @@ async function awardPointsToUser(
     },
   });
 }
-async function decrementPointsFromUser(
+export async function decrementPointsFromUser(
   userId: string,
   type: RewardType,
   name: string,
@@ -129,9 +129,18 @@ export const actionService = {
         increment: boolean,
       ) => {
         if (contentStats) {
+          const current = contentStats[field] ?? 0;
+
+          // Prevent decrementing below zero
+          if (!increment && current <= 0) return;
+
           contentStats = await tx.contentStats.update({
             where: { id: contentStats.id },
-            data: { [field]: { [increment ? "increment" : "decrement"]: 1 } },
+            data: {
+              [field]: {
+                [increment ? "increment" : "decrement"]: 1,
+              },
+            },
           });
         } else if (increment) {
           contentStats = await tx.contentStats.create({
