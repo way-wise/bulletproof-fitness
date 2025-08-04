@@ -68,6 +68,51 @@ exerciseSetupModule.get("/dashboard", async (c) => {
   }
 });
 
+// Get user videos for profile page
+exerciseSetupModule.get("/user-videos", async (c) => {
+  try {
+    const session = await getApiSession(c);
+    if (!session?.user?.id) {
+      return c.json(
+        {
+          success: false,
+          message: "Authentication required",
+        },
+        401,
+      );
+    }
+
+    // Get query parameters
+    const page = parseInt(c.req.query("page") || "1");
+    const limit = parseInt(c.req.query("limit") || "10");
+    const userId = c.req.query("userId") || session.user.id;
+
+    const result = await exerciseSetupService.getUserVideos(
+      userId,
+      page,
+      limit,
+    );
+
+    return c.json({
+      success: true,
+      data: result.data,
+      meta: result.meta,
+    });
+  } catch (error) {
+    console.error("Error fetching user videos:", error);
+    return c.json(
+      {
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch user videos",
+      },
+      500,
+    );
+  }
+});
+
 // Get single exercise library video by ID
 exerciseSetupModule.get("/dashboard/:id", async (c) => {
   try {
