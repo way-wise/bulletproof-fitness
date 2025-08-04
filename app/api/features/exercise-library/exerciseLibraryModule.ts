@@ -2,7 +2,6 @@ import { auth } from "@/lib/auth";
 import {
   exerciseLibrarySchema,
   exerciseLibrarySchemaAdmin,
-  exerciseLibraryZapierSchema,
 } from "@/schema/exerciseLibrarySchema";
 import { validateInput } from "@api/lib/validateInput";
 import { Hono, type Context } from "hono";
@@ -535,29 +534,55 @@ exerciseLibraryModule.post("/youtube/callback", async (c) => {
     
     // Extract data from the youtube string
     const data = parseYoutubeString(rawData.youtube as string);
+    console.log('Parsed data:', JSON.stringify(data, null, 2));
+
+    // Helper function to convert string to array if needed
+    const toArray = (value: any): string[] => {
+      if (!value) return [];
+      if (Array.isArray(value)) return value;
+      if (typeof value === 'string') {
+        // If it contains commas, split it
+        return value.includes(',') ? value.split(',').map(item => item.trim()) : [value];
+      }
+      return [];
+    };
+
+    // Validate required fields
+    if (!data.title && !rawData.title) {
+      console.error('Missing title in both parsed data and raw data');
+      return c.json({ error: 'Title is required but not found' }, 400);
+    }
+    
+    if (!data.userId) {
+      console.error('Missing userId in parsed data');
+      return c.json({ error: 'User ID is required but not found in YouTube data' }, 400);
+    }
+    
+    // Handle height - default to 0 if not a valid number
+    const height = data.height && !isNaN(Number(data.height)) ? Number(data.height) : 0;
 
     const result = await prisma.exerciseLibraryVideo.create({
       data: {
-        title: data.title,
+        title: data.title || rawData.title,
         videoUrl: rawData.embedUrl,
-        height: Number(data.height),
+        height: height,
         playUrl: rawData.playUrl,
         isPublic: true,
         publishedAt: rawData.publishedAt,
         ExLibEquipment: {
-          connect: data.equipments?.map((equipmentId: string) => ({
+          connect: toArray(data.equipments).map((equipmentId: string) => ({
             id: equipmentId,
-          })) || [],
+          })),
         },
         ExLibBodyPart: {
-          connect: data.bodyParts?.map((bodyPartId: string) => ({
+          connect: toArray(data.bodyParts).map((bodyPartId: string) => ({
             id: bodyPartId,
-          })) || [],
+          })),
         },
         ExLibRak: {
-          connect: data.racks?.map((rackId: string) => ({
+          connect: toArray(data.racks).map((rackId: string) => ({
             id: rackId,
-          })) || [],
+          })),
         },
         user: {
           connect: {
