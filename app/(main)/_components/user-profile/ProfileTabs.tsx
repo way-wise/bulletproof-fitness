@@ -247,22 +247,27 @@ export const ProfileTabs = ({
                   </div>
                 </div>
               ))}
-              {rewards.slice(0, 5).map((reward) => (
-                <div
-                  key={reward.id}
-                  className="flex items-center gap-4 rounded-lg border p-3"
-                >
-                  <Trophy className="h-8 w-8 text-yellow-500" />
-                  <div className="flex-1">
-                    <p className="font-medium">Earned {reward.points} points</p>
-                    <p className="text-sm text-muted-foreground">
-                      {reward.description || reward.type} -{" "}
-                      {reward.createdAt ? formatDate(reward.createdAt) : "N/A"}
-                    </p>
+              {rewards.length > 0 &&
+                rewards.slice(0, 5).map((reward) => (
+                  <div
+                    key={reward.id}
+                    className="flex items-center gap-4 rounded-lg border p-3"
+                  >
+                    <Trophy className="h-8 w-8 text-yellow-500" />
+                    <div className="flex-1">
+                      <p className="font-medium">
+                        Earned {reward.points} points
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {reward.description || reward.type} -{" "}
+                        {reward.createdAt
+                          ? formatDate(reward.createdAt)
+                          : "N/A"}
+                      </p>
+                    </div>
+                    <Badge variant="secondary">+{reward.points}</Badge>
                   </div>
-                  <Badge variant="secondary">+{reward.points}</Badge>
-                </div>
-              ))}
+                ))}
             </div>
           </CardContent>
         </Card>
