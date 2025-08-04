@@ -2,7 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Spinner from "@/components/ui/spinner";
 import { UserProfile } from "@/hooks/useUserProfile";
+import { uploadImageViaFileInput } from "@/lib/cloudinaryClient";
 import React, { useEffect, useState } from "react";
 
 interface EditProfileModalProps {
@@ -23,6 +25,9 @@ export const EditProfileModal = ({
     email: user?.email || "",
     image: user?.image || "",
   });
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   useEffect(() => {
     setFormData({
@@ -32,9 +37,39 @@ export const EditProfileModal = ({
     });
   }, [user]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleImageUpload = async () => {
+    setIsUploading(true);
+    setUploadError(null);
+
+    try {
+      const imageUrl = await uploadImageViaFileInput();
+      setFormData({ ...formData, image: imageUrl });
+    } catch (error) {
+      if (error instanceof Error && error.message === "No file selected") {
+        // User cancelled the file selection, don't show error
+        return;
+      }
+      setUploadError("Failed to upload image. Please try again.");
+      console.error("Upload error:", error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    setIsSaving(true);
+
+    try {
+      // Call the onSave prop with the form data
+      await onSave(formData);
+      onClose();
+    } catch (error) {
+      console.error("Save error:", error);
+      setUploadError("Failed to save profile. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -71,27 +106,74 @@ export const EditProfileModal = ({
                 required
               />
             </div>
-            <div>
-              <label className="text-sm font-medium">Profile Image URL</label>
-              <input
-                type="url"
-                value={formData.image}
-                onChange={(e) =>
-                  setFormData({ ...formData, image: e.target.value })
-                }
-                className="mt-1 w-full rounded-md border p-2"
-                placeholder="https://example.com/image.jpg"
-              />
+
+            {/* Profile Image Section */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium">Profile Image</label>
+
+              {/* Current Image Preview */}
+              {formData.image && (
+                <div className="flex items-center space-x-3">
+                  <img
+                    src={formData.image}
+                    alt="Profile"
+                    className="h-16 w-16 rounded-full border object-cover"
+                  />
+                  <div className="flex-1">
+                    <p className="truncate text-xs text-gray-500">
+                      {formData.image}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Upload Button */}
+              <div className="space-y-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleImageUpload}
+                  disabled={isUploading || isSaving}
+                  className="w-full"
+                >
+                  {isUploading ? (
+                    <>
+                      <Spinner className="mr-2 h-4 w-4" />
+                      Uploading...
+                    </>
+                  ) : (
+                    "Upload Image"
+                  )}
+                </Button>
+
+                {/* Error Message */}
+                {uploadError && (
+                  <p className="text-sm text-red-500">{uploadError}</p>
+                )}
+              </div>
             </div>
+
             <div className="flex gap-2">
-              <Button type="submit" className="flex-1">
-                Save Changes
+              <Button
+                type="submit"
+                className="flex-1"
+                disabled={isUploading || isSaving}
+              >
+                {isSaving ? (
+                  <>
+                    <Spinner className="mr-2 h-4 w-4" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save Changes"
+                )}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={onClose}
                 className="flex-1"
+                disabled={isUploading || isSaving}
               >
                 Cancel
               </Button>
