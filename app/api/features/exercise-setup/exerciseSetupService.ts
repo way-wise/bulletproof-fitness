@@ -7,8 +7,6 @@ export const exerciseSetupService = {
   createExerciseSetupAdmin: async (
     data: InferType<typeof exerciseSetupSchemaAdmin>,
   ) => {
-    console.log(data);
-
     // Create the exercise setup with junction table relations
     const exerciseSetup = await prisma.exerciseSetup.create({
       data: {
@@ -164,6 +162,96 @@ export const exerciseSetupService = {
     } catch (error) {
       console.error("Error fetching all exercise setup videos:", error);
       throw new Error("Failed to fetch exercise setup videos.");
+    }
+  },
+
+  // Get user videos for profile page
+  getUserVideos: async (userId: string, page = 1, limit = 10) => {
+    try {
+      const skip = (page - 1) * limit;
+
+      // Get total count for this user
+      const total = await prisma.exerciseSetup.count({
+        where: { userId },
+      });
+
+      // Get paginated data for this user
+      const exercises = await prisma.exerciseSetup.findMany({
+        where: { userId },
+        skip,
+        take: limit,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          ExSetupEquipment: {
+            include: {
+              equipment: true,
+            },
+          },
+          ExSetupBodyPart: {
+            include: {
+              bodyPart: true,
+            },
+          },
+          ExSetupRak: {
+            include: {
+              rack: true,
+            },
+          },
+          contentStats: true,
+          views: {
+            select: {
+              id: true,
+            },
+          },
+          ratings: {
+            select: {
+              id: true,
+              rating: true,
+            },
+          },
+          reactions: {
+            where: {
+              reaction: "LIKE",
+            },
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      // Transform data to include view, like, and rating counts
+      const transformedExercises = exercises.map((exercise) => ({
+        ...exercise,
+        views: exercise.views.length,
+        likes: exercise.reactions.length,
+        rating:
+          exercise.ratings.length > 0
+            ? exercise.ratings.reduce((sum, r) => sum + r.rating, 0) /
+              exercise.ratings.length
+            : 0,
+      }));
+
+      return {
+        data: transformedExercises,
+        meta: {
+          total,
+          page,
+          limit,
+        },
+      };
+    } catch (error) {
+      console.error("Error fetching user videos:", error);
+      throw new Error("Failed to fetch user videos.");
     }
   },
 
