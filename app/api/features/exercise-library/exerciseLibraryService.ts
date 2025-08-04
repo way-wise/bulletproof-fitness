@@ -758,15 +758,16 @@ export const exerciseLibraryService = {
     
     // Extract data from the youtube string
     const data = parseYoutubeString(rawData.youtube);
+    console.log("Exercise Library data", data);
 
-    const result = await prisma.exerciseLibraryVideo.create({
+    await prisma.exerciseLibraryVideo.create({
       data: {
         title: data.title,
-        videoUrl: data.embedUrl,
+        videoUrl: rawData.embedUrl,
         height: Number(data.height),
-        playUrl: data.playUrl,
+        playUrl: rawData.playUrl,
         isPublic: true,
-        publishedAt: data.publishedAt,
+        publishedAt: rawData.publishedAt,
         ExLibEquipment: {
           connect: data.equipments?.map((equipmentId: string) => ({
             id: equipmentId,
@@ -793,7 +794,6 @@ export const exerciseLibraryService = {
     return {
       success: true,
       message: "A video post has been created on library",
-      data: result,
     }
   },
 };
