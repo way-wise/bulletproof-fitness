@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { Textarea } from "@/components/ui/textarea";
-import { admin } from "@/lib/auth-client";
+import { demoCenterAdmin } from "@/lib/admin/demoCenter";
 import { DemoCenter } from "@/lib/dataTypes";
 import { formatDate } from "@/lib/date-format";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
@@ -89,7 +89,7 @@ export const DemoCenterTable = () => {
     }
 
     try {
-      const { error } = await admin.demoCenter.block({
+      const { error } = await demoCenterAdmin.block({
         demoCenterId,
         blockReason: formData.blockReason,
       });
@@ -117,7 +117,7 @@ export const DemoCenterTable = () => {
     }
 
     try {
-      const { error } = await admin.demoCenter.unblock({
+      const { error } = await demoCenterAdmin.unblock({
         demoCenterId,
       });
 
@@ -142,7 +142,7 @@ export const DemoCenterTable = () => {
     }
 
     try {
-      const { error } = await admin.demoCenter.updateStatus({
+      const { error } = await demoCenterAdmin.updateStatus({
         demoCenterId,
         isPublic: isPublic,
       });
@@ -175,7 +175,7 @@ export const DemoCenterTable = () => {
     }
 
     try {
-      const { error, data } = await admin.demoCenter.delete({
+      const { error, data } = await demoCenterAdmin.delete({
         demoCenterId,
       });
 

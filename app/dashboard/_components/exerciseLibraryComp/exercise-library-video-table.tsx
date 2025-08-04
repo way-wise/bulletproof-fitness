@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { Textarea } from "@/components/ui/textarea";
-import { admin } from "@/lib/auth-client";
+import { exerciseLibraryAdmin } from "@/lib/admin/exerciseLibrary";
 import { ExerciseLibraryVideo } from "@/lib/dataTypes";
 import { formatDate } from "@/lib/date-format";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
@@ -90,7 +90,7 @@ export const ExerciseLibraryVideoTable = () => {
     }
 
     try {
-      const { error } = await admin.exerciseLibrary.block({
+      const { error } = await exerciseLibraryAdmin.block({
         videoId,
         blockReason: formData.blockReason,
       });
@@ -118,7 +118,7 @@ export const ExerciseLibraryVideoTable = () => {
     }
 
     try {
-      const { error } = await admin.exerciseLibrary.unblock({
+      const { error } = await exerciseLibraryAdmin.unblock({
         videoId,
       });
 
@@ -143,7 +143,7 @@ export const ExerciseLibraryVideoTable = () => {
     }
 
     try {
-      const { error } = await admin.exerciseLibrary.updateStatus({
+      const { error } = await exerciseLibraryAdmin.updateStatus({
         videoId,
         isPublic: isPublic,
       });
@@ -176,7 +176,7 @@ export const ExerciseLibraryVideoTable = () => {
     }
 
     try {
-      const { error } = await admin.exerciseLibrary.delete({
+      const { error } = await exerciseLibraryAdmin.delete({
         videoId,
       });
 

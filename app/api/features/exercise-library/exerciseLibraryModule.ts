@@ -2,7 +2,6 @@ import { auth } from "@/lib/auth";
 import {
   exerciseLibrarySchema,
   exerciseLibrarySchemaAdmin,
-  exerciseLibraryZapierSchema,
 } from "@/schema/exerciseLibrarySchema";
 import { validateInput } from "@api/lib/validateInput";
 import { Hono, type Context } from "hono";
@@ -512,18 +511,8 @@ exerciseLibraryModule.post("/", async (c) => {
 
 // Create library video information when youtube video is published
 exerciseLibraryModule.post("/youtube/callback", async (c) => {
-  console.log("youtube callback", await c.req.parseBody());
-
-  const validatedJSONBody = await validateInput({
-    type: "form",
-    schema: exerciseLibraryZapierSchema,
-    data: await c.req.parseBody(),
-  });
-
-  const result =
-    await exerciseLibraryService.createExerciseLibraryFromYoutube(
-      validatedJSONBody,
-    );
-
-  return c.json(result);
+    const rawData = await c.req.json();
+    console.log("Exercise Library rawData", rawData);
+    const result = await exerciseLibraryService.createExerciseLibraryFromYoutube(rawData);
+    return c.json(result);
 });

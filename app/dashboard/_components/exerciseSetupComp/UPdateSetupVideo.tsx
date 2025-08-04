@@ -2,12 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   Form,
   FormControl,
   FormField,
@@ -133,7 +127,7 @@ export const UpdateSetupVideo = ({
         purple: videoData.purple || "",
         orange: videoData.orange || "",
       };
-
+      console.log(formData);
       form.reset(formData);
     } catch (error) {
       toast.error("Failed to fetch video data");
@@ -148,7 +142,7 @@ export const UpdateSetupVideo = ({
     if (isOpen && videoId) {
       fetchVideoData();
     }
-  }, [isOpen, videoId, fetchVideoData]);
+  }, [isOpen, videoId]);
 
   const onSubmit = async (data: FormValues) => {
     if (!videoId) return;
@@ -170,7 +164,7 @@ export const UpdateSetupVideo = ({
         },
         body: JSON.stringify(submitData),
       });
-
+      console.log(response);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to update video data");
@@ -225,22 +219,20 @@ export const UpdateSetupVideo = ({
     },
   ];
 
+  if (!isOpen) return null;
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] w-full max-w-[1400px] overflow-hidden">
-        <DialogHeader className="flex justify-between gap-3 border-b pb-4">
-          <DialogTitle className="text-2xl font-bold">
-            Update Exercise Setup Video
-          </DialogTitle>
-          <Button
-            type="button"
-            onClick={onClose}
-            variant="secondary"
-            disabled={isLoading}
-          >
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black/75" onClick={onClose} />
+      <div className="relative w-full max-w-6xl rounded-lg bg-card shadow-xl">
+        <div className="flex justify-between gap-3 border-b p-5">
+          <div className="flex items-center gap-2">
+            <p className="text-2xl font-bold">Update Exercise Setup Video</p>
+          </div>
+          <Button type="button" onClick={onClose} variant="secondary">
             Cancel
           </Button>
-        </DialogHeader>
+        </div>
 
         {isFetchingData ? (
           <div className="flex items-center justify-center p-8">
@@ -250,7 +242,7 @@ export const UpdateSetupVideo = ({
             </div>
           </div>
         ) : (
-          <div className="max-h-[70vh] overflow-y-auto p-5">
+          <div className="max-h-[80vh] overflow-y-auto p-5">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -495,7 +487,7 @@ export const UpdateSetupVideo = ({
             </Form>
           </div>
         )}
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 };

@@ -53,8 +53,8 @@ export const errorHandler: ErrorHandler = (err, c) => {
   // Other Exception
   return c.json(
     {
-      message: isProduction ? "Internal Server Error" : err.message,
-      stack: isProduction ? undefined : err.stack,
+      message: err.message,
+      stack: err.stack,
     },
     500,
   );
