@@ -1,4 +1,4 @@
-import { array, InferType, object, string } from "yup";
+import { array, InferType, number, object, string } from "yup";
 
 export const exerciseSetupSchema = object({
   title: string().required("Title is required"),
@@ -23,7 +23,9 @@ export const exerciseSetupSchemaAdmin = object({
   videoUrl: string().required("Video URL is required"),
   equipment: array().of(string()).default([]),
   bodyPart: array().of(string()).default([]),
-  height: string().optional().nullable(),
+  height: number()
+    .required("Height is required")
+    .min(0, "Height must be a positive number"),
   rack: array().of(string()).default([]),
   userId: string().required("User ID is required"),
   // Pump by numbers fields

@@ -74,7 +74,6 @@ const ExLibraryCard = ({
       throw error;
     }
   };
-
   return (
     <div>
       <CardUI className="overflow-hidden rounded-none border-none shadow-none">
