@@ -3,7 +3,6 @@ import prisma from "@/lib/prisma";
 import {
   exerciseLibrarySchemaAdmin,
   exerciseLibrarySchemaType,
-  exerciseLibraryZapierSchemaType,
 } from "@/schema/exerciseLibrarySchema";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
@@ -19,7 +18,7 @@ export const exerciseLibraryService = {
         data: {
           title: data.title,
           videoUrl: data.videoUrl,
-          height: data.height?.trim() || null,
+          height: data.height,
           userId: data.userId,
           // Create junction table records for equipment
           ExLibEquipment: {
@@ -270,7 +269,7 @@ export const exerciseLibraryService = {
         data: {
           title: data.title,
           videoUrl: data.videoUrl,
-          height: data.height && data.height.trim() !== "" ? data.height : null,
+          height: data.height,
           updatedAt: new Date(),
           // Create new junction table records for equipment
           ExLibEquipment: {
@@ -637,24 +636,24 @@ export const exerciseLibraryService = {
       const transformedExercises = exercises
         .map((exercise) => {
           // Parse height to inches
-          let heightInInches: number | null = null;
-          if (exercise.height && exercise.height.trim() !== "") {
-            const heightMatch = exercise.height.match(/(\d+)'(\d+)"/);
-            if (heightMatch) {
-              const feet = parseInt(heightMatch[1]);
-              const inches = parseInt(heightMatch[2]);
-              heightInInches = feet * 12 + inches;
-            } else {
-              heightInInches = parseInt(exercise.height || "0", 10);
-            }
-          }
+          // let heightInInches: number | null = null;
+          // if (exercise.height && exercise.height.trim() !== "") {
+          //   const heightMatch = exercise.height.match(/(\d+)'(\d+)"/);
+          //   if (heightMatch) {
+          //     const feet = parseInt(heightMatch[1]);
+          //     const inches = parseInt(heightMatch[2]);
+          //     heightInInches = feet * 12 + inches;
+          //   } else {
+          //     heightInInches = parseInt(exercise.height || "0", 10);
+          //   }
+          // }
 
-          // Apply height filter after parsing
-          if ((minHeight > 0 || maxHeight < 85) && heightInInches !== null) {
-            if (heightInInches < minHeight || heightInInches > maxHeight) {
-              return null;
-            }
-          }
+          // // Apply height filter after parsing
+          // if ((minHeight > 0 || maxHeight < 85) && heightInInches !== null) {
+          //   if (heightInInches < minHeight || heightInInches > maxHeight) {
+          //     return null;
+          //   }
+          // }
 
           // Apply rating filter (using mock rating for now)
           if (minRating > 0) {
@@ -686,7 +685,7 @@ export const exerciseLibraryService = {
                   name: exercise.ExLibRak[0].rack.name,
                 }
               : undefined,
-            height: heightInInches || 0,
+            height: exercise.height || 0,
             userId: exercise.userId,
             user: exercise.user,
             contentStats: exercise.contentStats,
@@ -725,43 +724,5 @@ export const exerciseLibraryService = {
       console.error("Error fetching exercise library with filters:", error);
       throw new Error("Failed to fetch exercise library data with filters.");
     }
-  },
-  createExerciseLibraryFromYoutube: async (data: exerciseLibraryZapierSchemaType) => {
-      const result = await prisma.exerciseLibraryVideo.create({
-        data: {
-          title: data.title,
-          videoUrl: data.embedUrl,
-          height: Number(data.height),
-          playUrl: data.playUrl,
-          isPublic: true,
-          publishedAt: data.publishedAt,
-          ExLibEquipment: {
-            connect: data.equipments?.map((equipmentId) => ({
-              id: equipmentId,
-            })) || [],
-          },
-          ExLibBodyPart: {
-            connect: data.bodyParts?.map((bodyPartId) => ({
-              id: bodyPartId,
-            })) || [],
-          },
-          ExLibRak: {
-            connect: data.racks?.map((rackId) => ({
-              id: rackId,
-            })) || [],
-          },
-          user: {
-            connect: {
-              id: data.userId,
-            },
-          },
-        },
-      });
-      
-      return {
-        success: true,
-        message: "A video post has been created on library",
-        data: result,
-      }
   },
 };
