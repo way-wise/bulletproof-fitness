@@ -170,64 +170,63 @@ export const exerciseSetupService = {
     try {
       const skip = (page - 1) * limit;
 
-      // Get total count for this user
-      const total = await prisma.exerciseSetup.count({
-        where: { userId },
-      });
-
-      // Get paginated data for this user
-      const exercises = await prisma.exerciseSetup.findMany({
-        where: { userId },
-        skip,
-        take: limit,
-        orderBy: {
-          createdAt: "desc",
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
+      const [exercises, total] = await Promise.all([
+        prisma.exerciseSetup.findMany({
+          where: { userId },
+          skip,
+          take: limit,
+          orderBy: {
+            createdAt: "desc",
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            ExSetupEquipment: {
+              include: {
+                equipment: true,
+              },
+            },
+            ExSetupBodyPart: {
+              include: {
+                bodyPart: true,
+              },
+            },
+            ExSetupRak: {
+              include: {
+                rack: true,
+              },
+            },
+            contentStats: true,
+            views: {
+              select: {
+                id: true,
+              },
+            },
+            ratings: {
+              select: {
+                id: true,
+                rating: true,
+              },
+            },
+            reactions: {
+              where: {
+                reaction: "LIKE",
+              },
+              select: {
+                id: true,
+              },
             },
           },
-          ExSetupEquipment: {
-            include: {
-              equipment: true,
-            },
-          },
-          ExSetupBodyPart: {
-            include: {
-              bodyPart: true,
-            },
-          },
-          ExSetupRak: {
-            include: {
-              rack: true,
-            },
-          },
-          contentStats: true,
-          views: {
-            select: {
-              id: true,
-            },
-          },
-          ratings: {
-            select: {
-              id: true,
-              rating: true,
-            },
-          },
-          reactions: {
-            where: {
-              reaction: "LIKE",
-            },
-            select: {
-              id: true,
-            },
-          },
-        },
-      });
+        }),
+        prisma.exerciseSetup.count({
+          where: { userId },
+        }),
+      ]);
 
       // Transform data to include view, like, and rating counts
       const transformedExercises = exercises.map((exercise) => ({
@@ -854,58 +853,60 @@ export const exerciseSetupService = {
       if (minHeight > 0 || maxHeight < 85) {
         where.AND.push({
           height: {
-            not: null,
+            gte: minHeight,
+            lte: maxHeight,
           },
         });
       }
 
-      const total = await prisma.exerciseSetup.count({
-        where,
-      });
-
-      const exercises = await prisma.exerciseSetup.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: {
-          [sortBy]: sortOrder,
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
+      const [exercises, total] = await Promise.all([
+        prisma.exerciseSetup.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy: {
+            [sortBy]: sortOrder,
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            ExSetupEquipment: {
+              include: {
+                equipment: true,
+              },
+            },
+            ExSetupBodyPart: {
+              include: {
+                bodyPart: true,
+              },
+            },
+            ExSetupRak: {
+              include: {
+                rack: true,
+              },
+            },
+            contentStats: true,
+            reactions: {
+              where: { userId: session?.user?.id },
+              orderBy: { createdAt: "desc" },
+              take: 1,
+              select: {
+                id: true,
+                userId: true,
+                reaction: true,
+              },
             },
           },
-          ExSetupEquipment: {
-            include: {
-              equipment: true,
-            },
-          },
-          ExSetupBodyPart: {
-            include: {
-              bodyPart: true,
-            },
-          },
-          ExSetupRak: {
-            include: {
-              rack: true,
-            },
-          },
-          contentStats: true,
-          reactions: {
-            where: { userId: session?.user?.id },
-            orderBy: { createdAt: "desc" },
-            take: 1,
-            select: {
-              id: true,
-              userId: true,
-              reaction: true,
-            },
-          },
-        },
-      });
+        }),
+        prisma.exerciseSetup.count({
+          where,
+        }),
+      ]);
 
       const transformedExercises = exercises
         .map((exercise) => {

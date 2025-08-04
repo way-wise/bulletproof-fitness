@@ -599,4 +599,5 @@ exerciseLibraryModule.post("/youtube/callback", async (c) => {
     };
 
     return c.json(response);
+
 });
