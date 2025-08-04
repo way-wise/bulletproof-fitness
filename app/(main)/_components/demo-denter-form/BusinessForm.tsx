@@ -288,7 +288,7 @@ export default function BusinessForm({
               control={form.control}
               name="weekdayOpen"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="max-h-[50px]">
                   <FormLabel className="text-md font-semibold">
                     Weekdays Opening Time
                   </FormLabel>

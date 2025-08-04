@@ -22,7 +22,10 @@ export const demoCentersService = {
     let total = 0;
 
     // Building type filter
-    const whereFilter: any = {};
+    const whereFilter: any = {
+      isPublic: true,
+      blocked: false,
+    };
     if (buildingType) {
       whereFilter.buildingType = buildingType;
     }

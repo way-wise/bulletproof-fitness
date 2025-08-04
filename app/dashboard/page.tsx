@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import {
   Activity,
@@ -27,6 +28,7 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
+import { AuthRequired } from "../(main)/_components/user-profile/AuthRequired";
 
 const DashboardOverviewPage = () => {
   // Mock data - in real app, this would come from API
@@ -135,10 +137,10 @@ const DashboardOverviewPage = () => {
     { name: "Storage Usage", value: 72.1, status: "good" },
   ];
 
-  // const { data: session } = useSession();
-  // if (!session) {
-  //   return <AuthRequired />;
-  // }
+  const { data: session } = useSession();
+  if (!session) {
+    return <AuthRequired />;
+  }
 
   return (
     <div className="space-y-6">

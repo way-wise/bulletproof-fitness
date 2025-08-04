@@ -83,9 +83,7 @@ const Navbar = () => {
   };
 
   const handleDropdownMouseLeave = () => {
-    setTimeout(() => {
-      setOpenDropdown(null);
-    }, 100);
+    setOpenDropdown(null);
   };
 
   const closeMobileMenu = () => {
@@ -122,11 +120,14 @@ const Navbar = () => {
                     <div className="relative">
                       {menu.submenu ? (
                         // Dropdown Menu Item
-                        <div className="relative">
+                        <div
+                          className="relative"
+                          onMouseEnter={() => handleDropdownOpen(menu.title)}
+                          onMouseLeave={handleDropdownMouseLeave}
+                        >
                           <button
-                            onMouseEnter={() => handleDropdownOpen(menu.title)}
                             className={cn(
-                              "flex items-center gap-2 border-b-2 border-transparent py-2 text-sm font-medium transition-colors hover:text-black focus:outline-none",
+                              "flex items-center gap-2 border-b-2 border-transparent pt-2 pb-2 text-sm font-medium transition-colors hover:text-black focus:outline-none",
                               {
                                 "border-b-black text-black": isActive,
                                 "text-muted-foreground": !isActive,
@@ -144,19 +145,13 @@ const Navbar = () => {
 
                           {/* Dropdown Menu */}
                           {isDropdownOpen && (
-                            <div
-                              className="absolute top-full left-0 z-50 mt-1 min-w-[200px] rounded-md border bg-popover p-1 shadow-lg"
-                              onMouseEnter={() =>
-                                handleDropdownOpen(menu.title)
-                              }
-                              onMouseLeave={handleDropdownMouseLeave}
-                            >
+                            <div className="absolute top-full left-0 z-50 mb-1 min-w-[200px] rounded-md border bg-popover p-1 shadow-lg">
                               {menu.submenu.map((submenu, subIndex) => (
                                 <Link
                                   key={subIndex}
                                   href={submenu.url}
                                   className={cn(
-                                    "block w-full rounded-sm px-3 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
+                                    "mb-1 block w-full rounded-sm px-3 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
                                     pathname === submenu.url &&
                                       "bg-accent text-accent-foreground",
                                   )}
