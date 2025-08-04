@@ -7,13 +7,15 @@ async function getRewardPointValue(type: RewardType) {
     where: { type },
     orderBy: { createdAt: "desc" },
   });
+  if (!reward) {
+    console.warn(`No reward points found for type: ${type}`);
+    return 0;
+  }
+  if (!reward.isActive) {
+    console.warn(`Reward points for type ${type} are not active`);
+    return 0;
+  }
   return reward?.points ?? 0;
-}
-
-function cleanWhere(where: Record<string, any>) {
-  return Object.fromEntries(
-    Object.entries(where).filter(([_, v]) => v !== undefined && v !== null),
-  );
 }
 
 async function awardPointsToUser(
