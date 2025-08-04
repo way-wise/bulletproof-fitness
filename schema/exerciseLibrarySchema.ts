@@ -1,4 +1,4 @@
-import { array, InferType, object, string } from "yup";
+import { array, InferType, number, object, string } from "yup";
 
 // Exercise Library Schema for form validation
 export const exerciseLibrarySchema = object({
@@ -18,12 +18,12 @@ export const exerciseLibrarySchemaAdmin = object({
   videoUrl: string().url("Invalid video URL").required("Video URL is required"),
   equipments: array().of(string()).default([]),
   bodyPart: array().of(string()).default([]),
-  height: string().optional().nullable(),
+  height: number()
+    .required("Height is required")
+    .min(0, "Height must be a positive number"),
   rack: array().of(string()).default([]),
   userId: string().required("User id is required"),
 });
-
-
 
 const normalizeToArray = (val: unknown) => {
   if (Array.isArray(val)) return val;
@@ -43,5 +43,6 @@ export const exerciseLibraryZapierSchema = object({
   publishedAt: string().optional().nullable(),
 });
 
-export type exerciseLibraryZapierSchemaType = InferType<typeof exerciseLibraryZapierSchema>;
-
+export type exerciseLibraryZapierSchemaType = InferType<
+  typeof exerciseLibraryZapierSchema
+>;
