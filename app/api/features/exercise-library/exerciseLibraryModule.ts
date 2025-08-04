@@ -7,6 +7,7 @@ import {
 import { validateInput } from "@api/lib/validateInput";
 import { Hono, type Context } from "hono";
 import { exerciseLibraryService } from "./exerciseLibraryService";
+import prisma from "@/lib/prisma";
 
 export const exerciseLibraryModule = new Hono();
 
@@ -512,11 +513,63 @@ exerciseLibraryModule.post("/", async (c) => {
 
 // Create library video information when youtube video is published
 exerciseLibraryModule.post("/youtube/callback", async (c) => {
-  console.log("youtube callback", await c.req.parseBody());
+    const rawData = await c.req.json();
 
-    const validatedJSONBody = await c.req.json();
+    // Parse the youtube string into key-value pairs
+    const parseYoutubeString = (youtubeString: string) => {
+      const pairs = youtubeString.split('|');
+      const result: Record<string, any> = {};
+      
+      pairs.forEach(pair => {
+        const [key, value] = pair.split(':').map(item => item.trim());
+        if (key && value !== undefined) {
+          // For now, treat all values as strings to be safe
+          result[key] = value;
+        }
+      });
+      
+      return result;
+    };
+    
+    // Extract data from the youtube string
+    const data = parseYoutubeString(rawData.youtube as string);
 
-    const result = await exerciseLibraryService.createExerciseLibraryFromYoutube(validatedJSONBody);
+    const result = await prisma.exerciseLibraryVideo.create({
+      data: {
+        title: data.title,
+        videoUrl: rawData.embedUrl,
+        height: Number(data.height),
+        playUrl: rawData.playUrl,
+        isPublic: true,
+        publishedAt: rawData.publishedAt,
+        ExLibEquipment: {
+          connect: data.equipments?.map((equipmentId: string) => ({
+            id: equipmentId,
+          })) || [],
+        },
+        ExLibBodyPart: {
+          connect: data.bodyParts?.map((bodyPartId: string) => ({
+            id: bodyPartId,
+          })) || [],
+        },
+        ExLibRak: {
+          connect: data.racks?.map((rackId: string) => ({
+            id: rackId,
+          })) || [],
+        },
+        user: {
+          connect: {
+            id: data.userId,
+          },
+        },
+      },
+    });
+      
+    const response = {
+      success: true,
+      message: "A video post has been created on library",
+      data: result,
+    };
 
-    return c.json(result);
+    return c.json(response);
 });

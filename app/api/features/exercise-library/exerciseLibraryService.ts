@@ -746,12 +746,6 @@ export const exerciseLibraryService = {
     // Extract data from the youtube string
     const data = parseYoutubeString(rawData.youtube);
 
-    console.log("data", data);
-    return {
-      message: "Just testing",
-      data: data
-    }
-    
     const result = await prisma.exerciseLibraryVideo.create({
       data: {
         title: data.title,
@@ -783,10 +777,10 @@ export const exerciseLibraryService = {
       },
     });
       
-      return {
-        success: true,
-        message: "A video post has been created on library",
-        data: result,
-      }
+    return {
+      success: true,
+      message: "A video post has been created on library",
+      data: result,
+    }
   },
 };
