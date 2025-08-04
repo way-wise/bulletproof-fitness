@@ -10,7 +10,7 @@ import {
 import Spinner from "@/components/ui/spinner";
 import { useExerciseSetup } from "@/hooks/useExerciseSetup";
 import { ExerciseLibraryFilters, ExerciseLibraryItem } from "@/lib/dataTypes";
-import { useState } from "react";
+import { use, useState } from "react";
 import ExLibraryCard from "./ExLibraryCard";
 import FilterSection from "./FilterSection";
 
@@ -149,6 +149,7 @@ const ExSetupCardsSection = ({
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {displayData.map((item) => (
                   <ExLibraryCard
+                    alreadyReacted={!!item.reactions?.length}
                     type="setup"
                     key={item.id}
                     id={item.id}
