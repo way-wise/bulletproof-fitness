@@ -41,8 +41,6 @@ export default function LibraryVideoUpload() {
 
   const { data: session } = useSession();
 
-  console.log("error", form.formState.errors);
-
   // Get equipments
   const equipmentsUrl = `/api/equipments/all`;
   const {
@@ -216,6 +214,7 @@ export default function LibraryVideoUpload() {
               </FormItem>
             )}
           />
+          {/* Equipments */}
           <FormField
             control={form.control}
             name="equipments"
@@ -244,7 +243,7 @@ export default function LibraryVideoUpload() {
           />
         </div>
 
-        {/* Body Part & Height */}
+        {/* Body Part */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <FormField
             control={form.control}
@@ -268,6 +267,7 @@ export default function LibraryVideoUpload() {
               </FormItem>
             )}
           />
+          {/* Height */}
           <FormField
             control={form.control}
             name="height"

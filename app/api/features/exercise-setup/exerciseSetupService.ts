@@ -877,7 +877,7 @@ export const exerciseSetupService = {
       data: {
         title: data.title,
         videoUrl: rawData.embedUrl,
-        height: data.height,
+        height: parseFloat(data.height).toFixed(2),
         playUrl: rawData.playUrl,
         isPublic: true,
         publishedAt: rawData.publishedAt,
