@@ -26,7 +26,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaGithub, FaGoogle } from "react-icons/fa";
+import { FaGoogle } from "react-icons/fa";
 import { toast } from "sonner";
 import { InferType } from "yup";
 
@@ -158,16 +158,6 @@ const SignupForm = () => {
               >
                 <FaGoogle />
                 <span>Google</span>
-              </Button>
-
-              <Button
-                type="button"
-                variant="secondary"
-                className="w-full"
-                disabled={pendingAuth}
-              >
-                <FaGithub />
-                <span>Github</span>
               </Button>
             </div>
           </form>

@@ -19,7 +19,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { Textarea } from "@/components/ui/textarea";
 import { demoCenterAdmin } from "@/lib/admin/demoCenter";
@@ -33,7 +32,6 @@ import {
   Lock,
   MoreVertical,
   Pencil,
-  Search,
   Trash,
   XCircle,
 } from "lucide-react";
@@ -377,7 +375,11 @@ export const DemoCenterTable = () => {
     <>
       <div className="rounded-xl border bg-card p-6">
         <div className="flex items-center justify-between gap-4 pb-6">
-          <div className="relative max-w-xs">
+          <div>
+            <h1 className="text-2xl font-medium">Demo Centers</h1>
+          </div>
+
+          {/* <div className="relative max-w-xs">
             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="search"
@@ -386,7 +388,7 @@ export const DemoCenterTable = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </div>
+          </div> */}
         </div>
         <DataTable
           data={data}

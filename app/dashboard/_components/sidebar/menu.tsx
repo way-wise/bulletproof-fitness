@@ -5,7 +5,6 @@ import {
   Home,
   LayoutGrid,
   Play,
-  Settings,
   UsersRound,
 } from "lucide-react";
 import MenuCollapsible from "./menu-collapsible";
@@ -87,11 +86,11 @@ const SidebarMenu = () => {
         },
       ],
     },
-    {
-      title: "Settings",
-      icon: <Settings className="icon" />,
-      url: "/dashboard/settings",
-    },
+    // {
+    //   title: "Settings",
+    //   icon: <Settings className="icon" />,
+    //   url: "/dashboard/settings",
+    // },
   ];
 
   return (

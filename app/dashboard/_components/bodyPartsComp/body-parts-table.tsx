@@ -210,9 +210,10 @@ const BodyPartsTable = () => {
         </Button>
       </div>
       <div className="rounded-xl border bg-card p-6">
-        <div className="flex items-center justify-between gap-4 pb-6">
+        {/* need to add search bar here */}
+        {/* <div className="flex items-center justify-between gap-4 pb-6">
           <Input type="search" placeholder="Search..." className="max-w-xs" />
-        </div>
+        </div> */}
         <DataTable
           data={data}
           columns={columns}
