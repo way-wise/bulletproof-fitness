@@ -6,7 +6,6 @@ import {
 import { validateInput } from "@api/lib/validateInput";
 import { Hono, type Context } from "hono";
 import { exerciseLibraryService } from "./exerciseLibraryService";
-import prisma from "@/lib/prisma";
 
 export const exerciseLibraryModule = new Hono();
 

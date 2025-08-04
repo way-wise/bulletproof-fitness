@@ -760,28 +760,51 @@ export const exerciseLibraryService = {
     const data = parseYoutubeString(rawData.youtube);
     console.log("Exercise Library data", data);
 
+    // Helper function to convert string to array if needed
+    const toArray = (value: any): string[] => {
+      if (!value) return [];
+      if (Array.isArray(value)) return value;
+      if (typeof value === 'string') {
+        // If it contains commas, split it
+        return value.includes(',') ? value.split(',').map(item => item.trim()) : [value];
+      }
+      return [];
+    };
+
+    // Validate required fields
+    if (!data.title) {
+      throw new Error('Title is required but not found in YouTube data');
+    }
+    
+    if (!data.userId) {
+      throw new Error('User ID is required but not found in YouTube data');
+    }
+    
+    // Handle height - default to 0 if not a valid number
+    const height = data.height && !isNaN(Number(data.height)) ? Number(data.height) : 0;
+
     await prisma.exerciseLibraryVideo.create({
       data: {
         title: data.title,
         videoUrl: rawData.embedUrl,
-        height: Number(data.height),
+        height: height,
         playUrl: rawData.playUrl,
         isPublic: true,
         publishedAt: rawData.publishedAt,
         ExLibEquipment: {
-          connect: data.equipments?.map((equipmentId: string) => ({
+          connect: toArray(data.equipments).map((equipmentId: string) => ({
             id: equipmentId,
-          })) || [],
+          })),
         },
         ExLibBodyPart: {
-          connect: data.bodyParts?.map((bodyPartId: string) => ({
+          connect: toArray(data.bodyParts).map((bodyPartId: string) => ({
             id: bodyPartId,
-          })) || [],
+          })),
         },
         ExLibRak: {
-          connect: data.racks?.map((rackId: string) => ({
+          connect: toArray(data.racks).map((rackId: string) => ({
             id: rackId,
-          })) || [],
+          })),
         },
         user: {
           connect: {
