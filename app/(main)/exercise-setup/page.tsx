@@ -2,7 +2,7 @@ import {
   ExerciseLibraryFilters,
   ExerciseLibraryResponse,
 } from "@/lib/dataTypes";
-import ExSetupCardsSection from "../_components/exercideLibrary/ExSetupCardsSection";
+import ExSetupCardsSection from "../_components/exercide-library/ExSetupCardsSection";
 
 // Type for search params
 type SearchParams = {

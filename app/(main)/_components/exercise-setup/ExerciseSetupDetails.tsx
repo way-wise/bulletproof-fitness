@@ -4,9 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 
 import { Star } from "lucide-react";
 import { useState } from "react";
-import useSWR from "swr";
-import ContactUs from "../exercideLibrary/ContactUs";
 import { toast } from "sonner";
+import useSWR from "swr";
+import ContactUs from "../exercide-library/ContactUs";
 type TBodyPart = {
   bodyPart?: {
     name: string;
