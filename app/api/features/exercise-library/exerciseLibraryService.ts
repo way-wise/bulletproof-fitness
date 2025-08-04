@@ -722,37 +722,62 @@ export const exerciseLibraryService = {
       throw new Error("Failed to fetch exercise library data with filters.");
     }
   },
-  createExerciseLibraryFromYoutube: async (data: exerciseLibraryZapierSchemaType) => {
-      const result = await prisma.exerciseLibraryVideo.create({
-        data: {
-          title: data.title,
-          videoUrl: data.embedUrl,
-          height: Number(data.height),
-          playUrl: data.playUrl,
-          isPublic: true,
-          publishedAt: data.publishedAt,
-          ExLibEquipment: {
-            connect: data.equipments?.map((equipmentId) => ({
-              id: equipmentId,
-            })) || [],
-          },
-          ExLibBodyPart: {
-            connect: data.bodyParts?.map((bodyPartId) => ({
-              id: bodyPartId,
-            })) || [],
-          },
-          ExLibRak: {
-            connect: data.racks?.map((rackId) => ({
-              id: rackId,
-            })) || [],
-          },
-          user: {
-            connect: {
-              id: data.userId,
-            },
+  createExerciseLibraryFromYoutube: async (rawData: exerciseLibraryZapierSchemaType) => {
+    // Parse the youtube string into key-value pairs
+    const parseYoutubeString = (youtubeString: string) => {
+      const pairs = youtubeString.split('|');
+      const result: Record<string, any> = {};
+      
+      pairs.forEach(pair => {
+        const [key, value] = pair.split(':').map(item => item.trim());
+        if (key && value !== undefined) {
+          // For now, treat all values as strings to be safe
+          result[key] = value;
+        }
+      });
+      
+      return result;
+    };
+    
+    // Extract data from the youtube string
+    const data = parseYoutubeString(rawData.youtube);
+
+    console.log("data", data);
+    return {
+      message: "Just testing",
+      data: data
+    }
+    
+    const result = await prisma.exerciseLibraryVideo.create({
+      data: {
+        title: data.title,
+        videoUrl: data.embedUrl,
+        height: Number(data.height),
+        playUrl: data.playUrl,
+        isPublic: true,
+        publishedAt: data.publishedAt,
+        ExLibEquipment: {
+          connect: data.equipments?.map((equipmentId: string) => ({
+            id: equipmentId,
+          })) || [],
+        },
+        ExLibBodyPart: {
+          connect: data.bodyParts?.map((bodyPartId: string) => ({
+            id: bodyPartId,
+          })) || [],
+        },
+        ExLibRak: {
+          connect: data.racks?.map((rackId: string) => ({
+            id: rackId,
+          })) || [],
+        },
+        user: {
+          connect: {
+            id: data.userId,
           },
         },
-      });
+      },
+    });
       
       return {
         success: true,
