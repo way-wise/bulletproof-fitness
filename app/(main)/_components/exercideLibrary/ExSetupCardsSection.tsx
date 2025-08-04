@@ -154,10 +154,18 @@ const ExSetupCardsSection = ({
                     url={item.videoUrl || ""}
                     bodypart={item.bodyPart?.name || ""}
                     author={item.user?.name || ""}
-                    views={item.contentStats[0].totalViews}
-                    likes={item.contentStats[0].totalLikes}
-                    averageRating={item.contentStats[0].avgRating}
-                    dislikes={item.contentStats[0].totalDislikes}
+                    views={
+                      item.contentStats ? item.contentStats[0]?.totalViews : 0
+                    }
+                    likes={
+                      item.contentStats ? item.contentStats[0]?.totalLikes : 0
+                    }
+                    averageRating={
+                      item.contentStats ? item.contentStats[0]?.avgRating : 0
+                    }
+                    dislikes={
+                      item.contentStats ? item.contentStats[0]?.totalDislikes : 0
+                    }
                   />
                 ))}
               </div>
