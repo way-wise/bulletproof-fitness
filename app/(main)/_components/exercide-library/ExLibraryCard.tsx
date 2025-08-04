@@ -33,11 +33,11 @@ const ExLibraryCard = ({
   alreadyReacted = false,
   mutate,
 }: ExLibraryCardProps) => {
-  const videoUrl = url || "";
-  const videoId =
-    videoUrl.match(
-      /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-    )?.[1] || null;
+  // const videoUrl = url || "";
+  // const videoId =
+  //   videoUrl.match(
+  //     /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+  //   )?.[1] || null;
 
   const handleReactSubmit = async ({
     contentId,
@@ -80,7 +80,7 @@ const ExLibraryCard = ({
       <CardUI className="overflow-hidden rounded-none border-none shadow-none">
         <div className="relative aspect-video rounded-none shadow-none">
           <iframe
-            src={`https://www.youtube.com/embed/${videoId}`}
+            src={`${url}`}
             title={title}
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
