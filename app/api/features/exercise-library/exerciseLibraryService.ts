@@ -763,10 +763,11 @@ export const exerciseLibraryService = {
     // Helper function to convert string to array if needed
     const toArray = (value: any): string[] => {
       if (!value) return [];
-      if (Array.isArray(value)) return value;
+      if (Array.isArray(value)) return value.filter(item => item && item.trim());
       if (typeof value === 'string') {
         // If it contains commas, split it
-        return value.includes(',') ? value.split(',').map(item => item.trim()) : [value];
+        const items = value.includes(',') ? value.split(',').map(item => item.trim()) : [value.trim()];
+        return items.filter(item => item && item.length > 0);
       }
       return [];
     };
@@ -783,6 +784,13 @@ export const exerciseLibraryService = {
     // Handle height - default to 0 if not a valid number
     const height = data.height && !isNaN(Number(data.height)) ? Number(data.height) : 0;
 
+    // Get arrays and filter out empty values
+    const equipments = toArray(data.equipments);
+    const bodyParts = toArray(data.bodyParts);
+    const racks = toArray(data.racks);
+    
+    console.log('Filtered arrays:', { equipments, bodyParts, racks });
+
     await prisma.exerciseLibraryVideo.create({
       data: {
         title: data.title,
@@ -791,21 +799,27 @@ export const exerciseLibraryService = {
         playUrl: rawData.playUrl,
         isPublic: true,
         publishedAt: rawData.publishedAt,
-        ExLibEquipment: {
-          connect: toArray(data.equipments).map((equipmentId: string) => ({
-            id: equipmentId,
-          })),
-        },
-        ExLibBodyPart: {
-          connect: toArray(data.bodyParts).map((bodyPartId: string) => ({
-            id: bodyPartId,
-          })),
-        },
-        ExLibRak: {
-          connect: toArray(data.racks).map((rackId: string) => ({
-            id: rackId,
-          })),
-        },
+        ...(equipments.length > 0 && {
+          ExLibEquipment: {
+            connect: equipments.map((equipmentId: string) => ({
+              id: equipmentId,
+            })),
+          },
+        }),
+        ...(bodyParts.length > 0 && {
+          ExLibBodyPart: {
+            connect: bodyParts.map((bodyPartId: string) => ({
+              id: bodyPartId,
+            })),
+          },
+        }),
+        ...(racks.length > 0 && {
+          ExLibRak: {
+            connect: racks.map((rackId: string) => ({
+              id: rackId,
+            })),
+          },
+        }),
         user: {
           connect: {
             id: data.userId,
