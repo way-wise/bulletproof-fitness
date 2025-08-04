@@ -740,97 +740,72 @@ export const exerciseLibraryService = {
     }
   },
   createExerciseLibraryFromYoutube: async (rawData: exerciseLibraryZapierSchemaType) => {
-    // Parse the youtube string into key-value pairs
-    const parseYoutubeString = (youtubeString: string) => {
-      const pairs = youtubeString.split('|');
-      const result: Record<string, any> = {};
+      const parseYoutubeString = (youtubeString: string) => {
+        const pairs = youtubeString.split('|');
+        const result: Record<string, any> = {};
+        
+        // Parse the youtube description string into key-value pairs
+        pairs.forEach(pair => {
+          const [key, value] = pair.split(':').map(item => item.trim());
+          if (key && value !== undefined) {
+            result[key] = value;
+          }
+        });
+        
+        return result;
+      };
       
-      pairs.forEach(pair => {
-        const [key, value] = pair.split(':').map(item => item.trim());
-        if (key && value !== undefined) {
-          // For now, treat all values as strings to be safe
-          result[key] = value;
+      // Extract data from the youtube string
+      const data = parseYoutubeString(rawData.youtube);
+
+      // Helper function to convert string to array
+      const toArray = (value: any): string[] => {
+        if (!value) return [];
+        if (typeof value === 'string') {
+          return value.includes(',') 
+            ? value.split(',').map(item => item.trim()).filter(item => item.length > 0)
+            : [value.trim()].filter(item => item.length > 0);
         }
-      });
-      
-      return result;
-    };
-    
-    // Extract data from the youtube string
-    const data = parseYoutubeString(rawData.youtube);
-    console.log("Exercise Library data", data);
+        return [];
+      };
 
-    // Helper function to convert string to array if needed
-    const toArray = (value: any): string[] => {
-      if (!value) return [];
-      if (Array.isArray(value)) return value.filter(item => item && item.trim());
-      if (typeof value === 'string') {
-        // If it contains commas, split it
-        const items = value.includes(',') ? value.split(',').map(item => item.trim()) : [value.trim()];
-        return items.filter(item => item && item.length > 0);
-      }
-      return [];
-    };
+      // Get arrays for relations
+      const equipments = toArray(data.equipments);
+      const bodyParts = toArray(data.bodyParts);
+      const racks = toArray(data.racks);
 
-    // Validate required fields
-    if (!data.title) {
-      throw new Error('Title is required but not found in YouTube data');
-    }
-    
-    if (!data.userId) {
-      throw new Error('User ID is required but not found in YouTube data');
-    }
-    
-    // Handle height - default to 0 if not a valid number
-    const height = data.height && !isNaN(Number(data.height)) ? Number(data.height) : 0;
-
-    // Get arrays and filter out empty values
-    const equipments = toArray(data.equipments);
-    const bodyParts = toArray(data.bodyParts);
-    const racks = toArray(data.racks);
-    
-    console.log('Filtered arrays:', { equipments, bodyParts, racks });
-
-    await prisma.exerciseLibraryVideo.create({
-      data: {
-        title: data.title,
-        videoUrl: rawData.embedUrl,
-        height: height,
-        playUrl: rawData.playUrl,
-        isPublic: true,
-        publishedAt: rawData.publishedAt,
-        ...(equipments.length > 0 && {
+      // Create the exercise library video
+      const result = await prisma.exerciseLibraryVideo.create({
+        data: {
+          title: data.title,
+          videoUrl: rawData.embedUrl,
+          height: Number(data.height),
+          playUrl: rawData.playUrl,
+          isPublic: true,
+          publishedAt: rawData.publishedAt,
+          userId: data.userId,
           ExLibEquipment: {
-            connect: equipments.map((equipmentId: string) => ({
-              id: equipmentId,
+            create: equipments.map(equipmentId => ({
+              equipmentId: equipmentId,
             })),
           },
-        }),
-        ...(bodyParts.length > 0 && {
           ExLibBodyPart: {
-            connect: bodyParts.map((bodyPartId: string) => ({
-              id: bodyPartId,
+            create: bodyParts.map(bodyPartId => ({
+              bodyPartId: bodyPartId,
             })),
           },
-        }),
-        ...(racks.length > 0 && {
           ExLibRak: {
-            connect: racks.map((rackId: string) => ({
-              id: rackId,
+            create: racks.map(rackId => ({
+              rackId: rackId,
             })),
-          },
-        }),
-        user: {
-          connect: {
-            id: data.userId,
           },
         },
-      },
-    });
-      
-    return {
-      success: true,
-      message: "A video post has been created on library",
-    }
+      });
+        
+      return {
+        success: true,
+        message: "A video post has been created on library",
+        data: result,
+      };
   },
 };
