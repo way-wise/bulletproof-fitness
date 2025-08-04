@@ -14,7 +14,7 @@ const page = () => {
             width={300}
             height={200}
           />
-          <Link href="/uploadVideo/exercise-setup">
+          <Link href="/upload-video/exercise-setup">
             <Button className="mt-2 cursor-pointer rounded-sm uppercase">
               UPLOAD EXERCISE SETUP VIDEO
             </Button>
@@ -29,7 +29,7 @@ const page = () => {
             height={200}
           />
 
-          <Link href="/uploadVideo/exercise-library">
+          <Link href="/upload-video/exercise-library">
             <Button className="mt-2 cursor-pointer rounded-sm uppercase">
               UPLOAD EXERCISE LIBRARY VIDEO
             </Button>

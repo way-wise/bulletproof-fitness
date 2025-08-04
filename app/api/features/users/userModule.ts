@@ -1,8 +1,8 @@
-import { Hono } from "hono";
-import { userService } from "./userService";
 import { paginationQuerySchema } from "@/schema/paginationSchema";
 import { validateInput } from "@api/lib/validateInput";
+import { Hono } from "hono";
 import { object, string } from "yup";
+import { userService } from "./userService";
 
 const app = new Hono();
 
@@ -19,6 +19,27 @@ app.get("/", async (c) => {
   });
 
   const result = await userService.getUsers(validatedQuery);
+  return c.json(result);
+});
+
+/*
+  @route    GET: /users/me
+  @access   private
+  @desc     Get current user profile
+*/
+app.get("/me", async (c) => {
+  const result = await userService.getCurrentUser();
+  return c.json(result);
+});
+
+/*
+  @route    PUT: /users/me
+  @access   private
+  @desc     Update current user profile
+*/
+app.put("/me", async (c) => {
+  const body = await c.req.json();
+  const result = await userService.updateCurrentUser(body);
   return c.json(result);
 });
 
