@@ -1,4 +1,4 @@
-import ExerciseSetupDetails from "../../_components/exerciseSetup/ExerciseSetupDetails";
+import ExerciseSetupDetails from "../../_components/exercise-setup/ExerciseSetupDetails";
 
 const ExerciseSetupDetailPage = async ({
   params,

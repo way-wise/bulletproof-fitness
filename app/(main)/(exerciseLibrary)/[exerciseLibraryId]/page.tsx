@@ -1,4 +1,4 @@
-import ExLibraryCardDetail from "../../_components/exercideLibrary/ExLibraryCardDetail";
+import ExLibraryCardDetail from "../../_components/exercide-library/ExLibraryCardDetail";
 
 const CardPage = async ({
   params,
