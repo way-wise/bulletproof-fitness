@@ -1,6 +1,5 @@
 import { Badge } from "@/components/ui/badge";
 import { CardContent, Card as CardUI } from "@/components/ui/card";
-import { ExerciseLibraryItem } from "@/lib/dataTypes";
 import { ReactionType } from "@/prisma/generated/enums";
 import { Eye, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
@@ -16,6 +15,7 @@ interface ExLibraryCardProps {
   averageRating: number;
   dislikes: number;
   type: "setup" | "lib";
+  mutate?: () => void;
 }
 
 const ExLibraryCard = ({
@@ -29,14 +29,13 @@ const ExLibraryCard = ({
   averageRating,
   dislikes,
   type,
+  mutate,
 }: ExLibraryCardProps) => {
   const videoUrl = url || "";
   const videoId =
     videoUrl.match(
       /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
     )?.[1] || null;
-
-  console.log("Views", views);
 
   const handleReactSubmit = async ({
     contentId,
@@ -60,6 +59,11 @@ const ExLibraryCard = ({
 
       if (!res.ok || !result.success) {
         throw new Error(result.message || "Failed to record reaction");
+      }
+
+      // Revalidate the data to update the UI in real-time
+      if (mutate) {
+        mutate();
       }
 
       return result;

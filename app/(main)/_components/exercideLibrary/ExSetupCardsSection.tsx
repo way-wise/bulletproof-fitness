@@ -11,9 +11,8 @@ import Spinner from "@/components/ui/spinner";
 import { useExerciseSetup } from "@/hooks/useExerciseSetup";
 import { ExerciseLibraryFilters, ExerciseLibraryItem } from "@/lib/dataTypes";
 import { useState } from "react";
-import SetupCard from "../exerciseSetup/SetupCard";
-import FilterSection from "./FilterSection";
 import ExLibraryCard from "./ExLibraryCard";
+import FilterSection from "./FilterSection";
 
 interface ExCardsSectionProps {
   initialData?: ExerciseLibraryItem[];
@@ -28,7 +27,8 @@ const ExSetupCardsSection = ({
     initialFilters || {},
   );
 
-  const { exercises, meta, isLoading, error } = useExerciseSetup(filters);
+  const { exercises, meta, isLoading, error, mutate } =
+    useExerciseSetup(filters);
 
   // Use initial data if loading and no current data
   const displayData = exercises.length > 0 ? exercises : initialData || [];
@@ -164,8 +164,11 @@ const ExSetupCardsSection = ({
                       item.contentStats ? item.contentStats[0]?.avgRating : 0
                     }
                     dislikes={
-                      item.contentStats ? item.contentStats[0]?.totalDislikes : 0
+                      item.contentStats
+                        ? item.contentStats[0]?.totalDislikes
+                        : 0
                     }
+                    mutate={mutate}
                   />
                 ))}
               </div>

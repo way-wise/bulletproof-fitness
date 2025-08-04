@@ -27,7 +27,8 @@ const ExCardsSection = ({
     initialFilters || {},
   );
 
-  const { exercises, meta, isLoading, error } = useExerciseLibrary(filters);
+  const { exercises, meta, isLoading, error, mutate } =
+    useExerciseLibrary(filters);
 
   console.log("exercises", exercises);
 
@@ -154,17 +155,20 @@ const ExCardsSection = ({
                     bodypart={item.bodyPart?.name || ""}
                     author={item.user?.name || ""}
                     views={
-                      item.contentStats ? item.contentStats[0].totalViews : 0
+                      item.contentStats ? item.contentStats[0]?.totalViews : 0
                     }
                     likes={
-                      item.contentStats ? item.contentStats[0].totalLikes : 0
+                      item.contentStats ? item.contentStats[0]?.totalLikes : 0
                     }
                     averageRating={
-                      item.contentStats ? item.contentStats[0].avgRating : 0
+                      item.contentStats ? item.contentStats[0]?.avgRating : 0
                     }
                     dislikes={
-                      item.contentStats ? item.contentStats[0].totalDislikes : 0
+                      item.contentStats
+                        ? item.contentStats[0]?.totalDislikes
+                        : 0
                     }
+                    mutate={mutate}
                   />
                 ))}
               </div>
