@@ -79,9 +79,11 @@ export const ProfileDropdown = ({ session }: { session: Session }) => {
               <span className="">Membership Account</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <UserRound aria-hidden="true" />
-            <span>Profile</span>
+          <DropdownMenuItem asChild>
+            <Link href="/profile">
+              <UserRound aria-hidden="true" />
+              <span>Profile</span>
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleSignout}>
             <LogOut aria-hidden="true" />
