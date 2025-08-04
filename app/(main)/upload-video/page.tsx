@@ -9,12 +9,11 @@ import FormsButtonPage from "../_components/upload-video/FormButtonPage";
 const page = () => {
   const { data: session } = useSession();
   console.log(session);
-  // If not authenticated, show the FormsButtonPage component
+
   if (!session) {
     return <FormsButtonPage />;
   }
 
-  // If authenticated, show the original upload options
   return (
     <div className="container py-12">
       <div className="mx-auto flex w-full flex-col items-center justify-center gap-12 md:w-3/4 md:flex-row">
