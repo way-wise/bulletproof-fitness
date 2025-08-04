@@ -1,6 +1,10 @@
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { exerciseSetupSchema, exerciseSetupSchemaAdmin, exerciseSetupZapierSchemaType } from "@/schema/exerciseSetupSchema";
+import {
+  exerciseSetupSchema,
+  exerciseSetupSchemaAdmin,
+  exerciseSetupZapierSchemaType,
+} from "@/schema/exerciseSetupSchema";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
 
@@ -15,7 +19,7 @@ export const exerciseSetupService = {
       data: {
         title: data.title,
         videoUrl: data.videoUrl,
-        height: data.height?.trim() || "",
+        height: data.height,
         userId: data.userId,
         // Pump by numbers fields
         isolatorHole:
@@ -374,7 +378,7 @@ export const exerciseSetupService = {
         data: {
           title: data.title,
           videoUrl: data.videoUrl,
-          height: data.height?.trim() || "",
+          height: data.height,
           // Pump by numbers fields
           isolatorHole:
             data.isolatorHole && data.isolatorHole.trim() !== ""
@@ -646,6 +650,9 @@ export const exerciseSetupService = {
         });
       }
 
+      console.log("minHeight", minHeight);
+      console.log("maxHeight", maxHeight);
+
       // Height filter - only apply if we have height constraints
       if (minHeight > 0 || maxHeight < 85) {
         where.AND.push({
@@ -656,7 +663,7 @@ export const exerciseSetupService = {
         });
       }
 
-      const [exercises, total] = await Promise.all([
+      const [exercises, total] = await prisma.$transaction([
         prisma.exerciseSetup.findMany({
           where,
           skip,
@@ -708,25 +715,25 @@ export const exerciseSetupService = {
       const transformedExercises = exercises
         .map((exercise) => {
           // Parse height to inches
-          let heightInInches: number | null = null;
-          if (exercise.height && exercise.height.trim() !== "") {
-            const heightMatch = exercise.height.match(/(\d+)'(\d+)"/);
-            if (heightMatch) {
-              const feet = parseInt(heightMatch[1]);
-              const inches = parseInt(heightMatch[2]);
-              heightInInches = feet * 12 + inches;
-            } else {
-              heightInInches = parseInt(exercise.height || "0", 10);
-            }
-          }
+          // let heightInInches: number | null = null;
+          // if (exercise.height && exercise.height.trim() !== "") {
+          //   const heightMatch = exercise.height.match(/(\d+)'(\d+)"/);
+          //   if (heightMatch) {
+          //     const feet = parseInt(heightMatch[1]);
+          //     const inches = parseInt(heightMatch[2]);
+          //     heightInInches = feet * 12 + inches;
+          //   } else {
+          //     heightInInches = parseInt(exercise.height || "0", 10);
+          //   }
+          // }
 
-          if (
-            (minHeight > 0 || maxHeight < 85) &&
-            heightInInches !== null &&
-            (heightInInches < minHeight || heightInInches > maxHeight)
-          ) {
-            return null;
-          }
+          // if (
+          //   (minHeight > 0 || maxHeight < 85) &&
+          //   heightInInches !== null &&
+          //   (heightInInches < minHeight || heightInInches > maxHeight)
+          // ) {
+          //   return null;
+          // }
 
           if (minRating > 0) {
             const mockRating = Math.floor(Math.random() * 5) + 1;
@@ -757,7 +764,7 @@ export const exerciseSetupService = {
                   name: exercise.ExSetupRak[0].rack.name,
                 }
               : undefined,
-            height: heightInInches || 0,
+            height: exercise.height || 0,
             userId: exercise.userId,
             user: exercise.user,
             contentStats: exercise.contentStats,
@@ -796,109 +803,114 @@ export const exerciseSetupService = {
       throw new Error("Failed to fetch exercise library data with filters.");
     }
   },
-    // Create exercise setup from public (Through Zapier)
-    createExerciseSetup: async (data: InferType<typeof exerciseSetupSchema>) => {
-      if (!zapierSetupTriggerHook) {
-        throw new HTTPException(500, {
-          message: "Zapier exercise trigger hook not found",
-        });
-      }
-  
-      const response = await fetch(zapierSetupTriggerHook, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+  // Create exercise setup from public (Through Zapier)
+  createExerciseSetup: async (data: InferType<typeof exerciseSetupSchema>) => {
+    if (!zapierSetupTriggerHook) {
+      throw new HTTPException(500, {
+        message: "Zapier exercise trigger hook not found",
       });
-  
-      if (!response.ok) {
-        throw new HTTPException(500, { message: "Zapier call failed" });
-      }
-  
-      const result = await response.json();
-  
-      return {
-        success: true,
-        message: "Video uploaded successfully, awaiting approval",
-        data: result,
-      };
-    },
+    }
+
+    const response = await fetch(zapierSetupTriggerHook, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new HTTPException(500, { message: "Zapier call failed" });
+    }
+
+    const result = await response.json();
+
+    return {
+      success: true,
+      message: "Video uploaded successfully, awaiting approval",
+      data: result,
+    };
+  },
   // Create exercise setup from public (Through Youtube to Zapier)
-  createExerciseSetupFromYoutube: async (rawData: exerciseSetupZapierSchemaType) => {
-        const parseYoutubeString = (youtubeString: string) => {
-          const pairs = youtubeString.split('|');
-          const result: Record<string, any> = {};
-          
-          // Parse the youtube description string into key-value pairs
-          pairs.forEach(pair => {
-            const [key, value] = pair.split(':').map(item => item.trim());
-            if (key && value !== undefined) {
-              result[key] = value;
-            }
-          });
-          
-          return result;
-        };
-        
-        // Extract data from the youtube string
-        const data = parseYoutubeString(rawData.youtube);
-  
-        // Helper function to convert string to array
-        const toArray = (value: any): string[] => {
-          if (!value) return [];
-          if (typeof value === 'string') {
-            return value.includes(',') 
-              ? value.split(',').map(item => item.trim()).filter(item => item.length > 0)
-              : [value.trim()].filter(item => item.length > 0);
-          }
-          return [];
-        };
-  
-        // Get arrays for relations
-        const equipments = toArray(data.equipments);
-        const bodyParts = toArray(data.bodyParts);
-        const racks = toArray(data.racks);
-  
-        // Create the exercise library video
-        const result = await prisma.exerciseSetup.create({
-          data: {
-            title: data.title,
-            videoUrl: rawData.embedUrl,
-            height: data.height,
-            playUrl: rawData.playUrl,
-            isPublic: true,
-            publishedAt: rawData.publishedAt,
-            isolatorHole: data.isolatorHole,
-            yellow: data.yellow,
-            green: data.green,
-            blue: data.blue,
-            red: data.red,
-            purple: data.purple,
-            orange: data.orange,
-            userId: data.userId,
-            ExSetupEquipment: {
-              create: equipments.map(equipmentId => ({
-                equipmentId: equipmentId,
-              })),
-            },
-            ExSetupBodyPart: {
-              create: bodyParts.map(bodyPartId => ({
-                bodyPartId: bodyPartId,
-              })),
-            },
-            ExSetupRak: {
-              create: racks.map(rackId => ({
-                rackId: rackId,
-              })),
-            },
-          },
-        });
-          
-        return {
-          success: true,
-          message: "A video post has been created on library",
-          data: result,
-        };
-    },
+  createExerciseSetupFromYoutube: async (
+    rawData: exerciseSetupZapierSchemaType,
+  ) => {
+    const parseYoutubeString = (youtubeString: string) => {
+      const pairs = youtubeString.split("|");
+      const result: Record<string, any> = {};
+
+      // Parse the youtube description string into key-value pairs
+      pairs.forEach((pair) => {
+        const [key, value] = pair.split(":").map((item) => item.trim());
+        if (key && value !== undefined) {
+          result[key] = value;
+        }
+      });
+
+      return result;
+    };
+
+    // Extract data from the youtube string
+    const data = parseYoutubeString(rawData.youtube);
+
+    // Helper function to convert string to array
+    const toArray = (value: any): string[] => {
+      if (!value) return [];
+      if (typeof value === "string") {
+        return value.includes(",")
+          ? value
+              .split(",")
+              .map((item) => item.trim())
+              .filter((item) => item.length > 0)
+          : [value.trim()].filter((item) => item.length > 0);
+      }
+      return [];
+    };
+
+    // Get arrays for relations
+    const equipments = toArray(data.equipments);
+    const bodyParts = toArray(data.bodyParts);
+    const racks = toArray(data.racks);
+
+    // Create the exercise library video
+    const result = await prisma.exerciseSetup.create({
+      data: {
+        title: data.title,
+        videoUrl: rawData.embedUrl,
+        height: data.height,
+        playUrl: rawData.playUrl,
+        isPublic: true,
+        publishedAt: rawData.publishedAt,
+        isolatorHole: data.isolatorHole,
+        yellow: data.yellow,
+        green: data.green,
+        blue: data.blue,
+        red: data.red,
+        purple: data.purple,
+        orange: data.orange,
+        userId: data.userId,
+        ExSetupEquipment: {
+          create: equipments.map((equipmentId) => ({
+            equipmentId: equipmentId,
+          })),
+        },
+        ExSetupBodyPart: {
+          create: bodyParts.map((bodyPartId) => ({
+            bodyPartId: bodyPartId,
+          })),
+        },
+        ExSetupRak: {
+          create: racks.map((rackId) => ({
+            rackId: rackId,
+          })),
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: "A video post has been created on library",
+      data: result,
+    };
+  },
 };

@@ -153,7 +153,7 @@ model ExerciseSetup {
   id           String    @id @default(ulid())
   title        String
   videoUrl     String
-  height       String?
+  height       Float
   userId       String
   user         users     @relation(fields: [userId], references: [id], onDelete: Cascade)
   isPublic     Boolean   @default(false)
