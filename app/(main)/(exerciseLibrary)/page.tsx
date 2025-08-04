@@ -111,7 +111,7 @@ const CardsPage = async ({ searchParams }: CardsPageProps) => {
     minRating: params.minRating ? parseInt(params.minRating) : undefined,
     search: params.search || undefined,
     page: params.page ? parseInt(params.page) : 1,
-    limit: params.limit ? parseInt(params.limit) : 20,
+    limit: params.limit ? parseInt(params.limit) : 18,
   };
 
   // Fetch initial data server-side

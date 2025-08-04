@@ -30,8 +30,6 @@ const ExCardsSection = ({
   const { exercises, meta, isLoading, error, mutate } =
     useExerciseLibrary(filters);
 
-  console.log("exercises", exercises);
-
   // Use initial data if loading and no current data
   const displayData = exercises.length > 0 ? exercises : initialData || [];
 
