@@ -514,13 +514,16 @@ exerciseLibraryModule.post("/", async (c) => {
 exerciseLibraryModule.post("/youtube/callback", async (c) => {
   console.log("youtube callback", await c.req.parseBody());
 
-    const validatedJSONBody = await validateInput({
-        type: "form",
-        schema: exerciseLibraryZapierSchema,
-        data: await c.req.parseBody(),
-    });
+  const validatedJSONBody = await validateInput({
+    type: "form",
+    schema: exerciseLibraryZapierSchema,
+    data: await c.req.parseBody(),
+  });
 
-    const result = await exerciseLibraryService.createExerciseLibraryFromYoutube(validatedJSONBody);
+  const result =
+    await exerciseLibraryService.createExerciseLibraryFromYoutube(
+      validatedJSONBody,
+    );
 
-    return c.json(result);
+  return c.json(result);
 });

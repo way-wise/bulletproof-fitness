@@ -586,60 +586,64 @@ export const exerciseLibraryService = {
       if (minHeight > 0 || maxHeight < 85) {
         where.AND.push({
           height: {
-            not: null,
+            gte: minHeight,
+            lte: maxHeight,
           },
         });
       }
 
+      const [exercises, total] = await prisma.$transaction([
+        prisma.exerciseLibraryVideo.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy: {
+            [sortBy]: sortOrder,
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            ExLibEquipment: {
+              include: {
+                equipment: true,
+              },
+            },
+            ExLibBodyPart: {
+              include: {
+                bodyPart: true,
+              },
+            },
+            ExLibRak: {
+              include: {
+                rack: true,
+              },
+            },
+            contentStats: true,
+            reactions: {
+              where: { userId: session?.user?.id },
+              orderBy: { createdAt: "desc" },
+              take: 1,
+              select: {
+                id: true,
+                userId: true,
+                reaction: true,
+              },
+            },
+          },
+        }),
+        prisma.exerciseLibraryVideo.count({
+          where,
+        }),
+      ]);
+
       // Get total count
-      const total = await prisma.exerciseLibraryVideo.count({
-        where,
-      });
 
       // Get paginated data with user info and junction tables
-      const exercises = await prisma.exerciseLibraryVideo.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: {
-          [sortBy]: sortOrder,
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
-          ExLibEquipment: {
-            include: {
-              equipment: true,
-            },
-          },
-          ExLibBodyPart: {
-            include: {
-              bodyPart: true,
-            },
-          },
-          ExLibRak: {
-            include: {
-              rack: true,
-            },
-          },
-          contentStats: true,
-          reactions: {
-            where: { userId: session?.user?.id },
-            orderBy: { createdAt: "desc" },
-            take: 1,
-            select: {
-              id: true,
-              userId: true,
-              reaction: true,
-            },
-          },
-        },
-      });
 
       // Transform data to include additional fields
       const transformedExercises = exercises
