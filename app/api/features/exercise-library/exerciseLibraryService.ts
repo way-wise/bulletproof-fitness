@@ -780,7 +780,7 @@ export const exerciseLibraryService = {
         data: {
           title: data.title,
           videoUrl: rawData.embedUrl,
-          height: parseFloat(data.height).toFixed(2),
+          height: parseFloat(data.height),
           playUrl: rawData.playUrl,
           isPublic: true,
           publishedAt: rawData.publishedAt,

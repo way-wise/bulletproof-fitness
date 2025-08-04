@@ -21,12 +21,12 @@ import useSWR from "swr";
 import * as z from "zod";
 
 const formSchema = z.object({
-  video: z.string().min(1, "Video is required"),
+  video: z.string(),
   title: z.string().min(1, "Video title is required"),
-  equipments: z.array(z.string()).min(1, "Please select equipment"),
-  bodyPart: z.array(z.string()).min(1, "Please select a body part"),
-  height: z.string().min(1, "Please enter your height"),
-  rack: z.array(z.string()).min(1, "Please select a rack"),
+  equipments: z.array(z.string()),
+  bodyPart: z.array(z.string()),
+  height: z.string(),
+  rack: z.array(z.string()),
 });
 
 type FormValues = z.infer<typeof formSchema>;

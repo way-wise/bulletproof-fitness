@@ -54,6 +54,8 @@ export default function ExerciseSetupVideoForm() {
     resolver: zodResolver(formSchema),
   });
 
+  console.log("Errors", form.formState.errors);
+
   const { data: session } = useSession();
 
   // Get equipments
