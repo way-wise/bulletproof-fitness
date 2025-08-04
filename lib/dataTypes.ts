@@ -62,7 +62,7 @@ export type ExerciseLibraryItem = {
   orange?: string;
   createdAt: string;
   updatedAt: string;
-  contentStats: contentStats[];
+  contentStats?: contentStats[];
 };
 
 export interface contentStats {

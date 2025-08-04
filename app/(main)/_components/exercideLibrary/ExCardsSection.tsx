@@ -29,6 +29,8 @@ const ExCardsSection = ({
 
   const { exercises, meta, isLoading, error } = useExerciseLibrary(filters);
 
+  console.log("exercises", exercises);
+
   // Use initial data if loading and no current data
   const displayData = exercises.length > 0 ? exercises : initialData || [];
 
@@ -151,10 +153,18 @@ const ExCardsSection = ({
                     url={item.videoUrl || ""}
                     bodypart={item.bodyPart?.name || ""}
                     author={item.user?.name || ""}
-                    views={item.contentStats[0].totalViews}
-                    likes={item.contentStats[0].totalLikes}
-                    averageRating={item.contentStats[0].avgRating}
-                    dislikes={item.contentStats[0].totalDislikes}
+                    views={
+                      item.contentStats ? item.contentStats[0].totalViews : 0
+                    }
+                    likes={
+                      item.contentStats ? item.contentStats[0].totalLikes : 0
+                    }
+                    averageRating={
+                      item.contentStats ? item.contentStats[0].avgRating : 0
+                    }
+                    dislikes={
+                      item.contentStats ? item.contentStats[0].totalDislikes : 0
+                    }
                   />
                 ))}
               </div>
