@@ -63,6 +63,7 @@ export type ExerciseLibraryItem = {
   createdAt: string;
   updatedAt: string;
   contentStats?: contentStats[];
+  reactions?: Reactions[];
 };
 
 export interface contentStats {
@@ -79,6 +80,12 @@ export type ExerciseLibraryResponse = {
     limit: number;
     total: number;
   };
+};
+
+export type Reactions = {
+  userId: string;
+  exerciseId: string;
+  type: "like" | "dislike";
 };
 
 export type ExerciseLibraryFilters = {

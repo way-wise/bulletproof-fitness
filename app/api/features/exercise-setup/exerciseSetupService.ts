@@ -747,6 +747,7 @@ export const exerciseSetupService = {
     sortBy?: "title" | "createdAt" | "views" | "likes";
     sortOrder?: "asc" | "desc";
   }) => {
+    const session = await getSession();
     try {
       const {
         page = 1,
@@ -893,6 +894,16 @@ export const exerciseSetupService = {
             },
           },
           contentStats: true,
+          reactions: {
+            where: { userId: session?.user?.id },
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            select: {
+              id: true,
+              userId: true,
+              reaction: true,
+            },
+          },
         },
       });
 
@@ -952,6 +963,8 @@ export const exerciseSetupService = {
             userId: exercise.userId,
             user: exercise.user,
             contentStats: exercise.contentStats,
+            reactions:
+              exercise.reactions.length > 0 ? exercise.reactions : null,
             views: Math.floor(Math.random() * 1000) + 100,
             likes: Math.floor(Math.random() * 50),
             comments: Math.floor(Math.random() * 10),

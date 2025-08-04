@@ -16,6 +16,7 @@ const ProfilePage = () => {
   const { data: session } = useSession();
   const { user, videos, rewards, stats, isLoading, error, mutate } =
     useUserProfile();
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 

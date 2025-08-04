@@ -1,11 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const session = getSessionCookie(request);
 
-  const { pathname } = request.nextUrl;
+  // const onlyProtectedRoutes = ["/upload-video"];
 
+  const { pathname } = request.nextUrl;
+  // if (onlyProtectedRoutes.includes(pathname)) {
+  //   if (!session) {
+  //     return NextResponse.redirect(new URL("/forms-button", request.url));
+  //   }
+  // }
   /**
    * Trailing slash is important in the route prefix.
    * Prefix is defined to avoid manually declaring routes.

@@ -219,6 +219,7 @@ export default function LibraryVideoUpload({
                 <FormControl>
                   <Input
                     {...field}
+                    type="number"
                     placeholder="Height in inches"
                     disabled={isUploading}
                   />

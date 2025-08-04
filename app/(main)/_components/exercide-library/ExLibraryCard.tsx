@@ -15,6 +15,7 @@ interface ExLibraryCardProps {
   averageRating: number;
   dislikes: number;
   type: "setup" | "lib";
+  alreadyReacted?: boolean;
   mutate?: () => void;
 }
 
@@ -29,6 +30,7 @@ const ExLibraryCard = ({
   averageRating,
   dislikes,
   type,
+  alreadyReacted = false,
   mutate,
 }: ExLibraryCardProps) => {
   const videoUrl = url || "";
@@ -118,7 +120,11 @@ const ExLibraryCard = ({
                 })
               }
             >
-              <ThumbsUp className="h-4 w-4" /> {likes}
+              <ThumbsUp
+                className="h-4 w-4"
+                fill={alreadyReacted ? "#c9c9c9" : "none"}
+              />{" "}
+              {likes}
             </span>
             <span
               className="flex cursor-pointer items-center gap-1"
