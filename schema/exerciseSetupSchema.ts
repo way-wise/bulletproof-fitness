@@ -2,7 +2,7 @@ import { array, InferType, number, object, string } from "yup";
 
 export const exerciseSetupSchema = object({
   title: string().required("Title is required"),
-  videoUrl: string().required("Video URL is required"),
+  video: string().required("Video URL is required"),
   equipment: array().of(string()).default([]),
   bodyPart: array().of(string()).default([]),
   height: string().optional().nullable(),

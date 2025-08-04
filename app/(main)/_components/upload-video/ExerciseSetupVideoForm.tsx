@@ -423,7 +423,12 @@ export default function ExerciseSetupVideoForm() {
               <FormItem>
                 <FormLabel>User Height *</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Height in inches" />
+                  <Input
+                    type="number"
+                    min={0}
+                    {...field}
+                    placeholder="Height in inches"
+                  />
                 </FormControl>
                 <p className="text-xs text-muted-foreground">
                   Your height in inches.
