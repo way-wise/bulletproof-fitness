@@ -534,7 +534,7 @@ exerciseLibraryModule.post("/youtube/callback", async (c) => {
     
     // Extract data from the youtube string
     const data = parseYoutubeString(rawData.youtube as string);
-    console.log('Parsed data:', JSON.stringify(data, null, 2));
+    console.log("Exercise Library data", data);
 
     // Helper function to convert string to array if needed
     const toArray = (value: any): string[] => {
