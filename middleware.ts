@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function middleware(request: NextRequest) {
   const session = getSessionCookie(request);
 
-  // const onlyProtectedRoutes = ["/upload-video"];
+  // const onlyProtectedRoutes = ["/upload-video", "/"];
 
   const { pathname } = request.nextUrl;
   // if (onlyProtectedRoutes.includes(pathname)) {

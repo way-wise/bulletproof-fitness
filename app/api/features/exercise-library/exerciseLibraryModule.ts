@@ -2,11 +2,11 @@ import { auth } from "@/lib/auth";
 import {
   exerciseLibrarySchema,
   exerciseLibrarySchemaAdmin,
-  exerciseLibraryZapierSchema,
 } from "@/schema/exerciseLibrarySchema";
 import { validateInput } from "@api/lib/validateInput";
 import { Hono, type Context } from "hono";
 import { exerciseLibraryService } from "./exerciseLibraryService";
+import prisma from "@/lib/prisma";
 
 export const exerciseLibraryModule = new Hono();
 
@@ -512,18 +512,92 @@ exerciseLibraryModule.post("/", async (c) => {
 
 // Create library video information when youtube video is published
 exerciseLibraryModule.post("/youtube/callback", async (c) => {
-  console.log("youtube callback", await c.req.parseBody());
+    const rawData = await c.req.json();
 
-  const validatedJSONBody = await validateInput({
-    type: "form",
-    schema: exerciseLibraryZapierSchema,
-    data: await c.req.parseBody(),
-  });
+    console.log("Exercise Library rawData", rawData);
 
-  const result =
-    await exerciseLibraryService.createExerciseLibraryFromYoutube(
-      validatedJSONBody,
-    );
+    // Parse the youtube string into key-value pairs
+    const parseYoutubeString = (youtubeString: string) => {
+      const pairs = youtubeString.split('|');
+      const result: Record<string, any> = {};
+      
+      pairs.forEach(pair => {
+        const [key, value] = pair.split(':').map(item => item.trim());
+        if (key && value !== undefined) {
+          // For now, treat all values as strings to be safe
+          result[key] = value;
+        }
+      });
+      
+      return result;
+    };
+    
+    // Extract data from the youtube string
+    const data = parseYoutubeString(rawData.youtube as string);
+    console.log('Parsed data:', JSON.stringify(data, null, 2));
 
-  return c.json(result);
+    // Helper function to convert string to array if needed
+    const toArray = (value: any): string[] => {
+      if (!value) return [];
+      if (Array.isArray(value)) return value;
+      if (typeof value === 'string') {
+        // If it contains commas, split it
+        return value.includes(',') ? value.split(',').map(item => item.trim()) : [value];
+      }
+      return [];
+    };
+
+    // Validate required fields
+    if (!data.title && !rawData.title) {
+      console.error('Missing title in both parsed data and raw data');
+      return c.json({ error: 'Title is required but not found' }, 400);
+    }
+    
+    if (!data.userId) {
+      console.error('Missing userId in parsed data');
+      return c.json({ error: 'User ID is required but not found in YouTube data' }, 400);
+    }
+    
+    // Handle height - default to 0 if not a valid number
+    const height = data.height && !isNaN(Number(data.height)) ? Number(data.height) : 0;
+
+    const result = await prisma.exerciseLibraryVideo.create({
+      data: {
+        title: data.title || rawData.title,
+        videoUrl: rawData.embedUrl,
+        height: height,
+        playUrl: rawData.playUrl,
+        isPublic: true,
+        publishedAt: rawData.publishedAt,
+        ExLibEquipment: {
+          connect: toArray(data.equipments).map((equipmentId: string) => ({
+            id: equipmentId,
+          })),
+        },
+        ExLibBodyPart: {
+          connect: toArray(data.bodyParts).map((bodyPartId: string) => ({
+            id: bodyPartId,
+          })),
+        },
+        ExLibRak: {
+          connect: toArray(data.racks).map((rackId: string) => ({
+            id: rackId,
+          })),
+        },
+        user: {
+          connect: {
+            id: data.userId,
+          },
+        },
+      },
+    });
+      
+    const response = {
+      success: true,
+      message: "A video post has been created on library",
+      data: result,
+    };
+
+    return c.json(response);
+
 });
