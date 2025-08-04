@@ -358,69 +358,6 @@ const DashboardOverviewPage = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Bottom Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Monthly Revenue
-                </p>
-                <p className="text-2xl font-bold">$124,563</p>
-              </div>
-              <div className="rounded-lg bg-green-100 p-2 dark:bg-green-900">
-                <TrendingUp className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-            <div className="mt-2 flex items-center space-x-2 text-xs text-green-600">
-              <ArrowUpRight className="h-3 w-3" />
-              <span>+23.1% from last month</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Active Sessions
-                </p>
-                <p className="text-2xl font-bold">1,847</p>
-              </div>
-              <div className="rounded-lg bg-blue-100 p-2 dark:bg-blue-900">
-                <Activity className="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-            <div className="mt-2 flex items-center space-x-2 text-xs text-blue-600">
-              <ArrowUpRight className="h-3 w-3" />
-              <span>+12.5% from last hour</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Support Tickets
-                </p>
-                <p className="text-2xl font-bold">23</p>
-              </div>
-              <div className="rounded-lg bg-orange-100 p-2 dark:bg-orange-900">
-                <Award className="h-6 w-6 text-orange-600" />
-              </div>
-            </div>
-            <div className="mt-2 flex items-center space-x-2 text-xs text-orange-600">
-              <ArrowDownRight className="h-3 w-3" />
-              <span>-8.2% from yesterday</span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 };

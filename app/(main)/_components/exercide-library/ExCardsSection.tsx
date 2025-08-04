@@ -149,7 +149,9 @@ const ExCardsSection = ({
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {displayData.map((item) => (
                   <ExLibraryCard
-                    alreadyReacted={!!item.reactions?.length}
+                    alreadyReacted={
+                      (item.reactions?.[0]?.type as "like" | "LIKE") === "LIKE"
+                    }
                     type="lib"
                     key={item.id}
                     id={item.id}

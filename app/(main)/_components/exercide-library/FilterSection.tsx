@@ -166,7 +166,7 @@ export default function ExerciseFilters({
             variant="outline"
             size="sm"
             onClick={handleReset}
-            className="text-xs"
+            className="mb-1 text-xs"
           >
             Reset All
           </Button>
