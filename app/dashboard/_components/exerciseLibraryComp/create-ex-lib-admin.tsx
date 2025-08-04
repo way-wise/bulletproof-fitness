@@ -215,13 +215,14 @@ export default function LibraryVideoUpload({
             name="height"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>User Height</FormLabel>
+                <FormLabel>User Height*</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     type="number"
                     placeholder="Height in inches"
                     disabled={isUploading}
+                    required
                   />
                 </FormControl>
                 <FormMessage />
