@@ -515,6 +515,8 @@ exerciseLibraryModule.post("/", async (c) => {
 exerciseLibraryModule.post("/youtube/callback", async (c) => {
     const rawData = await c.req.json();
 
+    console.log("Exercise Library rawData", rawData);
+
     // Parse the youtube string into key-value pairs
     const parseYoutubeString = (youtubeString: string) => {
       const pairs = youtubeString.split('|');
