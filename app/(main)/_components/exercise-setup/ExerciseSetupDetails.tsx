@@ -22,30 +22,7 @@ type TRack = {
     name: string;
   };
 };
-const pumpData = [
-  { label: "Yellow", desc: "ISOLATOR seat/pad", value: 3 },
-  {
-    label: "Green",
-    desc: "ISOLATOR lever arm, the number you have set on the circle cam",
-    value: 6,
-  },
-  {
-    label: "Blue",
-    desc: "ISOLATOR lever arm, the hole number that the attachment is at",
-    value: 3,
-  },
-  {
-    label: "Red",
-    desc: "ISOLATOR weight arm lever arm, the hole number that the weight arm is placed on",
-    value: 4,
-  },
-  {
-    label: "Orange",
-    desc: "the hole number that the attachment is at on the lever arm",
-    value: 5,
-  },
-  { label: "Not Used", desc: "", value: null },
-];
+
 const pumpColors = [
   {
     key: "yellow",

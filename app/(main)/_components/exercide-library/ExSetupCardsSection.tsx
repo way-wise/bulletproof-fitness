@@ -54,14 +54,16 @@ const ExSetupCardsSection = ({
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto py-8">
-        <div className="flex flex-col gap-4 md:flex-row">
-          <div className="hidden lg:block lg:w-full lg:max-w-[250px]">
-            <div className="sticky top-20">
+        <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
+          {/* Sticky Sidebar */}
+          <div className="hidden lg:block lg:w-64 lg:flex-shrink-0">
+            <div className="sticky top-24 h-fit">
               <FilterSection onFiltersChange={handleFiltersChange} />
             </div>
           </div>
 
-          <div className="w-full">
+          {/* Main Content */}
+          <div className="min-w-0 flex-1">
             <div className="mb-8 flex items-center justify-between">
               <h1 className="text-left text-lg font-bold text-gray-900 md:text-xl lg:text-3xl">
                 EXERCISE SETUP

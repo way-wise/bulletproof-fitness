@@ -94,9 +94,11 @@ const ExLibraryCard = ({
           <p className="text-[16px] text-gray-500">{author}</p>
 
           <Link
-            href={`${type === "setup" ? `/exerciseSetup/${id}` : `/${id}`}`}
+            href={`${type === "setup" ? `/exercise-setup/${id}` : `/${id}`}`}
           >
-            <h3 className="text-[20px] font-bold uppercase">{title}</h3>
+            <h3 className="line-clamp-2 flex min-h-[60px] items-start text-[20px] font-bold uppercase">
+              {title}
+            </h3>
           </Link>
           <div className="mt-[12px] flex items-center gap-6 text-[16px] text-primary">
             <span className="flex items-center gap-1">

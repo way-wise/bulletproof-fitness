@@ -27,15 +27,15 @@ const Navbar = () => {
     },
     {
       title: "EXERCISE SETUP",
-      url: "/exerciseSetup",
+      url: "/exercise-setup",
     },
     {
       title: "DEMO/RETAIL CENTERS",
-      baseUrl: "/demoCenters",
+      baseUrl: "/demo-centers",
       submenu: [
         {
           title: "DEMO CENTER",
-          url: "/demoCenters",
+          url: "/demo-centers",
         },
         // {
         //   title: "RETAIL CENTER",
@@ -43,13 +43,13 @@ const Navbar = () => {
         // },
         {
           title: "DEMO CENTER FORM",
-          url: "/demoCenterForm",
+          url: "/demo-center-form",
         },
       ],
     },
     {
       title: "UPLOAD VIDEO",
-      url: "/uploadVideo",
+      url: "/upload-video",
     },
   ];
   const handleSignoutMobile = async () => {
@@ -208,7 +208,7 @@ const Navbar = () => {
               variant="ghost"
               size="sm"
               onClick={() => setMobileMenuOpen(true)}
-              className="p-2 border border-gray-300 rounded-md"
+              className="rounded-md border border-gray-300 p-2"
             >
               <Menu className="h-5 w-5" />
             </Button>
