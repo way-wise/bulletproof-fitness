@@ -67,40 +67,57 @@ export const userService = {
     const session = await getSession();
     if (!session) throw new HTTPException(401, { message: "Unauthorized" });
 
-    const { skip, take, page, limit } = getPaginationQuery(query);
+    const { skip, take, page, limit = 10 } = getPaginationQuery(query);
 
-    const user = await prisma.users.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        totalPoints: true,
-        rewardPoints: {
-          orderBy: { createdAt: "desc" },
-          select: {
-            id: true,
-            points: true,
-            createdAt: true,
-            description: true,
-            type: true,
-            isActive: true,
-            name: true,
+    const [user, total] = await prisma.$transaction([
+      prisma.users.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          totalPoints: true,
+          createdAt: true,
+          banned: true,
+          image: true,
+          role: true,
+          emailVerified: true,
+
+          rewardPoints: {
+            orderBy: { createdAt: "desc" },
+            skip,
+            take,
+            select: {
+              id: true,
+              points: true,
+              createdAt: true,
+              description: true,
+              type: true,
+              isActive: true,
+              name: true,
+              updatedAt: true,
+            },
           },
         },
-      },
-    });
+      }),
+      prisma.rewardPoints.count({
+        where: { userId: id },
+      }),
+    ]);
 
     if (!user) {
       throw new HTTPException(404, { message: "User not found" });
     }
 
     return {
-      data: user.rewardPoints,
-      meta: {
-        page,
-        limit,
-        total: user.rewardPoints.length,
+      user,
+      data: {
+        data: user.rewardPoints,
+        meta: {
+          page,
+          limit,
+          total,
+        },
       },
     };
   },
