@@ -35,7 +35,6 @@ model users {
   views                UserView[]
   ratings              UserRating[]
   reactions            UserReaction[]
-  rewardPoints         RewardPoints[]
 
   @@index([email])
   @@index([emailVerified])
@@ -302,8 +301,6 @@ model ContentStats {
 
 model RewardPoints {
   id          String     @id @default(ulid())
-  userId      String
-  user        users      @relation(fields: [userId], references: [id], onDelete: Cascade)
   points      Int        @default(0)
   name        String?
   isActive    Boolean    @default(true)
@@ -312,8 +309,6 @@ model RewardPoints {
   description String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-
-  @@index([userId])
   @@index([isActive])
   @@index([type])
   @@map("reward_points")

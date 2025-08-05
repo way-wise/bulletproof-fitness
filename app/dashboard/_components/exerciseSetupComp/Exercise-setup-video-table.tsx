@@ -22,22 +22,19 @@ import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { Textarea } from "@/components/ui/textarea";
 import { exerciseSetupAdmin } from "@/lib/admin/exerciseSetup";
-import { ExerciseLibraryVideo } from "@/lib/dataTypes";
+import { ExerciseSetupVideo } from "@/lib/dataTypes";
 import { formatDate } from "@/lib/date-format";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import {
-  Ban,
   Eye,
   Globe,
   Lock,
   MoreVertical,
   Pencil,
-  Play,
   Plus,
   Search,
   Trash,
-  XCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -195,9 +192,9 @@ export const ExerciseSetupVideoTable = () => {
   };
 
   // Remove unused getStatusBadge function
-
+  console.log(data);
   // Table columns
-  const columns: ColumnDef<ExerciseLibraryVideo>[] = [
+  const columns: ColumnDef<ExerciseSetupVideo>[] = [
     {
       id: "number",
       header: "#",
@@ -217,66 +214,55 @@ export const ExerciseSetupVideoTable = () => {
         </div>
       ),
     },
+
     {
       header: "Equipment",
       accessorKey: "equipment",
       cell: ({ row }) => {
-        const equipment = row.original.equipment;
-        if (!equipment) return "-";
+        const equipmentArray = row.original.ExSetupEquipment;
 
-        try {
-          const equipmentArray = JSON.parse(equipment);
-          if (!Array.isArray(equipmentArray) || equipmentArray.length === 0)
-            return "-";
-
-          return (
-            <div className="flex flex-wrap gap-1">
-              {equipmentArray.slice(0, 2).map((item, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
-                  {item}
-                </Badge>
-              ))}
-              {equipmentArray.length > 2 && (
-                <Badge variant="default" className="text-xs">
-                  +{equipmentArray.length - 2} more
-                </Badge>
-              )}
-            </div>
-          );
-        } catch {
-          return equipment || "-";
-        }
+        if (!Array.isArray(equipmentArray) || equipmentArray.length === 0)
+          return "-";
+        console.log(equipmentArray);
+        return (
+          <div className="flex flex-wrap gap-1">
+            {equipmentArray.slice(0, 2).map((item, index: number) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {item?.equipment?.name}
+              </Badge>
+            ))}
+            {equipmentArray.length > 2 && (
+              <Badge variant="default" className="text-xs">
+                +{equipmentArray.length - 2} more
+              </Badge>
+            )}
+          </div>
+        );
       },
     },
     {
       header: "Body Part",
       accessorKey: "bodyPart",
       cell: ({ row }) => {
-        const bodyPart = row.original.bodyPart;
-        if (!bodyPart) return "-";
+        const bodyPartArray = row.original.ExSetupBodyPart;
 
-        try {
-          const bodyPartArray = JSON.parse(bodyPart);
-          if (!Array.isArray(bodyPartArray) || bodyPartArray.length === 0)
-            return "-";
-
-          return (
-            <div className="flex flex-wrap gap-1">
-              {bodyPartArray.slice(0, 2).map((item, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
-                  {item}
-                </Badge>
-              ))}
-              {bodyPartArray.length > 2 && (
-                <Badge variant="default" className="text-xs">
-                  +{bodyPartArray.length - 2} more
-                </Badge>
-              )}
-            </div>
-          );
-        } catch {
-          return bodyPart || "-";
-        }
+        if (!Array.isArray(bodyPartArray) || bodyPartArray.length === 0)
+          return "-";
+        console.log(bodyPartArray);
+        return (
+          <div className="flex flex-wrap gap-1">
+            {bodyPartArray.slice(0, 2).map((item, index: number) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {item?.bodyPart?.name}
+              </Badge>
+            ))}
+            {bodyPartArray.length > 2 && (
+              <Badge variant="default" className="text-xs">
+                +{bodyPartArray.length - 2} more
+              </Badge>
+            )}
+          </div>
+        );
       },
     },
     {
@@ -288,30 +274,24 @@ export const ExerciseSetupVideoTable = () => {
       header: "Rack",
       accessorKey: "rack",
       cell: ({ row }) => {
-        const rack = row.original.rack;
-        if (!rack) return "-";
+        const rackArray = row.original.ExSetupRak;
 
-        try {
-          const rackArray = JSON.parse(rack);
-          if (!Array.isArray(rackArray) || rackArray.length === 0) return "-";
-
-          return (
-            <div className="flex flex-wrap gap-1">
-              {rackArray.slice(0, 2).map((item, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
-                  {item}
-                </Badge>
-              ))}
-              {rackArray.length > 2 && (
-                <Badge variant="default" className="text-xs">
-                  +{rackArray.length - 2} more
-                </Badge>
-              )}
-            </div>
-          );
-        } catch {
-          return rack || "-";
-        }
+        if (!Array.isArray(rackArray) || rackArray.length === 0) return "-";
+        console.log(rackArray);
+        return (
+          <div className="flex flex-wrap gap-1">
+            {rackArray.slice(0, 2).map((item, index: number) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {item?.rack?.name}
+              </Badge>
+            ))}
+            {rackArray.length > 2 && (
+              <Badge variant="default" className="text-xs">
+                +{rackArray.length - 2} more
+              </Badge>
+            )}
+          </div>
+        );
       },
     },
     {
@@ -369,17 +349,17 @@ export const ExerciseSetupVideoTable = () => {
         );
       },
     },
-    {
-      header: "Blocked Status",
-      accessorKey: "blocked",
-      cell: ({ row }) => {
-        return row.original.blocked ? (
-          <Badge variant="destructive">Blocked</Badge>
-        ) : (
-          <Badge variant="secondary">Active</Badge>
-        );
-      },
-    },
+    // {
+    //   header: "Blocked Status",
+    //   accessorKey: "blocked",
+    //   cell: ({ row }) => {
+    //     return row.original.blocked ? (
+    //       <Badge variant="destructive">Blocked</Badge>
+    //     ) : (
+    //       <Badge variant="secondary">Active</Badge>
+    //     );
+    //   },
+    // },
 
     {
       header: "Created At",
@@ -399,7 +379,7 @@ export const ExerciseSetupVideoTable = () => {
                 <MoreVertical />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem asChild>
+                {/* <DropdownMenuItem asChild>
                   <Link
                     href={videoUrl}
                     target="_blank"
@@ -408,7 +388,7 @@ export const ExerciseSetupVideoTable = () => {
                     <Play className="mr-2 h-4 w-4" />
                     <span>Watch</span>
                   </Link>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuItem asChild>
                   <Link href={`/dashboard/exercise-setup/${id}`}>
                     <Eye className="mr-2 h-4 w-4" />
@@ -442,7 +422,7 @@ export const ExerciseSetupVideoTable = () => {
                     </>
                   )}
                 </DropdownMenuItem>
-                {blocked ? (
+                {/* {blocked ? (
                   <DropdownMenuItem
                     variant="destructive"
                     onClick={() => {
@@ -463,8 +443,8 @@ export const ExerciseSetupVideoTable = () => {
                   >
                     <Ban className="mr-2 h-4 w-4" />
                     <span>Block</span>
-                  </DropdownMenuItem>
-                )}
+                  </DropdownMenuItem> 
+                )}*/}
                 <DropdownMenuItem
                   variant="destructive"
                   onClick={() => {

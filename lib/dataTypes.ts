@@ -199,6 +199,75 @@ export type ExerciseLibraryVideo = {
   orange?: string;
   createdAt: Date;
   updatedAt: Date;
+  // Junction table properties for dashboard
+  ExLibEquipment?: Array<{
+    equipment: {
+      id: string;
+      name: string;
+    };
+  }>;
+  ExLibBodyPart?: Array<{
+    bodyPart: {
+      id: string;
+      name: string;
+    };
+  }>;
+  ExLibRak?: Array<{
+    rack: {
+      id: string;
+      name: string;
+    };
+  }>;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+};
+
+export type ExerciseSetupVideo = {
+  id: string;
+  title: string;
+  videoUrl: string;
+  height: number;
+  userId: string;
+  isPublic: boolean;
+  blocked: boolean;
+  blockReason?: string;
+  // Pump by numbers fields
+  isolatorHole?: string;
+  yellow?: string;
+  green?: string;
+  blue?: string;
+  red?: string;
+  purple?: string;
+  orange?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  // Junction table properties for dashboard
+  ExSetupEquipment?: Array<{
+    equipment: {
+      id: string;
+      name: string;
+    };
+  }>;
+  ExSetupBodyPart?: Array<{
+    bodyPart: {
+      id: string;
+      name: string;
+    };
+  }>;
+  ExSetupRak?: Array<{
+    rack: {
+      id: string;
+      name: string;
+    };
+  }>;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+  };
 };
 
 // YouTube Video Types
