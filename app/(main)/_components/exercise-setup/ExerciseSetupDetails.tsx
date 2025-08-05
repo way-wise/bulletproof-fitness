@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 
+import ExerciseSetupDetailsSkeleton from "@/components/skeleton/exerciseSetupDetailsSkeleton";
 import { Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -72,22 +73,17 @@ export default function ExerciseSetupDetails({
 }) {
   const [rating, setRating] = useState(0);
 
-  const fetcher = (url: string) =>
-    fetch(url).then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch video");
-      return res.json();
-    });
+  const fetcher = async (url: string): Promise<any> => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to fetch video");
+    return res.json();
+  };
 
   const { data, error, isLoading } = useSWR(
     exerciseSetupId ? `/api/exercise-setup/dashboard/${exerciseSetupId}` : null,
     fetcher,
   );
   const libraryData = data?.data;
-  const videoUrl = libraryData?.videoUrl || "";
-  const videoId =
-    videoUrl.match(
-      /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-    )?.[1] || null;
 
   const handleSubmitRating = async (value: number) => {
     if (!exerciseSetupId) return;
@@ -118,7 +114,19 @@ export default function ExerciseSetupDetails({
     }
   };
 
-  console.log("libraryData", libraryData);
+  if (isLoading) {
+    return <ExerciseSetupDetailsSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-[1200px] px-6 py-14 text-center">
+        <p className="text-lg text-red-600">
+          Failed to load exercise setup details
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-[1200px] px-6 py-14 font-sans text-[17px] leading-relaxed text-[#222]">
@@ -126,7 +134,7 @@ export default function ExerciseSetupDetails({
       <div className="grid items-start gap-10 md:grid-cols-2">
         <div className="aspect-video w-full overflow-hidden rounded shadow-md">
           <iframe
-            src={`https://www.youtube.com/embed/${videoId}`}
+            src={libraryData?.videoUrl}
             title="Exercise Video"
             className="h-full w-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -152,7 +160,8 @@ export default function ExerciseSetupDetails({
               ).join(", ")}
             </li>
             <li>
-              <strong>User Height In Inches:</strong> 63
+              <strong>User Height In Inches:</strong>{" "}
+              {libraryData?.height || "Not Available"}
             </li>
             <li>
               <strong>Rack Used:</strong>{" "}
@@ -176,7 +185,6 @@ export default function ExerciseSetupDetails({
         <h2 className="mb-6 text-2xl font-bold uppercase">Pump-By-Numbers:</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
           {pumpColors.map((item, i) => {
-            const value = data?.[item.key as keyof typeof data];
             return (
               <Card key={i} className="border border-gray-300">
                 <CardContent className="flex items-start gap-5 p-6">
@@ -190,7 +198,7 @@ export default function ExerciseSetupDetails({
                       <span className="font-semibold">{item.label}</span>
                       {item.label !== "Not Used" && ` (${item.desc})`}:{" "}
                       <span className="ml-1 font-bold">
-                        {value ?? "Not Used"}
+                        {libraryData?.[item.key] ?? "Not Used"}
                       </span>
                     </p>
                   </div>

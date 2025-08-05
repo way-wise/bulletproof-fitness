@@ -37,12 +37,6 @@ const ExLibraryCard = ({
   const [likeCount, setLikeCount] = useState(likes);
   const [dislikeCount, setDislikeCount] = useState(dislikes);
   const [reaction, setReaction] = useState<ReactionType | null>(alreadyReacted);
-  // const videoUrl = url || "";
-  // const videoId =
-  //   videoUrl.match(
-  //     /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-  //   )?.[1] || null;
-
   const handleReactSubmit = async ({
     contentId,
     key,
@@ -102,41 +96,7 @@ const ExLibraryCard = ({
     }
   };
 
-  // const handleReactSubmit = async ({
-  //   contentId,
-  //   key,
-  //   type,
-  // }: {
-  //   contentId: string;
-  //   key: "setup" | "lib";
-  //   type: ReactionType;
-  // }) => {
-  //   try {
-  //     const res = await fetch("/api/action/react", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ contentId, key, type }),
-  //     });
 
-  //     const result = await res.json();
-
-  //     if (!res.ok || !result.success) {
-  //       throw new Error(result.message || "Failed to record reaction");
-  //     }
-
-  //     // Revalidate the data to update the UI in real-time
-  //     if (mutate) {
-  //       mutate();
-  //     }
-
-  //     return result;
-  //   } catch (error) {
-  //     console.error("Reaction submit failed:", error);
-  //     throw error;
-  //   }
-  // };
   return (
     <div>
       <CardUI className="overflow-hidden rounded-none border-none shadow-none">
