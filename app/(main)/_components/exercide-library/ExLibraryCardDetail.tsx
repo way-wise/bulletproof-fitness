@@ -6,6 +6,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
 import ContactUs from "./ContactUs";
+import { useSession } from "@/lib/auth-client";
+import SignInModal from "../SignInModal";
 
 export default function ExerciseDetailPage({
   exerciseLibraryId,
@@ -13,6 +15,11 @@ export default function ExerciseDetailPage({
   exerciseLibraryId: string;
 }) {
   const [rating, setRating] = useState(0);
+
+  const [showSignInModal, setShowSignInModal] = useState(false);
+
+  const session = useSession();
+
   const { data, error, isLoading } = useSWR(
     exerciseLibraryId
       ? `/api/exercise-library/dashboard/${exerciseLibraryId}`
@@ -21,6 +28,11 @@ export default function ExerciseDetailPage({
   const libraryData = data?.data;
   const handleSubmitRating = async (value: number) => {
     if (!exerciseLibraryId) return;
+
+    if (!session.data?.user) {
+      setShowSignInModal(true);
+      return;
+    }
 
     try {
       const res = await fetch("/api/action/rate", {
@@ -119,7 +131,7 @@ export default function ExerciseDetailPage({
         <p className="text-base text-gray-500">Click on a star to rate it!</p>
 
         <div className="flex justify-center gap-2 py-4">
-          {libraryData?.ratings.length > 0 ? (
+          {libraryData?.ratings && libraryData?.ratings.length > 0 ? (
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((s) => (
                 <Star
@@ -152,6 +164,13 @@ export default function ExerciseDetailPage({
         </p>
 
         <ContactUs exerciseLibraryId={exerciseLibraryId} />
+
+        {showSignInModal && (
+          <SignInModal
+            isOpen={showSignInModal}
+            onClose={() => setShowSignInModal(false)}
+          />
+        )}
       </div>
     </div>
   );
