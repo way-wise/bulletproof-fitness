@@ -25,16 +25,7 @@ import { demoCenterAdmin } from "@/lib/admin/demoCenter";
 import { DemoCenter } from "@/lib/dataTypes";
 import { formatDate } from "@/lib/date-format";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
-import {
-  Ban,
-  Eye,
-  Globe,
-  Lock,
-  MoreVertical,
-  Pencil,
-  Trash,
-  XCircle,
-} from "lucide-react";
+import { Eye, Globe, Lock, MoreVertical, Pencil, Trash } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -250,40 +241,40 @@ export const DemoCenterTable = () => {
         );
       },
     },
-    {
-      header: "Blocked Status",
-      accessorKey: "blocked",
-      cell: ({ row }) => {
-        return row.original.blocked ? (
-          <Badge variant="destructive">Blocked</Badge>
-        ) : (
-          <Badge variant="secondary">Active</Badge>
-        );
-      },
-    },
-    {
-      header: "Block Reason",
-      accessorKey: "blockReason",
-      cell: ({ row }) => {
-        return row.original.blockReason ? (
-          <div className="max-w-xs truncate" title={row.original.blockReason}>
-            {row.original.blockReason}
-          </div>
-        ) : (
-          <span className="text-muted-foreground">-</span>
-        );
-      },
-    },
+    // {
+    //   header: "Blocked Status",
+    //   accessorKey: "blocked",
+    //   cell: ({ row }) => {
+    //     return row.original.blocked ? (
+    //       <Badge variant="destructive">Blocked</Badge>
+    //     ) : (
+    //       <Badge variant="secondary">Active</Badge>
+    //     );
+    //   },
+    // },
+    // {
+    //   header: "Block Reason",
+    //   accessorKey: "blockReason",
+    //   cell: ({ row }) => {
+    //     return row.original.blockReason ? (
+    //       <div className="max-w-xs truncate" title={row.original.blockReason}>
+    //         {row.original.blockReason}
+    //       </div>
+    //     ) : (
+    //       <span className="text-muted-foreground">-</span>
+    //     );
+    //   },
+    // },
     {
       header: "Created At",
       accessorKey: "createdAt",
       cell: ({ row }) => formatDate(row.original.createdAt),
     },
-    {
-      header: "Updated At",
-      accessorKey: "updatedAt",
-      cell: ({ row }) => formatDate(row.original.updatedAt),
-    },
+    // {
+    //   header: "Updated At",
+    //   accessorKey: "updatedAt",
+    //   cell: ({ row }) => formatDate(row.original.updatedAt),
+    // },
     {
       id: "actions",
       header: "Actions",
@@ -330,7 +321,7 @@ export const DemoCenterTable = () => {
                     </>
                   )}
                 </DropdownMenuItem>
-                {blocked ? (
+                {/* {blocked ? (
                   <DropdownMenuItem
                     variant="destructive"
                     onClick={() => {
@@ -352,7 +343,7 @@ export const DemoCenterTable = () => {
                     <Ban className="mr-2 h-4 w-4" />
                     <span>Block</span>
                   </DropdownMenuItem>
-                )}
+                )} */}
                 <DropdownMenuItem
                   variant="destructive"
                   onClick={() => {
