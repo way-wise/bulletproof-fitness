@@ -1,9 +1,12 @@
+"use client";
 import { Badge } from "@/components/ui/badge";
 import { CardContent, Card as CardUI } from "@/components/ui/card";
+import { useSession } from "@/lib/auth-client";
 import { ReactionType } from "@/prisma/generated/enums";
 import { Eye, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import SignInModal from "../SignInModal";
 
 interface ExLibraryCardProps {
   id: string;
@@ -37,11 +40,16 @@ const ExLibraryCard = ({
   const [likeCount, setLikeCount] = useState(likes);
   const [dislikeCount, setDislikeCount] = useState(dislikes);
   const [reaction, setReaction] = useState<ReactionType | null>(alreadyReacted);
+  const [showSignInModal, setShowSignInModal] = useState(false);
+
+  const session = useSession();
   // const videoUrl = url || "";
   // const videoId =
   //   videoUrl.match(
   //     /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
   //   )?.[1] || null;
+
+  console.log("Sesstion", session);
 
   const handleReactSubmit = async ({
     contentId,
@@ -52,6 +60,10 @@ const ExLibraryCard = ({
     key: "setup" | "lib";
     type: ReactionType;
   }) => {
+    if (!session.data?.user) {
+      setShowSignInModal(true);
+      return;
+    }
     const optimisticUpdate = () => {
       if (reaction === type) {
         // remove reaction
@@ -207,6 +219,13 @@ const ExLibraryCard = ({
           </div>
         </CardContent>
       </CardUI>
+
+      {showSignInModal && (
+        <SignInModal
+          isOpen={showSignInModal}
+          onClose={() => setShowSignInModal(false)}
+        />
+      )}
     </div>
   );
 };

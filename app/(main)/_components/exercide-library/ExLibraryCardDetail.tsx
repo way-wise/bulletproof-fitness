@@ -5,6 +5,8 @@ import { useState } from "react";
 import useSWR from "swr";
 import ContactUs from "./ContactUs";
 import { toast } from "sonner";
+import { useSession } from "@/lib/auth-client";
+import SignInModal from "../SignInModal";
 type TBodyPart = {
   bodyPart?: {
     name: string;
@@ -26,6 +28,9 @@ export default function ExerciseDetailPage({
   exerciseLibraryId: string;
 }) {
   const [rating, setRating] = useState(0);
+  const [showSignInModal, setShowSignInModal] = useState(false);
+
+  const session = useSession();
 
   const fetcher = (url: string) =>
     fetch(url).then((res) => {
@@ -47,6 +52,11 @@ export default function ExerciseDetailPage({
     )?.[1] || null;
   const handleSubmitRating = async (value: number) => {
     if (!exerciseLibraryId) return;
+
+    if (!session.data?.user) {
+      setShowSignInModal(true);
+      return;
+    }
 
     try {
       const res = await fetch("/api/action/rate", {
@@ -131,7 +141,7 @@ export default function ExerciseDetailPage({
         <p className="text-base text-gray-500">Click on a star to rate it!</p>
 
         <div className="flex justify-center gap-2 py-4">
-          {libraryData?.ratings.length > 0 ? (
+          {libraryData?.ratings && libraryData?.ratings.length > 0 ? (
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((s) => (
                 <Star
@@ -164,6 +174,13 @@ export default function ExerciseDetailPage({
         </p>
 
         <ContactUs exerciseLibraryId={exerciseLibraryId} />
+
+        {showSignInModal && (
+          <SignInModal
+            isOpen={showSignInModal}
+            onClose={() => setShowSignInModal(false)}
+          />
+        )}
       </div>
     </div>
   );
