@@ -5,7 +5,14 @@ export const rewardsSchema = object({
   points: number().required("Points is required"),
   description: string().optional(),
   type: string()
-    .oneOf(["LIKE", "VIEW", "RATING", "SETUP", "DISLIKE", "LIBRARY"])
+    .oneOf([
+      "LIKE",
+      "VIEW",
+      "RATING",
+      "UPLOAD_EXERCISE",
+      "UPLOAD_LIBRARY",
+      "DISLIKE",
+    ])
     .required(),
   isActive: boolean().default(false),
   icon: string().optional(),

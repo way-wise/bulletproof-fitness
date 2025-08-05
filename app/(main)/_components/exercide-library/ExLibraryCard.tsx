@@ -5,7 +5,7 @@ import { useSession } from "@/lib/auth-client";
 import { ReactionType } from "@/prisma/generated/enums";
 import { Eye, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import SignInModal from "../SignInModal";
 
 interface ExLibraryCardProps {
@@ -45,71 +45,71 @@ const ExLibraryCard = ({
 
   const session = useSession();
 
-  const handleReactSubmit = async ({
-    contentId,
-    key,
-    type,
-  }: {
-    contentId: string;
-    key: "setup" | "lib";
-    type: ReactionType;
-  }) => {
-    if (!session.data?.user) {
-      setShowSignInModal(true);
-      return;
-    }
-    const optimisticUpdate = () => {
-      if (reaction === type) {
-        // remove reaction
-        if (type === "LIKE") setLikeCount((prev) => prev - 1);
-        else setDislikeCount((prev) => prev - 1);
-        setReaction(null);
-      } else {
-        // switch or new
-        if (type === "LIKE") {
-          setLikeCount((prev) => prev + 1);
-          if (reaction === "DISLIKE") setDislikeCount((prev) => prev - 1);
+  const handleReactSubmit = useCallback(
+    async ({
+      contentId,
+      key,
+      type,
+    }: {
+      contentId: string;
+      key: "setup" | "lib";
+      type: ReactionType;
+    }) => {
+      if (!session.data?.user) {
+        setShowSignInModal(true);
+        return;
+      }
+      const optimisticUpdate = () => {
+        if (reaction === type) {
+          // remove reaction
+          if (type === "LIKE") setLikeCount((prev) => prev - 1);
+          else setDislikeCount((prev) => prev - 1);
+          setReaction(null);
         } else {
-          setDislikeCount((prev) => prev + 1);
-          if (reaction === "LIKE") setLikeCount((prev) => prev - 1);
+          // switch or new
+          if (type === "LIKE") {
+            setLikeCount((prev) => prev + 1);
+            if (reaction === "DISLIKE") setDislikeCount((prev) => prev - 1);
+          } else {
+            setDislikeCount((prev) => prev + 1);
+            if (reaction === "LIKE") setLikeCount((prev) => prev - 1);
+          }
+          setReaction(type);
         }
-        setReaction(type);
+      };
+
+      const rollback = () => {
+        // reset everything to original
+        setLikeCount(likes);
+        setDislikeCount(dislikes);
+        setReaction(alreadyReacted ?? null);
+      };
+
+      try {
+        optimisticUpdate();
+
+        const res = await fetch("/api/action/react", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ contentId, key, type }),
+        });
+
+        const result = await res.json();
+
+        if (!res.ok || !result.success) {
+          rollback();
+          throw new Error(result.message || "Failed to react");
+        }
+
+        if (mutate) mutate();
+      } catch (err) {
+        console.error("Failed to react:", err);
       }
-    };
-
-    const rollback = () => {
-      // reset everything to original
-      setLikeCount(likes);
-      setDislikeCount(dislikes);
-      setReaction(alreadyReacted ?? null);
-    };
-
-    try {
-      optimisticUpdate();
-
-      const res = await fetch("/api/action/react", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ contentId, key, type }),
-      });
-
-      const result = await res.json();
-
-      if (!res.ok || !result.success) {
-        rollback();
-        throw new Error(result.message || "Failed to react");
-      }
-
-      if (mutate) mutate();
-    } catch (err) {
-      console.error("Failed to react:", err);
-    }
-  };
-
-  
-
+    },
+    [likes, dislikes, alreadyReacted, reaction, session.data?.user, mutate],
+  );
   return (
     <div>
       <CardUI className="overflow-hidden rounded-none border-none shadow-none">
