@@ -220,8 +220,8 @@ model DemoCenterEquipment {
   demoCenter   DemoCenter @relation(fields: [demoCenterId], references: [id], onDelete: Cascade)
   equipmentId  String
   equipment    Equipment  @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
-  createdAt    DateTime
-  updatedAt    DateTime
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 model ExLibBodyPart {
@@ -323,9 +323,9 @@ enum RewardType {
   LIKE
   VIEW
   RATING
-  SETUP
+  UPLOAD_EXERCISE
+  UPLOAD_LIBRARY
   DISLIKE
-  LIBRARY
 }
 
 model UserView {
@@ -396,14 +396,14 @@ enum ReactionType {
   DISLIKE
 }
 
-
 model Feedback {
-  id         String   @id @default(ulid())
-  fullName   String
-  email      String
-  phone      String?
-  message    String
-  createdAt  DateTime @default(now())
+  id        String   @id @default(ulid())
+  fullName  String
+  email     String
+  phone     String?
+  message   String
+  createdAt DateTime @default(now())
+
   @@index([email])
   @@index([createdAt])
   @@map("feedback")

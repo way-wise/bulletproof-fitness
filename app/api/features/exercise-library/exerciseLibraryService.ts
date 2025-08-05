@@ -591,8 +591,8 @@ export const exerciseLibraryService = {
       if (minRating > 0) {
         where.AND.push({
           contentStats: {
-            some: {
-              avgRating: { gte: 0, lte: minRating },
+            every: {
+              avgRating: { gte: minRating, lte: 5 },
             },
           },
         });
@@ -651,6 +651,10 @@ export const exerciseLibraryService = {
           where,
         }),
       ]);
+
+      for (const exercise of exercises) {
+        console.log("Fetched exercise contentStats:", exercise.contentStats);
+      }
 
       return {
         data: exercises,

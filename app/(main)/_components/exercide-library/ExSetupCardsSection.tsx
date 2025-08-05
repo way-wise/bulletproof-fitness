@@ -156,8 +156,8 @@ const ExSetupCardsSection = ({
                     title={item.title}
                     url={item.videoUrl || ""}
                     bodypart={
-                      (item.ExLibBodyPart &&
-                        item.ExLibBodyPart[0]?.bodyPart.name) ||
+                      (item.ExSetupBodyPart &&
+                        item.ExSetupBodyPart[0]?.bodyPart.name) ||
                       ""
                     }
                     author={item.user?.name || ""}

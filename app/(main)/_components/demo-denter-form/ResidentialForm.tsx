@@ -10,13 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { MultiSelect } from "@/components/ui/multi-select";
 import { Textarea } from "@/components/ui/textarea";
 import { useEquipments } from "@/hooks/useEquipments";
 import { uploadImageToImgBB } from "@/lib/imageUpload";
@@ -33,7 +27,9 @@ const residentialFormSchema = z.object({
   address: z.string().min(1, "Address is required"),
   contact: z.string().min(1, "Contact information is required"),
   cityZip: z.string().min(1, "City/Zip is required"),
-  equipment: z.string().min(1, "Equipment selection is required"),
+  equipment: z
+    .array(z.string())
+    .min(1, "At least one equipment must be selected"),
   availability: z.string().optional(),
   bio: z.string().min(1, "Bio is required"),
 });
@@ -41,14 +37,10 @@ const residentialFormSchema = z.object({
 type ResidentialFormValues = z.infer<typeof residentialFormSchema>;
 
 export default function ResidentialForm({
-  showAgreement,
   setShowAgreement,
-  agreementWidgetId,
   setAgreementWidgetId,
 }: {
-  showAgreement: boolean;
   setShowAgreement: (showAgreement: boolean) => void;
-  agreementWidgetId: string | null;
   setAgreementWidgetId: (agreementWidgetId: string | null) => void;
 }) {
   const { equipments, isLoading } = useEquipments();
@@ -58,6 +50,7 @@ export default function ResidentialForm({
     resolver: zodResolver(residentialFormSchema),
     defaultValues: {
       buildingType: "RESIDENTIAL",
+      equipment: [],
     },
   });
 
@@ -110,7 +103,7 @@ export default function ResidentialForm({
         address: "",
         contact: "",
         cityZip: "",
-        equipment: "",
+        equipment: [],
         availability: "",
         bio: "",
       });
@@ -258,30 +251,21 @@ export default function ResidentialForm({
               <FormLabel className="text-md font-semibold">
                 Equipment Available *
               </FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Equipment" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {isLoading ? (
-                    <SelectItem value="loading" disabled>
-                      Loading equipment...
-                    </SelectItem>
-                  ) : equipments.length === 0 ? (
-                    <SelectItem value="no-equipment" disabled>
-                      No equipment available
-                    </SelectItem>
-                  ) : (
-                    equipments.map((equipment) => (
-                      <SelectItem key={equipment.id} value={equipment.name}>
-                        {equipment.name}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
+              <FormControl>
+                <MultiSelect
+                  options={equipments.map((equipment) => ({
+                    label: equipment.name,
+                    value: equipment.id,
+                  }))}
+                  selected={field.value || []}
+                  onChange={field.onChange}
+                  placeholder={
+                    isLoading ? "Loading equipment..." : "Select Equipment"
+                  }
+                  disabled={isLoading || equipments.length === 0}
+                  className="w-full"
+                />
+              </FormControl>
               <p className="text-xs text-muted-foreground">
                 Select the equipment you have available at your demo center
               </p>
