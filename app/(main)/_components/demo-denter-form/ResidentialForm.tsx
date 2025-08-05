@@ -114,7 +114,7 @@ export default function ResidentialForm({
         address: "",
         contact: "",
         cityZip: "",
-        equipment: "",
+        equipment: [],
         availability: "",
         bio: "",
       });
