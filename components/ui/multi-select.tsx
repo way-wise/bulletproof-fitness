@@ -68,7 +68,7 @@ export const MultiSelect = ({
             )}
           >
             {selected.length > 0 ? `${selected.length} selected` : placeholder}
-            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronDown className="ml-2 size-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
 
@@ -77,7 +77,7 @@ export const MultiSelect = ({
             <CommandInput placeholder="Search..." className="h-9" />
             <CommandEmpty>No option found.</CommandEmpty>
 
-            <ScrollArea className="max-h-40">
+            <ScrollArea className="max-h-40 overflow-y-auto">
               <CommandGroup>
                 {options.map((option) => (
                   <CommandItem
@@ -85,9 +85,15 @@ export const MultiSelect = ({
                     onSelect={() => toggleItem(option.value)}
                     className="cursor-pointer"
                   >
-                    <div className="flex h-4 w-4 items-center justify-center rounded-sm border border-primary">
+                    <div
+                      className={cn(
+                        "flex size-[18px] shrink-0 items-center justify-center rounded-sm border border-zinc-400",
+                        selected.includes(option.value) &&
+                          "&[svg]:text-white border-black bg-primary",
+                      )}
+                    >
                       {selected.includes(option.value) ? (
-                        <Check className="h-4 w-4" />
+                        <Check className="size-4 text-primary-foreground" />
                       ) : null}
                     </div>
                     {option.label}
