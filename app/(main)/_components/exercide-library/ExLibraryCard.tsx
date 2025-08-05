@@ -5,7 +5,7 @@ import { useSession } from "@/lib/auth-client";
 import { ReactionType } from "@/prisma/generated/enums";
 import { Eye, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import SignInModal from "../SignInModal";
 
 interface ExLibraryCardProps {
@@ -110,6 +110,15 @@ const ExLibraryCard = ({
     },
     [likes, dislikes, alreadyReacted, reaction, session.data?.user, mutate],
   );
+
+  const likeFill = useMemo(
+    () => (reaction === "LIKE" ? "#c9c9c9" : "none"),
+    [reaction],
+  );
+  const dislikeFill = useMemo(
+    () => (reaction === "DISLIKE" ? "#c9c9c9" : "none"),
+    [reaction],
+  );
   return (
     <div>
       <CardUI className="overflow-hidden rounded-none border-none shadow-none">
@@ -155,11 +164,7 @@ const ExLibraryCard = ({
                 })
               }
             >
-              <ThumbsUp
-                className="h-4 w-4"
-                fill={reaction === "LIKE" ? "#c9c9c9" : "none"}
-              />{" "}
-              {likeCount}
+              <ThumbsUp className="h-4 w-4" fill={likeFill} /> {likeCount}
             </span>
             <span
               className="flex cursor-pointer items-center gap-1"
@@ -171,10 +176,7 @@ const ExLibraryCard = ({
                 })
               }
             >
-              <ThumbsDown
-                className="h-4 w-4"
-                fill={reaction === "DISLIKE" ? "#c9c9c9" : "none"}
-              />{" "}
+              <ThumbsDown className="h-4 w-4" fill={dislikeFill} />{" "}
               {dislikeCount}
             </span>
           </div>
