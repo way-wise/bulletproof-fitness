@@ -8,7 +8,7 @@ export const demoCenterSchema = object({
   contact: string().required("Contact is required"),
   cityZip: string().required("City/Zip is required"),
   image: string().required("Image is required"),
-  equipment: string().required("Equipment is required"),
+  equipment: array().of(string()).required("Equipment is required"),
   availability: string().optional(),
   bio: string().required("Bio is required"),
   // Business specific fields - make these optional since they're not always provided
