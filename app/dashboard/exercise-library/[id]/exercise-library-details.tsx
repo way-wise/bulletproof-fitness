@@ -126,15 +126,6 @@ export const ExerciseLibraryVideoDetails = ({
       return [];
     }
   };
-  const videoUrl = video?.videoUrl || "";
-  const videoId =
-    videoUrl.match(
-      /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-    )?.[1] || null;
-
-  const equipmentArray = parseJsonArray(video?.equipment ?? null);
-  const bodyPartArray = parseJsonArray(video?.bodyPart ?? null);
-  const rackArray = parseJsonArray(video?.rack ?? null);
 
   if (isLoading) return <LoadingSkeleton />;
 
@@ -200,7 +191,7 @@ export const ExerciseLibraryVideoDetails = ({
               <div className="overflow-hidden rounded-lg">
                 <iframe
                   className="aspect-video w-full"
-                  src={`https://www.youtube.com/embed/${videoId}`}
+                  src={video.videoUrl}
                   title="Exercise Video"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -230,13 +221,13 @@ export const ExerciseLibraryVideoDetails = ({
                   </h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {equipmentArray.length > 0 ? (
-                    equipmentArray.map((item, i) => (
+                  {video?.ExLibEquipment && video.ExLibEquipment.length > 0 ? (
+                    video.ExLibEquipment.map((item, i) => (
                       <Badge
                         key={i}
                         className="bg-orange-100 text-xs text-orange-800 sm:text-sm"
                       >
-                        {item}
+                        {item?.equipment?.name}
                       </Badge>
                     ))
                   ) : (
@@ -258,13 +249,13 @@ export const ExerciseLibraryVideoDetails = ({
                   </h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {bodyPartArray.length > 0 ? (
-                    bodyPartArray.map((item, i) => (
+                  {video?.ExLibBodyPart && video.ExLibBodyPart.length > 0 ? (
+                    video.ExLibBodyPart.map((item, i) => (
                       <Badge
                         key={i}
                         className="bg-red-100 text-xs text-red-800 sm:text-sm"
                       >
-                        {item}
+                        {item?.bodyPart?.name}
                       </Badge>
                     ))
                   ) : (
@@ -294,13 +285,13 @@ export const ExerciseLibraryVideoDetails = ({
                     Rack
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {rackArray.length > 0 ? (
-                      rackArray.map((item, i) => (
+                    {video?.ExLibRak && video.ExLibRak.length > 0 ? (
+                      video.ExLibRak.map((item, i) => (
                         <Badge
                           key={i}
                           className="bg-indigo-100 text-xs text-indigo-800 sm:text-sm"
                         >
-                          {item}
+                          {item?.rack?.name}
                         </Badge>
                       ))
                     ) : (

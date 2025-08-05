@@ -67,7 +67,7 @@ export const DataTable = <TData, TValue>({
   const handleLimitChange = (value: string) => {
     onPaginationChange({ pageIndex: 0, pageSize: Number(value) });
   };
-
+  console.log(data);
   return (
     <div className="relative">
       {/* Smooth loading overlay */}
