@@ -32,12 +32,8 @@ const fetcher = async (url: string) => {
 
 export const useRacks = (): UseRacksReturn => {
   const { data, error, isLoading, mutate } = useSWR<RackResponse>(
-    "/api/racks",
+    "/api/racks/all",
     fetcher,
-    {
-      revalidateOnFocus: true,
-      refreshInterval: 0,
-    },
   );
 
   return {

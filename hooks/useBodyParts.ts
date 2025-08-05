@@ -26,7 +26,7 @@ interface UseBodyPartsReturn {
 
 export const useBodyParts = (): UseBodyPartsReturn => {
   const { data, error, isLoading, mutate } =
-    useSWR<BodyPartResponse>("/api/body-parts");
+    useSWR<BodyPartResponse>("/api/body-parts/all");
 
   return {
     bodyParts: data?.data ?? [],

@@ -8,9 +8,9 @@ import { bodyPartsService } from "./bodyPartsService";
 export const bodyPartsModule = new Hono();
 
 /*
-  @route    GET: /equipments
+  @route    GET: /body-parts
   @access   private
-  @desc     Get all equipments
+  @desc     Get all body parts (Paginated)
 */
 bodyPartsModule.get("/", async (c: Context) => {
   const validatedQuery = await validateInput({
@@ -20,6 +20,17 @@ bodyPartsModule.get("/", async (c: Context) => {
   });
 
   const result = await bodyPartsService.getBodyParts(validatedQuery);
+
+  return c.json(result);
+});
+
+/*
+  @route    GET: /body-parts
+  @access   private
+  @desc     Get all body parts (Non-paginated)
+*/
+bodyPartsModule.get("/all", async (c: Context) => {
+  const result = await bodyPartsService.getAllBodyParts();
 
   return c.json(result);
 });

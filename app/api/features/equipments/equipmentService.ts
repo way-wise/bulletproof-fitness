@@ -10,7 +10,7 @@ export const equipmentService = {
   getAllEquipments: async () => {
     const equipments = await prisma.equipment.findMany({
       orderBy: {
-        id: "desc",
+        name: "asc",
       },
     });
 

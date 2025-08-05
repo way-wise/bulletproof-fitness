@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/auth";
+
 import prisma from "@/lib/prisma";
 import { bodyPartSchema } from "@/schema/bodyparts";
 import { PaginationQuery } from "@/schema/paginationSchema";
@@ -30,7 +30,14 @@ export const bodyPartsService = {
       },
     };
   },
-
+  getAllBodyParts: async () => {
+    const bodyParts = await prisma.bodyPart.findMany({
+      orderBy: {
+        name: "asc",
+      },
+    });
+    return bodyParts;
+  },
   // Create equipment
   createBodyPart: async (data: InferType<typeof bodyPartSchema>) => {
     const bodyPart = await prisma.bodyPart.create({

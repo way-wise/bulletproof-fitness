@@ -24,12 +24,8 @@ const fetcher = (url: string) =>
 
 export const useEquipments = () => {
   const { data, error, isLoading, mutate } = useSWR<EquipmentResponse>(
-    "/api/equipments",
+    "/api/equipments/all",
     fetcher,
-    {
-      revalidateOnFocus: true,
-      refreshInterval: 0, 
-    },
   );
 
   return {

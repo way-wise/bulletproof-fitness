@@ -25,6 +25,17 @@ racksModule.get("/", async (c) => {
 });
 
 /*
+  @route    GET: /racks/all
+  @access   private
+  @desc     Get all racks (Non-paginated)
+*/
+racksModule.get("/all", async (c) => {
+  const result = await racksService.getAllRacks();
+
+  return c.json(result);
+});
+
+/*
   @route    POST: /racks
   @access   private
   @desc     Create new rack

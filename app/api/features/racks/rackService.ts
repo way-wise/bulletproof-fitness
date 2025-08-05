@@ -30,7 +30,14 @@ export const racksService = {
       },
     };
   },
-
+  getAllRacks: async () => {
+    const racks = await prisma.rack.findMany({
+      orderBy: {
+        name: "asc",
+      },
+    });
+    return racks;
+  },
   // Create rack
   createRack: async (data: InferType<typeof rackSchema>) => {
     const rack = await prisma.rack.create({
