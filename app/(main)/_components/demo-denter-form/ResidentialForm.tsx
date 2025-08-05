@@ -11,13 +11,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { MultiSelect } from "@/components/ui/multi-select";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useEquipments } from "@/hooks/useEquipments";
 import { uploadImageToImgBB } from "@/lib/imageUpload";
@@ -44,14 +37,10 @@ const residentialFormSchema = z.object({
 type ResidentialFormValues = z.infer<typeof residentialFormSchema>;
 
 export default function ResidentialForm({
-  showAgreement,
   setShowAgreement,
-  agreementWidgetId,
   setAgreementWidgetId,
 }: {
-  showAgreement: boolean;
   setShowAgreement: (showAgreement: boolean) => void;
-  agreementWidgetId: string | null;
   setAgreementWidgetId: (agreementWidgetId: string | null) => void;
 }) {
   const { equipments, isLoading } = useEquipments();
