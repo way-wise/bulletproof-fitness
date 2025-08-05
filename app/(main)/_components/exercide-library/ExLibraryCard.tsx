@@ -96,7 +96,6 @@ const ExLibraryCard = ({
     }
   };
 
-
   return (
     <div>
       <CardUI className="overflow-hidden rounded-none border-none shadow-none">
