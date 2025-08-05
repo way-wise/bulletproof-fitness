@@ -9,11 +9,11 @@ const Footer = () => {
         </p>
 
         <p className="text-center">
-          <Link href="/" className="mr-4 hover:underline">
+          <Link href="/privacy-policy" className="mr-4 hover:underline">
             Privacy Policy
           </Link>
 
-          <Link href="/" className="hover:underline">
+          <Link href="/terms-of-service" className="hover:underline">
             Terms of Service
           </Link>
         </p>
