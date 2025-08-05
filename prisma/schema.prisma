@@ -323,9 +323,9 @@ enum RewardType {
   LIKE
   VIEW
   RATING
-  SETUP
+  UPLOAD_EXERCISE
+  UPLOAD_LIBRARY
   DISLIKE
-  LIBRARY
 }
 
 model UserView {
