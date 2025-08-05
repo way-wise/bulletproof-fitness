@@ -237,7 +237,12 @@ export default function DemoCenterFormPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <ResidentialForm />
+              <ResidentialForm
+                showAgreement={showAgreement}
+                setShowAgreement={setShowAgreement}
+                agreementWidgetId={agreementWidgetId}
+                setAgreementWidgetId={setAgreementWidgetId}
+              />
             </CardContent>
           </Card>
         </TabsContent>
