@@ -656,7 +656,7 @@ export const exerciseSetupService = {
         where.AND.push({
           contentStats: {
             some: {
-              avgRating: { gte: 0, lte: minRating },
+              avgRating: { gte: minRating, lte: 5 },
             },
           },
         });
