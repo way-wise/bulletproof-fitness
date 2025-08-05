@@ -10,7 +10,7 @@ import {
 import Spinner from "@/components/ui/spinner";
 import { useExerciseSetup } from "@/hooks/useExerciseSetup";
 import { ExerciseLibraryFilters, ExerciseLibraryItem } from "@/lib/dataTypes";
-import { use, useState } from "react";
+import { useState } from "react";
 import ExLibraryCard from "./ExLibraryCard";
 import FilterSection from "./FilterSection";
 
@@ -156,8 +156,8 @@ const ExSetupCardsSection = ({
                     title={item.title}
                     url={item.videoUrl || ""}
                     bodypart={
-                      (item.ExLibBodyPart &&
-                        item.ExLibBodyPart[0]?.bodyPart.name) ||
+                      (item.ExSetupBodyPart &&
+                        item.ExSetupBodyPart[0]?.bodyPart.name) ||
                       ""
                     }
                     author={item.user?.name || ""}

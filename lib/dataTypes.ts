@@ -33,6 +33,7 @@ export type ExerciseLibraryItem = {
   title: string;
   videoUrl: string;
   ExLibBodyPart: ExLibBodyPartType[];
+  ExSetupBodyPart: ExLibBodyPartType[];
   equipment: {
     id: string;
     name: string;
