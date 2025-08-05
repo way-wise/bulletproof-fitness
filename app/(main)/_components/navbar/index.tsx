@@ -4,7 +4,7 @@ type Session = typeof auth.$Infer.Session;
 const MainNavbar = async () => {
   const session = await getSession();
   return (
-    <div>
+    <div className="sticky top-0 z-50">
       <Navbar session={session as Session} />
     </div>
   );
