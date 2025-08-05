@@ -158,13 +158,12 @@ export default function ExerciseSetupDetails({
                 (item: TRack) => item?.rack?.name,
               ).join(", ")}
             </li>
-            <li>
-              <strong>Note:</strong> For ISOLATOR videos, the number holes high
-              the carriage is attached on the upright: <strong>2</strong>
-            </li>
           </ul>
           <div className="rounded border bg-gray-100 px-4 py-3 text-base">
-            Uploaded by: <strong>Bulletproof Fitness Equipment</strong>
+            Uploaded by:{" "}
+            <strong>
+              {libraryData?.user?.name || "Bulletproof Fitness Equipment"}
+            </strong>
           </div>
         </div>
       </div>

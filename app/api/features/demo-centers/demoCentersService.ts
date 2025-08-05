@@ -198,20 +198,6 @@ export const demoCentersService = {
 
   // Create demo center
   createDemoCenter: async (data: InferType<typeof demoCenterSchema>) => {
-    // Find the equipment by name to get its ID
-
-    console.log(data);
-    const equipment = await prisma.equipment.findFirst({
-      where: {
-        name: data.equipment,
-      },
-    });
-
-    if (!equipment) {
-      throw new HTTPException(400, {
-        message: `Equipment "${data.equipment}" not found`,
-      });
-    }
     const demoCenter = await prisma.demoCenter.create({
       data: {
         buildingType: data.buildingType,
@@ -235,14 +221,12 @@ export const demoCentersService = {
         isPublic: data.isPublic || false,
         blocked: data.blocked || false,
         blockReason: data.blockReason,
-        createdAt: new Date(),
-        updatedAt: new Date(),
         // Create the equipment relationship
         demoCenterEquipments: {
-          create: {
-            equipmentId: equipment.id,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+          createMany: {
+            data: data.equipment.map((equipmentId) => ({
+               equipmentId,
+            })),
           },
         },
       },
@@ -331,9 +315,15 @@ export const demoCentersService = {
     }
 
     // Find the equipment by name to get its ID
-    const equipment = await prisma.equipment.findFirst({
+    const equipment = await prisma.equipment.findMany({
       where: {
-        name: data.equipment,
+        name: {
+          in: data.equipment.filter((name): name is string => typeof name === 'string'),
+        },
+      },
+      select: {
+        id: true,
+        name: true,
       },
     });
 
@@ -366,7 +356,6 @@ export const demoCentersService = {
         isPublic: data.isPublic || false,
         blocked: data.blocked || false,
         blockReason: data.blockReason,
-        updatedAt: new Date(),
       },
       include: {
         demoCenterEquipments: {
@@ -382,13 +371,15 @@ export const demoCentersService = {
       where: { demoCenterId: id },
     });
 
-    await prisma.demoCenterEquipment.create({
-      data: {
-        demoCenterId: id,
-        equipmentId: equipment.id,
+    equipment.forEach(async (equipment) => {
+      await prisma.demoCenterEquipment.create({
+        data: {
+          demoCenterId: id,
+          equipmentId: equipment.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+    });
     });
 
     return updatedDemoCenter;

@@ -158,7 +158,7 @@ export default function ExerciseFilters({
   return (
     <div className="bg-white px-4 py-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-left text-[24px] font-extrabold uppercase">
+        <h2 className="py-1 text-left text-[24px] font-extrabold uppercase">
           Filters
         </h2>
         {hasActiveFilters && (
@@ -166,7 +166,7 @@ export default function ExerciseFilters({
             variant="outline"
             size="sm"
             onClick={handleReset}
-            className="mb-1 text-xs"
+            className="text-xs"
           >
             Reset All
           </Button>

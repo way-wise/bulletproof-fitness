@@ -23,8 +23,6 @@ export default function DemoCenterFormPage() {
   const [agreementWidgetId, setAgreementWidgetId] = useState<string | null>(
     null,
   );
-  // const [submittedFormData, setSubmittedFormData] =
-  //   useState<BusinessFormValues | null>(null);
 
   // get equipments
   const { equipments, isLoading } = useEquipments();
@@ -214,7 +212,7 @@ export default function DemoCenterFormPage() {
             <CardContent className="space-y-4">
               <BusinessForm
                 form={form}
-                equipments={equipments}
+                equipment={equipments}
                 isLoading={isLoading}
                 preview={preview}
                 setPreview={setPreview}
@@ -240,9 +238,7 @@ export default function DemoCenterFormPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <ResidentialForm
-                showAgreement={showAgreement}
                 setShowAgreement={setShowAgreement}
-                agreementWidgetId={agreementWidgetId}
                 setAgreementWidgetId={setAgreementWidgetId}
               />
             </CardContent>
