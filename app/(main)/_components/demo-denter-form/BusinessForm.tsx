@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { MultiSelect } from "@/components/ui/multi-select";
 import Image from "next/image";
 import { UseFormReturn } from "react-hook-form";
 import * as z from "zod";
@@ -29,7 +30,9 @@ export const businessFormSchema = z.object({
   address: z.string().min(1, "Address is required"),
   contact: z.string().min(1, "Contact information is required"),
   cityZip: z.string().min(1, "City/Zip is required"),
-  equipment: z.string().min(1, "Equipment selection is required"),
+  equipment: z
+    .array(z.string())
+    .min(1, "At least one equipment must be selected"),
   availability: z.string().min(1, "Availability is required"),
   bio: z.string().min(1, "Bio is required"),
   weekdays: z.array(z.string()).optional(),
@@ -187,30 +190,21 @@ export default function BusinessForm({
               <FormLabel className="text-md font-semibold">
                 Equipment Available *
               </FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Equipment" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {isLoading ? (
-                    <SelectItem value="loading" disabled>
-                      Loading equipment...
-                    </SelectItem>
-                  ) : equipments.length === 0 ? (
-                    <SelectItem value="no-equipment" disabled>
-                      No equipment available
-                    </SelectItem>
-                  ) : (
-                    equipments.map((equipment) => (
-                      <SelectItem key={equipment.id} value={equipment.name}>
-                        {equipment.name}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
+              <FormControl>
+                <MultiSelect
+                  options={equipments.map((equipment) => ({
+                    label: equipment.name,
+                    value: equipment.name,
+                  }))}
+                  selected={field.value || []}
+                  onChange={field.onChange}
+                  placeholder={
+                    isLoading ? "Loading equipment..." : "Select Equipment"
+                  }
+                  disabled={isLoading || equipments.length === 0}
+                  className="w-full"
+                />
+              </FormControl>
               <p className="text-xs text-muted-foreground">
                 Select the equipment you have available at your demo center
               </p>
@@ -292,12 +286,28 @@ export default function BusinessForm({
                   <FormLabel className="text-md font-semibold">
                     Weekdays Opening Time
                   </FormLabel>
-                  <FormControl>
-                    <select {...field} className="w-full rounded border p-2">
-                      <option value="">Select time</option>
-                      {generateTimeOptions()}
-                    </select>
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {Array.from({ length: 24 }, (_, hour) =>
+                        [0, 30].map((min) => {
+                          const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : "30"} ${hour < 12 ? "AM" : "PM"}`;
+                          return (
+                            <SelectItem key={display} value={display}>
+                              {display}
+                            </SelectItem>
+                          );
+                        }),
+                      ).flat()}
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
@@ -309,12 +319,28 @@ export default function BusinessForm({
                   <FormLabel className="text-md font-semibold">
                     Weekdays Closing Time
                   </FormLabel>
-                  <FormControl>
-                    <select {...field} className="w-full rounded border p-2">
-                      <option value="">Select time</option>
-                      {generateTimeOptions()}
-                    </select>
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {Array.from({ length: 24 }, (_, hour) =>
+                        [0, 30].map((min) => {
+                          const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : "30"} ${hour < 12 ? "AM" : "PM"}`;
+                          return (
+                            <SelectItem key={display} value={display}>
+                              {display}
+                            </SelectItem>
+                          );
+                        }),
+                      ).flat()}
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
@@ -330,12 +356,28 @@ export default function BusinessForm({
                   <FormLabel className="text-md font-semibold">
                     Weekends Opening Time
                   </FormLabel>
-                  <FormControl>
-                    <select {...field} className="w-full rounded border p-2">
-                      <option value="">Select time</option>
-                      {generateTimeOptions()}
-                    </select>
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {Array.from({ length: 24 }, (_, hour) =>
+                        [0, 30].map((min) => {
+                          const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : "30"} ${hour < 12 ? "AM" : "PM"}`;
+                          return (
+                            <SelectItem key={display} value={display}>
+                              {display}
+                            </SelectItem>
+                          );
+                        }),
+                      ).flat()}
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
@@ -347,12 +389,28 @@ export default function BusinessForm({
                   <FormLabel className="text-md font-semibold">
                     Weekends Closing Time
                   </FormLabel>
-                  <FormControl>
-                    <select {...field} className="w-full rounded border p-2">
-                      <option value="">Select time</option>
-                      {generateTimeOptions()}
-                    </select>
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {Array.from({ length: 24 }, (_, hour) =>
+                        [0, 30].map((min) => {
+                          const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : "30"} ${hour < 12 ? "AM" : "PM"}`;
+                          return (
+                            <SelectItem key={display} value={display}>
+                              {display}
+                            </SelectItem>
+                          );
+                        }),
+                      ).flat()}
+                    </SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />

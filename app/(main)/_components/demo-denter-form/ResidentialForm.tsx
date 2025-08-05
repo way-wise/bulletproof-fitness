@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -33,7 +34,9 @@ const residentialFormSchema = z.object({
   address: z.string().min(1, "Address is required"),
   contact: z.string().min(1, "Contact information is required"),
   cityZip: z.string().min(1, "City/Zip is required"),
-  equipment: z.string().min(1, "Equipment selection is required"),
+  equipment: z
+    .array(z.string())
+    .min(1, "At least one equipment must be selected"),
   availability: z.string().optional(),
   bio: z.string().min(1, "Bio is required"),
 });
@@ -48,6 +51,7 @@ export default function ResidentialForm() {
     resolver: zodResolver(residentialFormSchema),
     defaultValues: {
       buildingType: "RESIDENTIAL",
+      equipment: [],
     },
   });
 
@@ -233,30 +237,21 @@ export default function ResidentialForm() {
               <FormLabel className="text-md font-semibold">
                 Equipment Available *
               </FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Equipment" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {isLoading ? (
-                    <SelectItem value="loading" disabled>
-                      Loading equipment...
-                    </SelectItem>
-                  ) : equipments.length === 0 ? (
-                    <SelectItem value="no-equipment" disabled>
-                      No equipment available
-                    </SelectItem>
-                  ) : (
-                    equipments.map((equipment) => (
-                      <SelectItem key={equipment.id} value={equipment.name}>
-                        {equipment.name}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
+              <FormControl>
+                <MultiSelect
+                  options={equipments.map((equipment) => ({
+                    label: equipment.name,
+                    value: equipment.name,
+                  }))}
+                  selected={field.value || []}
+                  onChange={field.onChange}
+                  placeholder={
+                    isLoading ? "Loading equipment..." : "Select Equipment"
+                  }
+                  disabled={isLoading || equipments.length === 0}
+                  className="w-full"
+                />
+              </FormControl>
               <p className="text-xs text-muted-foreground">
                 Select the equipment you have available at your demo center
               </p>

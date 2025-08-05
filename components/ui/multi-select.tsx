@@ -113,7 +113,7 @@ export const MultiSelect = ({
                   <Badge
                     key={item}
                     variant="secondary"
-                    className="max-w-[120px] truncate rounded-sm px-2 font-normal"
+                    className="truncate rounded-sm px-2 font-normal"
                     title={label}
                   >
                     {label}

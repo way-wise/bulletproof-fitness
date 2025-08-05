@@ -23,8 +23,6 @@ export default function DemoCenterFormPage() {
   const [agreementWidgetId, setAgreementWidgetId] = useState<string | null>(
     null,
   );
-  // const [submittedFormData, setSubmittedFormData] =
-  //   useState<BusinessFormValues | null>(null);
 
   // get equipments
   const { equipments, isLoading } = useEquipments();
