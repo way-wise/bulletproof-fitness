@@ -395,3 +395,16 @@ enum ReactionType {
   LIKE
   DISLIKE
 }
+
+
+model Feedback {
+  id         String   @id @default(ulid())
+  fullName   String
+  email      String
+  phone      String?
+  message    String
+  createdAt  DateTime @default(now())
+  @@index([email])
+  @@index([createdAt])
+  @@map("feedback")
+}

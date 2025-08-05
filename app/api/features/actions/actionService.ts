@@ -1,6 +1,9 @@
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { ReactionType, RewardType } from "@/prisma/generated/enums";
+import { PaginationQuery } from "@/schema/paginationSchema";
+import { getPaginationQuery } from "../../lib/pagination";
+import { QueryMode } from "@/prisma/generated/internal/prismaNamespace";
 
 async function getRewardPointValue(type: RewardType) {
   const reward = await prisma.rewardPoints.findFirst({
@@ -379,5 +382,69 @@ export const actionService = {
         });
       }
     });
+  },
+
+  async recordFeedback(
+    fullName: string,
+    email: string,
+    phone: string,
+    message: string,
+  ) {
+    // Create feedback entry
+    await prisma.feedback.create({
+      data: {
+        fullName,
+        email,
+        phone,
+        message,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Feedback recorded",
+    };
+  },
+
+  async getFeedback(query: PaginationQuery & { search?: string }) {
+    const session = await getSession();
+    if (!session) throw new Error("Unauthorized");
+
+    const { page, limit, skip, take } = getPaginationQuery(query);
+    const { search = "" } = query;
+
+    const searchFilter = search
+      ? {
+          OR: [
+            { fullName: { contains: search, mode: QueryMode.insensitive } },
+            { email: { contains: search, mode: QueryMode.insensitive } },
+            { phone: { contains: search, mode: QueryMode.insensitive } },
+            { message: { contains: search, mode: QueryMode.insensitive } },
+          ],
+        }
+      : {};
+
+    const [feedbacks, total] = await prisma.$transaction([
+      prisma.feedback.findMany({
+        where: searchFilter,
+        take,
+        skip,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.feedback.count({ where: searchFilter }),
+    ]);
+
+    console.log("Feedbacks fetched:", feedbacks.length);
+
+    return {
+      success: true,
+      data: feedbacks,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   },
 };

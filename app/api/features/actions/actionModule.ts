@@ -1,9 +1,10 @@
 import { Hono } from "hono";
 
 import { ReactionType } from "@/prisma/generated/enums";
-import { object, string, number, mixed } from "yup";
+import { mixed, number, object, string } from "yup";
 import { validateInput } from "../../lib/validateInput";
 import { actionService } from "./actionService";
+import { paginationQuerySchema } from "@/schema/paginationSchema";
 
 const app = new Hono();
 
@@ -72,6 +73,40 @@ app.post("/view", async (c) => {
 
   await actionService.recordView(validated.contentId, validated.key);
   return c.json({ success: true, message: "View recorded" });
+});
+
+app.post("/feedback", async (c) => {
+  const body = await c.req.json();
+
+  const schema = object({
+    fullName: string().required(),
+    email: string().email().required(),
+    phone: string().optional().nullable(),
+    message: string().required(),
+  });
+
+  const validated = await validateInput({ type: "form", schema, data: body });
+
+  await actionService.recordFeedback(
+    validated.fullName,
+    validated.email,
+    validated.phone,
+    validated.message,
+  );
+  return c.json({ success: true, message: "Feedback recorded" });
+});
+
+app.get("/feedback", async (c) => {
+  const validatedQuery = await validateInput({
+    type: "query",
+    schema: paginationQuerySchema,
+    data: c.req.query(),
+  });
+
+  console.log("Fetching feedback with query:", validatedQuery);
+
+  const result = await actionService.getFeedback(validatedQuery);
+  return c.json(result);
 });
 
 export default app;
