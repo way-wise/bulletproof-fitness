@@ -1,50 +1,24 @@
 "use client";
-
+import ExerciseLibraryDetailsSkeleton from "@/components/skeleton/exercoseLibraryDetailsSkeleton";
+import { TBodyPart, TEquipment, TRack } from "@/lib/types/exerciseTypes";
 import { Star } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import useSWR from "swr";
 import ContactUs from "./ContactUs";
-import { toast } from "sonner";
-type TBodyPart = {
-  bodyPart?: {
-    name: string;
-  };
-};
-type TEquipment = {
-  equipment?: {
-    name: string;
-  };
-};
-type TRack = {
-  rack?: {
-    name: string;
-  };
-};
+
 export default function ExerciseDetailPage({
   exerciseLibraryId,
 }: {
   exerciseLibraryId: string;
 }) {
   const [rating, setRating] = useState(0);
-
-  const fetcher = (url: string) =>
-    fetch(url).then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch video");
-      return res.json();
-    });
-
   const { data, error, isLoading } = useSWR(
     exerciseLibraryId
       ? `/api/exercise-library/dashboard/${exerciseLibraryId}`
       : null,
-    fetcher,
   );
   const libraryData = data?.data;
-  const videoUrl = libraryData?.videoUrl || "";
-  const videoId =
-    videoUrl.match(
-      /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-    )?.[1] || null;
   const handleSubmitRating = async (value: number) => {
     if (!exerciseLibraryId) return;
 
@@ -73,13 +47,27 @@ export default function ExerciseDetailPage({
       toast.error(error.message || "Something went wrong.");
     }
   };
+
+  if (isLoading) {
+    return <ExerciseLibraryDetailsSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-[1200px] px-6 py-14 text-center">
+        <p className="text-lg text-red-600">
+          Failed to load exercise setup details
+        </p>
+      </div>
+    );
+  }
   return (
     <div className="mx-auto max-w-[1200px] px-6 py-14 font-sans text-[17px] leading-relaxed text-[#222]">
       {/* Video & Info Section */}
       <div className="grid items-start gap-10 md:grid-cols-2">
         <div className="aspect-video w-full overflow-hidden rounded shadow-md">
           <iframe
-            src={`https://www.youtube.com/embed/${videoId}`}
+            src={libraryData?.videoUrl}
             title="Exercise Video"
             className="h-full w-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

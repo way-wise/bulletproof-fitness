@@ -1,28 +1,13 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-
 import ExerciseSetupDetailsSkeleton from "@/components/skeleton/exerciseSetupDetailsSkeleton";
+import { Card, CardContent } from "@/components/ui/card";
+import { TBodyPart, TEquipment, TRack } from "@/lib/types/exerciseTypes";
 import { Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
 import ContactUs from "../exercide-library/ContactUs";
-type TBodyPart = {
-  bodyPart?: {
-    name: string;
-  };
-};
-type TEquipment = {
-  equipment?: {
-    name: string;
-  };
-};
-type TRack = {
-  rack?: {
-    name: string;
-  };
-};
 
 const pumpColors = [
   {
@@ -73,16 +58,10 @@ export default function ExerciseSetupDetails({
 }) {
   const [rating, setRating] = useState(0);
 
-  const fetcher = async (url: string): Promise<any> => {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("Failed to fetch video");
-    return res.json();
-  };
-
   const { data, error, isLoading } = useSWR(
     exerciseSetupId ? `/api/exercise-setup/dashboard/${exerciseSetupId}` : null,
-    fetcher,
   );
+
   const libraryData = data?.data;
 
   const handleSubmitRating = async (value: number) => {
