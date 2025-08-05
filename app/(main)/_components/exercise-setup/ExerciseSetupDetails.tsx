@@ -12,7 +12,6 @@ import ContactUs from "../exercide-library/ContactUs";
 import { useSession } from "@/lib/auth-client";
 import SignInModal from "../SignInModal";
 
-
 const pumpColors = [
   {
     key: "yellow",
@@ -104,7 +103,6 @@ export default function ExerciseSetupDetails({
     }
   };
 
-
   if (isLoading) {
     return <ExerciseSetupDetailsSkeleton />;
   }
@@ -118,7 +116,6 @@ export default function ExerciseSetupDetails({
       </div>
     );
   }
-
 
   return (
     <div className="mx-auto max-w-[1200px] px-6 py-14 font-sans text-[17px] leading-relaxed text-[#222]">

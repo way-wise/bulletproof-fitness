@@ -650,8 +650,17 @@ export const exerciseSetupService = {
         });
       }
 
-      console.log("minHeight", minHeight);
-      console.log("maxHeight", maxHeight);
+      //avarage rating ContentStats
+      // Rating filter
+      if (minRating > 0) {
+        where.AND.push({
+          contentStats: {
+            some: {
+              avgRating: { gte: 0, lte: minRating },
+            },
+          },
+        });
+      }
 
       // Height filter - only apply if we have height constraints
       if (minHeight > 0 || maxHeight < 85) {
@@ -679,21 +688,18 @@ export const exerciseSetupService = {
                 email: true,
               },
             },
-            ExSetupEquipment: {
-              include: {
-                equipment: true,
-              },
-            },
+
             ExSetupBodyPart: {
-              include: {
-                bodyPart: true,
+              select: {
+                bodyPart: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
               },
             },
-            ExSetupRak: {
-              include: {
-                rack: true,
-              },
-            },
+
             contentStats: true,
             reactions: {
               where: { userId: session?.user?.id },
@@ -712,83 +718,8 @@ export const exerciseSetupService = {
         }),
       ]);
 
-      const transformedExercises = exercises
-        .map((exercise) => {
-          // Parse height to inches
-          // let heightInInches: number | null = null;
-          // if (exercise.height && exercise.height.trim() !== "") {
-          //   const heightMatch = exercise.height.match(/(\d+)'(\d+)"/);
-          //   if (heightMatch) {
-          //     const feet = parseInt(heightMatch[1]);
-          //     const inches = parseInt(heightMatch[2]);
-          //     heightInInches = feet * 12 + inches;
-          //   } else {
-          //     heightInInches = parseInt(exercise.height || "0", 10);
-          //   }
-          // }
-
-          // if (
-          //   (minHeight > 0 || maxHeight < 85) &&
-          //   heightInInches !== null &&
-          //   (heightInInches < minHeight || heightInInches > maxHeight)
-          // ) {
-          //   return null;
-          // }
-
-          if (minRating > 0) {
-            const mockRating = Math.floor(Math.random() * 5) + 1;
-            if (mockRating < minRating) {
-              return null;
-            }
-          }
-
-          return {
-            id: exercise.id,
-            title: exercise.title,
-            videoUrl: exercise.videoUrl,
-            equipment: {
-              id: exercise.ExSetupEquipment[0]?.equipment?.id || "default",
-              name:
-                exercise.ExSetupEquipment[0]?.equipment?.name ||
-                "Unknown Equipment",
-            },
-            bodyPart: {
-              id: exercise.ExSetupBodyPart[0]?.bodyPart?.id || "default",
-              name:
-                exercise.ExSetupBodyPart[0]?.bodyPart?.name ||
-                "Unknown Body Part",
-            },
-            rack: exercise.ExSetupRak[0]
-              ? {
-                  id: exercise.ExSetupRak[0].rack.id,
-                  name: exercise.ExSetupRak[0].rack.name,
-                }
-              : undefined,
-            height: exercise.height || 0,
-            userId: exercise.userId,
-            user: exercise.user,
-            contentStats: exercise.contentStats,
-            reactions:
-              exercise.reactions.length > 0 ? exercise.reactions : null,
-            views: Math.floor(Math.random() * 1000) + 100,
-            likes: Math.floor(Math.random() * 50),
-            comments: Math.floor(Math.random() * 10),
-            saves: Math.floor(Math.random() * 20),
-            rating: Math.floor(Math.random() * 5) + 1,
-            label: ["Yellow", "Green", "Blue", "Red"][
-              Math.floor(Math.random() * 4)
-            ],
-            isPublic: exercise.isPublic,
-            blocked: exercise.blocked,
-            blockReason: exercise.blockReason,
-            createdAt: exercise.createdAt.toISOString(),
-            updatedAt: exercise.updatedAt.toISOString(),
-          };
-        })
-        .filter(Boolean);
-
       return {
-        data: transformedExercises,
+        data: exercises,
         meta: {
           total,
           page,
