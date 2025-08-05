@@ -1,13 +1,13 @@
 "use client";
 import ExerciseLibraryDetailsSkeleton from "@/components/skeleton/exercoseLibraryDetailsSkeleton";
+import { useSession } from "@/lib/auth-client";
 import { TBodyPart, TEquipment, TRack } from "@/lib/types/exerciseTypes";
 import { Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
-import ContactUs from "./ContactUs";
-import { useSession } from "@/lib/auth-client";
 import SignInModal from "../SignInModal";
+import ContactUs from "./ContactUs";
 
 export default function ExerciseDetailPage({
   exerciseLibraryId,
@@ -74,7 +74,7 @@ export default function ExerciseDetailPage({
     );
   }
   return (
-    <div className="mx-auto max-w-[1200px] px-6 py-14 font-sans text-[17px] leading-relaxed text-[#222]">
+    <div className="mx-auto w-full max-w-[1200px] px-6 py-14 font-sans text-[17px] leading-relaxed text-[#222]">
       {/* Video & Info Section */}
       <div className="grid items-start gap-10 md:grid-cols-2">
         <div className="aspect-video w-full overflow-hidden rounded shadow-md">
@@ -113,10 +113,6 @@ export default function ExerciseDetailPage({
               {libraryData?.ExLibRak?.map(
                 (item: TRack) => item?.rack?.name,
               ).join(", ")}
-            </li>
-            <li>
-              <strong>Note:</strong> For ISOLATOR videos, the number holes high
-              the carriage is attached on the upright: <strong>2</strong>
             </li>
           </ul>
           <div className="rounded border bg-gray-100 px-4 py-3 text-base">
