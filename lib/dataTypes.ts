@@ -119,6 +119,8 @@ export type DemoCenter = {
   cityZip: string;
   bio: string;
   image: string;
+  lat?: number;
+  lng?: number;
   availability?: string;
   weekdays: string[];
   weekends: string[];
@@ -152,6 +154,8 @@ export interface DemoCenterFromAPI {
   cityZip: string;
   bio: string;
   image: string;
+  lat?: number;
+  lng?: number;
   availability?: string;
   weekdays: string[];
   weekends: string[];

@@ -198,6 +198,17 @@ export const demoCentersService = {
 
   // Create demo center
   createDemoCenter: async (data: InferType<typeof demoCenterSchema>) => {
+    // Geocode the address to get lat/lng coordinates
+    const fullAddress = `${data.address}, ${data.cityZip}`;
+    const geocodedLocation = await getGeoCodeAddress(fullAddress);
+    
+    // Validate that geocoding was successful
+    if (!geocodedLocation || !geocodedLocation.lat || !geocodedLocation.lng) {
+      throw new HTTPException(400, {
+        message: `Invalid address: Unable to geocode the provided address. Please verify the address and try again.`,
+      });
+    }
+    
     const demoCenter = await prisma.demoCenter.create({
       data: {
         buildingType: data.buildingType,
@@ -205,6 +216,8 @@ export const demoCentersService = {
         address: data.address,
         contact: data.contact,
         cityZip: data.cityZip,
+        lat: geocodedLocation?.lat || null,
+        lng: geocodedLocation?.lng || null,
         bio: data.bio,
         image: data.image,
         availability: data.availability,
@@ -333,6 +346,25 @@ export const demoCentersService = {
       });
     }
 
+    // Check if address has changed and geocode if necessary
+    let lat = demoCenter.lat;
+    let lng = demoCenter.lng;
+    
+    if (data.address !== demoCenter.address || data.cityZip !== demoCenter.cityZip) {
+      const fullAddress = `${data.address}, ${data.cityZip}`;
+      const geocodedLocation = await getGeoCodeAddress(fullAddress);
+      
+      // Validate that geocoding was successful for the new address
+      if (!geocodedLocation || !geocodedLocation.lat || !geocodedLocation.lng) {
+        throw new HTTPException(400, {
+          message: `Invalid address: Unable to geocode the provided address. Please verify the address and try again.`,
+        });
+      }
+      
+      lat = geocodedLocation.lat;
+      lng = geocodedLocation.lng;
+    }
+
     // Update demo center
     const updatedDemoCenter = await prisma.demoCenter.update({
       where: { id },
@@ -342,6 +374,8 @@ export const demoCentersService = {
         address: data.address,
         contact: data.contact,
         cityZip: data.cityZip,
+        lat,
+        lng,
         bio: data.bio,
         image: data.image,
         availability: data.availability,
