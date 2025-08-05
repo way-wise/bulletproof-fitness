@@ -1,6 +1,8 @@
 import {
+  Atom,
   BadgeCent,
   Building2,
+  CassetteTape,
   ClipboardMinus,
   Dumbbell,
   Home,
@@ -70,14 +72,16 @@ const SidebarMenu = () => {
     },
     {
       title: "Equipments",
-      icon: <Dumbbell className="icon" />,
+      icon: <CassetteTape className="icon" />,
       url: "/dashboard/equipments",
     },
+
     {
       title: "Body Parts",
-      icon: <Dumbbell className="icon" />,
+      icon: <Atom className="icon" />,
       url: "/dashboard/body-parts",
     },
+
     {
       title: "Racks",
       icon: <Dumbbell className="icon" />,
