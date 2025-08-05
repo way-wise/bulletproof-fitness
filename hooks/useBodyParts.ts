@@ -7,30 +7,12 @@ export type BodyPart = {
   updatedAt: string;
 };
 
-export type BodyPartResponse = {
-  data: BodyPart[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-  };
-};
-
-interface UseBodyPartsReturn {
-  bodyParts: BodyPart[];
-  meta: BodyPartResponse["meta"] | null;
-  isLoading: boolean;
-  error: Error | undefined;
-  mutate: () => void;
-}
-
-export const useBodyParts = (): UseBodyPartsReturn => {
+export const useBodyParts = () => {
   const { data, error, isLoading, mutate } =
-    useSWR<BodyPartResponse>("/api/body-parts/all");
+    useSWR<BodyPart[]>("/api/body-parts/all");
 
   return {
-    bodyParts: data?.data ?? [],
-    meta: data?.meta ?? null,
+    bodyParts: data ?? [],
     isLoading,
     error,
     mutate,

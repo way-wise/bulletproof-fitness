@@ -7,38 +7,14 @@ export type Rack = {
   updatedAt: string;
 };
 
-export type RackResponse = {
-  data: Rack[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-  };
-};
 
-interface UseRacksReturn {
-  racks: Rack[];
-  meta: RackResponse["meta"] | null;
-  isLoading: boolean;
-  error: Error | undefined;
-  mutate: () => void;
-}
-
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch racks");
-  return res.json();
-};
-
-export const useRacks = (): UseRacksReturn => {
-  const { data, error, isLoading, mutate } = useSWR<RackResponse>(
+export const useRacks = () => {
+  const { data, error, isLoading, mutate } = useSWR<Rack[]>(
     "/api/racks/all",
-    fetcher,
   );
 
   return {
-    racks: data?.data ?? [],
-    meta: data?.meta ?? null,
+    racks: data ?? [],
     isLoading,
     error,
     mutate,
