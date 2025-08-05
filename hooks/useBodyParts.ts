@@ -24,21 +24,9 @@ interface UseBodyPartsReturn {
   mutate: () => void;
 }
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch body parts");
-  return res.json();
-};
-
 export const useBodyParts = (): UseBodyPartsReturn => {
-  const { data, error, isLoading, mutate } = useSWR<BodyPartResponse>(
-    "/api/body-parts",
-    fetcher,
-    {
-      revalidateOnFocus: true,
-      refreshInterval: 0,
-    },
-  );
+  const { data, error, isLoading, mutate } =
+    useSWR<BodyPartResponse>("/api/body-parts");
 
   return {
     bodyParts: data?.data ?? [],

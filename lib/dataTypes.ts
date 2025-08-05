@@ -85,7 +85,7 @@ export type ExerciseLibraryResponse = {
 export type Reactions = {
   userId: string;
   exerciseId: string;
-  type: "like" | "dislike";
+  reaction: "LIKE" | "DISLIKE";
 };
 
 export type ExerciseLibraryFilters = {

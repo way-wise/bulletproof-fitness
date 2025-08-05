@@ -15,18 +15,20 @@ import { useSession } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import useSWR from "swr";
 import * as z from "zod";
 
 const formSchema = z.object({
   video: z.string(),
   title: z.string().min(1, "Video title is required"),
-  equipments: z.array(z.string()),
-  bodyPart: z.array(z.string()),
-  height: z.string(),
-  rack: z.array(z.string()),
+  equipments: z.array(z.string()).min(1, "equipment is required"),
+  bodyPart: z.array(z.string()).min(1, "body part is required"),
+  height: z.string().min(1, "height is required"),
+  rack: z.array(z.string()).min(1, "rack is required"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -38,7 +40,7 @@ export default function LibraryVideoUpload() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   });
-
+  const router = useRouter();
   const { data: session } = useSession();
 
   // Get equipments
@@ -91,9 +93,17 @@ export default function LibraryVideoUpload() {
     });
 
     if (!response.ok) {
+      toast.error("Video uploaded failed!");
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to upload video");
     }
+    const result = await response.json();
+    toast.success(
+      result.message || "Video uploaded successfully, awaiting approval",
+    );
+    setTimeout(() => {
+      router.push("/upload-video");
+    }, 1500);
 
     // Reset form
     setFileResource(undefined);
@@ -173,7 +183,7 @@ export default function LibraryVideoUpload() {
                   );
                 }}
               </CldUploadWidget>
-              <FormMessage>{form.formState.errors.video?.message}</FormMessage>
+              <FormMessage />
             </>
           )}
         </div>
@@ -237,7 +247,12 @@ export default function LibraryVideoUpload() {
                   Select the equipment used in your video.You can select
                   multiple pieces of equipment if multiple pieces are used.
                 </p>
-                <FormMessage />
+                {form.formState.errors.equipments && (
+                  <p className="mt-1 text-sm text-destructive">
+                    {form.formState.errors.equipments.message ||
+                      "Please select at least one equipment"}
+                  </p>
+                )}
               </FormItem>
             )}
           />
@@ -317,7 +332,7 @@ export default function LibraryVideoUpload() {
         <div className="flex justify-center">
           <Button
             type="submit"
-            className="w-full md:w-40"
+            className="w-full cursor-pointer md:w-40"
             isLoading={form.formState.isSubmitting}
           >
             Submit

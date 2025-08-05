@@ -1,8 +1,12 @@
+"use client";
 import { Badge } from "@/components/ui/badge";
 import { CardContent, Card as CardUI } from "@/components/ui/card";
+import { useSession } from "@/lib/auth-client";
 import { ReactionType } from "@/prisma/generated/enums";
 import { Eye, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import SignInModal from "../SignInModal";
 
 interface ExLibraryCardProps {
   id: string;
@@ -15,7 +19,7 @@ interface ExLibraryCardProps {
   averageRating: number;
   dislikes: number;
   type: "setup" | "lib";
-  alreadyReacted?: boolean;
+  alreadyReacted: ReactionType | null;
   mutate?: () => void;
 }
 
@@ -30,14 +34,16 @@ const ExLibraryCard = ({
   averageRating,
   dislikes,
   type,
-  alreadyReacted = false,
+  alreadyReacted,
   mutate,
 }: ExLibraryCardProps) => {
-  // const videoUrl = url || "";
-  // const videoId =
-  //   videoUrl.match(
-  //     /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-  //   )?.[1] || null;
+  const [likeCount, setLikeCount] = useState(likes);
+  const [dislikeCount, setDislikeCount] = useState(dislikes);
+  const [reaction, setReaction] = useState<ReactionType | null>(alreadyReacted);
+
+  const [showSignInModal, setShowSignInModal] = useState(false);
+
+  const session = useSession();
 
   const handleReactSubmit = async ({
     contentId,
@@ -48,7 +54,39 @@ const ExLibraryCard = ({
     key: "setup" | "lib";
     type: ReactionType;
   }) => {
+    if (!session.data?.user) {
+      setShowSignInModal(true);
+      return;
+    }
+    const optimisticUpdate = () => {
+      if (reaction === type) {
+        // remove reaction
+        if (type === "LIKE") setLikeCount((prev) => prev - 1);
+        else setDislikeCount((prev) => prev - 1);
+        setReaction(null);
+      } else {
+        // switch or new
+        if (type === "LIKE") {
+          setLikeCount((prev) => prev + 1);
+          if (reaction === "DISLIKE") setDislikeCount((prev) => prev - 1);
+        } else {
+          setDislikeCount((prev) => prev + 1);
+          if (reaction === "LIKE") setLikeCount((prev) => prev - 1);
+        }
+        setReaction(type);
+      }
+    };
+
+    const rollback = () => {
+      // reset everything to original
+      setLikeCount(likes);
+      setDislikeCount(dislikes);
+      setReaction(alreadyReacted ?? null);
+    };
+
     try {
+      optimisticUpdate();
+
       const res = await fetch("/api/action/react", {
         method: "POST",
         headers: {
@@ -60,20 +98,16 @@ const ExLibraryCard = ({
       const result = await res.json();
 
       if (!res.ok || !result.success) {
-        throw new Error(result.message || "Failed to record reaction");
+        rollback();
+        throw new Error(result.message || "Failed to react");
       }
 
-      // Revalidate the data to update the UI in real-time
-      if (mutate) {
-        mutate();
-      }
-
-      return result;
-    } catch (error) {
-      console.error("Reaction submit failed:", error);
-      throw error;
+      if (mutate) mutate();
+    } catch (err) {
+      console.error("Failed to react:", err);
     }
   };
+
   return (
     <div>
       <CardUI className="overflow-hidden rounded-none border-none shadow-none">
@@ -121,9 +155,9 @@ const ExLibraryCard = ({
             >
               <ThumbsUp
                 className="h-4 w-4"
-                fill={alreadyReacted ? "#c9c9c9" : "none"}
+                fill={reaction === "LIKE" ? "#c9c9c9" : "none"}
               />{" "}
-              {likes}
+              {likeCount}
             </span>
             <span
               className="flex cursor-pointer items-center gap-1"
@@ -135,11 +169,22 @@ const ExLibraryCard = ({
                 })
               }
             >
-              <ThumbsDown className="h-4 w-4" /> {dislikes}
+              <ThumbsDown
+                className="h-4 w-4"
+                fill={reaction === "DISLIKE" ? "#c9c9c9" : "none"}
+              />{" "}
+              {dislikeCount}
             </span>
           </div>
         </CardContent>
       </CardUI>
+
+      {showSignInModal && (
+        <SignInModal
+          isOpen={showSignInModal}
+          onClose={() => setShowSignInModal(false)}
+        />
+      )}
     </div>
   );
 };
