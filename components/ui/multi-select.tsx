@@ -89,7 +89,7 @@ export const MultiSelect = ({
                       className={cn(
                         "flex size-[18px] shrink-0 items-center justify-center rounded-sm border border-zinc-400",
                         selected.includes(option.value) &&
-                          "&[svg]:text-white border-black bg-primary",
+                          "&[svg]:text-white border-black bg-primary dark:border-white",
                       )}
                     >
                       {selected.includes(option.value) ? (
