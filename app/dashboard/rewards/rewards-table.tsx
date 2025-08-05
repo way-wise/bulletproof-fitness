@@ -118,17 +118,17 @@ const RewardsTable = () => {
     }
   };
 
-  const handleDeleteReward = async (reward: TReward) => {
-    try {
-      await fetch(`/api/rewards/${reward.id}`, {
-        method: "DELETE",
-      });
-      toast.success("Reward deleted successfully");
-      mutate(url);
-    } catch {
-      toast.error("Failed to delete reward");
-    }
-  };
+  // const handleDeleteReward = async (reward: TReward) => {
+  //   try {
+  //     await fetch(`/api/rewards/${reward.id}`, {
+  //       method: "DELETE",
+  //     });
+  //     toast.success("Reward deleted successfully");
+  //     mutate(url);
+  //   } catch {
+  //     toast.error("Failed to delete reward");
+  //   }
+  // };
 
   const columns: ColumnDef<TReward>[] = [
     {
@@ -185,9 +185,6 @@ const RewardsTable = () => {
                 }}
               >
                 Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleDeleteReward(reward)}>
-                Delete
               </DropdownMenuItem>
 
               {!reward.isActive && (
