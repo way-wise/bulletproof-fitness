@@ -324,17 +324,23 @@ export const UpdateSetupVideo = ({
                     name="bodyPart"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Body Part</FormLabel>
+                        <FormLabel>Body Part *</FormLabel>
                         <FormControl>
-                          <MultiSelect
-                            options={bodyParts.map((bodyPart) => ({
-                              value: bodyPart.id,
-                              label: bodyPart.name,
-                            }))}
-                            selected={field.value || []}
-                            onChange={field.onChange}
-                            placeholder="Select body parts"
-                          />
+                          <Select
+                            value={(field.value || [])[0] || ""}
+                            onValueChange={(value) => field.onChange([value])}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select body part" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {bodyParts.map((bodyPart) => (
+                                <SelectItem key={bodyPart.id} value={bodyPart.id}>
+                                  {bodyPart.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </FormControl>
                         <FormMessage />
                       </FormItem>

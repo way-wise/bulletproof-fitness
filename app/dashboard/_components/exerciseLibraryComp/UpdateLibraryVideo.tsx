@@ -11,6 +11,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { MultiSelect } from "@/components/ui/multi-select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useBodyParts } from "@/hooks/useBodyParts";
 import { useEquipments } from "@/hooks/useEquipments";
 import { useRacks } from "@/hooks/useRacks";
@@ -265,20 +272,28 @@ export default function UpdateLibraryVideo({
                   name="bodyPart"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Body Part</FormLabel>
+                      <FormLabel>Body Part *</FormLabel>
                       <FormControl>
-                        <MultiSelect
-                          options={bodyParts.map((bodyPart) => ({
-                            value: bodyPart.id,
-                            label: bodyPart.name,
-                          }))}
-                          selected={field.value || []}
-                          onChange={field.onChange}
-                          placeholder={
-                            isLoading ? "Loading..." : "Select body parts"
-                          }
+                        <Select
+                          value={(field.value || [])[0] || ""}
+                          onValueChange={(value) => field.onChange([value])}
                           disabled={isLoading || isUpdating}
-                        />
+                        >
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={
+                                isLoading ? "Loading..." : "Select body part"
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {bodyParts.map((bodyPart) => (
+                              <SelectItem key={bodyPart.id} value={bodyPart.id}>
+                                {bodyPart.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -11,6 +11,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { MultiSelect } from "@/components/ui/multi-select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useSession } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
@@ -266,18 +273,21 @@ export default function LibraryVideoUpload() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Body Part *</FormLabel>
-                <MultiSelect
-                  options={
-                    bodyParts?.data.map((bodyPart: any) => ({
-                      value: bodyPart.id,
-                      label: bodyPart.name,
-                    })) || []
-                  }
-                  selected={(field.value || []) as string[]}
-                  onChange={(value) => field.onChange(value)}
-                  placeholder="Select Body Part"
-                  className="w-full"
-                />
+                <Select
+                  value={(field.value || [])[0] || ""}
+                  onValueChange={(value) => field.onChange([value])}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Body Part" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {bodyParts?.data.map((bodyPart: any) => (
+                      <SelectItem key={bodyPart.id} value={bodyPart.id}>
+                        {bodyPart.name}
+                      </SelectItem>
+                    )) || []}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
