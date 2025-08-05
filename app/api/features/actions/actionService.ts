@@ -97,17 +97,18 @@ export const actionService = {
   ) {
     const session = await getSession();
     if (!session) throw new Error("Unauthorized");
+
     const userId = session.user.id;
     const isLibrary = key === "lib";
 
-    // Step 1: Verify content exists
+    // Step 1: Validate content exists
     const content = await (isLibrary
       ? prisma.exerciseLibraryVideo.findUnique({ where: { id: contentId } })
       : prisma.exerciseSetup.findUnique({ where: { id: contentId } }));
 
     if (!content) throw new Error("Content not found");
 
-    // Step 2: Get existing reaction
+    // Step 2: Find existing reaction
     const whereClause = isLibrary
       ? { userId_libraryId: { userId, libraryId: contentId } }
       : { userId_exerciseId: { userId, exerciseId: contentId } };
@@ -116,11 +117,8 @@ export const actionService = {
       where: whereClause,
     });
 
-    const statsField = type === "LIKE" ? "totalLikes" : "totalDislikes";
-
-    // Step 3: Start transaction
     const result = await prisma.$transaction(async (tx) => {
-      let contentStats = await tx.contentStats.findFirst({
+      let stats = await tx.contentStats.findFirst({
         where: isLibrary ? { libraryId: contentId } : { exerciseId: contentId },
       });
 
@@ -128,14 +126,11 @@ export const actionService = {
         field: "totalLikes" | "totalDislikes",
         increment: boolean,
       ) => {
-        if (contentStats) {
-          const current = contentStats[field] ?? 0;
-
-          // Prevent decrementing below zero
+        if (stats) {
+          const current = stats[field] ?? 0;
           if (!increment && current <= 0) return;
-
-          contentStats = await tx.contentStats.update({
-            where: { id: contentStats.id },
+          stats = await tx.contentStats.update({
+            where: { id: stats.id },
             data: {
               [field]: {
                 [increment ? "increment" : "decrement"]: 1,
@@ -143,7 +138,7 @@ export const actionService = {
             },
           });
         } else if (increment) {
-          contentStats = await tx.contentStats.create({
+          stats = await tx.contentStats.create({
             data: {
               id: crypto.randomUUID(),
               ...(isLibrary
@@ -157,34 +152,57 @@ export const actionService = {
 
       if (existingReaction) {
         if (existingReaction.reaction === type) {
-          // Remove reaction
+          // Same reaction → remove it
           await tx.userReaction.delete({ where: { id: existingReaction.id } });
-          await updateStats(statsField, false);
-          // Step 4: Award points dcrement
+          const field = type === "LIKE" ? "totalLikes" : "totalDislikes";
+          await updateStats(field, false);
+
           await decrementPointsFromUser(
             userId,
             type === "LIKE" ? RewardType.LIKE : RewardType.DISLIKE,
             "Reaction",
-            `User removed reaction ${type}`,
+            `User removed ${type}`,
           );
-          return { message: "Reaction removed", stats: contentStats };
+
+          return { message: "Reaction removed", stats };
         } else {
-          // Switch reaction
+          // Switching reaction
           const oldField =
             existingReaction.reaction === "LIKE"
               ? "totalLikes"
               : "totalDislikes";
+          const newField = type === "LIKE" ? "totalLikes" : "totalDislikes";
+
           await tx.userReaction.update({
             where: { id: existingReaction.id },
             data: { reaction: type },
           });
+
           await updateStats(oldField, false);
-          await updateStats(statsField, true);
-          return { message: "Reaction updated", stats: contentStats };
+          await updateStats(newField, true);
+
+          // Adjust points: remove old, add new
+          await decrementPointsFromUser(
+            userId,
+            existingReaction.reaction === "LIKE"
+              ? RewardType.LIKE
+              : RewardType.DISLIKE,
+            "Reaction",
+            `User switched from ${existingReaction.reaction}`,
+          );
+
+          await awardPointsToUser(
+            userId,
+            type === "LIKE" ? RewardType.LIKE : RewardType.DISLIKE,
+            "Reaction",
+            `User switched to ${type}`,
+          );
+
+          return { message: "Reaction switched", stats };
         }
       }
 
-      // No reaction exists — create it
+      // New reaction
       await tx.userReaction.create({
         data: {
           userId,
@@ -193,21 +211,31 @@ export const actionService = {
         },
       });
 
-      await updateStats(statsField, true);
+      await updateStats(type === "LIKE" ? "totalLikes" : "totalDislikes", true);
 
-      return { message: "Reaction added", stats: contentStats };
+      // Award or deduct points
+      if (type === "LIKE") {
+        await awardPointsToUser(
+          userId,
+          RewardType.LIKE,
+          "Reaction",
+          "User liked",
+        );
+      } else {
+        await decrementPointsFromUser(
+          userId,
+          RewardType.DISLIKE,
+          "Reaction",
+          "User disliked",
+        );
+      }
+
+      return { message: "Reaction added", stats };
     });
-
-    // Step 4: Award points (outside transaction if safe)
-    await awardPointsToUser(
-      userId,
-      RewardType.LIKE,
-      "Reaction",
-      `User reacted with ${type}`,
-    );
 
     return result;
   },
+
   async giveRating(contentId: string, key: "setup" | "lib", rating: number) {
     const session = await getSession();
     if (!session) throw new Error("Unauthorized");
