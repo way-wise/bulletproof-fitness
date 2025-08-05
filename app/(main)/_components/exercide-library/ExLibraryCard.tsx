@@ -33,12 +33,6 @@ const ExLibraryCard = ({
   alreadyReacted = false,
   mutate,
 }: ExLibraryCardProps) => {
-  // const videoUrl = url || "";
-  // const videoId =
-  //   videoUrl.match(
-  //     /(?:youtube\.com\/.*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-  //   )?.[1] || null;
-
   const handleReactSubmit = async ({
     contentId,
     key,
