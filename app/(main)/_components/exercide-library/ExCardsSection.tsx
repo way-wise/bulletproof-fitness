@@ -66,11 +66,6 @@ const ExCardsSection = ({
             <div className="mb-8 flex items-center justify-between">
               <h1 className="text-left text-lg font-bold text-gray-900 md:text-xl lg:text-3xl">
                 EXERCISE LIBRARY
-                {meta && (
-                  <span className="ml-2 text-sm font-normal text-gray-500">
-                    ({meta.total} exercises)
-                  </span>
-                )}
               </h1>
               <Drawer direction="right">
                 <DrawerTrigger asChild>
@@ -145,7 +140,7 @@ const ExCardsSection = ({
 
             {/* Exercise Cards Grid */}
             {displayData.length > 0 && (
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="grid min-h-[80vh] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {displayData.map((item) => (
                   <ExLibraryCard
                     alreadyReacted={item.reactions?.[0]?.reaction || null}
