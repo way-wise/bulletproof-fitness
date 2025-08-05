@@ -24,7 +24,8 @@ type Session = typeof auth.$Infer.Session | null;
 export const ProfileDropdown = ({ session }: { session: Session }) => {
   const router = useRouter();
   const { start, stop } = useProgress();
-
+  const isAdmin = session?.user?.role === "admin";
+  console.log(isAdmin);
   // Handle sign-out & progressbar
   const handleSignout = async () => {
     await signOut({
@@ -67,12 +68,14 @@ export const ProfileDropdown = ({ session }: { session: Session }) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard">
-              <LayoutGrid aria-hidden="true" />
-              <span>Dashboard</span>
-            </Link>
-          </DropdownMenuItem>
+          {isAdmin && (
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard">
+                <LayoutGrid aria-hidden="true" />
+                <span>Dashboard</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
 
           <DropdownMenuItem asChild>
             <Link href="/profile">
