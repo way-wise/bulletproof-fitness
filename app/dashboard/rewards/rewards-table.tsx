@@ -64,7 +64,13 @@ const RewardsTable = () => {
 
   const handleAddOrUpdateReward = async (values: {
     description?: string | undefined;
-    type: "LIKE" | "VIEW" | "RATING" | "SETUP" | "DISLIKE" | "LIBRARY";
+    type:
+      | "LIKE"
+      | "VIEW"
+      | "RATING"
+      | "UPLOAD_EXERCISE"
+      | "UPLOAD_LIBRARY"
+      | "DISLIKE";
     icon?: string | undefined;
     name: string;
     points: number;
@@ -280,9 +286,13 @@ const RewardsTable = () => {
                         <SelectItem value="LIKE">Like</SelectItem>
                         <SelectItem value="VIEW">View</SelectItem>
                         <SelectItem value="RATING">Rating</SelectItem>
-                        <SelectItem value="SETUP">Setup</SelectItem>
+                        <SelectItem value="UPLOAD_EXERCISE">
+                          Upload Exercise
+                        </SelectItem>
+                        <SelectItem value="UPLOAD_LIBRARY">
+                          Upload Library
+                        </SelectItem>
                         <SelectItem value="DISLIKE">Dislike</SelectItem>
-                        <SelectItem value="LIBRARY">Library</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

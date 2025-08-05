@@ -31,22 +31,6 @@ export async function awardPointsToUser(
 
   if (!points) return;
 
-  await prisma.rewardPoints.create({
-    data: {
-      userId,
-      points,
-      type,
-      name,
-      description,
-      isActive: true,
-    },
-  });
-
-  console.log("Awarding points", {
-    userId,
-    points,
-  });
-
   await prisma.users.update({
     where: { id: userId },
     data: {
@@ -65,17 +49,6 @@ export async function decrementPointsFromUser(
   const points = await getRewardPointValue(type);
 
   if (!points) return;
-
-  await prisma.rewardPoints.create({
-    data: {
-      userId,
-      points: -points,
-      type,
-      name,
-      description,
-      isActive: true,
-    },
-  });
 
   console.log("Decrementing points", {
     userId,

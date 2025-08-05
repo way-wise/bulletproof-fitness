@@ -24,9 +24,23 @@ app.post("/", async (c) => {
       icon: string().required(),
       description: string().required(),
       type: mixed<
-        "LIKE" | "VIEW" | "RATING" | "SETUP" | "DISLIKE" | "LIBRARY"
+        | "LIKE"
+        | "VIEW"
+        | "RATING"
+        | "SETUP"
+        | "DISLIKE"
+        | "UPLOAD_EXERCISE"
+        | "UPLOAD_LIBRARY"
       >()
-        .oneOf(["LIKE", "VIEW", "RATING", "SETUP", "DISLIKE", "LIBRARY"])
+        .oneOf([
+          "LIKE",
+          "VIEW",
+          "RATING",
+          "SETUP",
+          "DISLIKE",
+          "UPLOAD_EXERCISE",
+          "UPLOAD_LIBRARY",
+        ])
         .required(),
     }),
     data: body, // ✅ Use the already-read body here
@@ -61,7 +75,23 @@ app.put("/:id", async (c) => {
         .required("isActive is required"),
       icon: string().required("Icon is required"),
       description: string().required("Description is required"),
-      type: string().required("Type is required"),
+      type: mixed<
+        | "LIKE"
+        | "VIEW"
+        | "RATING"
+        | "UPLOAD_EXERCISE"
+        | "UPLOAD_LIBRARY"
+        | "DISLIKE"
+      >()
+        .oneOf([
+          "LIKE",
+          "VIEW",
+          "RATING",
+          "UPLOAD_EXERCISE",
+          "UPLOAD_LIBRARY",
+          "DISLIKE",
+        ])
+        .required("Type is required"),
     }),
     data: body,
   });
