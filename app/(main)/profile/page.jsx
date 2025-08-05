@@ -14,7 +14,7 @@ import { StatsCards } from "../_components/user-profile/StatsCards";
 // Main Profile Page Component
 const ProfilePage = () => {
   const { data: session } = useSession();
-  const { user, videos, rewards, stats, isLoading, error, mutate } =
+  const { user, videos, rewards, stats, isLoading, error, mutate, libVideos } =
     useUserProfile();
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -94,6 +94,7 @@ const ProfilePage = () => {
       <ProfileTabs
         user={user}
         videos={videos}
+        libVideos={libVideos}
         rewards={rewards}
         stats={stats}
         isLoading={isLoading}

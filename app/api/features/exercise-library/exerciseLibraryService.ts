@@ -672,6 +672,23 @@ export const exerciseLibraryService = {
       throw new Error("Failed to fetch exercise library data with filters.");
     }
   },
+
+  getExerciseLibraryVideos: async () => {
+    const session = await getSession();
+    try {
+      const exercises = await prisma.exerciseLibraryVideo.findMany({
+        where: {
+          userId: session?.user?.id,
+        },
+      });
+
+      return exercises;
+    } catch (error) {
+      console.error("Error fetching exercise library:", error);
+      throw new Error("Failed to fetch exercise library data.");
+    }
+  },
+
   createExerciseLibraryFromYoutube: async (
     rawData: exerciseLibraryZapierSchemaType,
   ) => {

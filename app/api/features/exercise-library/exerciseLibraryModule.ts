@@ -455,10 +455,30 @@ exerciseLibraryModule.post("/", async (c) => {
   }
 });
 
+exerciseLibraryModule.get("/videos", async (c) => {
+  try {
+    const result = await exerciseLibraryService.getExerciseLibraryVideos();
+    return c.json(result);
+  } catch (error) {
+    console.error("Error fetching exercise library videos:", error);
+    return c.json(
+      {
+        success: false,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch exercise library videos",
+      },
+      500,
+    );
+  }
+});
+
 // Create library video information when youtube video is published
 exerciseLibraryModule.post("/youtube/callback", async (c) => {
-    const rawData = await c.req.json();
-    console.log("Exercise Library rawData", rawData);
-    const result = await exerciseLibraryService.createExerciseLibraryFromYoutube(rawData);
-    return c.json(result);
+  const rawData = await c.req.json();
+  console.log("Exercise Library rawData", rawData);
+  const result =
+    await exerciseLibraryService.createExerciseLibraryFromYoutube(rawData);
+  return c.json(result);
 });

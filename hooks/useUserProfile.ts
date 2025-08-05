@@ -71,6 +71,7 @@ interface ProfileStats {
 interface UseUserProfileReturn {
   user: UserProfile | null;
   videos: UserVideo[];
+  libVideos: UserVideo[];
   rewards: UserReward[];
   stats: ProfileStats;
   isLoading: boolean;
@@ -83,6 +84,7 @@ export const useUserProfile = (): UseUserProfileReturn => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [videos, setVideos] = useState<UserVideo[]>([]);
   const [rewards, setRewards] = useState<UserReward[]>([]);
+  const [libVideos, setLibVideos] = useState<UserVideo[]>([]);
   const [stats, setStats] = useState<ProfileStats>({
     totalVideos: 0,
     totalViews: 0,
@@ -111,10 +113,23 @@ export const useUserProfile = (): UseUserProfileReturn => {
       setUser(userData);
 
       // Fetch user videos and rewards in parallel
-      const [videosResponse, rewardsResponse] = await Promise.all([
-        fetch("/api/exercise-setup/user-videos"),
-        fetch(`/api/users/${userData.id}/rewards`),
-      ]);
+      const [libraryVideos, videosResponse, rewardsResponse] =
+        await Promise.all([
+          fetch(`/api/exercise-library/videos`),
+          fetch("/api/exercise-setup/user-videos"),
+          fetch(`/api/users/${userData.id}/rewards`),
+        ]);
+
+      if (libraryVideos.ok) {
+        const libraryVideosData = await libraryVideos.json();
+        if (libraryVideosData.success) {
+          setLibVideos(libraryVideosData.data || []);
+        } else {
+          console.error("Library videos response error:", libraryVideosData);
+        }
+      } else {
+        console.error("Library videos request failed:", libraryVideos.status);
+      }
 
       // Handle videos response
       if (videosResponse.ok) {
@@ -175,6 +190,7 @@ export const useUserProfile = (): UseUserProfileReturn => {
     stats,
     isLoading,
     error,
+    libVideos,
     mutate,
   };
 };
