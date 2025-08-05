@@ -32,7 +32,6 @@ import {
   Lock,
   MoreVertical,
   Pencil,
-  Play,
   Plus,
   Search,
   Trash,
@@ -380,7 +379,7 @@ export const ExerciseSetupVideoTable = () => {
                 <MoreVertical />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuItem asChild>
+                {/* <DropdownMenuItem asChild>
                   <Link
                     href={videoUrl}
                     target="_blank"
@@ -389,7 +388,7 @@ export const ExerciseSetupVideoTable = () => {
                     <Play className="mr-2 h-4 w-4" />
                     <span>Watch</span>
                   </Link>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuItem asChild>
                   <Link href={`/dashboard/exercise-setup/${id}`}>
                     <Eye className="mr-2 h-4 w-4" />

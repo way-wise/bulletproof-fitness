@@ -166,14 +166,6 @@ export const ExerciseLibraryVideoDetails = ({
             </p>
           </div>
         </div>
-
-        <Button variant="outline" size="sm" asChild className="w-fit">
-          <Link href={video.videoUrl} target="_blank">
-            <Play className="mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Watch Video</span>
-            <span className="sm:hidden">Watch</span>
-          </Link>
-        </Button>
       </div>
 
       {/* Responsive Main Content */}
@@ -204,6 +196,30 @@ export const ExerciseLibraryVideoDetails = ({
 
         {/* Exercise Info - Takes full width on mobile, 1/3 on xl+ */}
         <div className="xl:col-span-1">
+          {/* Status Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Status</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span>Published</span>
+                <Badge variant={video.isPublic ? "success" : "secondary"}>
+                  {video.isPublic ? "Yes" : "No"}
+                </Badge>
+              </div>
+
+              {video.blockReason && (
+                <div>
+                  <span className="text-sm font-medium">Block Reason</span>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {video.blockReason}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          <br />
           <Card>
             <CardHeader className="pb-3 sm:pb-4">
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">

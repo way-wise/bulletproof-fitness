@@ -13,35 +13,6 @@ interface ExerciseSetupDetailsProps {
   id: string;
 }
 
-// Type for ExerciseSetup with user relation
-// interface ExerciseSetupWithUser {
-//   id: string;
-//   title: string;
-//   videoUrl: string;
-//   equipment: string | null;
-//   bodyPart: string | null;
-//   height: string | null;
-//   rack: string | null;
-//   userId: string;
-//   isPublic: boolean;
-//   blocked: boolean;
-//   blockReason: string | null;
-//   isolatorHole: string | null;
-//   yellow: string | null;
-//   green: string | null;
-//   blue: string | null;
-//   red: string | null;
-//   purple: string | null;
-//   orange: string | null;
-//   createdAt: Date;
-//   updatedAt: Date;
-//   user: {
-//     id: string;
-//     name: string;
-//     email: string;
-//   };
-// }
-
 const fetcher = async (url: string) => {
   const response = await fetch(url, {
     credentials: "include",
