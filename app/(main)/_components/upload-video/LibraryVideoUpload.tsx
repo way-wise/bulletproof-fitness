@@ -332,7 +332,7 @@ export default function LibraryVideoUpload() {
         <div className="flex justify-center">
           <Button
             type="submit"
-            className="w-full md:w-40"
+            className="w-full cursor-pointer md:w-40"
             isLoading={form.formState.isSubmitting}
           >
             Submit

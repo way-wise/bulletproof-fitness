@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -17,16 +18,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSession } from "@/lib/auth-client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { X } from "lucide-react";
+import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { CldUploadWidget, CloudinaryUploadWidgetInfo } from "next-cloudinary";
-import { useSession } from "@/lib/auth-client";
+import { toast } from "sonner";
 import useSWR from "swr";
-import { MultiSelect } from "@/components/ui/multi-select";
-import { X } from "lucide-react";
+import * as z from "zod";
 
 const formSchema = z.object({
   video: z.string().min(1, "Video is required"),
@@ -53,7 +55,7 @@ export default function ExerciseSetupVideoForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   });
-
+  const router = useRouter();
   console.log("Errors", form.formState.errors);
 
   const { data: session } = useSession();
@@ -118,6 +120,13 @@ export default function ExerciseSetupVideoForm() {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to upload video");
     }
+    const result = await response.json();
+    toast.success(
+      result.message || "Video uploaded successfully, awaiting approval",
+    );
+    setTimeout(() => {
+      router.push("/upload-video");
+    }, 1500);
 
     // Reset form
     setFileResource(undefined);
@@ -462,7 +471,11 @@ export default function ExerciseSetupVideoForm() {
         </div>
 
         <div className="flex justify-center">
-          <Button type="submit" className="w-full md:w-40">
+          <Button
+            type="submit"
+            className="w-full cursor-pointer md:w-40"
+            isLoading={form.formState.isSubmitting}
+          >
             Submit
           </Button>
         </div>
