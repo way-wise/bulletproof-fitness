@@ -40,7 +40,17 @@ const residentialFormSchema = z.object({
 
 type ResidentialFormValues = z.infer<typeof residentialFormSchema>;
 
-export default function ResidentialForm() {
+export default function ResidentialForm({
+  showAgreement,
+  setShowAgreement,
+  agreementWidgetId,
+  setAgreementWidgetId,
+}: {
+  showAgreement: boolean;
+  setShowAgreement: (showAgreement: boolean) => void;
+  agreementWidgetId: string | null;
+  setAgreementWidgetId: (agreementWidgetId: string | null) => void;
+}) {
   const { equipments, isLoading } = useEquipments();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -88,11 +98,25 @@ export default function ResidentialForm() {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to submit form");
       }
+      setAgreementWidgetId(
+        "CBFCIBAA3AAABLblqZhAOZCgwKvj8DKEzXVqmWXBtuqCzZpn6UpUGIiMutxmtR3A8oUMhEkiV1qWXbmz3pIU",
+      );
+      setShowAgreement(true);
 
       toast.success("Residential demo center submitted successfully!");
-      form.reset();
+      form.reset({
+        buildingType: "RESIDENTIAL",
+        name: "",
+        address: "",
+        contact: "",
+        cityZip: "",
+        equipment: "",
+        availability: "",
+        bio: "",
+      });
       setFile(null);
       setPreview(null);
+      removeImage();
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to submit form",
@@ -125,6 +149,7 @@ export default function ResidentialForm() {
         <FormField
           control={form.control}
           name="name"
+          defaultValue={""}
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-lg font-semibold">
