@@ -1,6 +1,7 @@
 import {
   BadgeCent,
   Building2,
+  ClipboardMinus,
   Dumbbell,
   Home,
   LayoutGrid,
@@ -53,6 +54,17 @@ const SidebarMenu = () => {
         {
           title: "All Demo Centers",
           url: "/dashboard/demo-centers",
+        },
+      ],
+    },
+    {
+      title: "Feedbacks",
+      icon: <ClipboardMinus className="icon" />,
+      baseUrl: "/dashboard/feedback",
+      submenu: [
+        {
+          title: "All Feedbacks",
+          url: "/dashboard/feedback",
         },
       ],
     },

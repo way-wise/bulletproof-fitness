@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,54 +12,101 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
 import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { toast } from "sonner";
+
+interface FeedbackForm {
+  fullName: string;
+  email: string;
+  phone?: string;
+  message: string;
+}
 
 const ContactUs = ({ exerciseLibraryId }: { exerciseLibraryId: string }) => {
-  const form = useForm();
+  const { register, handleSubmit, reset, formState } = useForm<FeedbackForm>();
+  const [open, setOpen] = useState(false);
+
+  const onSubmit = async (data: FeedbackForm) => {
+    try {
+      const res = await fetch("/api/action/feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok || !result.success) {
+        toast.error(result.message || "Something went wrong");
+        return;
+      }
+
+      toast.success("Feedback submitted successfully");
+      reset();
+      setOpen(false);
+    } catch (error) {
+      toast.error("Failed to submit feedback");
+    }
+  };
 
   return (
     <div>
-      <Dialog>
-        <form onSubmit={(e) => {}}>
-          <DialogTrigger asChild>
-            <Button className="mt-5 cursor-pointer rounded bg-black px-5 py-3 text-base text-white">
-              {" "}
-              FEEDBACK? Contact Us ✉️
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="w-2/3 max-w-2/3">
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button className="mt-5 cursor-pointer rounded bg-black px-5 py-3 text-base text-white">
+            FEEDBACK? Contact Us ✉️
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="w-2/3 max-w-2/3">
+          <form onSubmit={handleSubmit(onSubmit)}>
             <DialogHeader>
               <DialogTitle className="text-center text-2xl">
                 Feedback Form
               </DialogTitle>
             </DialogHeader>
-            <div className="grid gap-4">
-              <div className="grid gap-3">
-                <Label htmlFor="name-1">Full Name</Label>
-                <Input id="name-1" name="name" />
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input
+                  id="fullName"
+                  {...register("fullName", { required: true })}
+                />
               </div>
-              <div className="grid gap-3">
-                <Label htmlFor="username-1">Email</Label>
-                <Input id="username-1" name="username" />
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register("email", { required: true })}
+                />
               </div>
-              <div className="grid gap-3">
-                <Label htmlFor="username-1">Phone</Label>
-                <Input id="username-1" name="username" />
+              <div className="grid gap-2">
+                <Label htmlFor="phone">Phone</Label>
+                <Input id="phone" {...register("phone")} />
               </div>
-              <div className="grid gap-3">
-                <Label htmlFor="username-1">Message</Label>
-                <Input id="username-1" name="username" />
+              <div className="grid gap-2">
+                <Label htmlFor="message">Message</Label>
+                <Input
+                  id="message"
+                  {...register("message", { required: true })}
+                />
               </div>
             </div>
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline" type="button">
+                  Cancel
+                </Button>
               </DialogClose>
-              <Button type="submit">Save changes</Button>
+              <Button type="submit" disabled={formState.isSubmitting}>
+                Submit
+              </Button>
             </DialogFooter>
-          </DialogContent>
-        </form>
+          </form>
+        </DialogContent>
       </Dialog>
     </div>
   );
