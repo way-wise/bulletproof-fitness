@@ -40,7 +40,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { formatDate } from "@/lib/date-format";
 import { rewardsSchema } from "@/schema/rewardsSchema";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
-import { Pencil, Plus } from "lucide-react";
+import { Pencil } from "lucide-react";
 
 export type TReward = InferType<typeof rewardsSchema> & {
   id: string;
@@ -53,7 +53,6 @@ const RewardsTable = () => {
     pageIndex: 1,
     pageSize: 10,
   });
-  const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedReward, setSelectedReward] = useState<TReward | null>(null);
 
@@ -99,7 +98,6 @@ const RewardsTable = () => {
       toast.success(`Reward ${isEdit ? "updated" : "created"} successfully`);
       mutate(url);
       rewardForm.reset();
-      setAddModalOpen(false);
       setEditModalOpen(false);
       setSelectedReward(null);
     } catch (err) {
@@ -211,9 +209,6 @@ const RewardsTable = () => {
     <>
       <div className="mb-8 flex justify-between">
         <h1 className="text-2xl font-semibold">Rewards</h1>
-        <Button onClick={() => setAddModalOpen(true)}>
-          <Plus className="mr-2" /> Add Reward
-        </Button>
       </div>
 
       <DataTable
@@ -225,10 +220,9 @@ const RewardsTable = () => {
       />
 
       <Modal
-        isOpen={addModalOpen || editModalOpen}
+        isOpen={editModalOpen}
         onClose={() => {
           rewardForm.reset();
-          setAddModalOpen(false);
           setEditModalOpen(false);
           setSelectedReward(null);
         }}
@@ -331,7 +325,6 @@ const RewardsTable = () => {
                   type="button"
                   onClick={() => {
                     rewardForm.reset();
-                    setAddModalOpen(false);
                     setEditModalOpen(false);
                     setSelectedReward(null);
                   }}
