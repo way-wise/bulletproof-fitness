@@ -49,6 +49,7 @@ const ExCardsSection = ({
       </div>
     );
   }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto py-8">
@@ -153,7 +154,7 @@ const ExCardsSection = ({
                     id={item.id}
                     title={item.title}
                     url={item.videoUrl || ""}
-                    bodypart={item.bodyPart?.name || ""}
+                    bodypart={item.ExLibBodyPart[0]?.bodyPart.name || ""}
                     author={item.user?.name || ""}
                     views={
                       item.contentStats ? item.contentStats[0]?.totalViews : 0
