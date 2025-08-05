@@ -21,10 +21,18 @@ export type TCardType = {
   videoUrl: string;
 };
 
+type ExLibBodyPartType = {
+  bodyPart: {
+    id: string;
+    name: string;
+  };
+};
+
 export type ExerciseLibraryItem = {
   id: string;
   title: string;
   videoUrl: string;
+  ExLibBodyPart: ExLibBodyPartType[];
   equipment: {
     id: string;
     name: string;
