@@ -151,7 +151,8 @@ const ExLibraryCard = ({
               <Eye className="h-4 w-4" /> {views}
             </span>
             <span className="flex items-center gap-1">
-              <Star className="h-4 w-4" /> {averageRating}
+              <Star className="h-4 w-4" />{" "}
+              {averageRating ? Number(averageRating).toFixed(1) : ""}
             </span>
 
             <span
