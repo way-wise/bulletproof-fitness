@@ -212,7 +212,7 @@ export default function DemoCenterFormPage() {
             <CardContent className="space-y-4">
               <BusinessForm
                 form={form}
-                equipments={equipments}
+                equipment={equipments}
                 isLoading={isLoading}
                 preview={preview}
                 setPreview={setPreview}

@@ -52,7 +52,7 @@ interface BusinessFormProps {
   file: File | null;
   setFile: (file: File | null) => void;
   form: UseFormReturn<BusinessFormValues>;
-  equipments: { id: string; name: string }[];
+  equipment: { id: string; name: string }[];
   isLoading: boolean;
   preview: string | null;
   setPreview: (preview: string | null) => void;
@@ -65,7 +65,7 @@ export default function BusinessForm({
   onSubmit,
   isSubmitting,
   form,
-  equipments,
+  equipment,
   isLoading,
   preview,
   handleFileChange,
@@ -192,16 +192,16 @@ export default function BusinessForm({
               </FormLabel>
               <FormControl>
                 <MultiSelect
-                  options={equipments.map((equipment) => ({
+                  options={equipment.map((equipment) => ({
                     label: equipment.name,
-                    value: equipment.name,
+                    value: equipment.id,
                   }))}
                   selected={field.value || []}
                   onChange={field.onChange}
                   placeholder={
                     isLoading ? "Loading equipment..." : "Select Equipment"
                   }
-                  disabled={isLoading || equipments.length === 0}
+                  disabled={isLoading || equipment.length === 0}
                   className="w-full"
                 />
               </FormControl>

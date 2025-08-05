@@ -225,7 +225,7 @@ export const demoCentersService = {
         demoCenterEquipments: {
           createMany: {
             data: data.equipment.map((equipmentId) => ({
-              equipmentId,
+               equipmentId,
             })),
           },
         },
@@ -315,9 +315,15 @@ export const demoCentersService = {
     }
 
     // Find the equipment by name to get its ID
-    const equipment = await prisma.equipment.findFirst({
+    const equipment = await prisma.equipment.findMany({
       where: {
-        name: data.equipment,
+        name: {
+          in: data.equipment.filter((name): name is string => typeof name === 'string'),
+        },
+      },
+      select: {
+        id: true,
+        name: true,
       },
     });
 
@@ -350,7 +356,6 @@ export const demoCentersService = {
         isPublic: data.isPublic || false,
         blocked: data.blocked || false,
         blockReason: data.blockReason,
-        updatedAt: new Date(),
       },
       include: {
         demoCenterEquipments: {
@@ -366,13 +371,15 @@ export const demoCentersService = {
       where: { demoCenterId: id },
     });
 
-    await prisma.demoCenterEquipment.create({
-      data: {
-        demoCenterId: id,
-        equipmentId: equipment.id,
+    equipment.forEach(async (equipment) => {
+      await prisma.demoCenterEquipment.create({
+        data: {
+          demoCenterId: id,
+          equipmentId: equipment.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+    });
     });
 
     return updatedDemoCenter;

@@ -255,7 +255,7 @@ export default function ResidentialForm({
                 <MultiSelect
                   options={equipments.map((equipment) => ({
                     label: equipment.name,
-                    value: equipment.name,
+                    value: equipment.id,
                   }))}
                   selected={field.value || []}
                   onChange={field.onChange}
