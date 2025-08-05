@@ -15,40 +15,40 @@ async function main(total: number) {
     //   updatedAt: new Date(),
     // }));
 
-    // const users = [
-    //   {
-    //     name: "Admin User",
-    //     email: "admin@gmail.com",
-    //     emailVerified: true,
-    //     role: "admin",
-    //     createdAt: new Date(),
-    //     updatedAt: new Date(),
-    //   },
-    // ];
+    const users = [
+      {
+        name: "Admin User",
+        email: "admin@gmail.com",
+        emailVerified: true,
+        role: "admin",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
 
-    // await tx.users.createMany({
-    //   data: users,
-    //   skipDuplicates: true,
-    // });
+    await tx.users.createMany({
+      data: users,
+      skipDuplicates: true,
+    });
 
     // Get created user IDs
-    // const userIds = await tx.users.findMany({
-    //   select: { id: true },
-    //   take: total,
-    // });
+    const userIds = await tx.users.findMany({
+      select: { id: true },
+      take: total,
+    });
 
     // Create accounts for users with same password
-    // const password = await hashPassword("12345678");
-    // await tx.accounts.createMany({
-    //   data: userIds.map(({ id }) => ({
-    //     userId: id,
-    //     accountId: id,
-    //     providerId: "credential",
-    //     password,
-    //     createdAt: new Date(),
-    //     updatedAt: new Date(),
-    //   })),
-    // });
+    const password = await hashPassword("12345678");
+    await tx.accounts.createMany({
+      data: userIds.map(({ id }) => ({
+        userId: id,
+        accountId: id,
+        providerId: "credential",
+        password,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })),
+    });
 
     // Create rewards
     const rewards = [
