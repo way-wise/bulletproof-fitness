@@ -309,6 +309,7 @@ model RewardPoints {
   description String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+
   @@index([isActive])
   @@index([type])
   @@map("reward_points")

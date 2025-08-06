@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -38,7 +39,9 @@ const businessFormSchema = z.object({
   address: z.string().min(1, "Address is required"),
   contact: z.string().min(1, "Contact information is required"),
   cityZip: z.string().min(1, "City/Zip is required"),
-  equipment: z.string().min(1, "Equipment selection is required"),
+  equipment: z
+    .array(z.string())
+    .min(1, "At least one equipment must be selected"),
   availability: z.string().optional(),
   bio: z.string().min(1, "Bio is required"),
   weekdays: z.array(z.string()).optional(),
@@ -56,7 +59,9 @@ const residentialFormSchema = z.object({
   address: z.string().min(1, "Address is required"),
   contact: z.string().min(1, "Contact information is required"),
   cityZip: z.string().min(1, "City/Zip is required"),
-  equipment: z.string().min(1, "Equipment selection is required"),
+  equipment: z
+    .array(z.string())
+    .min(1, "At least one equipment must be selected"),
   availability: z.string().optional(),
   bio: z.string().min(1, "Bio is required"),
 });
@@ -93,6 +98,7 @@ export default function UpdateDemoCenter({
       buildingType: "BUSINESS",
       weekdays: [],
       weekends: [],
+      equipment: [],
     },
   });
 
@@ -101,6 +107,7 @@ export default function UpdateDemoCenter({
     resolver: zodResolver(residentialFormSchema),
     defaultValues: {
       buildingType: "RESIDENTIAL",
+      equipment: [],
     },
   });
 
@@ -110,6 +117,10 @@ export default function UpdateDemoCenter({
       const isBusiness = demoCenter.buildingType === "BUSINESS";
       setActiveTab(isBusiness ? "business" : "residential");
 
+      // Extract equipment IDs from demo center equipment array
+      const equipmentIds =
+        demoCenter.demoCenterEquipments?.map((de) => de.equipment.id) || [];
+
       if (isBusiness) {
         const businessFormData = {
           buildingType: "BUSINESS" as const,
@@ -117,7 +128,7 @@ export default function UpdateDemoCenter({
           address: demoCenter.address,
           contact: demoCenter.contact,
           cityZip: demoCenter.cityZip,
-          equipment: demoCenter.demoCenterEquipments?.[0]?.equipment.name || "",
+          equipment: equipmentIds,
           availability: demoCenter.availability || "",
           bio: demoCenter.bio,
           weekdays: demoCenter.weekdays || [],
@@ -135,7 +146,7 @@ export default function UpdateDemoCenter({
           address: demoCenter.address,
           contact: demoCenter.contact,
           cityZip: demoCenter.cityZip,
-          equipment: demoCenter.demoCenterEquipments?.[0]?.equipment.name || "",
+          equipment: equipmentIds,
           availability: demoCenter.availability || "",
           bio: demoCenter.bio,
         };
@@ -168,9 +179,9 @@ export default function UpdateDemoCenter({
       for (const min of [0, 15, 30, 45]) {
         const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : min < 10 ? `0${min}` : min} ${hour < 12 ? "AM" : "PM"}`;
         times.push(
-          <option key={display} value={display}>
+          <SelectItem key={display} value={display}>
             {display}
-          </option>,
+          </SelectItem>,
         );
       }
     }
@@ -180,7 +191,7 @@ export default function UpdateDemoCenter({
   // Handle business form submission
   const onBusinessSubmit = async (data: BusinessFormValues) => {
     if (!demoCenter) return;
-
+    console.log(data);
     setIsSubmitting(true);
     try {
       let imageUrl = demoCenter.image;
@@ -397,9 +408,10 @@ interface BusinessFormProps {
   setFile: (file: File | null) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   removeImage: () => void;
-  generateTimeOptions: () => React.ReactNode[];
+  generateTimeOptions: () => React.ReactElement[];
 }
 
+// this will be a form component that will be used to update the business demo center
 function BusinessForm({
   form,
   equipments,
@@ -528,30 +540,21 @@ function BusinessForm({
               <FormLabel className="text-md font-semibold">
                 Equipment Available *
               </FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Equipment" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {isLoading ? (
-                    <SelectItem value="loading" disabled>
-                      Loading equipment...
-                    </SelectItem>
-                  ) : equipments.length === 0 ? (
-                    <SelectItem value="no-equipment" disabled>
-                      No equipment available
-                    </SelectItem>
-                  ) : (
-                    equipments.map((equipment) => (
-                      <SelectItem key={equipment.id} value={equipment.name}>
-                        {equipment.name}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
+              <FormControl>
+                <MultiSelect
+                  options={equipments.map((equipment) => ({
+                    label: equipment.name,
+                    value: equipment.id,
+                  }))}
+                  selected={field.value || []}
+                  onChange={field.onChange}
+                  placeholder={
+                    isLoading ? "Loading equipment..." : "Select Equipment"
+                  }
+                  disabled={isLoading || equipments.length === 0}
+                  className="w-full"
+                />
+              </FormControl>
               <p className="text-xs text-muted-foreground">
                 Select the equipment you have available at your demo center
               </p>
@@ -633,12 +636,17 @@ function BusinessForm({
                   <FormLabel className="text-md font-semibold">
                     Weekdays Opening Time
                   </FormLabel>
-                  <FormControl>
-                    <select {...field} className="w-full rounded border p-2">
-                      <option value="">Select time</option>
-                      {generateTimeOptions()}
-                    </select>
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>{generateTimeOptions()}</SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
@@ -650,12 +658,17 @@ function BusinessForm({
                   <FormLabel className="text-md font-semibold">
                     Weekdays Closing Time
                   </FormLabel>
-                  <FormControl>
-                    <select {...field} className="w-full rounded border p-2">
-                      <option value="">Select time</option>
-                      {generateTimeOptions()}
-                    </select>
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>{generateTimeOptions()}</SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
@@ -671,12 +684,17 @@ function BusinessForm({
                   <FormLabel className="text-md font-semibold">
                     Weekends Opening Time
                   </FormLabel>
-                  <FormControl>
-                    <select {...field} className="w-full rounded border p-2">
-                      <option value="">Select time</option>
-                      {generateTimeOptions()}
-                    </select>
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>{generateTimeOptions()}</SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
@@ -688,12 +706,17 @@ function BusinessForm({
                   <FormLabel className="text-md font-semibold">
                     Weekends Closing Time
                   </FormLabel>
-                  <FormControl>
-                    <select {...field} className="w-full rounded border p-2">
-                      <option value="">Select time</option>
-                      {generateTimeOptions()}
-                    </select>
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>{generateTimeOptions()}</SelectContent>
+                  </Select>
                 </FormItem>
               )}
             />
@@ -913,30 +936,21 @@ function ResidentialForm({
               <FormLabel className="text-md font-semibold">
                 Equipment Available *
               </FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Equipment" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {isLoading ? (
-                    <SelectItem value="loading" disabled>
-                      Loading equipment...
-                    </SelectItem>
-                  ) : equipments.length === 0 ? (
-                    <SelectItem value="no-equipment" disabled>
-                      No equipment available
-                    </SelectItem>
-                  ) : (
-                    equipments.map((equipment) => (
-                      <SelectItem key={equipment.id} value={equipment.name}>
-                        {equipment.name}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
+              <FormControl>
+                <MultiSelect
+                  options={equipments.map((equipment) => ({
+                    label: equipment.name,
+                    value: equipment.id,
+                  }))}
+                  selected={field.value || []}
+                  onChange={field.onChange}
+                  placeholder={
+                    isLoading ? "Loading equipment..." : "Select Equipment"
+                  }
+                  disabled={isLoading || equipments.length === 0}
+                  className="w-full"
+                />
+              </FormControl>
               <p className="text-xs text-muted-foreground">
                 Select the equipment you have available at your demo center
               </p>
