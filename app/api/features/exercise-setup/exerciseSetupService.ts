@@ -768,7 +768,7 @@ export const exerciseSetupService = {
 
     const formData = {
       ...data,
-      equipments: equipments.map((equipment) => ({
+      equipment: equipments.map((equipment) => ({
         id: equipment.id,
         name: equipment.name,
       })),
