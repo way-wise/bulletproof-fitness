@@ -201,14 +201,14 @@ export const demoCentersService = {
     // Geocode the address to get lat/lng coordinates
     const fullAddress = `${data.address}, ${data.cityZip}`;
     const geocodedLocation = await getGeoCodeAddress(fullAddress);
-    
+
     // Validate that geocoding was successful
     if (!geocodedLocation || !geocodedLocation.lat || !geocodedLocation.lng) {
       throw new HTTPException(400, {
         message: `Invalid address: Unable to geocode the provided address. Please verify the address and try again.`,
       });
     }
-    
+
     const demoCenter = await prisma.demoCenter.create({
       data: {
         buildingType: data.buildingType,
@@ -238,7 +238,7 @@ export const demoCentersService = {
         demoCenterEquipments: {
           createMany: {
             data: data.equipment.map((equipmentId) => ({
-               equipmentId,
+              equipmentId,
             })),
           },
         },
@@ -317,6 +317,7 @@ export const demoCentersService = {
     id: string,
     data: InferType<typeof demoCenterSchema>,
   ) => {
+    console.log(data);
     const demoCenter = await prisma.demoCenter.findUnique({
       where: { id },
     });
@@ -327,11 +328,13 @@ export const demoCentersService = {
       });
     }
 
-    // Find the equipment by name to get its ID
+    // Find the equipment by ID to get its details
     const equipment = await prisma.equipment.findMany({
       where: {
-        name: {
-          in: data.equipment.filter((name): name is string => typeof name === 'string'),
+        id: {
+          in: data.equipment.filter(
+            (id): id is string => typeof id === "string",
+          ),
         },
       },
       select: {
@@ -340,27 +343,30 @@ export const demoCentersService = {
       },
     });
 
-    if (!equipment) {
+    if (equipment.length === 0) {
       throw new HTTPException(400, {
-        message: `Equipment "${data.equipment}" not found`,
+        message: `Equipment not found for the provided IDs`,
       });
     }
 
     // Check if address has changed and geocode if necessary
     let lat = demoCenter.lat;
     let lng = demoCenter.lng;
-    
-    if (data.address !== demoCenter.address || data.cityZip !== demoCenter.cityZip) {
+
+    if (
+      data.address !== demoCenter.address ||
+      data.cityZip !== demoCenter.cityZip
+    ) {
       const fullAddress = `${data.address}, ${data.cityZip}`;
       const geocodedLocation = await getGeoCodeAddress(fullAddress);
-      
+
       // Validate that geocoding was successful for the new address
       if (!geocodedLocation || !geocodedLocation.lat || !geocodedLocation.lng) {
         throw new HTTPException(400, {
           message: `Invalid address: Unable to geocode the provided address. Please verify the address and try again.`,
         });
       }
-      
+
       lat = geocodedLocation.lat;
       lng = geocodedLocation.lng;
     }
@@ -387,9 +393,6 @@ export const demoCentersService = {
         weekdayClose: data.weekdayClose,
         weekendOpen: data.weekendOpen,
         weekendClose: data.weekendClose,
-        isPublic: data.isPublic || false,
-        blocked: data.blocked || false,
-        blockReason: data.blockReason,
       },
       include: {
         demoCenterEquipments: {
@@ -410,10 +413,10 @@ export const demoCentersService = {
         data: {
           demoCenterId: id,
           equipmentId: equipment.id,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
     });
 
     return updatedDemoCenter;
