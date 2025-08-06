@@ -185,3 +185,85 @@ export const useUserProfile = (): UseUserProfileReturn => {
     mutate,
   };
 };
+
+// import { ExerciseSetupVideo } from "@/lib/dataTypes";
+// import useSWR from "swr";
+
+// // Extended type for user videos with stats
+// interface UserVideoWithStats extends ExerciseSetupVideo {
+//   views: number;
+//   likes: number;
+//   rating: number;
+// }
+
+// export const useUserProfile = () => {
+//   const { data: session } = useSession();
+
+//   const userId = session?.user?.id;
+
+//   const {
+//     data: user,
+//     error: userError,
+//     isLoading: isUserLoading,
+//   } = useSWR(userId ? `/api/users/me` : null);
+
+//   const {
+//     data: libVideos = [],
+//     error: libError,
+//     isLoading: isLibLoading,
+//   } = useSWR(userId ? `/api/exercise-library/videos` : null);
+
+//   const {
+//     data: userVideosResponse,
+//     error: videosError,
+//     isLoading: isVideosLoading,
+//   } = useSWR(userId ? `/api/exercise-setup/user-videos` : null);
+
+//   const {
+//     data: rewardsResponse,
+//     error: rewardsError,
+//     isLoading: isRewardsLoading,
+//   } = useSWR(userId ? `/api/users/${userId}/rewards` : null);
+
+//   const videos = userVideosResponse?.data ?? [];
+//   const rewards = rewardsResponse?.data ?? [];
+
+//   // stats calculate
+//   const totalViews = videos.reduce(
+//     (acc: number, v: UserVideoWithStats) => acc + v.views,
+//     0,
+//   );
+//   const totalLikes = videos.reduce(
+//     (acc: number, v: UserVideoWithStats) => acc + v.likes,
+//     0,
+//   );
+//   const avgRating =
+//     videos.length > 0
+//       ? Number(
+//           (
+//             videos.reduce(
+//               (acc: number, v: UserVideoWithStats) => acc + v.rating,
+//               0,
+//             ) / videos.length
+//           ).toFixed(1),
+//         )
+//       : 0;
+
+//   const stats = {
+//     totalVideos: videos.length,
+//     totalViews,
+//     totalLikes,
+//     avgRating,
+//   };
+
+//   return {
+//     user,
+//     libVideos,
+//     videos,
+//     rewards,
+//     stats,
+//     isLoading:
+//       isUserLoading || isLibLoading || isVideosLoading || isRewardsLoading,
+//     error: userError || libError || videosError || rewardsError,
+//   };
+// };
