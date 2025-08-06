@@ -26,10 +26,17 @@ export const exerciseLibrarySchemaAdmin = object({
 });
 
 export const exerciseLibraryZapierSchema = object({
-  youtube: string().required("Details of youtube video is required"),
-  embedUrl: string().url("Invalid embed URL").required("Embed URL is required"),
-  playUrl: string().url("Invalid play URL").optional(),
-  publishedAt: string().optional(),
+  title: string().required("Title is required"),
+  equipments: string().required(),
+  bodyPart: string().required(),
+  racks: string().required(),
+  videoUrl: string().url("Invalid video URL").required("Video URL is required"),
+  playUrl: string().url("Invalid play URL").required(),
+  userId: string().required("User ID is required"),
+  height: string().required("Height is required"),
+  publishedAt: string().required(),
+  youtubeEmbedUrl: string().url("Invalid embed URL").required(),
+  youtubePlayUrl: string().url("Invalid play URL").required(),
 });
 
 export type exerciseLibraryZapierSchemaType = InferType<

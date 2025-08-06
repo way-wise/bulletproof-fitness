@@ -480,8 +480,6 @@ export const exerciseLibraryService = {
       })),
     };
 
-    console.log("formData", formData);
-
     const response = await fetch(zapierExerciseTriggerHook, {
       method: "POST",
       headers: {
@@ -495,8 +493,6 @@ export const exerciseLibraryService = {
     }
 
     const result = await response.json();
-
-    console.log("result", result);
 
     return {
       success: true,
@@ -738,54 +734,22 @@ export const exerciseLibraryService = {
   },
 
   createExerciseLibraryFromYoutube: async (
-    rawData: exerciseLibraryZapierSchemaType,
+    data: exerciseLibraryZapierSchemaType,
   ) => {
-    const parseYoutubeString = (youtubeString: string) => {
-      const pairs = youtubeString.split("|");
-      const result: Record<string, any> = {};
-
-      // Parse the youtube description string into key-value pairs
-      pairs.forEach((pair) => {
-        const [key, value] = pair.split(":").map((item) => item.trim());
-        if (key && value !== undefined) {
-          result[key] = value;
-        }
-      });
-
-      return result;
-    };
-
-    // Extract data from the youtube string
-    const data = parseYoutubeString(rawData.youtube);
-
-    // Helper function to convert string to array
-    const toArray = (value: any): string[] => {
-      if (!value) return [];
-      if (typeof value === "string") {
-        return value.includes(",")
-          ? value
-              .split(",")
-              .map((item) => item.trim())
-              .filter((item) => item.length > 0)
-          : [value.trim()].filter((item) => item.length > 0);
-      }
-      return [];
-    };
-
-    // Get arrays for relations
-    const equipments = toArray(data.equipments);
-    const bodyParts = toArray(data.bodyParts);
-    const racks = toArray(data.racks);
+    // Transform string to an array for equipments, bodyPart, and racks
+    const equipments = data.equipments.split(",").map((equipment) => equipment.trim());
+    const bodyPart = data.bodyPart.split(",").map((bodyPart) => bodyPart.trim());
+    const racks = data.racks.split(",").map((rack) => rack.trim());
 
     // Create the exercise library video
     const result = await prisma.exerciseLibraryVideo.create({
       data: {
         title: data.title,
-        videoUrl: rawData.embedUrl,
+        videoUrl: data.videoUrl,
         height: parseFloat(data.height),
-        playUrl: rawData.playUrl,
+        playUrl: data.playUrl,
         isPublic: true,
-        publishedAt: rawData.publishedAt,
+        publishedAt: data.publishedAt,
         userId: data.userId,
         ExLibEquipment: {
           create: equipments.map((equipmentId) => ({
@@ -793,7 +757,7 @@ export const exerciseLibraryService = {
           })),
         },
         ExLibBodyPart: {
-          create: bodyParts.map((bodyPartId) => ({
+          create: bodyPart.map((bodyPartId) => ({
             bodyPartId: bodyPartId,
           })),
         },
