@@ -4,10 +4,10 @@ import { array, InferType, number, object, string } from "yup";
 export const exerciseLibrarySchema = object({
   title: string().required("Title is required"),
   video: string().url("Invalid video URL").required("Video URL is required"),
-  equipments: array().of(string()).default([]),
-  bodyPart: array().of(string()).default([]),
+  equipments: array().of(string().required()).default([]),
+  bodyPart: array().of(string().required()).default([]),
   height: string().optional().nullable(),
-  rack: array().of(string()).default([]),
+  rack: array().of(string().required()).default([]),
   userId: string().required("User id is required"),
 });
 
@@ -16,12 +16,12 @@ export type exerciseLibrarySchemaType = InferType<typeof exerciseLibrarySchema>;
 export const exerciseLibrarySchemaAdmin = object({
   title: string().required("Title is required"),
   videoUrl: string().url("Invalid video URL").required("Video URL is required"),
-  equipments: array().of(string()).default([]),
-  bodyPart: array().of(string()).default([]),
+  equipments: array().of(string().required()).default([]),
+  bodyPart: array().of(string().required()).default([]),
   height: number()
     .required("Height is required")
     .min(0, "Height must be a positive number"),
-  rack: array().of(string()).default([]),
+  rack: array().of(string().required()).default([]),
   userId: string().required("User id is required"),
 });
 

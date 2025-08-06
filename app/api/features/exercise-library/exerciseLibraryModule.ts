@@ -434,8 +434,6 @@ exerciseLibraryModule.post("/", async (c) => {
       data: await c.req.json(),
     });
 
-    console.log("Exercise Library validatedBody", validatedBody);
-
     const result =
       await exerciseLibraryService.createExerciseLibrary(validatedBody);
 

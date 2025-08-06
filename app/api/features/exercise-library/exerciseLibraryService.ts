@@ -436,12 +436,56 @@ export const exerciseLibraryService = {
       });
     }
 
+    // Get Equipment names
+    const equipments = await prisma.equipment.findMany({
+      where: {
+        id: {
+          in: data.equipments,
+        },
+      },
+    });
+
+    // Get Body Part names
+    const bodyParts = await prisma.bodyPart.findMany({
+      where: {
+        id: {
+          in: data.bodyPart,
+        },
+      },
+    });
+
+    // Get Rack names
+    const racks = await prisma.rack.findMany({
+      where: {
+        id: {
+          in: data.rack,
+        },
+      },
+    });
+
+    // Construct equipments, bodyPart, and racks for zapier with both id and name
+    const formData = {
+      ...data,
+      equipments: equipments.map((equipment) => ({
+        id: equipment.id,
+        name: equipment.name,
+      })),
+      bodyPart: bodyParts.map((bodyPart) => ({
+        id: bodyPart.id,
+        name: bodyPart.name,
+      })),
+      rack: racks.map((rack) => ({
+        id: rack.id,
+        name: rack.name,
+      })),
+    };
+
     const response = await fetch(zapierExerciseTriggerHook, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(formData),
     });
 
     if (!response.ok) {
