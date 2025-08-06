@@ -54,6 +54,21 @@ export default function ExerciseSetupVideoForm() {
   >(undefined);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      video: "",
+      title: "",
+      equipments: [],
+      bodyPart: [],
+      rack: [],
+      height: "",
+      isolatorHole: "",
+      yellow: "",
+      green: "",
+      blue: "",
+      red: "",
+      purple: "",
+      orange: "",
+    },
   });
   const router = useRouter();
 
@@ -123,13 +138,11 @@ export default function ExerciseSetupVideoForm() {
     toast.success(
       result.message || "Video uploaded successfully, awaiting approval",
     );
-    setTimeout(() => {
-      router.push("/upload-video");
-    }, 1500);
-
     // Reset form
     setFileResource(undefined);
     form.reset();
+
+    router.push("/upload-video");
   };
 
   const pumpColors = [
