@@ -37,8 +37,6 @@ const ExSetupCardsSection = ({
     setFilters(newFilters);
   };
 
-  console.log("exercises", exercises);
-
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">

@@ -127,7 +127,7 @@ export const UpdateSetupVideo = ({
         purple: videoData.purple || "",
         orange: videoData.orange || "",
       };
-      console.log(formData);
+
       form.reset(formData);
     } catch (error) {
       toast.error("Failed to fetch video data");
@@ -164,7 +164,7 @@ export const UpdateSetupVideo = ({
         },
         body: JSON.stringify(submitData),
       });
-      console.log(response);
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to update video data");

@@ -265,7 +265,6 @@ export const exerciseSetupService = {
   getExerciseSetupVideoById: async (id: string) => {
     const session = await getSession();
     try {
-      console.log("id", id);
       const exercise = await prisma.exerciseSetup.findUnique({
         where: { id },
         include: {
@@ -304,10 +303,7 @@ export const exerciseSetupService = {
         },
       });
 
-      console.log("Database query result:", exercise);
-
       if (!exercise) {
-        console.log("No exercise setup found with id:", id);
         throw new Error("Exercise setup video not found");
       }
 
@@ -324,7 +320,6 @@ export const exerciseSetupService = {
         });
 
         if (!existView) {
-          console.log("New view");
           await prisma.userView.create({
             data: {
               exerciseId: id,

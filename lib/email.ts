@@ -15,7 +15,6 @@ export async function sendVerificationEmail(
   token: string,
   url: string,
 ) {
-  console.log(token);
   await transporter.sendMail({
     from: process.env.EMAIL_FROM!,
     to,

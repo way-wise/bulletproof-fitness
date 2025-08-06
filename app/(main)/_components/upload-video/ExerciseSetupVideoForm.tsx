@@ -56,7 +56,6 @@ export default function ExerciseSetupVideoForm() {
     resolver: zodResolver(formSchema),
   });
   const router = useRouter();
-  console.log("Errors", form.formState.errors);
 
   const { data: session } = useSession();
 

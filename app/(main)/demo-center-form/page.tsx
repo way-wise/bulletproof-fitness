@@ -113,7 +113,6 @@ export default function DemoCenterFormPage() {
             errorData.validationError?.message ||
             "Failed to submit form";
         } catch (e) {
-          console.log(e);
           errorMessage = responseText || "Failed to submit form";
         }
         throw new Error(errorMessage);

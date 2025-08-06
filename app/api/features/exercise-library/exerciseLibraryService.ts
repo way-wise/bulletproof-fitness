@@ -209,8 +209,6 @@ export const exerciseLibraryService = {
         },
       });
 
-      console.log("Session", session);
-
       if (!exercise) {
         throw new Error("Exercise library video not found");
       }
@@ -250,8 +248,6 @@ export const exerciseLibraryService = {
           });
         }
       }
-
-      console.log("exercise", exercise);
 
       return exercise;
     } catch (error) {
@@ -651,10 +647,6 @@ export const exerciseLibraryService = {
           where,
         }),
       ]);
-
-      for (const exercise of exercises) {
-        console.log("Fetched exercise contentStats:", exercise.contentStats);
-      }
 
       return {
         data: exercises,

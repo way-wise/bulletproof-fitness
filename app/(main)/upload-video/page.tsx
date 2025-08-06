@@ -8,7 +8,6 @@ import FormsButtonPage from "../_components/upload-video/FormButtonPage";
 
 const page = () => {
   const { data: session } = useSession();
-  console.log(session);
 
   if (!session) {
     return <FormsButtonPage />;

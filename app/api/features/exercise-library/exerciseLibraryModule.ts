@@ -434,8 +434,6 @@ exerciseLibraryModule.post("/", async (c) => {
       data: await c.req.json(),
     });
 
-    console.log("Exercise Library validatedBody", validatedBody);
-
     const result =
       await exerciseLibraryService.createExerciseLibrary(validatedBody);
 
@@ -477,7 +475,7 @@ exerciseLibraryModule.get("/videos", async (c) => {
 // Create library video information when youtube video is published
 exerciseLibraryModule.post("/youtube/callback", async (c) => {
   const rawData = await c.req.json();
-  console.log("Exercise Library rawData", rawData);
+
   const result =
     await exerciseLibraryService.createExerciseLibraryFromYoutube(rawData);
   return c.json(result);

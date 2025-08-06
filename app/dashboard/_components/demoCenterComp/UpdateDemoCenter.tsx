@@ -191,7 +191,7 @@ export default function UpdateDemoCenter({
   // Handle business form submission
   const onBusinessSubmit = async (data: BusinessFormValues) => {
     if (!demoCenter) return;
-    console.log(data);
+
     setIsSubmitting(true);
     try {
       let imageUrl = demoCenter.image;

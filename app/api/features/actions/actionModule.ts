@@ -1,10 +1,10 @@
 import { Hono } from "hono";
 
 import { ReactionType } from "@/prisma/generated/enums";
+import { paginationQuerySchema } from "@/schema/paginationSchema";
 import { mixed, number, object, string } from "yup";
 import { validateInput } from "../../lib/validateInput";
 import { actionService } from "./actionService";
-import { paginationQuerySchema } from "@/schema/paginationSchema";
 
 const app = new Hono();
 
@@ -46,7 +46,6 @@ app.post("/rate", async (c) => {
 
   if (body.rating < 1 || body.rating > 5) throw new Error("Invalid rating");
 
-  console.log("Rating", body.rating);
   const validated = await validateInput({ type: "form", schema, data: body });
 
   await actionService.giveRating(
@@ -102,8 +101,6 @@ app.get("/feedback", async (c) => {
     schema: paginationQuerySchema,
     data: c.req.query(),
   });
-
-  console.log("Fetching feedback with query:", validatedQuery);
 
   const result = await actionService.getFeedback(validatedQuery);
   return c.json(result);
