@@ -52,7 +52,7 @@ export const DataTable = <TData, TValue>({
     state: {
       rowSelection,
       pagination: {
-        pageIndex: pagination.pageIndex,
+        pageIndex: pagination.pageIndex - 1, // Convert 1-based to 0-based for TanStack
         pageSize: pagination.pageSize,
       },
     },
@@ -60,7 +60,24 @@ export const DataTable = <TData, TValue>({
     enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
     onRowSelectionChange: setRowSelection,
-    onPaginationChange,
+    onPaginationChange: (updater) => {
+      // Convert 0-based back to 1-based when calling parent's onPaginationChange
+      if (typeof updater === "function") {
+        const newState = updater({
+          pageIndex: pagination.pageIndex - 1,
+          pageSize: pagination.pageSize,
+        });
+        onPaginationChange({
+          pageIndex: newState.pageIndex + 1,
+          pageSize: newState.pageSize,
+        });
+      } else {
+        onPaginationChange({
+          pageIndex: updater.pageIndex + 1,
+          pageSize: updater.pageSize,
+        });
+      }
+    },
   });
 
   // Handle limit change
