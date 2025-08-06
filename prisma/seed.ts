@@ -5,19 +5,10 @@ import { RewardType } from "./generated/enums";
 
 async function main(total: number) {
   await prisma.$transaction(async (tx) => {
-    // Create users
-    // const users = Array.from({ length: total }).map(() => ({
-    //   name: faker.person.fullName(),
-    //   email: faker.internet.email().toLowerCase(),
-    //   emailVerified: false,
-    //   role: "user",
-    //   createdAt: new Date(),
-    //   updatedAt: new Date(),
-    // }));
-
+    // Create admin
     const users = [
       {
-        name: "Admin User",
+        name: "Bulletproof Fitness",
         email: "admin@gmail.com",
         emailVerified: true,
         role: "admin",
