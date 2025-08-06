@@ -7,6 +7,7 @@ import {
 } from "@/schema/exerciseLibrarySchema";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
+import { awardPointsToUser } from "../actions/actionService";
 
 const zapierExerciseTriggerHook = process.env.ZAPIER_EXERCISE_TRIGGER_HOOK;
 
@@ -760,6 +761,8 @@ export const exerciseLibraryService = {
         },
       },
     });
+
+    await awardPointsToUser(data.userId, "UPLOAD_LIBRARY", "Exercise Library", "Exercise Library Video upload Reward");
 
     return {
       success: true,

@@ -7,6 +7,7 @@ import {
 } from "@/schema/exerciseSetupSchema";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
+import { awardPointsToUser } from "../actions/actionService";
 
 const zapierSetupTriggerHook = process.env.ZAPIER_SETUP_TRIGGER_HOOK;
 
@@ -843,6 +844,8 @@ export const exerciseSetupService = {
         },
       },
     });
+
+    await awardPointsToUser(data.userId, "UPLOAD_EXERCISE", "Exercise Setup", "Exercise Setup Video upload Reward");
 
     return {
       success: true,
