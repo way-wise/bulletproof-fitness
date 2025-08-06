@@ -11,6 +11,7 @@ import ContactUs from "../exercide-library/ContactUs";
 
 import { useSession } from "@/lib/auth-client";
 import SignInModal from "../SignInModal";
+import BsicRule from "../exercide-library/BsicRule";
 
 const pumpColors = [
   {
@@ -250,6 +251,8 @@ export default function ExerciseSetupDetails({
           />
         )}
       </div>
+      {/* basic rule section  */}
+      <BsicRule />
     </div>
   );
 }
