@@ -461,7 +461,7 @@ export default function ExerciseSetupVideoForm() {
                   attached?
                 </FormLabel>
                 <FormControl>
-                  <Input type="number" min={0} {...field} />
+                  <Input required type="number" min={0} {...field} />
                 </FormControl>
                 <p className="text-xs text-muted-foreground">
                   Count from the bottom up to where the ISOLATOR carriage pin is

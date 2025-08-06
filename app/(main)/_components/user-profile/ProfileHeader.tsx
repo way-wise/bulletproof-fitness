@@ -7,14 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserProfile } from "@/lib/dataTypes";
 import { formatDate } from "@/lib/date-format";
-import {
-  Calendar,
-  CheckCircle,
-  Edit,
-  Mail,
-  Trophy,
-  XCircle,
-} from "lucide-react";
+import { Calendar, Edit, Mail, Trophy } from "lucide-react";
 import Image from "next/image";
 
 export const ProfileHeader = ({
@@ -68,7 +61,7 @@ export const ProfileHeader = ({
                 </AvatarFallback>
               </Avatar>
             )}
-            <div className="absolute -right-2 -bottom-2">
+            {/* <div className="absolute -right-2 -bottom-2">
               {user?.emailVerified ? (
                 <Badge variant="default" className="bg-green-500">
                   <CheckCircle className="mr-1 h-3 w-3" />
@@ -80,7 +73,7 @@ export const ProfileHeader = ({
                   Unverified
                 </Badge>
               )}
-            </div>
+            </div> */}
           </div>
 
           <div className="flex flex-1 flex-col items-center gap-2 sm:items-start">
