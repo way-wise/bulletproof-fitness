@@ -119,26 +119,17 @@ export const useUserProfile = (): UseUserProfileReturn => {
           fetch("/api/exercise-setup/user-videos"),
           fetch(`/api/users/${userData.id}/rewards`),
         ]);
-
       if (libraryVideos.ok) {
         const libraryVideosData = await libraryVideos.json();
-        if (libraryVideosData.success) {
-          setLibVideos(libraryVideosData.data || []);
-        } else {
-          console.error("Library videos response error:", libraryVideosData);
-        }
+        setLibVideos(libraryVideosData || []);
       } else {
-        console.error("Library videos request failed:", libraryVideos.status);
+        console.error("Library videos request failed");
       }
 
       // Handle videos response
       if (videosResponse.ok) {
         const videosData = await videosResponse.json();
-        if (videosData.success) {
-          setVideos(videosData.data || []);
-        } else {
-          console.error("Videos response error:", videosData);
-        }
+        setVideos(videosData.data || []);
       } else {
         console.error("Videos request failed:", videosResponse.status);
       }

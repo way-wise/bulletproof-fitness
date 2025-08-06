@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -67,12 +66,12 @@ export const ProfileTabs = ({
 }: ProfileTabsProps) => {
   return (
     <Tabs value={activeTab} onValueChange={onTabChange}>
-      <TabsList className="grid w-full grid-cols-4">
+      <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="library">Library Videos</TabsTrigger>
         <TabsTrigger value="videos">Setup Videos</TabsTrigger>
         <TabsTrigger value="rewards">Rewards</TabsTrigger>
-        <TabsTrigger value="activity">Activity</TabsTrigger>
+        {/* <TabsTrigger value="activity">Activity</TabsTrigger> */}
       </TabsList>
 
       <TabsContent value="overview" className="mt-6">
@@ -135,45 +134,6 @@ export const ProfileTabs = ({
         </Card>
       </TabsContent>
 
-      <TabsContent value="videos" className="mt-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Video className="h-5 w-5" />
-              My Videos ({videos.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {[1, 2, 3].map((i) => (
-                  <Card key={i}>
-                    <Skeleton className="aspect-video" />
-                    <CardContent className="p-4">
-                      <Skeleton className="mb-2 h-4 w-full" />
-                      <Skeleton className="h-3 w-24" />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : videos.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {videos.map((video) => (
-                  <VideoCard key={video.id} video={video} />
-                ))}
-              </div>
-            ) : (
-              <div className="py-8 text-center">
-                <Video className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-                <p className="text-muted-foreground">No videos uploaded yet</p>
-                <Link href="/upload-video">
-                  <Button className="mt-4">Upload Your First Video</Button>
-                </Link>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </TabsContent>
       <TabsContent value="library" className="mt-6">
         <Card>
           <CardHeader>
@@ -198,6 +158,45 @@ export const ProfileTabs = ({
             ) : libVideos.length > 0 ? (
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {libVideos.map((video) => (
+                  <VideoCard key={video.id} video={video} />
+                ))}
+              </div>
+            ) : (
+              <div className="py-8 text-center">
+                <Video className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                <p className="text-muted-foreground">No videos uploaded yet</p>
+                <Link href="/upload-video">
+                  <Button className="mt-4">Upload Your First Video</Button>
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+      <TabsContent value="videos" className="mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Video className="h-5 w-5" />
+              My Videos ({videos.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {[1, 2, 3].map((i) => (
+                  <Card key={i}>
+                    <Skeleton className="aspect-video" />
+                    <CardContent className="p-4">
+                      <Skeleton className="mb-2 h-4 w-full" />
+                      <Skeleton className="h-3 w-24" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : videos.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {videos.map((video) => (
                   <VideoCard key={video.id} video={video} />
                 ))}
               </div>
@@ -254,7 +253,7 @@ export const ProfileTabs = ({
         </Card>
       </TabsContent>
 
-      <TabsContent value="activity" className="mt-6">
+      {/* <TabsContent value="activity" className="mt-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -313,7 +312,7 @@ export const ProfileTabs = ({
             </div>
           </CardContent>
         </Card>
-      </TabsContent>
+      </TabsContent> */}
     </Tabs>
   );
 };
