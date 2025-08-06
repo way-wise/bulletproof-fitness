@@ -567,8 +567,6 @@ exerciseSetupModule.post("/", async (c) => {
       data: await c.req.json(),
     });
 
-    console.log("Exercise Setup validatedBody", validatedBody);
-
     const result =
       await exerciseSetupService.createExerciseSetup(validatedBody);
 

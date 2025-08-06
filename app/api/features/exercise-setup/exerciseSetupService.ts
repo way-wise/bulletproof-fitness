@@ -742,12 +742,52 @@ export const exerciseSetupService = {
       });
     }
 
+    const equipments = await prisma.equipment.findMany({
+      where: {
+        id: {
+          in: data.equipment,
+        },
+      },
+    });
+
+    const bodyParts = await prisma.bodyPart.findMany({
+      where: {
+        id: {
+          in: data.bodyPart,
+        },
+      },
+    });
+
+    const racks = await prisma.rack.findMany({
+      where: {
+        id: {
+          in: data.rack,
+        },
+      },
+    });
+
+    const formData = {
+      ...data,
+      equipments: equipments.map((equipment) => ({
+        id: equipment.id,
+        name: equipment.name,
+      })),
+      bodyPart: bodyParts.map((bodyPart) => ({
+        id: bodyPart.id,
+        name: bodyPart.name,
+      })),
+      rack: racks.map((rack) => ({
+        id: rack.id,
+        name: rack.name,
+      })),
+    };
+
     const response = await fetch(zapierSetupTriggerHook, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(formData),
     });
 
     if (!response.ok) {
@@ -764,54 +804,23 @@ export const exerciseSetupService = {
   },
   // Create exercise setup from public (Through Youtube to Zapier)
   createExerciseSetupFromYoutube: async (
-    rawData: exerciseSetupZapierSchemaType,
+    data: exerciseSetupZapierSchemaType,
   ) => {
-    const parseYoutubeString = (youtubeString: string) => {
-      const pairs = youtubeString.split("|");
-      const result: Record<string, any> = {};
+    // Transform string to an array for equipments, bodyPart, and racks
+    const equipments = data.equipments.split(",").map((equipment) => equipment.trim());
+    const bodyPart = data.bodyPart.split(",").map((bodyPart) => bodyPart.trim());
+    const racks = data.racks.split(",").map((rack) => rack.trim());
 
-      // Parse the youtube description string into key-value pairs
-      pairs.forEach((pair) => {
-        const [key, value] = pair.split(":").map((item) => item.trim());
-        if (key && value !== undefined) {
-          result[key] = value;
-        }
-      });
-
-      return result;
-    };
-
-    // Extract data from the youtube string
-    const data = parseYoutubeString(rawData.youtube);
-
-    // Helper function to convert string to array
-    const toArray = (value: any): string[] => {
-      if (!value) return [];
-      if (typeof value === "string") {
-        return value.includes(",")
-          ? value
-              .split(",")
-              .map((item) => item.trim())
-              .filter((item) => item.length > 0)
-          : [value.trim()].filter((item) => item.length > 0);
-      }
-      return [];
-    };
-
-    // Get arrays for relations
-    const equipments = toArray(data.equipments);
-    const bodyParts = toArray(data.bodyParts);
-    const racks = toArray(data.racks);
 
     // Create the exercise library video
     const result = await prisma.exerciseSetup.create({
       data: {
         title: data.title,
-        videoUrl: rawData.embedUrl,
+        videoUrl: data.videoUrl,
         height: parseFloat(data.height),
-        playUrl: rawData.playUrl,
+        playUrl: data.playUrl,
         isPublic: true,
-        publishedAt: rawData.publishedAt,
+        publishedAt: data.publishedAt,
         isolatorHole: data.isolatorHole,
         yellow: data.yellow,
         green: data.green,
@@ -826,7 +835,7 @@ export const exerciseSetupService = {
           })),
         },
         ExSetupBodyPart: {
-          create: bodyParts.map((bodyPartId) => ({
+          create: bodyPart.map((bodyPartId) => ({
             bodyPartId: bodyPartId,
           })),
         },
