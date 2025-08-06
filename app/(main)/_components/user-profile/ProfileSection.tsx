@@ -2,18 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+
+import ProfileSkleton from "@/components/skeleton/ProfileSkleton";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { useSession } from "@/lib/auth-client";
+import { UserProfile, UserReward } from "@/lib/dataTypes";
 import { useState } from "react";
-import { AuthRequired } from "../_components/user-profile/AuthRequired";
-import { EditProfileModal } from "../_components/user-profile/EditProfileModal";
-import { ProfileHeader } from "../_components/user-profile/ProfileHeader";
-import { ProfileTabs } from "../_components/user-profile/ProfileTabs";
-import { StatsCards } from "../_components/user-profile/StatsCards";
+import { EditProfileModal } from "./EditProfileModal";
+import { ProfileHeader } from "./ProfileHeader";
+import { ProfileTabs } from "./ProfileTabs";
+import { StatsCards } from "./StatsCards";
 
 // Main Profile Page Component
-const ProfilePage = () => {
-  const { data: session } = useSession();
+const ProfileSection = () => {
   const { user, videos, rewards, stats, isLoading, error, mutate, libVideos } =
     useUserProfile();
 
@@ -24,7 +24,7 @@ const ProfilePage = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleSaveProfile = async (formData) => {
+  const handleSaveProfile = async (formData: Record<string, unknown>) => {
     try {
       const response = await fetch("/api/users/me", {
         method: "PUT",
@@ -35,7 +35,7 @@ const ProfilePage = () => {
       });
 
       if (response.ok) {
-        mutate(); // Refresh data
+        await mutate();
         setIsEditModalOpen(false);
       } else {
         const errorData = await response.json();
@@ -45,11 +45,6 @@ const ProfilePage = () => {
       console.error("Error updating profile:", error);
     }
   };
-
-  // Show auth required if not signed in
-  if (!session) {
-    return <AuthRequired />;
-  }
 
   if (error) {
     return (
@@ -67,11 +62,14 @@ const ProfilePage = () => {
       </div>
     );
   }
+  if (isLoading || !user) {
+    return <ProfileSkleton />;
+  }
 
   return (
     <div className="container mx-auto max-w-6xl px-4 py-8">
       <ProfileHeader
-        user={user}
+        user={user as UserProfile}
         isLoading={isLoading}
         onEditClick={handleEditProfile}
       />
@@ -79,10 +77,22 @@ const ProfilePage = () => {
       <StatsCards stats={stats} isLoading={isLoading} />
 
       <ProfileTabs
-        user={user}
-        videos={videos}
-        libVideos={libVideos}
-        rewards={rewards}
+        user={user as UserProfile}
+        videos={videos.map((video) => ({
+          ...video,
+          createdAt:
+            video.createdAt instanceof Date
+              ? video.createdAt.toISOString()
+              : video.createdAt,
+        }))}
+        libVideos={libVideos.map((video) => ({
+          ...video,
+          createdAt:
+            video.createdAt instanceof Date
+              ? video.createdAt.toISOString()
+              : video.createdAt,
+        }))}
+        rewards={rewards as UserReward[]}
         stats={stats}
         isLoading={isLoading}
         activeTab={activeTab}
@@ -90,7 +100,7 @@ const ProfilePage = () => {
       />
 
       <EditProfileModal
-        user={user}
+        user={user as UserProfile}
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSave={handleSaveProfile}
@@ -99,4 +109,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default ProfileSection;

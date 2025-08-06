@@ -282,3 +282,24 @@ export interface UserProfile {
   role: string | null;
   emailVerified: boolean;
 }
+
+export type Reward = {
+  id: string;
+  name: string;
+  description: string;
+  points: number;
+  image: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UserReward = {
+  id: string;
+  points: number;
+  createdAt: string;
+  description: string | null;
+  type: string;
+  isActive: boolean;
+  name: string | null;
+  updatedAt: string;
+};
