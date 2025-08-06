@@ -53,7 +53,6 @@ export const ResetPassword = ({
 
     setIsSaving(true);
     try {
-      console.log(password, currentPassword);
       const { error } = await changePassword({
         newPassword: password,
         currentPassword: currentPassword,
@@ -64,9 +63,8 @@ export const ResetPassword = ({
         throw new Error(error.message);
       }
       toast.success("Password updated successfully!");
-      setTimeout(() => {
-        onClose();
-      }, 1500);
+
+      onClose();
     } catch (error) {
       console.error("Save error:", error);
       setError(
