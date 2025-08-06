@@ -270,96 +270,15 @@ export type ExerciseSetupVideo = {
   };
 };
 
-// YouTube Video Types
-export interface YouTubeVideo {
+export interface UserProfile {
   id: string;
-  title: string;
-  description?: string;
-  videoId: string;
-  videoUrl: string;
-  thumbnail?: string;
-  tags: string[];
-  category: string;
-  privacy: "public" | "private" | "unlisted";
-  status: "uploaded" | "processing" | "failed";
-  duration?: number;
-  viewCount: number;
-  likeCount: number;
-  commentCount: number;
-  uploadDate: Date;
-  publishedAt?: Date;
-  userId: string;
-  isPublic: boolean;
-  blocked: boolean;
-  blockReason?: string;
-  createdAt: Date;
-  updatedAt: Date;
-  user?: {
-    id: string;
-    name: string;
-    email: string;
-  };
-}
-
-export interface CreateYouTubeVideoData {
-  title: string;
-  description?: string;
-  videoId: string;
-  videoUrl: string;
-  thumbnail?: string;
-  tags: string[];
-  category?: string;
-  privacy?: "public" | "private" | "unlisted";
-  status?: "uploaded" | "processing" | "failed";
-  duration?: number;
-  userId: string;
-  isPublic?: boolean;
-}
-
-export interface UpdateYouTubeVideoData {
-  title?: string;
-  description?: string;
-  thumbnail?: string;
-  tags?: string[];
-  category?: string;
-  privacy?: "public" | "private" | "unlisted";
-  status?: "uploaded" | "processing" | "failed";
-  viewCount?: number;
-  likeCount?: number;
-  commentCount?: number;
-  publishedAt?: Date;
-  isPublic?: boolean;
-  blocked?: boolean;
-  blockReason?: string;
-}
-
-// Type for the API response
-export interface YouTubeVideoFromAPI {
-  id: string;
-  title: string;
-  description?: string;
-  videoId: string;
-  videoUrl: string;
-  thumbnail?: string;
-  tags: string[];
-  category: string;
-  privacy: "public" | "private" | "unlisted";
-  status: "uploaded" | "processing" | "failed";
-  duration?: number;
-  viewCount: number;
-  likeCount: number;
-  commentCount: number;
-  uploadDate: string;
-  publishedAt?: string;
-  userId: string;
-  isPublic: boolean;
-  blocked: boolean;
-  blockReason?: string;
+  name: string;
+  email: string;
+  totalPoints: number;
   createdAt: string;
   updatedAt: string;
-  user?: {
-    id: string;
-    name: string;
-    email: string;
-  };
+  banned: boolean | null;
+  image: string | null;
+  role: string | null;
+  emailVerified: boolean;
 }

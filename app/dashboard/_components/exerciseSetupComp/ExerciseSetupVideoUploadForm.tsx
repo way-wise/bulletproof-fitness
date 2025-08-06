@@ -257,6 +257,7 @@ export default function ExerciseSetupVideoUploadForm({
                     onValueChange={(value) => field.onChange([value])}
                   >
                     <SelectTrigger>
+                      <span className="text-red-500">*</span>
                       <SelectValue placeholder="Select body part" />
                     </SelectTrigger>
                     <SelectContent>
@@ -279,7 +280,7 @@ export default function ExerciseSetupVideoUploadForm({
               <FormItem>
                 <FormLabel>User Height</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Height in inches" />
+                  <Input {...field} placeholder="Height in inches" required />
                 </FormControl>
                 <FormMessage />
               </FormItem>

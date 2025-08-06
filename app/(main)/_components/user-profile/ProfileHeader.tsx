@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserProfile } from "@/hooks/useUserProfile";
+import { UserProfile } from "@/lib/dataTypes";
 import { formatDate } from "@/lib/date-format";
 import {
   Calendar,

@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Spinner from "@/components/ui/spinner";
-import { UserProfile } from "@/hooks/useUserProfile";
 import { uploadImageViaFileInput } from "@/lib/cloudinaryClient";
+import { UserProfile } from "@/lib/dataTypes";
 import React, { useEffect, useState } from "react";
 
 interface EditProfileModalProps {
