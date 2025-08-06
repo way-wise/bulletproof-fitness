@@ -25,7 +25,7 @@ export const ProfileDropdown = ({ session }: { session: Session }) => {
   const router = useRouter();
   const { start, stop } = useProgress();
   const isAdmin = session?.user?.role === "admin";
-  console.log(isAdmin);
+
   // Handle sign-out & progressbar
   const handleSignout = async () => {
     await signOut({

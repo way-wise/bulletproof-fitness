@@ -90,7 +90,7 @@ const UserDetails = ({ id }: { id: string }) => {
       cell: ({ row }) => formatDate(row.original.updatedAt || ""),
     },
   ];
-  console.log(data);
+
   return (
     <>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">

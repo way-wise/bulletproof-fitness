@@ -1,20 +1,12 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
+import { UserReward } from "@/hooks/useUserProfile";
 import { formatDate } from "@/lib/date-format";
 import { Award, Eye, Heart, Star, ThumbsDown, Video } from "lucide-react";
 
-interface Reward {
-  id: string;
-  type: string;
-  name?: string;
-  description: string;
-  points: number;
-  createdAt?: string;
-}
-
 interface RewardCardProps {
-  reward: Reward;
+  reward: UserReward;
 }
 
 export const RewardCard = ({ reward }: RewardCardProps) => {

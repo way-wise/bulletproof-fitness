@@ -52,7 +52,6 @@ export const rewardService = {
       },
     });
 
-    console.log(data, "data");
     if (rewardType) throw new Error("Reward type already used");
 
     const reward = await prisma.rewardPoints.create({

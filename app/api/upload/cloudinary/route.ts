@@ -23,12 +23,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    console.log("File received:", {
-      name: file.name,
-      type: file.type,
-      size: file.size,
-    });
-
     // Validate file type
     const validTypes = [
       "image/jpeg",
@@ -61,8 +55,6 @@ export async function POST(request: NextRequest) {
     const base64 = Buffer.from(buffer).toString("base64");
     const dataURI = `data:${file.type};base64,${base64}`;
 
-    console.log("Uploading to Cloudinary...");
-
     // Upload to Cloudinary
     const result = await cloudinary.uploader.upload(dataURI, {
       resource_type: "image",
@@ -72,8 +64,6 @@ export async function POST(request: NextRequest) {
         { quality: "auto", fetch_format: "auto" },
       ],
     });
-
-    console.log("Upload successful:", result.secure_url);
 
     return NextResponse.json({
       success: true,

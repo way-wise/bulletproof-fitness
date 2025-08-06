@@ -1,6 +1,6 @@
-import { Hono } from "hono";
 import { paginationQuerySchema } from "@/schema/paginationSchema";
 import { validateInput } from "@api/lib/validateInput";
+import { Hono } from "hono";
 import { boolean, mixed, number, object, string } from "yup";
 import { rewardService } from "./rewardService";
 
@@ -14,7 +14,6 @@ const app = new Hono();
 app.post("/", async (c) => {
   const body = await c.req.json();
 
-  console.log("Reward Body", body);
   const validatedBody = await validateInput({
     type: "form",
     schema: object({
@@ -45,8 +44,6 @@ app.post("/", async (c) => {
     }),
     data: body, // ✅ Use the already-read body here
   });
-
-  //   console.log(validatedBody, "validatedBody");
 
   const result = await rewardService.createReward(validatedBody);
   return c.json(result);
