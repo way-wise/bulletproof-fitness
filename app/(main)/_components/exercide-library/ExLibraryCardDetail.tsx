@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
 import SignInModal from "../SignInModal";
+import BsicRule from "./BsicRule";
 import ContactUs from "./ContactUs";
 
 export default function ExerciseDetailPage({
@@ -74,7 +75,7 @@ export default function ExerciseDetailPage({
     );
   }
   return (
-    <div className="mx-auto w-full max-w-[1200px] px-6 py-14 font-sans text-[17px] leading-relaxed text-[#222]">
+    <div className="mx-auto w-full max-w-[1200px] px-2 py-14 font-sans text-[17px] leading-relaxed text-[#222] md:px-6">
       {/* Video & Info Section */}
       <div className="grid items-start gap-10 md:grid-cols-2">
         <div className="aspect-video w-full overflow-hidden rounded shadow-md">
@@ -168,6 +169,8 @@ export default function ExerciseDetailPage({
           />
         )}
       </div>
+      {/* basic rule section  */}
+      <BsicRule />
     </div>
   );
 }

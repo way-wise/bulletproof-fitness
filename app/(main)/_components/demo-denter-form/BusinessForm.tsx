@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { MultiSelect } from "@/components/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -19,7 +20,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { MultiSelect } from "@/components/ui/multi-select";
 import Image from "next/image";
 import { UseFormReturn } from "react-hook-form";
 import * as z from "zod";
@@ -297,8 +297,8 @@ export default function BusinessForm({
                     </FormControl>
                     <SelectContent>
                       {Array.from({ length: 24 }, (_, hour) =>
-                        [0, 30].map((min) => {
-                          const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : "30"} ${hour < 12 ? "AM" : "PM"}`;
+                        [0, 15, 30, 45].map((min) => {
+                          const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : min.toString().padStart(2, "0")} ${hour < 12 ? "AM" : "PM"}`;
                           return (
                             <SelectItem key={display} value={display}>
                               {display}
@@ -330,8 +330,8 @@ export default function BusinessForm({
                     </FormControl>
                     <SelectContent>
                       {Array.from({ length: 24 }, (_, hour) =>
-                        [0, 30].map((min) => {
-                          const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : "30"} ${hour < 12 ? "AM" : "PM"}`;
+                        [0, 15, 30, 45].map((min) => {
+                          const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : min.toString().padStart(2, "0")} ${hour < 12 ? "AM" : "PM"}`;
                           return (
                             <SelectItem key={display} value={display}>
                               {display}
@@ -367,8 +367,8 @@ export default function BusinessForm({
                     </FormControl>
                     <SelectContent>
                       {Array.from({ length: 24 }, (_, hour) =>
-                        [0, 30].map((min) => {
-                          const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : "30"} ${hour < 12 ? "AM" : "PM"}`;
+                        [0, 15, 30, 45].map((min) => {
+                          const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : min.toString().padStart(2, "0")} ${hour < 12 ? "AM" : "PM"}`;
                           return (
                             <SelectItem key={display} value={display}>
                               {display}
@@ -400,8 +400,8 @@ export default function BusinessForm({
                     </FormControl>
                     <SelectContent>
                       {Array.from({ length: 24 }, (_, hour) =>
-                        [0, 30].map((min) => {
-                          const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : "30"} ${hour < 12 ? "AM" : "PM"}`;
+                        [0, 15, 30, 45].map((min) => {
+                          const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : min.toString().padStart(2, "0")} ${hour < 12 ? "AM" : "PM"}`;
                           return (
                             <SelectItem key={display} value={display}>
                               {display}
