@@ -67,11 +67,6 @@ const ExSetupCardsSection = ({
             <div className="mb-8 flex items-center justify-between">
               <h1 className="text-left text-lg font-bold text-gray-900 md:text-xl lg:text-3xl">
                 EXERCISE SETUP
-                {meta && (
-                  <span className="ml-2 text-sm font-normal text-gray-500">
-                    ({meta.total} exercises)
-                  </span>
-                )}
               </h1>
               <Drawer direction="right">
                 <DrawerTrigger asChild>
