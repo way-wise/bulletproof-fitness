@@ -266,7 +266,7 @@ const RewardsTable = () => {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select reward type" />
                         </SelectTrigger>
                       </FormControl>

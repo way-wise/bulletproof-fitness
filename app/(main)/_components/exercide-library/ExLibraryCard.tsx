@@ -37,8 +37,8 @@ const ExLibraryCard = ({
   alreadyReacted,
   mutate,
 }: ExLibraryCardProps) => {
-  const [likeCount, setLikeCount] = useState(likes);
-  const [dislikeCount, setDislikeCount] = useState(dislikes);
+  const [likeCount, setLikeCount] = useState(likes ?? 0);
+  const [dislikeCount, setDislikeCount] = useState(dislikes ?? 0);
   const [reaction, setReaction] = useState<ReactionType | null>(alreadyReacted);
 
   const [showSignInModal, setShowSignInModal] = useState(false);
@@ -62,17 +62,20 @@ const ExLibraryCard = ({
       const optimisticUpdate = () => {
         if (reaction === type) {
           // remove reaction
-          if (type === "LIKE") setLikeCount((prev) => prev - 1);
-          else setDislikeCount((prev) => prev - 1);
+          if (type === "LIKE")
+            setLikeCount((prev) => Math.max(0, (prev ?? 0) - 1));
+          else setDislikeCount((prev) => Math.max(0, (prev ?? 0) - 1));
           setReaction(null);
         } else {
           // switch or new
           if (type === "LIKE") {
-            setLikeCount((prev) => prev + 1);
-            if (reaction === "DISLIKE") setDislikeCount((prev) => prev - 1);
+            setLikeCount((prev) => (prev ?? 0) + 1);
+            if (reaction === "DISLIKE")
+              setDislikeCount((prev) => Math.max(0, (prev ?? 0) - 1));
           } else {
-            setDislikeCount((prev) => prev + 1);
-            if (reaction === "LIKE") setLikeCount((prev) => prev - 1);
+            setDislikeCount((prev) => (prev ?? 0) + 1);
+            if (reaction === "LIKE")
+              setLikeCount((prev) => Math.max(0, (prev ?? 0) - 1));
           }
           setReaction(type);
         }
@@ -80,8 +83,8 @@ const ExLibraryCard = ({
 
       const rollback = () => {
         // reset everything to original
-        setLikeCount(likes);
-        setDislikeCount(dislikes);
+        setLikeCount(likes ?? 0);
+        setDislikeCount(dislikes ?? 0);
         setReaction(alreadyReacted ?? null);
       };
 
