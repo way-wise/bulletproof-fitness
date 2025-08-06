@@ -158,6 +158,13 @@ export default function ExerciseSetupDetails({
                 (item: TRack) => item?.rack?.name,
               ).join(", ")}
             </li>
+            <li>
+              <strong>
+                For ISOLATOR videos, the number holes high the carriage is
+                attached on the upright:
+              </strong>{" "}
+              {libraryData?.isolatorHole || "Not Available"}
+            </li>
           </ul>
           <div className="rounded border bg-gray-100 px-4 py-3 text-base">
             Uploaded by:{" "}
