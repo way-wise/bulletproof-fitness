@@ -10,8 +10,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+import { useDashboard } from "@/hooks/useDashboard";
 import type { auth } from "@/lib/auth";
 
+import DashboardSkleton from "@/components/skeleton/dashboardSkleton";
 import { cn } from "@/lib/utils";
 import {
   Activity,
@@ -27,131 +29,104 @@ import {
   Star,
   Users,
 } from "lucide-react";
-import { AuthRequired } from "../(main)/_components/user-profile/AuthRequired";
+import { AuthRequired } from "../../../(main)/_components/user-profile/AuthRequired";
+
 type Session = typeof auth.$Infer.Session;
+
 const DashboardOverview = ({ session }: { session: Session }) => {
-  // Mock data - in real app, this would come from API
-  const stats = [
+  const { data, isLoading } = useDashboard();
+
+  if (!session) {
+    return <AuthRequired />;
+  }
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Dashboard Overview
+            </h1>
+            <p className="text-muted-foreground">
+              Welcome back! Here's what's happening with your fitness platform
+              today.
+            </p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Badge variant="secondary" className="flex items-center gap-1">
+              <Activity className="h-3 w-3" />
+              Live
+            </Badge>
+            <Button variant="outline" size="sm">
+              <Calendar className="mr-2 h-4 w-4" />
+              Last 30 days
+            </Button>
+          </div>
+        </div>
+
+        <DashboardSkleton />
+      </div>
+    );
+  }
+
+  // Show data
+  if (!data) {
+    return null;
+  }
+  console.log(data);
+  const { stats, recentActivities, topPerformingCenters } = data;
+
+  // Prepare stats data for rendering
+  const statsData = [
     {
       title: "Total Users",
-      value: "2,847",
-      change: "+12.5%",
-      changeType: "positive",
+      value: stats.totalUsers.toLocaleString(),
+      change: `${stats.userGrowth >= 0 ? "+" : ""}${stats.userGrowth}%`,
+      changeType: stats.userGrowth >= 0 ? "positive" : "negative",
       icon: Users,
       color: "bg-blue-500",
       description: "Active fitness enthusiasts",
     },
     {
       title: "Demo Centers",
-      value: "24",
-      change: "+3.2%",
-      changeType: "positive",
+      value: stats.totalDemoCenters.toLocaleString(),
+      change: `${stats.centerGrowth >= 0 ? "+" : ""}${stats.centerGrowth}%`,
+      changeType: stats.centerGrowth >= 0 ? "positive" : "negative",
       icon: Building2,
       color: "bg-green-500",
       description: "Franchise locations",
     },
     {
-      title: "Equipment Items",
-      value: "156",
-      change: "+8.1%",
-      changeType: "positive",
-      icon: Dumbbell,
+      title: "Library Videos",
+      value: stats.totalLibraryVideos.toLocaleString(),
+      change: `${stats.libraryVideoGrowth >= 0 ? "+" : ""}${stats.libraryVideoGrowth}%`,
+      changeType: stats.libraryVideoGrowth >= 0 ? "positive" : "negative",
+      icon: Play,
       color: "bg-purple-500",
-      description: "Available equipment",
+      description: "Library content",
     },
     {
       title: "Exercise Videos",
-      value: "1,234",
-      change: "+15.3%",
-      changeType: "positive",
-      icon: Play,
+      value: stats.totalExerciseVideos.toLocaleString(),
+      change: `${stats.videoGrowth >= 0 ? "+" : ""}${stats.videoGrowth}%`,
+      changeType: stats.videoGrowth >= 0 ? "positive" : "negative",
+      icon: Dumbbell,
       color: "bg-orange-500",
-      description: "Library content",
+      description: "Exercise setup content",
     },
   ];
-
-  const recentActivities = [
-    {
-      id: 1,
-      type: "user",
-      action: "New user registered",
-      user: "Sarah Johnson",
-      time: "2 minutes ago",
-      avatar: "SJ",
-    },
-    {
-      id: 2,
-      type: "center",
-      action: "Demo center opened",
-      location: "Downtown Fitness Hub",
-      time: "1 hour ago",
-      avatar: "DC",
-    },
-    {
-      id: 3,
-      type: "equipment",
-      action: "New equipment added",
-      item: "Progressive Resistance Machine",
-      time: "3 hours ago",
-      avatar: "EQ",
-    },
-    {
-      id: 4,
-      type: "video",
-      action: "Exercise video uploaded",
-      title: "Advanced Chest Workout",
-      time: "5 hours ago",
-      avatar: "EV",
-    },
-  ];
-
-  const topPerformers = [
-    {
-      name: "Downtown Fitness Hub",
-      location: "New York, NY",
-      rating: 4.8,
-      members: 342,
-      growth: "+18%",
-    },
-    {
-      name: "Elite Training Center",
-      location: "Los Angeles, CA",
-      rating: 4.7,
-      members: 298,
-      growth: "+15%",
-    },
-    {
-      name: "Power House Gym",
-      location: "Chicago, IL",
-      rating: 4.6,
-      members: 267,
-      growth: "+12%",
-    },
-  ];
-
-  const systemHealth = [
-    { name: "Server Uptime", value: 99.8, status: "excellent" },
-    { name: "Database Performance", value: 94.2, status: "good" },
-    { name: "API Response Time", value: 87.5, status: "warning" },
-    { name: "Storage Usage", value: 72.1, status: "good" },
-  ];
-
-  if (!session) {
-    return <AuthRequired />;
-  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col items-center justify-between gap-2 md:flex-row">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             Dashboard Overview
           </h1>
-          <p className="text-muted-foreground">
-            Welcome back! Heres whats happening with your fitness platform
-            today.
-          </p>
         </div>
         <div className="flex items-center space-x-2">
           <Badge variant="secondary" className="flex items-center gap-1">
@@ -167,7 +142,7 @@ const DashboardOverview = ({ session }: { session: Session }) => {
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, index) => (
+        {statsData.map((stat, index) => (
           <Card key={index} className="relative overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -231,10 +206,7 @@ const DashboardOverview = ({ session }: { session: Session }) => {
                     {activity.action}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {activity.user ||
-                      activity.location ||
-                      activity.item ||
-                      activity.title}
+                    {activity.title}
                   </p>
                 </div>
                 <div className="flex flex-shrink-0 items-center gap-1 text-xs text-muted-foreground">
@@ -258,8 +230,8 @@ const DashboardOverview = ({ session }: { session: Session }) => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {topPerformers.map((center, index) => (
-              <div key={index} className="flex items-center space-x-3">
+            {topPerformingCenters.map((center, index) => (
+              <div key={center.id} className="flex items-center space-x-3">
                 <div className="flex-shrink-0">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-xs font-medium text-white">
                     {index + 1}
@@ -277,10 +249,10 @@ const DashboardOverview = ({ session }: { session: Session }) => {
                 <div className="flex-shrink-0 text-right">
                   <div className="flex items-center gap-1 text-xs">
                     <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                    {center.rating}
+                    {center.rating.toFixed(1)}
                   </div>
                   <p className="text-xs font-medium text-green-600">
-                    {center.growth}
+                    +{center.growth}%
                   </p>
                 </div>
               </div>
