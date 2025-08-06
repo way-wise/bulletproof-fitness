@@ -25,7 +25,7 @@ async function main(total: number) {
     // Get created user IDs
     const userIds = await tx.users.findMany({
       select: { id: true },
-      take: total,
+      take: 1,
     });
 
     // Create accounts for users with same password
@@ -49,7 +49,6 @@ async function main(total: number) {
         points: 1,
         isActive: true,
       },
-
       {
         type: RewardType.RATING,
         name: "Rating",
@@ -84,7 +83,7 @@ async function main(total: number) {
   });
 }
 
-main(100)
+main(1)
   .then(async () => {
     await prisma.$disconnect();
   })
