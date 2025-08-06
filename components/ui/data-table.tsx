@@ -67,7 +67,7 @@ export const DataTable = <TData, TValue>({
   const handleLimitChange = (value: string) => {
     onPaginationChange({ pageIndex: 0, pageSize: Number(value) });
   };
-  console.log(data);
+
   return (
     <div className="relative">
       {/* Smooth loading overlay */}
@@ -156,10 +156,10 @@ export const DataTable = <TData, TValue>({
       <div className="flex flex-wrap items-center justify-center gap-4 pt-6 sm:justify-between">
         {/* Pagination range indicator (e.g., '1-10 of 50') */}
         <div className="text-sm text-muted-foreground">
-          Showing {(pagination.pageIndex - 1) * pagination.pageSize + 1}
+          Showing {pagination.pageIndex * pagination.pageSize + 1}
           &nbsp;&minus;&nbsp;
           {Math.min(
-            pagination.pageIndex * pagination.pageSize,
+            (pagination.pageIndex + 1) * pagination.pageSize,
             data?.meta?.total || 0,
           )}
           &nbsp;of&nbsp;
