@@ -100,11 +100,11 @@ const DemoCentersCards: React.FC<DemoCentersCardsProps> = ({
               className="grid grid-cols-1 gap-6 p-6 md:grid-cols-5"
             >
               <div className="md:col-span-2">
-                <h3 className="text-lg font-bold uppercase">{center.name}</h3>
+                <h3 className="text-2xl font-bold uppercase">{center.name}</h3>
                 <p className="text-sm text-muted-foreground">
                   TYPE: {center.buildingType.toUpperCase()}
                 </p>
-                <div className="mt-4 h-full max-h-64 w-full overflow-hidden rounded-md bg-gray-100">
+                <div className="mt-4 h-64 w-full overflow-hidden rounded-md bg-gray-100">
                   {center.image ? (
                     <Image
                       src={center.image}
@@ -139,7 +139,7 @@ const DemoCentersCards: React.FC<DemoCentersCardsProps> = ({
               </div>
 
               <div className="space-y-3 md:col-span-3">
-                <p className="text-lg font-bold uppercase">Equipment Onsite</p>
+                <p className="text-2xl font-bold uppercase">Equipment Onsite</p>
                 <div className="mb-4 flex flex-wrap gap-2">
                   {center.demoCenterEquipments.map((equip) => (
                     <span
