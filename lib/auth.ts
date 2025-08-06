@@ -1,14 +1,16 @@
-import { headers } from "next/headers";
-import { betterAuth } from "better-auth";
-import { admin } from "better-auth/plugins";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import prisma from "@/lib/prisma";
-import { sendVerificationEmail } from "./email";
 import { emailEvents, EmailEventType } from "@/app/api/lib/events/email_event";
+import prisma from "@/lib/prisma";
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { admin } from "better-auth/plugins";
+import { headers } from "next/headers";
 
 // Auth Config
 export const auth = betterAuth({
-  trustedOrigins: ["http://localhost:3000", "https://bulletproof.waywisetech.com"],
+  trustedOrigins: [
+    "http://localhost:3000",
+    "https://bulletproof.waywisetech.com",
+  ],
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),

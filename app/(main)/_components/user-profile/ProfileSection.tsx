@@ -10,6 +10,7 @@ import { useState } from "react";
 import { EditProfileModal } from "./EditProfileModal";
 import { ProfileHeader } from "./ProfileHeader";
 import { ProfileTabs } from "./ProfileTabs";
+import ResetPassword from "./ResetPassword";
 import { StatsCards } from "./StatsCards";
 
 // Main Profile Page Component
@@ -18,6 +19,8 @@ const ProfileSection = () => {
     useUserProfile();
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] =
+    useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 
   const handleEditProfile = () => {
@@ -44,6 +47,9 @@ const ProfileSection = () => {
     } catch (error) {
       console.error("Error updating profile:", error);
     }
+  };
+  const handleResetPassword = () => {
+    setIsResetPasswordModalOpen(true);
   };
 
   if (error) {
@@ -72,6 +78,7 @@ const ProfileSection = () => {
         user={user as UserProfile}
         isLoading={isLoading}
         onEditClick={handleEditProfile}
+        onResetPasswordClick={handleResetPassword}
       />
 
       <StatsCards stats={stats} isLoading={isLoading} />
@@ -104,6 +111,12 @@ const ProfileSection = () => {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSave={handleSaveProfile}
+      />
+      {/* reset password modal  */}
+      <ResetPassword
+        user={user as UserProfile}
+        isOpen={isResetPasswordModalOpen}
+        onClose={() => setIsResetPasswordModalOpen(false)}
       />
     </div>
   );

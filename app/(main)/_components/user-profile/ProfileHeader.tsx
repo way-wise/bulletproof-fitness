@@ -7,17 +7,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserProfile } from "@/lib/dataTypes";
 import { formatDate } from "@/lib/date-format";
-import { Calendar, Edit, Mail, Trophy } from "lucide-react";
+import { Calendar, Edit, Lock, Mail, Trophy } from "lucide-react";
 import Image from "next/image";
 
 export const ProfileHeader = ({
   user,
   isLoading,
   onEditClick,
+  onResetPasswordClick,
 }: {
   user: UserProfile;
   isLoading: boolean;
   onEditClick: () => void;
+  onResetPasswordClick: () => void;
 }) => {
   if (isLoading) {
     return (
@@ -100,10 +102,20 @@ export const ProfileHeader = ({
             </div>
           </div>
 
-          <Button onClick={onEditClick} className="flex items-center gap-2">
-            <Edit className="h-4 w-4" />
-            Edit Profile
-          </Button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button onClick={onEditClick} className="flex items-center gap-2">
+              <Edit className="h-4 w-4 cursor-pointer" />
+              Edit Profile
+            </Button>
+            <Button
+              onClick={onResetPasswordClick}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Lock className="h-4 w-4 cursor-pointer" />
+              Reset Password
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
