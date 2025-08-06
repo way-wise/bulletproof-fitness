@@ -736,6 +736,8 @@ export const exerciseSetupService = {
   },
   // Create exercise setup from public (Through Zapier)
   createExerciseSetup: async (data: InferType<typeof exerciseSetupSchema>) => {
+    console.log("data", data);
+
     if (!zapierSetupTriggerHook) {
       throw new HTTPException(500, {
         message: "Zapier exercise trigger hook not found",
@@ -745,7 +747,7 @@ export const exerciseSetupService = {
     const equipments = await prisma.equipment.findMany({
       where: {
         id: {
-          in: data.equipment,
+          in: data.equipments,
         },
       },
     });
@@ -768,7 +770,7 @@ export const exerciseSetupService = {
 
     const formData = {
       ...data,
-      equipment: equipments.map((equipment) => ({
+      equipments: equipments.map((equipment) => ({
         id: equipment.id,
         name: equipment.name,
       })),
