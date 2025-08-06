@@ -480,6 +480,8 @@ export const exerciseLibraryService = {
       })),
     };
 
+    console.log("formData", formData);
+
     const response = await fetch(zapierExerciseTriggerHook, {
       method: "POST",
       headers: {
@@ -493,6 +495,8 @@ export const exerciseLibraryService = {
     }
 
     const result = await response.json();
+
+    console.log("result", result);
 
     return {
       success: true,
