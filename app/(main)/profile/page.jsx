@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useSession } from "@/lib/auth-client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { AuthRequired } from "../_components/user-profile/AuthRequired";
 import { EditProfileModal } from "../_components/user-profile/EditProfileModal";
 import { ProfileHeader } from "../_components/user-profile/ProfileHeader";
@@ -45,19 +45,6 @@ const ProfilePage = () => {
       console.error("Error updating profile:", error);
     }
   };
-
-  // Debug logging
-  React.useEffect(() => {
-    console.log("Profile data:", {
-      user,
-      videos,
-      rewards,
-      stats,
-      isLoading,
-      error,
-    });
-    console.log("Session:", session);
-  }, [user, videos, rewards, stats, isLoading, error, session]);
 
   // Show auth required if not signed in
   if (!session) {

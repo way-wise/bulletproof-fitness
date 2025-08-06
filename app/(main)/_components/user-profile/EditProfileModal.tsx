@@ -119,11 +119,6 @@ export const EditProfileModal = ({
                     alt="Profile"
                     className="h-16 w-16 rounded-full border object-cover"
                   />
-                  <div className="flex-1">
-                    <p className="truncate text-xs text-gray-500">
-                      {formData.image}
-                    </p>
-                  </div>
                 </div>
               )}
 
