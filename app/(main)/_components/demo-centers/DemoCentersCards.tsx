@@ -97,14 +97,14 @@ const DemoCentersCards: React.FC<DemoCentersCardsProps> = ({
           {demoCenters.map((center: DemoCenterFromAPI) => (
             <Card
               key={center.id}
-              className="grid grid-cols-1 gap-6 p-6 md:grid-cols-3"
+              className="grid grid-cols-1 gap-6 p-6 md:grid-cols-5"
             >
-              <div>
+              <div className="md:col-span-2">
                 <h3 className="text-lg font-bold uppercase">{center.name}</h3>
                 <p className="text-sm text-muted-foreground">
                   TYPE: {center.buildingType.toUpperCase()}
                 </p>
-                <div className="mt-4 h-48 w-full overflow-hidden rounded-md bg-gray-100">
+                <div className="mt-4 h-full max-h-64 w-full overflow-hidden rounded-md bg-gray-100">
                   {center.image ? (
                     <Image
                       src={center.image}
@@ -134,19 +134,17 @@ const DemoCentersCards: React.FC<DemoCentersCardsProps> = ({
                     </div>
                   )}
                 </div>
-                <p className="pt-2 text-sm font-semibold">BIO:</p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {center.bio}
-                </p>
+                <p className="pt-2 text-lg font-semibold">BIO:</p>
+                <p className="mt-1 text-muted-foreground">{center.bio}</p>
               </div>
 
-              <div className="space-y-3 md:col-span-2">
-                <p className="text-sm font-bold uppercase">Equipment Onsite</p>
+              <div className="space-y-3 md:col-span-3">
+                <p className="text-lg font-bold uppercase">Equipment Onsite</p>
                 <div className="mb-4 flex flex-wrap gap-2">
                   {center.demoCenterEquipments.map((equip) => (
                     <span
                       key={equip.id}
-                      className="inline-block rounded bg-gray-300 px-2 py-1 text-xs text-primary"
+                      className="inline-block rounded bg-gray-300 px-2 py-1 text-sm text-primary"
                     >
                       {equip.equipment.name}
                     </span>
@@ -154,34 +152,41 @@ const DemoCentersCards: React.FC<DemoCentersCardsProps> = ({
                 </div>
 
                 <h2 className="text-xl font-bold text-blue-900">VISIT US</h2>
-                <p className="text-sm leading-5">
+                <p className="leading-5 text-gray-500">
                   {center.address} <br />
                   {center.cityZip} <br />
                   {center.contact}
                 </p>
                 {center?.buildingType === "BUSINESS" && (
                   <div className="grid gap-4 md:grid-cols-2">
-                    <div className="rounded bg-gray-100 p-3">
-                      <h4 className="text-sm font-semibold">WEEKDAYS</h4>
-                      <p className="text-xs text-muted-foreground">
+                    <div className="space-y-2 rounded bg-gray-100 p-3">
+                      <h4 className="text-lg font-semibold">WEEKDAYS</h4>
+                      <p className="text-muted-foreground">
                         {center.weekdays.length > 0
                           ? center.weekdays.join(", ")
                           : "Not specified"}
                       </p>
-                      <p className="text-sm font-semibold">
+                      <p className="text-lg font-semibold">
+                        Opening/Closing Hour
+                      </p>
+                      <p className="">
                         {center.weekdayOpen && center.weekdayClose
                           ? `${center.weekdayOpen} - ${center.weekdayClose}`
                           : "Contact for hours"}
                       </p>
                     </div>
-                    <div className="rounded bg-gray-100 p-3">
-                      <h4 className="text-sm font-semibold">WEEKENDS</h4>
-                      <p className="text-xs text-muted-foreground">
+                    <div className="space-y-2 rounded bg-gray-100 p-3">
+                      <h4 className="text-lg font-semibold">WEEKENDS</h4>
+                      <p className="text-muted-foreground">
                         {center.weekends.length > 0
                           ? center.weekends.join(", ")
                           : "Not specified"}
                       </p>
-                      <p className="text-sm font-semibold">
+
+                      <p className="text-lg font-semibold">
+                        Opening/Closing Hour
+                      </p>
+                      <p className="">
                         {center.weekendOpen && center.weekendClose
                           ? `${center.weekendOpen} - ${center.weekendClose}`
                           : "Contact for hours"}
@@ -191,8 +196,8 @@ const DemoCentersCards: React.FC<DemoCentersCardsProps> = ({
                 )}
 
                 <div className="rounded bg-gray-100 p-3">
-                  <h4 className="text-sm font-semibold">AVAILABILITY</h4>
-                  <p className="text-sm">
+                  <h4 className="text-lg font-semibold">AVAILABILITY</h4>
+                  <p className="">
                     {center.availability || "Contact for availability"}
                   </p>
                 </div>
