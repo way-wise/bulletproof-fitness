@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
 import {
   DropdownMenu,
@@ -43,7 +44,6 @@ import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import LibraryVideoUpload from "./create-ex-lib-admin";
 import UpdateLibraryVideo from "./UpdateLibraryVideo";
-
 export const ExerciseLibraryVideoTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [blockVideoModalOpen, setBlockVideoModalOpen] = useState(false);
@@ -192,20 +192,27 @@ export const ExerciseLibraryVideoTable = () => {
     }
   };
 
-  // Remove unused getStatusBadge function
-
-  console.log(data);
   // Table columns
   const columns: ColumnDef<ExerciseLibraryVideo>[] = [
     {
-      id: "number",
-      header: "#",
-      cell: ({ row, table }) => {
-        // Calculate the row number based on pagination
-        const pageIndex = table.getState().pagination.pageIndex || 0;
-        const pageSize = table.getState().pagination.pageSize || 10;
-        return <span>{pageIndex * pageSize + row.index + 1}</span>;
-      },
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
     },
     {
       header: "Title",
@@ -222,7 +229,6 @@ export const ExerciseLibraryVideoTable = () => {
       cell: ({ row }) => {
         const equipmentArray = row.original.ExLibEquipment;
 
-        console.log(row.original);
         if (!Array.isArray(equipmentArray) || equipmentArray.length === 0)
           return "-";
         return (
