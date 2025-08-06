@@ -90,7 +90,7 @@ const UserDetails = ({ id }: { id: string }) => {
       cell: ({ row }) => formatDate(row.original.updatedAt || ""),
     },
   ];
-
+  console.log(data);
   return (
     <>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
@@ -105,9 +105,9 @@ const UserDetails = ({ id }: { id: string }) => {
           <UserDetailsSkeleton />
         ) : (
           <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:justify-start sm:text-left">
-            {data?.user.image ? (
+            {data?.user?.image ? (
               <Image
-                src={data.user.image}
+                src={data?.user?.image}
                 alt="Profile Image"
                 width={150}
                 height={150}
@@ -120,9 +120,9 @@ const UserDetails = ({ id }: { id: string }) => {
             )}
             <div>
               <h1 className="flex items-center justify-center gap-2 text-2xl font-medium sm:justify-start">
-                <span>{data?.user.name}</span>
+                <span>{data?.user?.name}</span>
 
-                {data?.user.emailVerified ? (
+                {data?.user?.emailVerified ? (
                   <Badge variant="success" size="icon">
                     <Check className="size-4" />
                   </Badge>
@@ -133,20 +133,21 @@ const UserDetails = ({ id }: { id: string }) => {
                 )}
               </h1>
               <Link
-                href={`mailto:${data?.user.email}`}
+                href={`mailto:${data?.user?.email}`}
                 className="text-muted-foreground"
               >
-                {data?.user.email}
+                {data?.user?.email}
               </Link>
               <p className="text-muted-foreground">
-                Since {data?.user.createdAt && formatDate(data?.user.createdAt)}
+                Since{" "}
+                {data?.user?.createdAt && formatDate(data?.user?.createdAt)}
               </p>
               <div className="flex items-center gap-2 py-3">
                 <div className="flex items-center gap-1.5 rounded-full bg-muted py-1.5 pr-2.5 pl-2 text-muted-foreground">
                   <ShieldUser className="size-6 stroke-[1.5]" />
-                  <span className="capitalize">{data?.user.role}</span>
+                  <span className="capitalize">{data?.user?.role}</span>
                 </div>
-                {data?.user.banned ? (
+                {data?.user?.banned ? (
                   <div className="flex items-center gap-1.5 rounded-full bg-destructive/70 py-1.5 pr-2.5 pl-2 text-white">
                     <CircleX className="size-6 stroke-[1.5]" />
                     <span className="capitalize">Banned</span>
@@ -167,7 +168,7 @@ const UserDetails = ({ id }: { id: string }) => {
         <div className="mb-4 flex items-center justify-between">
           <h3 className="mb-4 text-lg font-semibold">Rewards Points</h3>
           <span className="text-md text-muted-foreground">
-            {data?.user.totalPoints ?? 0}
+            {data?.user?.totalPoints ?? 0}
           </span>
         </div>
         <DataTable
