@@ -28,16 +28,7 @@ import { signUpSchema } from "@/schema/authSchema";
 import { User } from "@/schema/userSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
-import {
-  Ban,
-  Check,
-  Eye,
-  MoreVertical,
-  Pencil,
-  Plus,
-  Trash,
-  X,
-} from "lucide-react";
+import { Ban, Eye, MoreVertical, Plus, Trash } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -184,27 +175,27 @@ export const UsersTable = () => {
       header: "Email",
       accessorKey: "email",
     },
-    {
-      header: () => (
-        <div className="flex items-center justify-center">Email Verified</div>
-      ),
-      accessorKey: "emailVerified",
-      cell: ({ row }) => {
-        return (
-          <div className="text-center">
-            {row.original.emailVerified ? (
-              <Badge variant="success" size="icon">
-                <Check className="size-4" />
-              </Badge>
-            ) : (
-              <Badge variant="destructive" size="icon">
-                <X className="size-4" />
-              </Badge>
-            )}
-          </div>
-        );
-      },
-    },
+    // {
+    //   header: () => (
+    //     <div className="flex items-center justify-center">Email Verified</div>
+    //   ),
+    //   accessorKey: "emailVerified",
+    //   cell: ({ row }) => {
+    //     return (
+    //       <div className="text-center">
+    //         {row.original.emailVerified ? (
+    //           <Badge variant="success" size="icon">
+    //             <Check className="size-4" />
+    //           </Badge>
+    //         ) : (
+    //           <Badge variant="destructive" size="icon">
+    //             <X className="size-4" />
+    //           </Badge>
+    //         )}
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       header: "Role",
       accessorKey: "role",
@@ -232,11 +223,11 @@ export const UsersTable = () => {
       accessorKey: "createdAt",
       cell: ({ row }) => formatDate(row.original.createdAt),
     },
-    {
-      header: "Updated At",
-      accessorKey: "updatedAt",
-      cell: ({ row }) => formatDate(row.original.updatedAt),
-    },
+    // {
+    //   header: "Updated At",
+    //   accessorKey: "updatedAt",
+    //   cell: ({ row }) => formatDate(row.original.updatedAt),
+    // },
     {
       id: "actions",
       header: "Actions",
@@ -256,10 +247,10 @@ export const UsersTable = () => {
                     <span>View</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                {/* <DropdownMenuItem>
                   <Pencil />
                   <span>Edit</span>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 {banned ? (
                   <DropdownMenuItem
                     variant="destructive"
