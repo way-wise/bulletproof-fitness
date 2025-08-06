@@ -1,9 +1,9 @@
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { ReactionType, RewardType } from "@/prisma/generated/enums";
+import { QueryMode } from "@/prisma/generated/internal/prismaNamespace";
 import { PaginationQuery } from "@/schema/paginationSchema";
 import { getPaginationQuery } from "../../lib/pagination";
-import { QueryMode } from "@/prisma/generated/internal/prismaNamespace";
 
 async function getRewardPointValue(type: RewardType) {
   const reward = await prisma.rewardPoints.findFirst({
@@ -49,11 +49,6 @@ export async function decrementPointsFromUser(
   const points = await getRewardPointValue(type);
 
   if (!points) return;
-
-  console.log("Decrementing points", {
-    userId,
-    points: -points,
-  });
 
   await prisma.users.update({
     where: { id: userId },
@@ -406,8 +401,6 @@ export const actionService = {
       }),
       prisma.feedback.count({ where: searchFilter }),
     ]);
-
-    console.log("Feedbacks fetched:", feedbacks.length);
 
     return {
       success: true,

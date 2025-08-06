@@ -4,7 +4,6 @@ import {
   exerciseSetupSchemaAdmin,
 } from "@/schema/exerciseSetupSchema";
 import { Hono, type Context } from "hono";
-import { InferType } from "yup";
 import { validateInput } from "../../lib/validateInput";
 import { exerciseSetupService } from "./exerciseSetupService";
 
@@ -117,8 +116,6 @@ exerciseSetupModule.get("/user-videos", async (c) => {
 exerciseSetupModule.get("/dashboard/:id", async (c) => {
   try {
     const id = c.req.param("id");
-
-    console.log("Single ID", id);
 
     const result = await exerciseSetupService.getExerciseSetupVideoById(id);
 
@@ -588,7 +585,8 @@ exerciseSetupModule.post("/", async (c) => {
 
 // Create library video information when youtube video is published
 exerciseSetupModule.post("/youtube/callback", async (c) => {
-    const rawData = await c.req.json();
-    const result = await exerciseSetupService.createExerciseSetupFromYoutube(rawData);
-    return c.json(result);
+  const rawData = await c.req.json();
+  const result =
+    await exerciseSetupService.createExerciseSetupFromYoutube(rawData);
+  return c.json(result);
 });

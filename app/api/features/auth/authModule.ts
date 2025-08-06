@@ -1,6 +1,6 @@
-import { Hono } from "hono";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { Hono } from "hono";
 
 const app = new Hono();
 

@@ -82,8 +82,6 @@ const RewardsTable = () => {
         : "/api/rewards";
       const method = isEdit ? "PUT" : "POST";
 
-      console.log("Values", values);
-
       const response = await fetch(endpoint, {
         method,
         headers: { "Content-Type": "application/json" },
@@ -101,7 +99,6 @@ const RewardsTable = () => {
       setEditModalOpen(false);
       setSelectedReward(null);
     } catch (err) {
-      console.log(err);
       toast.error((err as Error).message);
     }
   };

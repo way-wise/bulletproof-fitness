@@ -317,7 +317,6 @@ export const demoCentersService = {
     id: string,
     data: InferType<typeof demoCenterSchema>,
   ) => {
-    console.log(data);
     const demoCenter = await prisma.demoCenter.findUnique({
       where: { id },
     });

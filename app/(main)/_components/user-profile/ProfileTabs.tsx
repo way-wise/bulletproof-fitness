@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UserReward } from "@/lib/dataTypes";
 import { formatDate } from "@/lib/date-format";
 import { Activity, Trophy, User, Video } from "lucide-react";
 import Link from "next/link";
@@ -17,15 +18,6 @@ interface Video {
   createdAt?: string;
   views?: number;
   likes?: number;
-}
-
-interface Reward {
-  id: string;
-  type: string;
-  name?: string;
-  description: string;
-  points: number;
-  createdAt?: string;
 }
 
 interface UserProfile {
@@ -47,7 +39,7 @@ interface ProfileTabsProps {
   user: UserProfile;
   videos: Video[];
   libVideos: Video[];
-  rewards: Reward[];
+  rewards: UserReward[];
   stats: Stats;
   isLoading: boolean;
   activeTab: string;

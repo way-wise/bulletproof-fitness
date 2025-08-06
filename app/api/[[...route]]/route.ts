@@ -3,18 +3,17 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
 import { handle } from "hono/vercel";
-import { equipmentModule } from "../features/equipments/equipmentModule";
+import actionModule from "../features/actions/actionModule";
 import authModule from "../features/auth/authModule";
 import { bodyPartsModule } from "../features/bodyParts/bodyPartsModule";
 import { demoCenterModule } from "../features/demo-centers/demoCentersModule";
+import { equipmentModule } from "../features/equipments/equipmentModule";
 import { exerciseLibraryModule } from "../features/exercise-library/exerciseLibraryModule";
 import { exerciseSetupModule } from "../features/exercise-setup/exerciseSetupModule";
 import { racksModule } from "../features/racks/racksModule";
 import rewardModule from "../features/rewards/rewardModule";
-import userModule from "../features/users/userModule";
-import actionModule from "../features/actions/actionModule";
 import signUploadModule from "../features/sign-upload/signUploadModule";
-
+import userModule from "../features/users/userModule";
 
 // Hono init
 const app = new Hono().basePath("/api");
@@ -37,7 +36,6 @@ app.route("/exercise-setup", exerciseSetupModule);
 app.route("/rewards", rewardModule);
 app.route("/action", actionModule);
 app.route("/sign-upload", signUploadModule);
-
 
 // Not found
 app.notFound((c) => {

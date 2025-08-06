@@ -193,8 +193,6 @@ export const ExerciseSetupVideoTable = () => {
     }
   };
 
-  // Remove unused getStatusBadge function
-  console.log(data);
   // Table columns
   const columns: ColumnDef<ExerciseSetupVideo>[] = [
     {
@@ -235,7 +233,7 @@ export const ExerciseSetupVideoTable = () => {
 
         if (!Array.isArray(equipmentArray) || equipmentArray.length === 0)
           return "-";
-        console.log(equipmentArray);
+
         return (
           <div className="flex flex-wrap gap-1">
             {equipmentArray.slice(0, 2).map((item, index: number) => (
@@ -260,7 +258,7 @@ export const ExerciseSetupVideoTable = () => {
 
         if (!Array.isArray(bodyPartArray) || bodyPartArray.length === 0)
           return "-";
-        console.log(bodyPartArray);
+
         return (
           <div className="flex flex-wrap gap-1">
             {bodyPartArray.slice(0, 2).map((item, index: number) => (
@@ -289,7 +287,7 @@ export const ExerciseSetupVideoTable = () => {
         const rackArray = row.original.ExSetupRak;
 
         if (!Array.isArray(rackArray) || rackArray.length === 0) return "-";
-        console.log(rackArray);
+
         return (
           <div className="flex flex-wrap gap-1">
             {rackArray.slice(0, 2).map((item, index: number) => (
