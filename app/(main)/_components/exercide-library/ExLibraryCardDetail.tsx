@@ -74,7 +74,7 @@ export default function ExerciseDetailPage({
     );
   }
   return (
-    <div className="mx-auto w-full max-w-[1200px] px-6 py-14 font-sans text-[17px] leading-relaxed text-[#222]">
+    <div className="mx-auto w-full max-w-[1200px] px-2 py-14 font-sans text-[17px] leading-relaxed text-[#222] md:px-6">
       {/* Video & Info Section */}
       <div className="grid items-start gap-10 md:grid-cols-2">
         <div className="aspect-video w-full overflow-hidden rounded shadow-md">
@@ -167,6 +167,20 @@ export default function ExerciseDetailPage({
             onClose={() => setShowSignInModal(false)}
           />
         )}
+      </div>
+      <div className="mx-auto mt-8 flex flex-col items-center justify-center gap-6">
+        <h2 className="text-center text-2xl font-bold md:text-4xl">
+          BASIC RULES TO SETUP
+        </h2>
+        <div className="mx-auto aspect-video w-full overflow-hidden rounded shadow-md md:w-1/2">
+          <iframe
+            className="h-full w-full"
+            src="https://www.youtube.com/embed/kt6MxpsAnY4"
+            title="Basic Rules To ISOLATOR Setup"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
       </div>
     </div>
   );
