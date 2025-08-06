@@ -37,7 +37,7 @@ const formSchema = z.object({
   title: z.string().min(1, "Video title is required"),
   equipment: z.array(z.string()),
   bodyPart: z.array(z.string()),
-  height: z.string().optional(),
+  height: z.number().optional(),
   rack: z.array(z.string()),
   isolatorHole: z.string().optional(),
   yellow: z.string().optional(),
@@ -76,7 +76,7 @@ export const UpdateSetupVideo = ({
       title: "",
       equipment: [],
       bodyPart: [],
-      height: "",
+      height: undefined,
       rack: [],
       isolatorHole: "",
       yellow: "",
@@ -114,7 +114,7 @@ export const UpdateSetupVideo = ({
           videoData.ExSetupBodyPart?.map(
             (item: { bodyPartId: string }) => item.bodyPartId,
           ) || [],
-        height: videoData.height || "",
+        height: videoData.height !== null ? videoData.height : undefined,
         rack:
           videoData.ExSetupRak?.map(
             (item: { rackId: string }) => item.rackId,
@@ -335,7 +335,10 @@ export const UpdateSetupVideo = ({
                             </SelectTrigger>
                             <SelectContent>
                               {bodyParts.map((bodyPart) => (
-                                <SelectItem key={bodyPart.id} value={bodyPart.id}>
+                                <SelectItem
+                                  key={bodyPart.id}
+                                  value={bodyPart.id}
+                                >
                                   {bodyPart.name}
                                 </SelectItem>
                               ))}
