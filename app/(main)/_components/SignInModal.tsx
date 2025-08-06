@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import SignInPage from "../auth/sign-in/page";
+import SigninForm from "../auth/sign-in/signin-form";
 const SignInModal = ({
   isOpen,
   onClose,
@@ -14,7 +14,7 @@ const SignInModal = ({
         <Button variant="outline">Share</Button>
       </DialogTrigger>
       <DialogContent className="rounded-xl p-0 sm:max-w-md">
-        <SignInPage />
+        <SigninForm />
       </DialogContent>
     </Dialog>
   );

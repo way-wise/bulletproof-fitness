@@ -136,6 +136,7 @@ const SigninForm = () => {
                 variant="secondary"
                 className="w-full"
                 disabled={pendingAuth}
+                onClick={() => signIn.social({ provider: "google" })}
               >
                 <FaGoogle />
                 <span>Login with Google</span>

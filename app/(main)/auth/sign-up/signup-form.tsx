@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/form";
 import { FormError } from "@/components/ui/form-error";
 import { Input } from "@/components/ui/input";
-import { signUp } from "@/lib/auth-client";
+import { signIn, signUp } from "@/lib/auth-client";
 import { signUpSchema } from "@/schema/authSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Link from "next/link";
@@ -155,6 +155,7 @@ const SignupForm = () => {
                 variant="secondary"
                 className="w-full"
                 disabled={pendingAuth}
+                onClick={() => signIn.social({ provider: "google" })}
               >
                 <FaGoogle />
                 <span>Google</span>
