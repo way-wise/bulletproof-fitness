@@ -165,8 +165,8 @@ export default function UpdateDemoCenter({
   function generateTimeOptions() {
     const times = [];
     for (let hour = 0; hour < 24; hour++) {
-      for (const min of [0, 30]) {
-        const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : "30"} ${hour < 12 ? "AM" : "PM"}`;
+      for (const min of [0, 15, 30, 45]) {
+        const display = `${((hour + 11) % 12) + 1}:${min === 0 ? "00" : min < 10 ? `0${min}` : min} ${hour < 12 ? "AM" : "PM"}`;
         times.push(
           <option key={display} value={display}>
             {display}
