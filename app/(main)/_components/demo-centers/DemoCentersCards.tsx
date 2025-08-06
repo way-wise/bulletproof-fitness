@@ -104,7 +104,7 @@ const DemoCentersCards: React.FC<DemoCentersCardsProps> = ({
                 <p className="text-sm text-muted-foreground">
                   TYPE: {center.buildingType.toUpperCase()}
                 </p>
-                <div className="mt-4 h-full max-h-64 w-full overflow-hidden rounded-md bg-gray-100">
+                <div className="mt-4 h-64 w-full overflow-hidden rounded-md bg-gray-100">
                   {center.image ? (
                     <Image
                       src={center.image}
