@@ -2,6 +2,8 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
+import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
 import {
   DropdownMenu,
@@ -196,14 +198,24 @@ export const ExerciseSetupVideoTable = () => {
   // Table columns
   const columns: ColumnDef<ExerciseSetupVideo>[] = [
     {
-      id: "number",
-      header: "#",
-      cell: ({ row, table }) => {
-        // Calculate the row number based on pagination
-        const pageIndex = table.getState().pagination.pageIndex || 0;
-        const pageSize = table.getState().pagination.pageSize || 10;
-        return <span>{pageIndex * pageSize + row.index + 1}</span>;
-      },
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
     },
     {
       header: "Title",

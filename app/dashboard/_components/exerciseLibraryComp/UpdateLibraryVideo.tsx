@@ -33,7 +33,7 @@ const formSchema = z.object({
   title: z.string().min(1, "Video title is required"),
   equipment: z.array(z.string()),
   bodyPart: z.array(z.string()),
-  height: z.string().optional(),
+  height: z.number().optional(),
   rack: z.array(z.string()),
 });
 
@@ -44,7 +44,7 @@ interface VideoWithRelations {
   id: string;
   title: string;
   videoUrl: string;
-  height: string | null;
+  height: number | null;
   userId: string;
   isPublic: boolean;
   blocked: boolean;
@@ -104,7 +104,7 @@ export default function UpdateLibraryVideo({
       title: "",
       equipment: [],
       bodyPart: [],
-      height: "",
+      height: undefined,
       rack: [],
     },
   });
@@ -122,6 +122,7 @@ export default function UpdateLibraryVideo({
   }
 
   // Pre-fill form when video data changes
+
   useEffect(() => {
     if (video) {
       form.reset({
@@ -129,7 +130,7 @@ export default function UpdateLibraryVideo({
         title: video.title || "",
         equipment: video.ExLibEquipment?.map((item) => item.equipment.id) || [],
         bodyPart: video.ExLibBodyPart?.map((item) => item.bodyPart.id) || [],
-        height: video.height || "",
+        height: video.height !== null ? video.height : undefined,
         rack: video.ExLibRak?.map((item) => item.rack.id) || [],
       });
     }
@@ -302,19 +303,27 @@ export default function UpdateLibraryVideo({
                 <FormField
                   control={form.control}
                   name="height"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>User Height</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Height in inches"
-                          disabled={isUpdating}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>User Height</FormLabel>
+                        <FormControl>
+                          <Input
+                            value={field.value?.toString() || ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === "" ? undefined : Number(value),
+                              );
+                            }}
+                            placeholder="Height in inches"
+                            disabled={isUpdating}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
               </div>
 
