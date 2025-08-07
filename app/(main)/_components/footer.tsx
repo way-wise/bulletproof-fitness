@@ -3,7 +3,7 @@ import Link from "next/link";
 const Footer = () => {
   return (
     <footer className="mt-auto border-t border-border py-3 dark:bg-card">
-      <div className="container flex items-center justify-between gap-2 text-xs md:text-sm">
+      <div className="container flex flex-col flex-wrap items-center justify-between gap-2 text-xs sm:flex-row md:text-sm">
         <p className="text-center">
           &copy;Copyright {new Date().getFullYear()} bulletprooffitness
         </p>

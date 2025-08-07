@@ -69,7 +69,7 @@ const ExCardsSection = ({
               </h1>
               <Drawer direction="right">
                 <DrawerTrigger asChild>
-                  <button className="inline-flex items-center gap-2 rounded-md border px-2 py-1 text-sm text-gray-500 transition-colors hover:bg-gray-50 lg:hidden">
+                  <button className="inline-flex items-center gap-2 rounded-md border bg-white px-2 py-1 text-sm transition-colors lg:hidden">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"

@@ -43,9 +43,9 @@ function DrawerContent({
   VariantProps<typeof sheetVariants>) {
   return (
     <DrawerPrimitive.Portal>
-      <DrawerPrimitive.Overlay className="fixed inset-0 bg-black/70" />
+      <DrawerPrimitive.Overlay className="fixed inset-0 z-20 bg-black/70" />
       <DrawerPrimitive.Content
-        className={cn(sheetVariants({ side }), className)}
+        className={cn(sheetVariants({ side }), "z-50", className)}
         {...props}
       >
         {children}

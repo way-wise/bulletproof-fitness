@@ -21,7 +21,6 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import SidebarMenu from "@/app/dashboard/_components/sidebar/menu";
 type Session = typeof auth.$Infer.Session;
 
 const Navbar = ({ session }: { session: Session }) => {
@@ -105,7 +104,7 @@ const Navbar = ({ session }: { session: Session }) => {
 
   return (
     <>
-      <nav className="h-16 border-b border-border bg-white py-3 dark:bg-card">
+      <nav className="sticky top-0 z-20 h-16 border-b border-border bg-white py-3 dark:bg-card">
         <div className="container flex items-center justify-between gap-2">
           <Link href="/" className="flex shrink-0 items-center">
             <Image
@@ -226,7 +225,7 @@ const Navbar = ({ session }: { session: Session }) => {
 
       {/* Mobile Sidebar */}
       <Drawer open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <DrawerContent className="z-50">
+        <DrawerContent>
           <DrawerHeader className="border-b-0">
             <div className="flex flex-col">
               <Link href="/" className="flex items-center">

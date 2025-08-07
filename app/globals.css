@@ -9,6 +9,10 @@
   padding-inline: 1rem;
 }
 
+@theme {
+  --breakpoint-xs: 30rem;
+}
+
 :root {
   --radius: 0.5rem;
   --background: oklch(1 0 0);
