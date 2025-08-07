@@ -90,7 +90,7 @@ const RewardsTable = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to create reward");
+        throw new Error(errorData.message || "Failed to update reward");
       }
 
       toast.success(`Reward ${isEdit ? "updated" : "created"} successfully`);
@@ -114,18 +114,6 @@ const RewardsTable = () => {
       toast.error("Failed to update status");
     }
   };
-
-  // const handleDeleteReward = async (reward: TReward) => {
-  //   try {
-  //     await fetch(`/api/rewards/${reward.id}`, {
-  //       method: "DELETE",
-  //     });
-  //     toast.success("Reward deleted successfully");
-  //     mutate(url);
-  //   } catch {
-  //     toast.error("Failed to delete reward");
-  //   }
-  // };
 
   const columns: ColumnDef<TReward>[] = [
     {
@@ -177,7 +165,13 @@ const RewardsTable = () => {
               <DropdownMenuItem
                 onClick={() => {
                   setSelectedReward(reward);
-                  rewardForm.reset(reward);
+                  // Convert null values to empty strings to prevent React warning
+                  const formData = {
+                    ...reward,
+                    description: reward.description || "",
+                    icon: reward.icon || "",
+                  };
+                  rewardForm.reset(formData);
                   setEditModalOpen(true);
                 }}
               >

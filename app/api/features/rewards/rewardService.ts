@@ -65,7 +65,8 @@ export const rewardService = {
       },
     });
 
-    if (rewardType) throw new Error("Reward type already used");
+    if(rewardType?.id !== rewardId) throw new Error("Reward type does not match");
+    
     const reward = await prisma.rewardPoints.update({
       where: { id: rewardId },
       data: {

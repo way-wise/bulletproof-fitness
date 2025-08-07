@@ -2,7 +2,6 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/ui/data-table";
 import {
   DropdownMenu,
@@ -27,7 +26,7 @@ import { formatDate } from "@/lib/date-format";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { Eye, Globe, Lock, MoreVertical, Pencil, Trash } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
@@ -53,15 +52,6 @@ export const DemoCenterTable = () => {
   // Get demo centers data with search
   const url = `/api/demo-centers/dashboard?page=${pagination.pageIndex}&limit=${pagination.pageSize}&search=${encodeURIComponent(searchQuery)}`;
   const { isValidating, data } = useSWR(url);
-
-  // Debounced search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPagination((prev) => ({ ...prev, pageIndex: 1 }));
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
 
   // Block Demo Center Form
   const blockDemoCenterForm = useForm({
@@ -273,14 +263,14 @@ export const DemoCenterTable = () => {
               <DropdownMenuTrigger>
                 <MoreVertical />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuContent align="end" className="w-44">
                 <DropdownMenuItem asChild>
                   <Link href={`/dashboard/demo-centers/${id}`}>
-                    <Eye className="mr-2 h-4 w-4" />
+                    <Eye />
                     <span>View</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem
+                {/* <DropdownMenuItem
                   onClick={() => {
                     setSelectedDemoCenter(row.original);
                     setUpdateModalOpen(true);
@@ -288,7 +278,7 @@ export const DemoCenterTable = () => {
                 >
                   <Pencil className="mr-2 h-4 w-4" />
                   <span>Edit</span>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuItem
                   onClick={() => {
                     setDemoCenterId(id);
@@ -297,12 +287,12 @@ export const DemoCenterTable = () => {
                 >
                   {isPublic ? (
                     <>
-                      <Lock className="mr-2 h-4 w-4" />
+                      <Lock />
                       <span>Make Private</span>
                     </>
                   ) : (
                     <>
-                      <Globe className="mr-2 h-4 w-4" />
+                      <Globe />
                       <span>Publish</span>
                     </>
                   )}
@@ -337,7 +327,7 @@ export const DemoCenterTable = () => {
                     setDeleteModalOpen(true);
                   }}
                 >
-                  <Trash className="mr-2 h-4 w-4" />
+                  <Trash />
                   <span>Delete</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -400,14 +390,14 @@ export const DemoCenterTable = () => {
               onClick={() => handlePublishToggle(true)}
               className="bg-green-600 hover:bg-green-700"
             >
-              <Globe className="mr-2 h-4 w-4" />
+              <Globe />
               Publish
             </Button>
             <Button
               onClick={() => handlePublishToggle(false)}
               variant="outline"
             >
-              <Lock className="mr-2 h-4 w-4" />
+              <Lock />
               Make Private
             </Button>
           </div>

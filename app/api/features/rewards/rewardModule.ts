@@ -70,8 +70,8 @@ app.put("/:id", async (c) => {
           (val, originalVal) => originalVal === "true" || originalVal === true,
         )
         .required("isActive is required"),
-      icon: string().required("Icon is required"),
-      description: string().required("Description is required"),
+      icon: string(),
+      description: string(),
       type: mixed<
         | "LIKE"
         | "VIEW"
