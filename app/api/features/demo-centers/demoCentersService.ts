@@ -221,7 +221,6 @@ export const demoCentersService = {
         bio: data.bio,
         image: data.image,
         availability: data.availability,
-        // Business specific fields
         weekdays:
           data.weekdays?.filter((day): day is string => Boolean(day)) || [],
         weekends:
@@ -230,11 +229,9 @@ export const demoCentersService = {
         weekdayClose: data.weekdayClose,
         weekendOpen: data.weekendOpen,
         weekendClose: data.weekendClose,
-        // New fields
         isPublic: data.isPublic || false,
         blocked: data.blocked || false,
         blockReason: data.blockReason,
-        // Create the equipment relationship
         demoCenterEquipments: {
           createMany: {
             data: data.equipment.map((equipmentId) => ({
@@ -298,7 +295,6 @@ export const demoCentersService = {
       where: { id },
       data: {
         ...data,
-        updatedAt: new Date(),
       },
       include: {
         demoCenterEquipments: {
@@ -412,8 +408,6 @@ export const demoCentersService = {
         data: {
           demoCenterId: id,
           equipmentId: equipment.id,
-          createdAt: new Date(),
-          updatedAt: new Date(),
         },
       });
     });
@@ -438,7 +432,6 @@ export const demoCentersService = {
       data: {
         blocked: true,
         blockReason: data.blockReason,
-        updatedAt: new Date(),
       },
       include: {
         demoCenterEquipments: {
@@ -471,7 +464,6 @@ export const demoCentersService = {
       data: {
         blocked: false,
         blockReason: null,
-        updatedAt: new Date(),
       },
       include: {
         demoCenterEquipments: {
