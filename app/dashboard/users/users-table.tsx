@@ -54,7 +54,7 @@ export const UsersTable = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
-    }, 500);
+    }, 600);
 
     return () => clearTimeout(timer);
   }, [search]);
