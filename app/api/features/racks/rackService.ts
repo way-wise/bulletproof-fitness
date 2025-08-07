@@ -43,8 +43,6 @@ export const racksService = {
     const rack = await prisma.rack.create({
       data: {
         name: data.name,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       },
     });
 
@@ -88,7 +86,6 @@ export const racksService = {
       },
       data: {
         name: data.name,
-        updatedAt: new Date(),
       },
     });
 
@@ -97,7 +94,7 @@ export const racksService = {
 
   // Delete rack by id
   deleteRack: async (id: string) => {
-    const rack = await prisma.rack.findUnique({
+    const rack = await prisma.rack.delete({
       where: {
         id,
       },
@@ -108,12 +105,6 @@ export const racksService = {
         message: "Rack not found",
       });
     }
-
-    await prisma.rack.delete({
-      where: {
-        id,
-      },
-    });
 
     return {
       success: true,
