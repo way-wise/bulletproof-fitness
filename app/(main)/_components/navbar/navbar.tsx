@@ -98,13 +98,14 @@ const Navbar = ({ session }: { session: Session }) => {
     <>
       <nav className="h-16 border-b border-border bg-white py-3 dark:bg-card">
         <div className="container flex items-center justify-between gap-2">
-          <Link href="/">
+          <Link href="/" className="flex items-center">
             <Image
               src="/logo.svg"
               alt="Brand Logo"
               width={100}
-              height={70}
+              height={40}
               priority
+              className="h-10 w-auto"
             />
           </Link>
 
