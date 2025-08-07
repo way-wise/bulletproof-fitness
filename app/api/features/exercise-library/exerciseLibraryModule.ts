@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth, getSession } from "@/lib/auth";
 import {
   exerciseLibrarySchema,
   exerciseLibrarySchemaAdmin,
@@ -9,23 +9,10 @@ import { exerciseLibraryService } from "./exerciseLibraryService";
 
 export const exerciseLibraryModule = new Hono();
 
-// Helper function to get session from API request
-const getApiSession = async (c: Context) => {
-  try {
-    const session = await auth.api.getSession({
-      headers: c.req.raw.headers,
-    });
-    return session;
-  } catch (error) {
-    console.error("Error getting session:", error);
-    return null;
-  }
-};
-
 // Get all exercise library videos for dashboard (admin)
 exerciseLibraryModule.get("/dashboard", async (c) => {
   try {
-    const session = await getApiSession(c);
+    const session = await getSession();
     if (!session?.user?.id) {
       return c.json(
         {
@@ -92,7 +79,7 @@ exerciseLibraryModule.get("/dashboard/:id", async (c) => {
 exerciseLibraryModule.post("/dashboard", async (c: Context) => {
   try {
     // Get current user session
-    const session = await getApiSession(c);
+    const session = await getSession();
     if (!session?.user?.id) {
       return c.json(
         {
@@ -144,7 +131,7 @@ exerciseLibraryModule.post("/dashboard", async (c: Context) => {
 // Update exercise library video
 exerciseLibraryModule.put("/dashboard/:id", async (c: Context) => {
   try {
-    const session = await getApiSession(c);
+    const session = await getSession();
     if (!session?.user?.id) {
       return c.json(
         {
@@ -197,7 +184,7 @@ exerciseLibraryModule.put("/dashboard/:id", async (c: Context) => {
 // Delete exercise library video
 exerciseLibraryModule.delete("/dashboard/:id", async (c: Context) => {
   try {
-    const session = await getApiSession(c);
+    const session = await getSession();
     if (!session?.user?.id) {
       return c.json(
         {
@@ -234,7 +221,7 @@ exerciseLibraryModule.delete("/dashboard/:id", async (c: Context) => {
 // Block exercise library video
 exerciseLibraryModule.post("/dashboard/:id/block", async (c: Context) => {
   try {
-    const session = await getApiSession(c);
+    const session = await getSession();
     if (!session?.user?.id) {
       return c.json(
         {
@@ -287,7 +274,7 @@ exerciseLibraryModule.post("/dashboard/:id/block", async (c: Context) => {
 // Unblock exercise library video
 exerciseLibraryModule.post("/dashboard/:id/unblock", async (c: Context) => {
   try {
-    const session = await getApiSession(c);
+    const session = await getSession();
     if (!session?.user?.id) {
       return c.json(
         {
@@ -324,7 +311,7 @@ exerciseLibraryModule.post("/dashboard/:id/unblock", async (c: Context) => {
 // Publish/Unpublish exercise library video
 exerciseLibraryModule.patch("/dashboard/:id/status", async (c: Context) => {
   try {
-    const session = await getApiSession(c);
+    const session = await getSession();
     if (!session?.user?.id) {
       return c.json(
         {

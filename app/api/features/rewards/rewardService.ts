@@ -1,4 +1,3 @@
-import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { RewardType } from "@/prisma/generated/enums";
 import { PaginationQuery } from "@/schema/paginationSchema";
@@ -7,8 +6,6 @@ import { getPaginationQuery } from "../../lib/pagination";
 
 export const rewardService = {
   getAllRewards: async (query: PaginationQuery) => {
-    const session = await getSession();
-    if (!session) throw new Error("Unauthorized");
     const { skip, take, page, limit } = getPaginationQuery(query);
     const [rewards, total] = await prisma.$transaction([
       prisma.rewardPoints.findMany({
@@ -40,11 +37,6 @@ export const rewardService = {
   },
 
   createReward: async (data: Reward) => {
-    const session = await getSession();
-    if (!session) {
-      return { error: "Unauthorized" };
-    }
-
     // //check type already use then error
     const rewardType = await prisma.rewardPoints.findFirst({
       where: {
@@ -62,16 +54,11 @@ export const rewardService = {
         icon: data.icon,
         description: data.description,
         type: data.type,
-        userId: session?.user.id,
       },
     });
     return { reward, message: "Reward created successfully" };
   },
-
   updateReward: async (rewardId: string, data: Reward) => {
-    const session = await getSession();
-    if (!session) throw new Error("Unauthorized");
-    // check type already use then error
     const rewardType = await prisma.rewardPoints.findFirst({
       where: {
         type: data.type as RewardType,
@@ -88,7 +75,6 @@ export const rewardService = {
         icon: data.icon,
         description: data.description,
         type: data.type,
-        userId: session?.user.id,
       },
     });
     return { reward, message: "Reward updated successfully" };

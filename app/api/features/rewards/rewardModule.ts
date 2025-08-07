@@ -42,7 +42,7 @@ app.post("/", async (c) => {
         ])
         .required(),
     }),
-    data: body, // ✅ Use the already-read body here
+    data: body,
   });
 
   const result = await rewardService.createReward(validatedBody);

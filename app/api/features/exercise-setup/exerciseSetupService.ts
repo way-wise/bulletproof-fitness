@@ -461,7 +461,6 @@ export const exerciseSetupService = {
         data: {
           blocked: true,
           blockReason,
-          updatedAt: new Date(),
         },
       });
 
@@ -480,7 +479,6 @@ export const exerciseSetupService = {
         data: {
           blocked: false,
           blockReason: null,
-          updatedAt: new Date(),
         },
       });
 
@@ -498,13 +496,10 @@ export const exerciseSetupService = {
   ) => {
     try {
       const updateData: {
-        updatedAt: Date;
         isPublic?: boolean;
         blocked?: boolean;
         blockReason?: string | null;
-      } = {
-        updatedAt: new Date(),
-      };
+      } = {};
 
       if (data.isPublic !== undefined) {
         updateData.isPublic = data.isPublic;
@@ -646,7 +641,7 @@ export const exerciseSetupService = {
         });
       }
 
-      //avarage rating ContentStats
+      // Average rating ContentStats
       // Rating filter
       if (minRating > 0) {
         where.AND.push({
@@ -732,8 +727,6 @@ export const exerciseSetupService = {
   },
   // Create exercise setup from public (Through Zapier)
   createExerciseSetup: async (data: InferType<typeof exerciseSetupSchema>) => {
-    console.log("data", data);
-
     if (!zapierSetupTriggerHook) {
       throw new HTTPException(500, {
         message: "Zapier exercise trigger hook not found",

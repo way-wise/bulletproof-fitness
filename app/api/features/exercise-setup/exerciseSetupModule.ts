@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth, getSession } from "@/lib/auth";
 import {
   exerciseSetupSchema,
   exerciseSetupSchemaAdmin,
@@ -9,33 +9,9 @@ import { exerciseSetupService } from "./exerciseSetupService";
 
 export const exerciseSetupModule = new Hono();
 
-// Helper function to get session from API request
-const getApiSession = async (c: Context) => {
-  try {
-    const session = await auth.api.getSession({
-      headers: c.req.raw.headers,
-    });
-    return session;
-  } catch (error) {
-    console.error("Error getting session:", error);
-    return null;
-  }
-};
-
 // Get all exercise library videos for dashboard (admin)
 exerciseSetupModule.get("/dashboard", async (c) => {
   try {
-    const session = await getApiSession(c);
-    if (!session?.user?.id) {
-      return c.json(
-        {
-          success: false,
-          message: "Authentication required",
-        },
-        401,
-      );
-    }
-
     // Get query parameters
     const page = parseInt(c.req.query("page") || "1");
     const limit = parseInt(c.req.query("limit") || "10");
@@ -70,7 +46,7 @@ exerciseSetupModule.get("/dashboard", async (c) => {
 // Get user videos for profile page
 exerciseSetupModule.get("/user-videos", async (c) => {
   try {
-    const session = await getApiSession(c);
+    const session = await getSession();
     if (!session?.user?.id) {
       return c.json(
         {
@@ -141,8 +117,7 @@ exerciseSetupModule.get("/dashboard/:id", async (c) => {
 // Create exercise library video from dashboard admin
 exerciseSetupModule.post("/dashboard", async (c: Context) => {
   try {
-    // Get current user session
-    const session = await getApiSession(c);
+    const session = await getSession();
     if (!session?.user?.id) {
       return c.json(
         {
@@ -194,7 +169,7 @@ exerciseSetupModule.post("/dashboard", async (c: Context) => {
 // Update exercise library video
 exerciseSetupModule.put("/dashboard/:id", async (c: Context) => {
   try {
-    const session = await getApiSession(c);
+    const session = await getSession();
     if (!session?.user?.id) {
       return c.json(
         {
@@ -247,7 +222,7 @@ exerciseSetupModule.put("/dashboard/:id", async (c: Context) => {
 // Delete exercise library video
 exerciseSetupModule.delete("/dashboard/:id", async (c: Context) => {
   try {
-    const session = await getApiSession(c);
+    const session = await getSession();
     if (!session?.user?.id) {
       return c.json(
         {
@@ -284,7 +259,7 @@ exerciseSetupModule.delete("/dashboard/:id", async (c: Context) => {
 // Block exercise library video
 exerciseSetupModule.post("/dashboard/:id/block", async (c: Context) => {
   try {
-    const session = await getApiSession(c);
+    const session = await getSession();
     if (!session?.user?.id) {
       return c.json(
         {
@@ -337,7 +312,7 @@ exerciseSetupModule.post("/dashboard/:id/block", async (c: Context) => {
 // Unblock exercise library video
 exerciseSetupModule.post("/dashboard/:id/unblock", async (c: Context) => {
   try {
-    const session = await getApiSession(c);
+    const session = await getSession();
     if (!session?.user?.id) {
       return c.json(
         {
@@ -374,7 +349,7 @@ exerciseSetupModule.post("/dashboard/:id/unblock", async (c: Context) => {
 // Publish/Unpublish exercise library video
 exerciseSetupModule.patch("/dashboard/:id/status", async (c: Context) => {
   try {
-    const session = await getApiSession(c);
+    const session = await getSession();
     if (!session?.user?.id) {
       return c.json(
         {
@@ -477,83 +452,6 @@ exerciseSetupModule.get("/", async (c) => {
     );
   }
 });
-
-// create library video from public (unchanged)
-// exerciseSetupModule.post("/", async (c) => {
-//   try {
-//     // Get current user session
-//     const session = await getApiSession(c);
-//     if (!session?.user?.id) {
-//       return c.json(
-//         {
-//           success: false,
-//           message: "Authentication required",
-//         },
-//         401,
-//       );
-//     }
-
-//     const formData = await c.req.formData();
-
-//     // Extract fields from formData
-//     const validatedBody = {
-//       title: formData.get("title") as string,
-//       equipment: [(formData.get("equipment") as string) || ""],
-//       bodyPart: [(formData.get("bodyPart") as string) || ""],
-//       height: formData.get("height") as string,
-//       rack: [(formData.get("rack") as string) || ""],
-//       video: formData.get("video") as File,
-//       userId: session.user.id,
-//       // Pump by numbers fields
-//       isolatorHole: (formData.get("isolatorHole") as string) || null,
-//       yellow: (formData.get("yellow") as string) || null,
-//       green: (formData.get("green") as string) || null,
-//       blue: (formData.get("blue") as string) || null,
-//       red: (formData.get("red") as string) || null,
-//       purple: (formData.get("purple") as string) || null,
-//       orange: (formData.get("orange") as string) || null,
-//     } as InferType<typeof exerciseSetupSchema> & { video: File };
-
-//     // Validate required fields
-//     if (
-//       !validatedBody.title ||
-//       !validatedBody.equipment ||
-//       !validatedBody.bodyPart ||
-//       !validatedBody.height ||
-//       !validatedBody.rack ||
-//       !validatedBody.video
-//     ) {
-//       return c.json(
-//         {
-//           success: false,
-//           message: "All fields are required",
-//         },
-//         400,
-//       );
-//     }
-
-//     const result =
-//       await exerciseSetupService.createExerciseSetupAdmin(validatedBody);
-
-//     return c.json({
-//       success: true,
-//       message: "Exercise setup created successfully",
-//       data: result,
-//     });
-//   } catch (error) {
-//     console.error("Error in exercise library creation:", error);
-//     return c.json(
-//       {
-//         success: false,
-//         message:
-//           error instanceof Error
-//             ? error.message
-//             : "Failed to create exercise setup",
-//       },
-//       500,
-//     );
-//   }
-// });
 
 // Create exercise setup from public (Through Zapier)
 exerciseSetupModule.post("/", async (c) => {
