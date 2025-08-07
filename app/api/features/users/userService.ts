@@ -9,14 +9,37 @@ export const userService = {
   getUsers: async (query: PaginationQuery) => {
     const session = await getSession();
 
+    const whereFilter: any = {
+      NOT: {
+        id: session?.user?.id,
+      },
+    };
+
+    if (query.search && query.search.trim()) {
+      whereFilter.AND = [
+        {
+          OR: [
+            {
+              email: {
+                contains: query.search,
+                mode: "insensitive",
+              },
+            },
+            {
+              name: {
+                contains: query.search,
+                mode: "insensitive",
+              },
+            },
+          ],
+        },
+      ];
+    }
+
     const { skip, take, page, limit } = getPaginationQuery(query);
     const [users, total] = await prisma.$transaction([
       prisma.users.findMany({
-        where: {
-          NOT: {
-            id: session?.user?.id,
-          },
-        },
+        where: whereFilter,
         skip,
         take,
         orderBy: {
@@ -137,64 +160,5 @@ export const userService = {
     }
 
     return user;
-  },
-
-  getUserRewards: async (id: string, query: PaginationQuery) => {
-    const session = await getSession();
-    if (!session) throw new HTTPException(401, { message: "Unauthorized" });
-
-    const { skip, take, page, limit = 10 } = getPaginationQuery(query);
-
-    const [user, total] = await prisma.$transaction([
-      prisma.users.findUnique({
-        where: { id },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          totalPoints: true,
-          createdAt: true,
-          banned: true,
-          image: true,
-          role: true,
-          emailVerified: true,
-
-          rewardPoints: {
-            orderBy: { createdAt: "desc" },
-            skip,
-            take,
-            select: {
-              id: true,
-              points: true,
-              createdAt: true,
-              description: true,
-              type: true,
-              isActive: true,
-              name: true,
-              updatedAt: true,
-            },
-          },
-        },
-      }),
-      prisma.rewardPoints.count({
-        where: { userId: id },
-      }),
-    ]);
-
-    if (!user) {
-      throw new HTTPException(404, { message: "User not found" });
-    }
-
-    return {
-      user,
-      data: {
-        data: user.rewardPoints,
-        meta: {
-          page,
-          limit,
-          total,
-        },
-      },
-    };
   },
 };

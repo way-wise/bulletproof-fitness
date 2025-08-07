@@ -1,13 +1,13 @@
 import {
-  Atom,
   BadgeCent,
+  BicepsFlexed,
   Building2,
-  CassetteTape,
-  ClipboardMinus,
   Dumbbell,
   Home,
   LayoutGrid,
+  MessageSquareMore,
   Play,
+  Rows3,
   UsersRound,
 } from "lucide-react";
 import MenuCollapsible from "./menu-collapsible";
@@ -29,62 +29,37 @@ const SidebarMenu = () => {
     {
       title: "Users",
       icon: <UsersRound className="icon" />,
-      baseUrl: "/dashboard/users",
-      submenu: [
-        {
-          title: "All Users",
-          url: "/dashboard/users",
-        },
-      ],
+      url: "/dashboard/users",
     },
     {
       title: "Rewards",
       icon: <BadgeCent className="icon" />,
-      baseUrl: "/dashboard/rewards",
-      submenu: [
-        {
-          title: "All Rewards",
-          url: "/dashboard/rewards",
-        },
-      ],
+      url: "/dashboard/rewards",
     },
     {
       title: "Demo Centers",
       icon: <Building2 className="icon" />,
-      baseUrl: "/dashboard/demo-centers",
-      submenu: [
-        {
-          title: "All Demo Centers",
-          url: "/dashboard/demo-centers",
-        },
-      ],
+      url: "/dashboard/demo-centers",
     },
     {
       title: "Feedbacks",
-      icon: <ClipboardMinus className="icon" />,
-      baseUrl: "/dashboard/feedback",
-      submenu: [
-        {
-          title: "All Feedbacks",
-          url: "/dashboard/feedback",
-        },
-      ],
+      icon: <MessageSquareMore className="icon" />,
+      url: "/dashboard/feedback",
     },
     {
       title: "Equipments",
-      icon: <CassetteTape className="icon" />,
+      icon: <Dumbbell className="icon" />,
       url: "/dashboard/equipments",
     },
-
     {
       title: "Body Parts",
-      icon: <Atom className="icon" />,
+      icon: <BicepsFlexed className="icon" />,
       url: "/dashboard/body-parts",
     },
 
     {
       title: "Racks",
-      icon: <Dumbbell className="icon" />,
+      icon: <Rows3 className="icon" />,
       url: "/dashboard/racks",
     },
     {

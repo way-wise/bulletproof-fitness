@@ -14,7 +14,9 @@ const app = new Hono();
 app.get("/", async (c) => {
   const validatedQuery = await validateInput({
     type: "query",
-    schema: paginationQuerySchema,
+    schema: paginationQuerySchema && object({
+      search: string().optional(),
+    }),
     data: c.req.query(),
   });
 
@@ -58,28 +60,6 @@ app.get("/:id", async (c) => {
   });
 
   const result = await userService.getUser(validatedParam.id);
-  return c.json(result);
-});
-
-app.get("/:id/rewards", async (c) => {
-  const validatedParam = await validateInput({
-    type: "param",
-    schema: object({
-      id: string().required(),
-    }),
-    data: c.req.param(),
-  });
-
-  const validatedQuery = await validateInput({
-    type: "query",
-    schema: paginationQuerySchema,
-    data: c.req.query(),
-  });
-
-  const result = await userService.getUserRewards(
-    validatedParam.id,
-    validatedQuery,
-  );
   return c.json(result);
 });
 

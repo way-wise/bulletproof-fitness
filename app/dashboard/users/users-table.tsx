@@ -34,6 +34,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
+import { useDebounceValue } from "usehooks-ts";
 import { InferType } from "yup";
 
 export const UsersTable = () => {
@@ -46,6 +47,9 @@ export const UsersTable = () => {
     pageIndex: 1,
     pageSize: 10,
   });
+  const [search, setSearch] = useState("");
+  // debounce search
+  const debouncedSearch = useDebounceValue(search, 500);
 
   // Get users data
   const url = `/api/users?page=${pagination.pageIndex}&limit=${pagination.pageSize}`;
@@ -60,6 +64,14 @@ export const UsersTable = () => {
       password: "",
     },
   });
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    setPagination({
+      pageIndex: 1,
+      pageSize: 10,
+    });
+  };
 
   // Handle Add User
   const handleAddUser = async (values: InferType<typeof signUpSchema>) => {
@@ -147,26 +159,6 @@ export const UsersTable = () => {
 
   // Table columns
   const columns: ColumnDef<User>[] = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-    },
     {
       header: "Name",
       accessorKey: "name",
@@ -303,7 +295,13 @@ export const UsersTable = () => {
       </div>
       <div className="rounded-xl border bg-card p-6">
         <div className="flex items-center justify-between gap-4 pb-6">
-          <Input type="search" placeholder="Search..." className="max-w-xs" />
+          <Input
+            type="search"
+            placeholder="Search name, email..."
+            value={search}
+            onChange={handleSearchChange}
+            className="max-w-xs"
+          />
         </div>
         <DataTable
           data={data}

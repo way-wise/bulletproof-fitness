@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import useSWR from "swr";
-
 import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/date-format";
-
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 
 type Feedback = {
@@ -33,15 +31,7 @@ const FeedbackTable = () => {
   const search = form.watch("search");
 
   const url = `/api/action/feedback?page=${pagination.pageIndex}&limit=${pagination.pageSize}&search=${search}`;
-  const { data, isValidating, mutate } = useSWR(url);
-
-  // Optional debounce effect
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      mutate();
-    }, 400);
-    return () => clearTimeout(timeout);
-  }, [search, mutate]);
+  const { data, isValidating } = useSWR(url);
 
   const columns: ColumnDef<Feedback>[] = [
     {
@@ -69,13 +59,17 @@ const FeedbackTable = () => {
 
   return (
     <>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col items-center justify-between gap-4 md:flex-row">
         <h1 className="text-2xl font-semibold">Feedback</h1>
-        <form className="flex gap-2" onSubmit={form.handleSubmit(() => {})}>
+        <form
+          className="flex w-full gap-2"
+          onSubmit={form.handleSubmit(() => {})}
+        >
           <Input
+            type="search"
             placeholder="Search by name, email, phone..."
             {...form.register("search")}
-            className="w-[250px]"
+            className="w-full max-w-xs"
           />
           <Button variant="outline" type="button" onClick={() => form.reset()}>
             Clear
