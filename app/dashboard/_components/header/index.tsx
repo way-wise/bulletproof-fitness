@@ -12,7 +12,7 @@ const Header = async () => {
         <SidebarToggle />
       </div>
       <div className="flex items-center gap-4">
-        <ThemeSwitcher />
+        {/* <ThemeSwitcher /> */}
         <ProfileDropdown session={session} />
       </div>
     </header>
