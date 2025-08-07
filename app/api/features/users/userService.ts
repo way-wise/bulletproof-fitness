@@ -9,44 +9,63 @@ export const userService = {
   getUsers: async (query: PaginationQuery) => {
     const session = await getSession();
 
-    const whereFilter: any = {
-      NOT: {
-        id: session?.user?.id,
-      },
-    };
-
-    if (query.search && query.search.trim()) {
-      whereFilter.AND = [
-        {
-          OR: [
-            {
-              email: {
-                contains: query.search,
-                mode: "insensitive",
-              },
-            },
-            {
-              name: {
-                contains: query.search,
-                mode: "insensitive",
-              },
-            },
-          ],
-        },
-      ];
-    }
-
     const { skip, take, page, limit } = getPaginationQuery(query);
     const [users, total] = await prisma.$transaction([
       prisma.users.findMany({
-        where: whereFilter,
+        where: {
+          NOT: {
+            id: session?.user?.id,
+          },
+          ...(query.search
+            ? {
+                OR: [
+                  {
+                    name: {
+                      contains: query.search,
+                      mode: "insensitive",
+                    },
+                  },
+                  {
+                    email: {
+                      contains: query.search,
+                      mode: "insensitive",
+                    },
+                  },
+                ],
+              }
+            : {}),
+        },
         skip,
         take,
         orderBy: {
           id: "desc",
         },
       }),
-      prisma.users.count(),
+      prisma.users.count({
+        where: {
+          NOT: {
+            id: session?.user?.id,
+          },
+          ...(query.search
+            ? {
+                OR: [
+                  {
+                    name: {
+                      contains: query.search,
+                      mode: "insensitive",
+                    },
+                  },
+                  {
+                    email: {
+                      contains: query.search,
+                      mode: "insensitive",
+                    },
+                  },
+                ],
+              }
+            : {}),
+        },
+      }),
     ]);
 
     return {

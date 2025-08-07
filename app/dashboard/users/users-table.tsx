@@ -34,7 +34,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
-import { useDebounceValue } from "usehooks-ts";
 import { InferType } from "yup";
 
 export const UsersTable = () => {
@@ -47,12 +46,11 @@ export const UsersTable = () => {
     pageIndex: 1,
     pageSize: 10,
   });
-  const [search, setSearch] = useState("");
   // debounce search
-  const debouncedSearch = useDebounceValue(search, 500);
+  const [search, setSearch] = useState("");
 
   // Get users data
-  const url = `/api/users?page=${pagination.pageIndex}&limit=${pagination.pageSize}`;
+  const url = `/api/users?page=${pagination.pageIndex}&limit=${pagination.pageSize}${search.trim() ? `&search=${encodeURIComponent(search.trim())}` : ""}`;
   const { isValidating, data } = useSWR(url);
 
   // Add User Form
