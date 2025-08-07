@@ -7,7 +7,7 @@ import { InferType } from "yup";
 import { getPaginationQuery } from "../../lib/pagination";
 
 export const bodyPartsService = {
-  // Get all equipments
+  // Get all body parts
   getBodyParts: async (query: PaginationQuery) => {
     const { skip, take, page, limit } = getPaginationQuery(query);
     const [bodyParts, total] = await prisma.$transaction([
@@ -38,20 +38,18 @@ export const bodyPartsService = {
     });
     return bodyParts;
   },
-  // Create equipment
+  // Create body part
   createBodyPart: async (data: InferType<typeof bodyPartSchema>) => {
     const bodyPart = await prisma.bodyPart.create({
       data: {
         name: data.name,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       },
     });
 
     return bodyPart;
   },
 
-  // Get equipment by id
+  // Get body part by id
   getBodyPart: async (id: string) => {
     const bodyPart = await prisma.bodyPart.findUnique({
       where: {
@@ -67,7 +65,7 @@ export const bodyPartsService = {
 
     return bodyPart;
   },
-  // Update rack by id
+  // Update body part by id
   updateBodyPart: async (
     id: string,
     data: InferType<typeof bodyPartSchema>,
@@ -90,16 +88,15 @@ export const bodyPartsService = {
       },
       data: {
         name: data.name,
-        updatedAt: new Date(),
       },
     });
 
     return updatedBodyPart;
   },
 
-  // Delete equipment by id
+  // Delete body part by id
   deleteBodyPart: async (id: string) => {
-    const bodyPart = await prisma.bodyPart.findUnique({
+    const bodyPart = await prisma.bodyPart.delete({
       where: {
         id,
       },
@@ -110,12 +107,6 @@ export const bodyPartsService = {
         message: "Body Part not found",
       });
     }
-
-    await prisma.bodyPart.delete({
-      where: {
-        id,
-      },
-    });
 
     return {
       success: true,

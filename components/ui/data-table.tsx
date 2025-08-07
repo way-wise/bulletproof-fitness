@@ -105,7 +105,7 @@ export const DataTable = <TData, TValue>({
 
       {/* Table */}
       <div className="relative overflow-auto">
-        <table className="min-h-40 w-full">
+        <table className="w-full">
           <thead className="border-b bg-secondary tracking-wide dark:bg-background">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -127,14 +127,10 @@ export const DataTable = <TData, TValue>({
           </thead>
           <tbody>
             {isPending && !data ? (
-              // Initial load: show empty tbody with min-height, overlay handles loading
               <tr>
-                <td colSpan={columns.length} className="h-40">
-                  {/* Empty cell to maintain table structure during initial load */}
-                </td>
+                <td colSpan={columns.length} className="h-40"></td>
               </tr>
             ) : table.getRowModel().rows.length ? (
-              // Show data rows (either from initial load or kept from previous)
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
@@ -155,7 +151,6 @@ export const DataTable = <TData, TValue>({
                 </tr>
               ))
             ) : (
-              // Show "No data found" only after loading completes and no data exists
               <tr>
                 <td
                   colSpan={columns.length}
