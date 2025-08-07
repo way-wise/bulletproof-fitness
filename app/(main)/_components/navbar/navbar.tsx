@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { signOut } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { useProgress } from "@bprogress/next";
@@ -13,6 +13,15 @@ import { toast } from "sonner";
 import { ProfileDropdown } from "./profile-dropdown";
 
 import type { auth } from "@/lib/auth";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import SidebarMenu from "@/app/dashboard/_components/sidebar/menu";
 type Session = typeof auth.$Infer.Session;
 
 const Navbar = ({ session }: { session: Session }) => {
@@ -98,14 +107,14 @@ const Navbar = ({ session }: { session: Session }) => {
     <>
       <nav className="h-16 border-b border-border bg-white py-3 dark:bg-card">
         <div className="container flex items-center justify-between gap-2">
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex shrink-0 items-center">
             <Image
               src="/logo.svg"
               alt="Brand Logo"
-              width={100}
-              height={40}
+              width={80}
+              height={32}
               priority
-              className="h-10 w-auto"
+              className="h-8 w-auto"
             />
           </Link>
 
@@ -216,42 +225,33 @@ const Navbar = ({ session }: { session: Session }) => {
       </nav>
 
       {/* Mobile Sidebar */}
-      <div
-        className={cn(
-          "fixed inset-0 z-50 transition-opacity duration-300 xl:hidden",
-          mobileMenuOpen ? "opacity-100" : "pointer-events-none opacity-0",
-        )}
-      >
-        {/* Backdrop */}
-        <div
-          className={cn(
-            "fixed inset-0 bg-black/50 transition-opacity duration-300",
-            mobileMenuOpen ? "opacity-100" : "opacity-0",
-          )}
-          onClick={closeMobileMenu}
-        />
-
-        {/* Sidebar */}
-        <div
-          className={cn(
-            "fixed top-0 left-0 h-full w-80 bg-white shadow-lg transition-transform duration-300 ease-in-out dark:bg-gray-900",
-            mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
-          )}
-        >
-          <div className="flex h-16 items-center justify-between border-b px-6">
-            <h2 className="text-lg font-semibold">Menu</h2>
-            {/* <ThemeSwitcher /> */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={closeMobileMenu}
-              className="p-2"
+      <Drawer open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <DrawerContent className="z-50">
+          <DrawerHeader className="border-b-0">
+            <div className="flex flex-col">
+              <Link href="/" className="flex items-center">
+                <Image
+                  src="/logo.svg"
+                  alt="Brand Logo"
+                  width={80}
+                  height={32}
+                  priority
+                  className="h-8 w-auto"
+                />
+              </Link>
+              <DrawerDescription className="sr-only">
+                Mobile sidebar navigation
+              </DrawerDescription>
+            </div>
+            <DrawerClose
+              className={cn(
+                buttonVariants({ variant: "secondary", size: "icon" }),
+              )}
             >
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
-
-          <div className="flex flex-col p-6">
+              <X />
+            </DrawerClose>
+          </DrawerHeader>
+          <div className="flex flex-col overflow-y-auto p-6">
             {/* Mobile Navigation Menu */}
             <nav className="space-y-4">
               {menuList.map((menu, index) => {
@@ -357,8 +357,8 @@ const Navbar = ({ session }: { session: Session }) => {
               )}
             </div>
           </div>
-        </div>
-      </div>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };
