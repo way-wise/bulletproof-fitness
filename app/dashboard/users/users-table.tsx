@@ -30,7 +30,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { Ban, Eye, MoreVertical, Plus, Trash } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
@@ -48,9 +48,19 @@ export const UsersTable = () => {
   });
   // debounce search
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search]);
 
   // Get users data
-  const url = `/api/users?page=${pagination.pageIndex}&limit=${pagination.pageSize}${search.trim() ? `&search=${encodeURIComponent(search.trim())}` : ""}`;
+  const url = `/api/users?page=${pagination.pageIndex}&limit=${pagination.pageSize}${debouncedSearch.trim() ? `&search=${encodeURIComponent(debouncedSearch.trim())}` : ""}`;
   const { isValidating, data } = useSWR(url);
 
   // Add User Form
