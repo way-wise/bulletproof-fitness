@@ -195,26 +195,6 @@ export const ExerciseLibraryVideoTable = () => {
   // Table columns
   const columns: ColumnDef<ExerciseLibraryVideo>[] = [
     {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-    },
-    {
       header: "Title",
       accessorKey: "title",
       cell: ({ row }) => (
@@ -306,14 +286,20 @@ export const ExerciseLibraryVideoTable = () => {
       accessorKey: "isPublic",
       cell: ({ row }) => {
         return (
-          <div className="text-center">
+          <div className="text-left">
             {row.original.isPublic ? (
-              <Badge variant="success" className="flex items-center gap-1">
+              <Badge
+                variant="success"
+                className="inline-flex items-center gap-1"
+              >
                 <Globe className="size-3" />
                 Published
               </Badge>
             ) : (
-              <Badge variant="secondary" className="flex items-center gap-1">
+              <Badge
+                variant="secondary"
+                className="inline-flex items-center gap-1"
+              >
                 <Lock className="size-3" />
                 Private
               </Badge>
