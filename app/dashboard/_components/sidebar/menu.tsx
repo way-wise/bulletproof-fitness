@@ -47,7 +47,7 @@ const SidebarMenu = () => {
       url: "/dashboard/feedback",
     },
     {
-      title: "Equipments",
+      title: "Equipment",
       icon: <Dumbbell className="icon" />,
       url: "/dashboard/equipments",
     },

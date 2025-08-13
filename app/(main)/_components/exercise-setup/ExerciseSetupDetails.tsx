@@ -12,6 +12,8 @@ import ContactUs from "../exercide-library/ContactUs";
 import { useSession } from "@/lib/auth-client";
 import SignInModal from "../SignInModal";
 import BsicRuleSetup from "./BsicRuleSetup";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 const pumpColors = [
   {
@@ -182,16 +184,30 @@ export default function ExerciseSetupDetails({
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
           {pumpColors.map((item, i) => {
             return (
-              <Card key={i} className="border border-gray-300">
-                <CardContent className="flex items-start gap-5 p-6">
-                  <img
+              <Card key={i} className="rounded-md border border-gray-200">
+                <CardContent className="flex items-center justify-center gap-4 p-4">
+                  <Image
                     src={item.img}
                     alt={item.label}
-                    className="h-[64px] w-[52px] rounded object-cover"
+                    width={100}
+                    height={100}
+                    className="rounded border border-gray-100"
                   />
                   <div className="text-base">
                     <p className="font-medium">
-                      <span className="font-semibold">{item.label}</span>
+                      <span
+                        className={cn(
+                          "font-semibold",
+                          item.key === "green" && "text-green-500",
+                          item.key === "blue" && "text-blue-500",
+                          item.key === "red" && "text-red-500",
+                          item.key === "purple" && "text-purple-500",
+                          item.key === "orange" && "text-orange-500",
+                          item.key === "yellow" && "text-yellow-500",
+                        )}
+                      >
+                        {item.label}
+                      </span>
                       {item.label !== "Not Used" && ` (${item.desc})`}:{" "}
                       <span className="ml-1 font-bold">
                         {libraryData?.[item.key] ?? "Not Used"}

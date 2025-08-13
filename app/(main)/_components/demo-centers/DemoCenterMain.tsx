@@ -186,7 +186,7 @@ export default function DemoCenterMain() {
           }
           selected={(filters.equipments || []) as string[]}
           onChange={(value) => updateFilters({ equipments: value })}
-          placeholder="Filter by Equipments"
+          placeholder="Filter by Equipment"
           className="w-full"
           triggerClassName="py-6"
         />

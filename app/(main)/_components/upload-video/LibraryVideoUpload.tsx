@@ -237,7 +237,7 @@ export default function LibraryVideoUpload() {
             name="equipments"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Equipments </FormLabel>
+                <FormLabel>Equipment</FormLabel>
                 <MultiSelect
                   options={
                     equipments?.map((equipment: any) => ({
@@ -247,7 +247,7 @@ export default function LibraryVideoUpload() {
                   }
                   selected={(field.value || []) as string[]}
                   onChange={(value) => field.onChange(value)}
-                  placeholder="Select Equipments"
+                  placeholder="Select Equipment"
                   className="w-full"
                 />
                 <p className="mt-2 text-xs text-muted-foreground">

@@ -183,7 +183,7 @@ const EquipmentsTable = () => {
   return (
     <>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-medium">Equipments</h1>
+        <h1 className="text-2xl font-medium">Equipment</h1>
         <Button onClick={() => setAddEquipmentModalOpen(true)}>
           <Plus />
           <span>Add Equipment</span>
