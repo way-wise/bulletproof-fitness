@@ -7,9 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserReward } from "@/lib/dataTypes";
 import { formatDate } from "@/lib/date-format";
 import { Activity, Trophy, User, Video } from "lucide-react";
-import Link from "next/link";
 import { RewardCard } from "./RewardCard";
 import { VideoCard } from "./VideoCard";
+import Link from "next/link";
 
 interface Video {
   id: string;
@@ -63,7 +63,6 @@ export const ProfileTabs = ({
         <TabsTrigger value="library">Library Videos</TabsTrigger>
         <TabsTrigger value="videos">Setup Videos</TabsTrigger>
         <TabsTrigger value="rewards">Rewards</TabsTrigger>
-        {/* <TabsTrigger value="activity">Activity</TabsTrigger> */}
       </TabsList>
 
       <TabsContent value="overview" className="mt-6">
@@ -125,7 +124,6 @@ export const ProfileTabs = ({
           </CardContent>
         </Card>
       </TabsContent>
-
       <TabsContent value="library" className="mt-6">
         <Card>
           <CardHeader>
@@ -244,67 +242,6 @@ export const ProfileTabs = ({
           </CardContent>
         </Card>
       </TabsContent>
-
-      {/* <TabsContent value="activity" className="mt-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5" />
-              Recent Activity
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {videos.slice(0, 5).map((video) => (
-                <div
-                  key={video.id}
-                  className="flex items-center gap-4 rounded-lg border p-3"
-                >
-                  <Video className="h-8 w-8 text-blue-500" />
-                  <div className="flex-1">
-                    <p className="font-medium">{video.title}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Uploaded{" "}
-                      {video.createdAt ? formatDate(video.createdAt) : "N/A"}
-                    </p>
-                  </div>
-                  <div className="text-right text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Activity className="h-3 w-3" />
-                      {video.views || 0}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Trophy className="h-3 w-3" />
-                      {video.likes || 0}
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {rewards.length > 0 &&
-                rewards.slice(0, 5).map((reward) => (
-                  <div
-                    key={reward.id}
-                    className="flex items-center gap-4 rounded-lg border p-3"
-                  >
-                    <Trophy className="h-8 w-8 text-yellow-500" />
-                    <div className="flex-1">
-                      <p className="font-medium">
-                        Earned {reward.points} points
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {reward.description || reward.type} -{" "}
-                        {reward.createdAt
-                          ? formatDate(reward.createdAt)
-                          : "N/A"}
-                      </p>
-                    </div>
-                    <Badge variant="secondary">+{reward.points}</Badge>
-                  </div>
-                ))}
-            </div>
-          </CardContent>
-        </Card>
-      </TabsContent> */}
     </Tabs>
   );
 };

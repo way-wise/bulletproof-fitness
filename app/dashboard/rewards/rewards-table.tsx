@@ -256,6 +256,7 @@ const RewardsTable = () => {
                   <FormItem>
                     <FormLabel>Type</FormLabel>
                     <Select
+                      disabled
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >

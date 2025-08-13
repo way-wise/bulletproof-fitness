@@ -223,11 +223,6 @@ export const UsersTable = () => {
       accessorKey: "createdAt",
       cell: ({ row }) => formatDate(row.original.createdAt),
     },
-    // {
-    //   header: "Updated At",
-    //   accessorKey: "updatedAt",
-    //   cell: ({ row }) => formatDate(row.original.updatedAt),
-    // },
     {
       id: "actions",
       header: "Actions",
