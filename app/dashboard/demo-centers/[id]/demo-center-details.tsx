@@ -1,46 +1,21 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DemoCenter } from "@/lib/dataTypes";
-import { formatDate } from "@/lib/date-format";
-import { ArrowLeft, Clock, Globe, Lock, MapPin, Phone } from "lucide-react";
-import Link from "next/link";
+import { Card } from "@/components/ui/card";
+import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import useSWR from "swr";
 
 interface DemoCenterDetailsProps {
   id: string;
 }
 
 export const DemoCenterDetails = ({ id }: DemoCenterDetailsProps) => {
-  const [demoCenter, setDemoCenter] = useState<DemoCenter | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: demoCenter, isValidating } = useSWR(`/api/demo-centers/${id}`);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchDemoCenter = async () => {
-      try {
-        const response = await fetch(`/api/demo-centers/${id}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch demo center");
-        }
-        const data = await response.json();
-        setDemoCenter(data);
-      } catch {
-        toast.error("Failed to load demo center details");
-        router.push("/dashboard/demo-centers");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDemoCenter();
-  }, [id, router]);
-
-  if (loading) {
+  if (isValidating) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-lg">Loading...</div>
@@ -48,212 +23,101 @@ export const DemoCenterDetails = ({ id }: DemoCenterDetailsProps) => {
     );
   }
 
-  if (!demoCenter) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="text-lg">Demo center not found</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/dashboard/demo-centers">
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-semibold">{demoCenter.name}</h1>
-            <p className="text-muted-foreground">Demo Center Details</p>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          {demoCenter.isPublic ? (
-            <Badge variant="success" className="flex items-center gap-1">
-              <Globe className="h-3 w-3" />
-              Public
-            </Badge>
-          ) : (
-            <Badge variant="secondary" className="flex items-center gap-1">
-              <Lock className="h-3 w-3" />
-              Private
-            </Badge>
-          )}
-          {demoCenter.blocked ? (
-            <Badge variant="destructive">Blocked</Badge>
-          ) : (
-            <Badge variant="secondary">Active</Badge>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Basic Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Building Type
-              </label>
-              <p className="text-lg">{demoCenter.buildingType}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Name
-              </label>
-              <p className="text-lg">{demoCenter.name}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Bio
-              </label>
-              <p className="text-sm">{demoCenter.bio}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Availability
-              </label>
-              <p className="text-sm">{demoCenter.availability}</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Contact Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Contact Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Address
-                </label>
-                <p className="text-sm">{demoCenter.address}</p>
-                <p className="text-sm">{demoCenter.cityZip}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-muted-foreground" />
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Contact
-                </label>
-                <p className="text-sm">{demoCenter.contact}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Operating Hours */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              Operating Hours
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Weekdays
-              </label>
-              <p className="text-sm">
-                {demoCenter.weekdayOpen} - {demoCenter.weekdayClose}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {demoCenter.weekdays.join(", ")}
-              </p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Weekends
-              </label>
-              <p className="text-sm">
-                {demoCenter.weekendOpen} - {demoCenter.weekendClose}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {demoCenter.weekends.join(", ")}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Status Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Status Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Public Status
-              </label>
-              <div className="mt-1">
-                {demoCenter.isPublic ? (
-                  <Badge
-                    variant="success"
-                    className="flex w-fit items-center gap-1"
-                  >
-                    <Globe className="h-3 w-3" />
-                    Public
-                  </Badge>
-                ) : (
-                  <Badge
-                    variant="secondary"
-                    className="flex w-fit items-center gap-1"
-                  >
-                    <Lock className="h-3 w-3" />
-                    Private
-                  </Badge>
-                )}
-              </div>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Blocked Status
-              </label>
-              <div className="mt-1">
-                {demoCenter.blocked ? (
-                  <Badge variant="destructive">Blocked</Badge>
-                ) : (
-                  <Badge variant="secondary">Active</Badge>
-                )}
-              </div>
-            </div>
-            {demoCenter.blockReason && (
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Block Reason
-                </label>
-                <p className="text-sm text-destructive">
-                  {demoCenter.blockReason}
-                </p>
+    <>
+      <Button variant="outline" onClick={() => router.back()} className="mb-6">
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back to Demo Centers
+      </Button>
+      <Card className="grid grid-cols-1 gap-6 p-6 md:grid-cols-5">
+        <div className="md:col-span-2">
+          <h3 className="text-2xl font-bold uppercase">{demoCenter?.name}</h3>
+          <p className="text-sm text-muted-foreground">
+            TYPE: {demoCenter?.buildingType.toUpperCase()}
+          </p>
+          <div className="mt-4 h-64 w-full overflow-hidden rounded-md bg-gray-100">
+            {demoCenter?.image ? (
+              <Image
+                src={demoCenter.image}
+                alt={demoCenter.name}
+                width={400}
+                height={200}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                <div className="text-center text-gray-500">
+                  <div className="mb-2 text-2xl">🏋️</div>
+                  <div className="text-sm">No Image Available</div>
+                </div>
               </div>
             )}
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Created At
-              </label>
-              <p className="text-sm">{formatDate(demoCenter.createdAt)}</p>
+          </div>
+          <p className="pt-2 text-lg font-semibold">BIO:</p>
+          <p className="mt-1 text-muted-foreground">{demoCenter?.bio}</p>
+        </div>
+
+        <div className="space-y-3 md:col-span-3">
+          <p className="text-2xl font-bold uppercase">Equipment Onsite</p>
+          <div className="mb-4 flex flex-wrap gap-2">
+            {demoCenter?.demoCenterEquipments.map((equip: any) => (
+              <span
+                key={equip.id}
+                className="inline-block rounded bg-gray-300 px-2 py-1 text-sm text-primary"
+              >
+                {equip.equipment.name}
+              </span>
+            ))}
+          </div>
+
+          <h2 className="text-xl font-bold text-blue-900">VISIT US</h2>
+          <p className="leading-5 text-gray-500">
+            {demoCenter?.address} <br />
+            {demoCenter?.cityZip} <br />
+            {demoCenter?.contact}
+          </p>
+          {demoCenter?.buildingType === "BUSINESS" && (
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2 rounded bg-gray-100 p-3">
+                <h4 className="text-lg font-semibold">WEEKDAYS</h4>
+                <p className="text-muted-foreground">
+                  {demoCenter?.weekdays.length > 0
+                    ? demoCenter.weekdays.join(", ")
+                    : "Not specified"}
+                </p>
+                <p className="text-lg font-semibold">Opening/Closing Hour</p>
+                <p className="">
+                  {demoCenter?.weekdayOpen && demoCenter?.weekdayClose
+                    ? `${demoCenter.weekdayOpen} - ${demoCenter.weekdayClose}`
+                    : "Contact for hours"}
+                </p>
+              </div>
+              <div className="space-y-2 rounded bg-gray-100 p-3">
+                <h4 className="text-lg font-semibold">WEEKENDS</h4>
+                <p className="text-muted-foreground">
+                  {demoCenter?.weekends.length > 0
+                    ? demoCenter.weekends.join(", ")
+                    : "Not specified"}
+                </p>
+
+                <p className="text-lg font-semibold">Opening/Closing Hour</p>
+                <p className="">
+                  {demoCenter?.weekendOpen && demoCenter?.weekendClose
+                    ? `${demoCenter.weekendOpen} - ${demoCenter.weekendClose}`
+                    : "Contact for hours"}
+                </p>
+              </div>
             </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">
-                Updated At
-              </label>
-              <p className="text-sm">{formatDate(demoCenter.updatedAt)}</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+          )}
+
+          <div className="rounded bg-gray-100 p-3">
+            <h4 className="text-lg font-semibold">AVAILABILITY</h4>
+            <p className="">
+              {demoCenter?.availability || "Contact for availability"}
+            </p>
+          </div>
+        </div>
+      </Card>
+    </>
   );
 };

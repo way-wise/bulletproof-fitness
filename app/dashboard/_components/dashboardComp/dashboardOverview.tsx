@@ -55,7 +55,7 @@ const DashboardOverview = ({ session }: { session: Session }) => {
               today.
             </p>
           </div>
-          <div className="flex items-center space-x-2">
+          {/* <div className="flex items-center space-x-2">
             <Badge variant="secondary" className="flex items-center gap-1">
               <Activity className="h-3 w-3" />
               Live
@@ -64,7 +64,7 @@ const DashboardOverview = ({ session }: { session: Session }) => {
               <Calendar className="mr-2 h-4 w-4" />
               Last 30 days
             </Button>
-          </div>
+          </div> */}
         </div>
 
         <DashboardSkleton />
@@ -128,7 +128,7 @@ const DashboardOverview = ({ session }: { session: Session }) => {
             Dashboard Overview
           </h1>
         </div>
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <Badge variant="secondary" className="flex items-center gap-1">
             <Activity className="h-3 w-3" />
             Live
@@ -137,7 +137,7 @@ const DashboardOverview = ({ session }: { session: Session }) => {
             <Calendar className="mr-2 h-4 w-4" />
             Last 30 days
           </Button>
-        </div>
+        </div> */}
       </div>
 
       {/* Stats Grid */}
