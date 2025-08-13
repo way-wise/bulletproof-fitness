@@ -180,7 +180,7 @@ export const DataTable = <TData, TValue>({
 
         <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-4">
           {/* Rows per page selector */}
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <label className="text-sm text-muted-foreground">
               Rows per page:
             </label>
@@ -199,7 +199,7 @@ export const DataTable = <TData, TValue>({
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </div> */}
 
           {/* Previous and Next buttons */}
           <div className="flex items-center gap-2">
