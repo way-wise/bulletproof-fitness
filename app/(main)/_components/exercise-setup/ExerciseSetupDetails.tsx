@@ -124,7 +124,7 @@ export default function ExerciseSetupDetails({
     <div className="mx-auto max-w-[1200px] px-6 py-14 font-sans text-[17px] leading-relaxed text-[#222]">
       {/* Video & Info Section */}
       <div className="grid items-start gap-10 md:grid-cols-2">
-        <div className="aspect-video w-full overflow-hidden rounded shadow-md">
+        <div className="aspect-video w-full overflow-hidden rounded">
           <iframe
             src={libraryData?.videoUrl}
             title="Exercise Video"

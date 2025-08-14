@@ -5,7 +5,7 @@ const BsicRuleSetup = () => {
         <h2 className="text-center text-2xl font-bold md:text-4xl">
           BASIC RULES TO SETUP
         </h2>
-        <div className="mx-auto aspect-video w-full overflow-hidden rounded shadow-md">
+        <div className="mx-auto aspect-video w-full overflow-hidden rounded">
           <iframe
             className="size-full"
             src="https://www.youtube.com/embed/kt6MxpsAnY4"
@@ -20,7 +20,7 @@ const BsicRuleSetup = () => {
         <h2 className="text-center text-2xl font-bold md:text-4xl">
           ISOLATOR ASSEMBLY
         </h2>
-        <div className="mx-auto aspect-video w-full overflow-hidden rounded shadow-md">
+        <div className="mx-auto aspect-video w-full overflow-hidden rounded">
           <iframe
             className="size-full"
             src="https://www.youtube.com/embed/x7VRUJW8K6I"

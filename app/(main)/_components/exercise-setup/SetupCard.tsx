@@ -13,8 +13,8 @@ const SetupCard = ({ item }: { item: ExerciseLibraryItem }) => {
 
   return (
     <div>
-      <CardUI className="overflow-hidden rounded-none border-none shadow-none">
-        <div className="relative aspect-video rounded-none shadow-none">
+      <CardUI className="overflow-hidden rounded-none border-none">
+        <div className="relative aspect-video rounded-none">
           <iframe
             src={`https://www.youtube.com/embed/${videoId}`}
             title={item.title}
