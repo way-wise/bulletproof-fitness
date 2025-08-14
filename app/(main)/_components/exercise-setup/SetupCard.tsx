@@ -22,6 +22,7 @@ const SetupCard = ({ item }: { item: ExerciseLibraryItem }) => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             className="h-full w-full"
+            loading="lazy"
           ></iframe>
         </div>
         <CardContent className="space-y-3 border-none p-4 text-left">
