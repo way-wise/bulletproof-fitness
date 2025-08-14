@@ -8,9 +8,10 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import Spinner from "@/components/ui/spinner";
-import { useExerciseLibrary } from "@/hooks/useExerciseLibrary";
+import { useInfiniteExerciseLibrary } from "@/hooks/useInfiniteExerciseLibrary";
+import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 import { ExerciseLibraryFilters, ExerciseLibraryItem } from "@/lib/dataTypes";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ExLibraryCard from "./ExLibraryCard";
 import FilterSection from "./FilterSection";
 
@@ -27,11 +28,35 @@ const ExCardsSection = ({
     initialFilters || {},
   );
 
-  const { exercises, meta, isLoading, error, mutate } =
-    useExerciseLibrary(filters);
+  const {
+    exercises,
+    meta,
+    isLoading,
+    isLoadingMore,
+    error,
+    size,
+    setSize,
+    isReachingEnd,
+    mutate,
+  } = useInfiniteExerciseLibrary(filters);
 
   // Use initial data if loading and no current data
   const displayData = exercises.length > 0 ? exercises : initialData || [];
+
+  // Intersection observer for infinite loading
+  const { targetRef, isIntersecting } = useIntersectionObserver({
+    threshold: 0.1,
+    rootMargin: "100px",
+    enabled:
+      !isLoading && !isLoadingMore && !isReachingEnd && displayData.length > 0,
+  });
+
+  // Load more when intersection observer triggers
+  useEffect(() => {
+    if (isIntersecting && !isLoadingMore && !isReachingEnd) {
+      setSize(size + 1);
+    }
+  }, [isIntersecting, isLoadingMore, isReachingEnd, size, setSize]);
 
   const handleFiltersChange = (newFilters: ExerciseLibraryFilters) => {
     setFilters(newFilters);
@@ -171,10 +196,23 @@ const ExCardsSection = ({
               </div>
             )}
 
+            {/* Loading More Indicator */}
+            {isLoadingMore && (
+              <div className="flex items-center justify-center py-8">
+                <Spinner className="h-6 w-6" />
+                <span className="ml-2 text-sm text-gray-600">
+                  Loading more...
+                </span>
+              </div>
+            )}
+
+            {/* Intersection Observer Target */}
+            <div ref={targetRef} className="h-4" />
+
             {/* Pagination Info */}
-            {meta && meta.total > 0 && (
-              <div className="mt-8 text-center text-sm text-gray-600">
-                Showing {displayData.length} of {meta.total} exercises
+            {isReachingEnd && displayData.length > 0 && (
+              <div className="mt-8 text-center text-xs text-gray-500">
+                All videos loaded
               </div>
             )}
           </div>
