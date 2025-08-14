@@ -30,7 +30,6 @@ const ExCardsSection = ({
 
   const {
     exercises,
-    meta,
     isLoading,
     isLoadingMore,
     error,
@@ -197,7 +196,7 @@ const ExCardsSection = ({
             )}
 
             {/* Loading More Indicator */}
-            {isLoadingMore && (
+            {isLoadingMore && size > 1 && (
               <div className="flex items-center justify-center py-8">
                 <Spinner className="h-6 w-6" />
                 <span className="ml-2 text-sm text-gray-600">
