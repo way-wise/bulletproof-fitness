@@ -1,7 +1,6 @@
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { ReactionType, RewardType } from "@/prisma/generated/enums";
-import { QueryMode } from "@/prisma/generated/internal/prismaNamespace";
+import { ReactionType, RewardType } from "@prisma/client";
 import { PaginationQuery } from "@/schema/paginationSchema";
 import { getPaginationQuery } from "../../lib/pagination";
 
@@ -384,10 +383,10 @@ export const actionService = {
     const searchFilter = search
       ? {
           OR: [
-            { fullName: { contains: search, mode: QueryMode.insensitive } },
-            { email: { contains: search, mode: QueryMode.insensitive } },
-            { phone: { contains: search, mode: QueryMode.insensitive } },
-            { message: { contains: search, mode: QueryMode.insensitive } },
+            { fullName: { contains: search, mode: "insensitive" as const } },
+            { email: { contains: search, mode: "insensitive" as const } },
+            { phone: { contains: search, mode: "insensitive" as const } },
+            { message: { contains: search, mode: "insensitive" as const } },
           ],
         }
       : {};
