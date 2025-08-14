@@ -23,16 +23,14 @@ exerciseLibraryModule.get("/dashboard", async (c) => {
       );
     }
 
-    // Get query parameters
-    const page = parseInt(c.req.query("page") || "1");
-    const limit = parseInt(c.req.query("limit") || "10");
-    const search = c.req.query("search") || "";
+    // Get query parameters using proper pagination pattern
+    const query = {
+      page: parseInt(c.req.query("page") || "1"),
+      limit: parseInt(c.req.query("limit") || "10"),
+      search: c.req.query("search") || "",
+    };
 
-    const result = await exerciseLibraryService.getAllExerciseLibraryVideos(
-      page,
-      limit,
-      search,
-    );
+    const result = await exerciseLibraryService.getAllExerciseLibraryVideos(query);
 
     return c.json(result);
   } catch (error) {

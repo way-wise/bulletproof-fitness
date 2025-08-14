@@ -12,16 +12,14 @@ export const exerciseSetupModule = new Hono();
 // Get all exercise library videos for dashboard (admin)
 exerciseSetupModule.get("/dashboard", async (c) => {
   try {
-    // Get query parameters
-    const page = parseInt(c.req.query("page") || "1");
-    const limit = parseInt(c.req.query("limit") || "10");
-    const search = c.req.query("search") || "";
+    // Get query parameters using proper pagination pattern
+    const query = {
+      page: parseInt(c.req.query("page") || "1"),
+      limit: parseInt(c.req.query("limit") || "10"),
+      search: c.req.query("search") || "",
+    };
 
-    const result = await exerciseSetupService.getAllExerciseSetupVideos(
-      page,
-      limit,
-      search,
-    );
+    const result = await exerciseSetupService.getAllExerciseSetupVideos(query);
 
     return c.json({
       success: true,

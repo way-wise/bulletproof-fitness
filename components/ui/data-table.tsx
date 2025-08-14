@@ -48,7 +48,7 @@ export const DataTable = <TData, TValue>({
   const table = useReactTable({
     data: data?.data || [],
     columns,
-    pageCount: Math.ceil((data?.meta?.total || 0) / pagination.pageSize),
+    pageCount: data?.meta?.totalPages || Math.ceil((data?.meta?.total || 0) / pagination.pageSize),
     state: {
       rowSelection,
       pagination: {
@@ -63,17 +63,19 @@ export const DataTable = <TData, TValue>({
     onPaginationChange: (updater) => {
       // Convert 0-based back to 1-based when calling parent's onPaginationChange
       if (typeof updater === "function") {
-        const newState = updater({
+        // Use current 0-based state for TanStack calculations
+        const currentZeroBasedState = {
           pageIndex: pagination.pageIndex - 1,
           pageSize: pagination.pageSize,
-        });
+        };
+        const newState = updater(currentZeroBasedState);
         onPaginationChange({
-          pageIndex: newState.pageIndex + 1,
+          pageIndex: newState.pageIndex + 1, // Convert back to 1-based
           pageSize: newState.pageSize,
         });
       } else {
         onPaginationChange({
-          pageIndex: updater.pageIndex + 1,
+          pageIndex: updater.pageIndex + 1, // Convert back to 1-based
           pageSize: updater.pageSize,
         });
       }
@@ -168,10 +170,10 @@ export const DataTable = <TData, TValue>({
       <div className="flex flex-wrap items-center justify-center gap-4 pt-6 sm:justify-between">
         {/* Pagination range indicator (e.g., '1-10 of 50') */}
         <div className="text-sm text-muted-foreground">
-          Showing {pagination.pageIndex * pagination.pageSize + 1}
+          Showing {Math.max(1, (pagination.pageIndex - 1) * pagination.pageSize + 1)}
           &nbsp;&minus;&nbsp;
           {Math.min(
-            (pagination.pageIndex + 1) * pagination.pageSize,
+            pagination.pageIndex * pagination.pageSize,
             data?.meta?.total || 0,
           )}
           &nbsp;of&nbsp;

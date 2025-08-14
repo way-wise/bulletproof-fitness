@@ -1,3 +1,4 @@
+import { getPaginationQuery } from "@/app/api/lib/pagination";
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import {
@@ -5,6 +6,7 @@ import {
   exerciseSetupSchemaAdmin,
   exerciseSetupZapierSchemaType,
 } from "@/schema/exerciseSetupSchema";
+import type { PaginationQuery } from "@/schema/paginationSchema";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
 import { awardPointsToUser } from "../actions/actionService";
@@ -81,21 +83,21 @@ export const exerciseSetupService = {
     return exerciseSetup;
   },
 
-  // Get all exercise library videos for dashboard (admin)
-  getAllExerciseSetupVideos: async (page = 1, limit = 10, search = "") => {
+  // Get all exercise setup videos for dashboard (admin) - OPTIMIZED
+  getAllExerciseSetupVideos: async (query: PaginationQuery) => {
     try {
-      const skip = (page - 1) * limit;
+      const { skip, take, page, limit } = getPaginationQuery(query);
 
-      // Build where clause for search
-      const where = search
+      // Build optimized where clause for search
+      const where: any = query.search
         ? {
             OR: [
-              { title: { contains: search } },
+              { title: { contains: query.search, mode: "insensitive" as const } },
               {
                 ExSetupEquipment: {
                   some: {
                     equipment: {
-                      name: { contains: search },
+                      name: { contains: query.search, mode: "insensitive" as const },
                     },
                   },
                 },
@@ -104,7 +106,7 @@ export const exerciseSetupService = {
                 ExSetupBodyPart: {
                   some: {
                     bodyPart: {
-                      name: { contains: search },
+                      name: { contains: query.search, mode: "insensitive" as const },
                     },
                   },
                 },
@@ -113,7 +115,7 @@ export const exerciseSetupService = {
                 ExSetupRak: {
                   some: {
                     rack: {
-                      name: { contains: search },
+                      name: { contains: query.search, mode: "insensitive" as const },
                     },
                   },
                 },
@@ -122,18 +124,33 @@ export const exerciseSetupService = {
           }
         : {};
 
-      // Get total count
-      const total = await prisma.exerciseSetup.count({ where });
-
-      // Get paginated data with user relation and junction tables
+      // OPTIMIZED: Separate queries to reduce connection pool pressure
       const exercises = await prisma.exerciseSetup.findMany({
         where,
         skip,
-        take: limit,
+        take,
         orderBy: {
           createdAt: "desc",
         },
-        include: {
+        select: {
+          id: true,
+          title: true,
+          videoUrl: true,
+          height: true,
+          isPublic: true,
+          blocked: true,
+          blockReason: true,
+          createdAt: true,
+          updatedAt: true,
+          // Pump by numbers fields for dashboard
+          isolatorHole: true,
+          yellow: true,
+          green: true,
+          blue: true,
+          red: true,
+          purple: true,
+          orange: true,
+          // Optimized user selection
           user: {
             select: {
               id: true,
@@ -141,23 +158,47 @@ export const exerciseSetupService = {
               email: true,
             },
           },
+          // Optimized equipment selection - limit to first 3 for dashboard
           ExSetupEquipment: {
-            include: {
-              equipment: true,
+            select: {
+              equipment: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
+            take: 3,
           },
+          // Optimized body part selection - limit to first 3 for dashboard
           ExSetupBodyPart: {
-            include: {
-              bodyPart: true,
+            select: {
+              bodyPart: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
+            take: 3,
           },
+          // Optimized rack selection - limit to first 3 for dashboard
           ExSetupRak: {
-            include: {
-              rack: true,
+            select: {
+              rack: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
+            take: 3,
           },
         },
       });
+
+      // Separate count query for better performance
+      const total = await prisma.exerciseSetup.count({ where });
 
       return {
         data: exercises,
@@ -165,6 +206,7 @@ export const exerciseSetupService = {
           total,
           page,
           limit,
+          totalPages: Math.ceil(total / limit),
         },
       };
     } catch (error) {
@@ -524,6 +566,7 @@ export const exerciseSetupService = {
       throw new Error("Failed to update exercise library video status.");
     }
   },
+  // Get exercise setup with comprehensive filters and pagination (OPTIMIZED)
   getExerciseSetupWithFilters: async (params: {
     page?: number;
     limit?: number;
@@ -557,13 +600,14 @@ export const exerciseSetupService = {
 
       const skip = (page - 1) * limit;
 
+      // Build optimized where clause
       const where: any = {
         isPublic: true,
         blocked: false,
         AND: [],
       };
 
-      // Search filter
+      // Search filter - optimized
       if (search) {
         where.AND.push({
           OR: [
@@ -599,7 +643,7 @@ export const exerciseSetupService = {
         });
       }
 
-      // Body parts
+      // Body part filter
       if (bodyPartIds.length > 0) {
         where.AND.push({
           ExSetupBodyPart: {
@@ -610,7 +654,7 @@ export const exerciseSetupService = {
         });
       }
 
-      // Equipments
+      // Equipment filter
       if (equipmentIds.length > 0) {
         where.AND.push({
           ExSetupEquipment: {
@@ -621,7 +665,7 @@ export const exerciseSetupService = {
         });
       }
 
-      // Racks
+      // Rack filter
       if (rackIds.length > 0) {
         where.AND.push({
           ExSetupRak: {
@@ -632,7 +676,7 @@ export const exerciseSetupService = {
         });
       }
 
-      // Username
+      // Username filter
       if (username) {
         where.AND.push({
           user: {
@@ -641,8 +685,7 @@ export const exerciseSetupService = {
         });
       }
 
-      // Average rating ContentStats
-      // Rating filter
+      // FIXED: Rating filter - using 'some' for correct logic
       if (minRating > 0) {
         where.AND.push({
           contentStats: {
@@ -663,51 +706,80 @@ export const exerciseSetupService = {
         });
       }
 
-      const [exercises, total] = await prisma.$transaction([
-        prisma.exerciseSetup.findMany({
-          where,
-          skip,
-          take: limit,
-          orderBy: {
-            [sortBy]: sortOrder,
-          },
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
+      // OPTIMIZED: Separate queries to reduce connection pool pressure
+      const exercises = await prisma.exerciseSetup.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: {
+          [sortBy]: sortOrder,
+        },
+        select: {
+          id: true,
+          title: true,
+          videoUrl: true,
+          height: true,
+          createdAt: true,
+          updatedAt: true,
+          // Pump by numbers fields
+          isolatorHole: true,
+          yellow: true,
+          green: true,
+          blue: true,
+          red: true,
+          purple: true,
+          orange: true,
+          // Optimized user selection
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
             },
-
-            ExSetupBodyPart: {
-              select: {
-                bodyPart: {
-                  select: {
-                    id: true,
-                    name: true,
-                  },
+          },
+          // Optimized body part selection
+          ExSetupBodyPart: {
+            select: {
+              bodyPart: {
+                select: {
+                  id: true,
+                  name: true,
                 },
               },
             },
-
-            contentStats: true,
-            reactions: {
-              where: { userId: session?.user?.id },
-              orderBy: { createdAt: "desc" },
-              take: 1,
-              select: {
-                id: true,
-                userId: true,
-                reaction: true,
-              },
-            },
+            take: 1, // Limit to first body part for performance
           },
-        }),
-        prisma.exerciseSetup.count({
-          where,
-        }),
-      ]);
+          // Only load contentStats if needed for sorting or filtering
+          ...(sortBy === "views" || sortBy === "likes" || minRating > 0
+            ? {
+                contentStats: {
+                  select: {
+                    totalViews: true,
+                    totalLikes: true,
+                    avgRating: true,
+                  },
+                  take: 1,
+                },
+              }
+            : {}),
+          // Only load user reactions if user is logged in
+          ...(session?.user?.id
+            ? {
+                reactions: {
+                  where: { userId: session.user.id },
+                  select: {
+                    id: true,
+                    reaction: true,
+                  },
+                  take: 1,
+                },
+              }
+            : {}),
+        },
+      });
+
+      // Separate count query for better performance
+      const total = await prisma.exerciseSetup.count({ where });
 
       return {
         data: exercises,
@@ -721,8 +793,8 @@ export const exerciseSetupService = {
         },
       };
     } catch (error) {
-      console.error("Error fetching exercise library with filters:", error);
-      throw new Error("Failed to fetch exercise library data with filters.");
+      console.error("Error fetching exercise setup with filters:", error);
+      throw new Error("Failed to fetch exercise setup data with filters.");
     }
   },
   // Create exercise setup from public (Through Zapier)
@@ -798,10 +870,13 @@ export const exerciseSetupService = {
     data: exerciseSetupZapierSchemaType,
   ) => {
     // Transform string to an array for equipments, bodyPart, and racks
-    const equipments = data.equipments.split(",").map((equipment) => equipment.trim());
-    const bodyPart = data.bodyPart.split(",").map((bodyPart) => bodyPart.trim());
+    const equipments = data.equipments
+      .split(",")
+      .map((equipment) => equipment.trim());
+    const bodyPart = data.bodyPart
+      .split(",")
+      .map((bodyPart) => bodyPart.trim());
     const racks = data.racks.split(",").map((rack) => rack.trim());
-
 
     // Create the exercise library video
     const result = await prisma.exerciseSetup.create({
@@ -838,7 +913,12 @@ export const exerciseSetupService = {
       },
     });
 
-    await awardPointsToUser(data.userId, "UPLOAD_EXERCISE", "Exercise Setup", "Exercise Setup Video upload Reward");
+    await awardPointsToUser(
+      data.userId,
+      "UPLOAD_EXERCISE",
+      "Exercise Setup",
+      "Exercise Setup Video upload Reward",
+    );
 
     return {
       success: true,

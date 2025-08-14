@@ -55,18 +55,18 @@ export const ExerciseLibraryVideoTable = () => {
   const [videoId, setVideoId] = useState<string | undefined>("");
   const [searchQuery, setSearchQuery] = useState("");
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
+    pageIndex: 1,
     pageSize: 10,
   });
 
   // Get exercise library videos data with search
-  const url = `/api/exercise-library/dashboard?page=${pagination.pageIndex + 1}&limit=${pagination.pageSize}&search=${encodeURIComponent(searchQuery)}`;
+  const url = `/api/exercise-library/dashboard?page=${pagination.pageIndex}&limit=${pagination.pageSize}&search=${encodeURIComponent(searchQuery)}`;
   const { isValidating, data } = useSWR(url);
 
   // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {
-      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+      setPagination((prev) => ({ ...prev, pageIndex: 1 }));
     }, 500);
 
     return () => clearTimeout(timer);
