@@ -293,8 +293,8 @@ export default function ExerciseFiltersOptimized({
   );
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div>
+      <div className="flex h-12 items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
         {hasActiveFilters && (
           <Button
@@ -310,8 +310,10 @@ export default function ExerciseFiltersOptimized({
       <hr />
       <div className="mt-6 space-y-4">
         {/* Body Part Filter */}
-        <div className="flex flex-col items-start space-y-1">
-          <Label className="text-[16px] font-bold">Filter By Body Part</Label>
+        <div className="flex flex-col items-start space-y-2">
+          <Label className="text-[16px] font-semibold">
+            Filter By Body Part
+          </Label>
           <MultiSelect
             options={bodyPartOptions}
             selected={state.selectedBodyParts}
@@ -322,8 +324,10 @@ export default function ExerciseFiltersOptimized({
         </div>
 
         {/* Equipment Filter */}
-        <div className="flex flex-col items-start space-y-1">
-          <Label className="text-[16px] font-bold">Filter By Equipment</Label>
+        <div className="flex flex-col items-start space-y-2">
+          <Label className="text-[16px] font-semibold">
+            Filter By Equipment
+          </Label>
           <MultiSelect
             options={equipmentOptions}
             selected={state.selectedEquipments}
@@ -334,8 +338,8 @@ export default function ExerciseFiltersOptimized({
         </div>
 
         {/* Search Filter */}
-        <div className="flex flex-col items-start space-y-1">
-          <Label className="text-[16px] font-bold">Search Exercises</Label>
+        <div className="flex flex-col items-start space-y-2">
+          <Label className="text-[16px] font-semibold">Search Exercises</Label>
           <Input
             placeholder="Search exercises..."
             value={state.searchQuery}
@@ -345,8 +349,8 @@ export default function ExerciseFiltersOptimized({
         </div>
 
         {/* Ratings Filter */}
-        <div className="flex flex-col items-start space-y-1">
-          <Label className="text-[16px] font-bold">Filter By Ratings</Label>
+        <div className="flex flex-col items-start space-y-2">
+          <Label className="text-[16px] font-semibold">Filter By Ratings</Label>
           <div className="flex w-full space-x-4 rounded-sm border bg-white p-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <Star
@@ -363,8 +367,8 @@ export default function ExerciseFiltersOptimized({
         </div>
 
         {/* Rack Filter */}
-        <div className="flex flex-col items-start space-y-1">
-          <Label className="text-[16px] font-bold">Filter By Rack</Label>
+        <div className="flex flex-col items-start space-y-2">
+          <Label className="text-[16px] font-semibold">Filter By Rack</Label>
           <MultiSelect
             options={rackOptions}
             selected={state.selectedRacks}
@@ -375,8 +379,10 @@ export default function ExerciseFiltersOptimized({
         </div>
 
         {/* Username Filter */}
-        <div className="flex flex-col items-start space-y-1">
-          <Label className="text-[16px] font-bold">Filter By Username</Label>
+        <div className="flex flex-col items-start space-y-2">
+          <Label className="text-[16px] font-semibold">
+            Filter By Username
+          </Label>
           <Input
             placeholder="Search by Username..."
             value={state.username}
@@ -386,8 +392,8 @@ export default function ExerciseFiltersOptimized({
         </div>
 
         {/* Height Filter */}
-        <div className="flex flex-col space-y-1">
-          <Label className="text-left text-[16px] font-bold">
+        <div className="flex flex-col space-y-2">
+          <Label className="text-left text-[16px] font-semibold">
             Filter By Height (Max: {state.heightRange[0]} IN)
           </Label>
           <div className="pt-4">
