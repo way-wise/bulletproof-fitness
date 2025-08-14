@@ -83,10 +83,10 @@ export default function ExerciseFiltersOptimized({
 }: ExerciseFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-
+  
   // Use reducer instead of multiple useState calls
   const [state, dispatch] = useReducer(filterReducer, initialState);
-
+  
   // Stable callback reference
   const onFiltersChangeRef = useRef(onFiltersChange);
   onFiltersChangeRef.current = onFiltersChange;
@@ -102,30 +102,27 @@ export default function ExerciseFiltersOptimized({
 
   // Memoize filter options to prevent unnecessary re-renders
   const bodyPartOptions = useMemo(
-    () =>
-      bodyParts.map((bodyPart) => ({
-        value: bodyPart.id,
-        label: bodyPart.name,
-      })),
-    [bodyParts],
+    () => bodyParts.map((bodyPart) => ({
+      value: bodyPart.id,
+      label: bodyPart.name,
+    })),
+    [bodyParts]
   );
 
   const equipmentOptions = useMemo(
-    () =>
-      equipments.map((equipment) => ({
-        value: equipment.id,
-        label: equipment.name,
-      })),
-    [equipments],
+    () => equipments.map((equipment) => ({
+      value: equipment.id,
+      label: equipment.name,
+    })),
+    [equipments]
   );
 
   const rackOptions = useMemo(
-    () =>
-      racks.map((rack) => ({
-        value: rack.id,
-        label: rack.name,
-      })),
-    [racks],
+    () => racks.map((rack) => ({
+      value: rack.id,
+      label: rack.name,
+    })),
+    [racks]
   );
 
   // Initialize filters from URL params (only once)
@@ -160,32 +157,29 @@ export default function ExerciseFiltersOptimized({
   }, []); // Only run once on mount
 
   // Memoize current filters to prevent unnecessary recalculations
-  const currentFilters = useMemo(
-    (): ExerciseLibraryFilters => ({
-      bodyPartIds: state.selectedBodyParts,
-      equipmentIds: state.selectedEquipments,
-      rackIds: state.selectedRacks,
-      username: debouncedUsername || undefined,
-      minRating: state.rating > 0 ? state.rating : undefined,
-      maxHeight: state.heightRange[0] < 85 ? state.heightRange[0] : undefined,
-      search: debouncedSearchQuery || undefined,
-    }),
-    [
-      state.selectedBodyParts,
-      state.selectedEquipments,
-      state.selectedRacks,
-      debouncedUsername,
-      state.rating,
-      state.heightRange,
-      debouncedSearchQuery,
-    ],
-  );
+  const currentFilters = useMemo((): ExerciseLibraryFilters => ({
+    bodyPartIds: state.selectedBodyParts,
+    equipmentIds: state.selectedEquipments,
+    rackIds: state.selectedRacks,
+    username: debouncedUsername || undefined,
+    minRating: state.rating > 0 ? state.rating : undefined,
+    maxHeight: state.heightRange[0] < 85 ? state.heightRange[0] : undefined,
+    search: debouncedSearchQuery || undefined,
+  }), [
+    state.selectedBodyParts,
+    state.selectedEquipments,
+    state.selectedRacks,
+    debouncedUsername,
+    state.rating,
+    state.heightRange,
+    debouncedSearchQuery,
+  ]);
 
   // Stable update function with throttling
   const updateFiltersThrottled = useCallback(
     (() => {
       let timeoutId: NodeJS.Timeout;
-
+      
       return (filters: ExerciseLibraryFilters) => {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
@@ -210,7 +204,7 @@ export default function ExerciseFiltersOptimized({
           // Update URL without refreshing the page
           const newUrl = params.toString();
           const currentUrl = window.location.search.slice(1);
-
+          
           if (newUrl !== currentUrl) {
             router.push(`?${newUrl}`, { scroll: false });
           }
@@ -220,14 +214,14 @@ export default function ExerciseFiltersOptimized({
         }, 100); // Throttle URL updates
       };
     })(),
-    [router],
+    [router]
   );
 
   // Effect to trigger filter updates (with memoized filters)
   const prevFiltersRef = useRef<string>("");
   useEffect(() => {
     const currentFiltersString = JSON.stringify(currentFilters);
-
+    
     if (currentFiltersString !== prevFiltersRef.current) {
       prevFiltersRef.current = currentFiltersString;
       updateFiltersThrottled(currentFilters);
@@ -235,15 +229,12 @@ export default function ExerciseFiltersOptimized({
   }, [currentFilters, updateFiltersThrottled]);
 
   // Memoized event handlers
-  const handleRatingClick = useCallback(
-    (star: number) => {
-      dispatch({
-        type: "SET_RATING",
-        payload: state.rating === star ? 0 : star,
-      });
-    },
-    [state.rating],
-  );
+  const handleRatingClick = useCallback((star: number) => {
+    dispatch({
+      type: "SET_RATING",
+      payload: state.rating === star ? 0 : star,
+    });
+  }, [state.rating]);
 
   const handleReset = useCallback(() => {
     dispatch({ type: "RESET_ALL" });
@@ -261,41 +252,35 @@ export default function ExerciseFiltersOptimized({
     dispatch({ type: "SET_RACKS", payload: value });
   }, []);
 
-  const handleUsernameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      dispatch({ type: "SET_USERNAME", payload: e.target.value });
-    },
-    [],
-  );
+  const handleUsernameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({ type: "SET_USERNAME", payload: e.target.value });
+  }, []);
 
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      dispatch({ type: "SET_SEARCH_QUERY", payload: e.target.value });
-    },
-    [],
-  );
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({ type: "SET_SEARCH_QUERY", payload: e.target.value });
+  }, []);
 
   const handleHeightChange = useCallback((value: number[]) => {
     dispatch({ type: "SET_HEIGHT_RANGE", payload: value });
   }, []);
 
   // Memoize active filters check
-  const hasActiveFilters = useMemo(
-    () =>
-      state.rating > 0 ||
-      state.selectedBodyParts.length > 0 ||
-      state.selectedEquipments.length > 0 ||
-      state.selectedRacks.length > 0 ||
-      state.username.trim() !== "" ||
-      state.heightRange[0] < 85 ||
-      state.searchQuery.trim() !== "",
-    [state],
-  );
+  const hasActiveFilters = useMemo(() => (
+    state.rating > 0 ||
+    state.selectedBodyParts.length > 0 ||
+    state.selectedEquipments.length > 0 ||
+    state.selectedRacks.length > 0 ||
+    state.username.trim() !== "" ||
+    state.heightRange[0] < 85 ||
+    state.searchQuery.trim() !== ""
+  ), [state]);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+        <h2 className="text-lg font-semibold text-gray-900">
+          Filters
+        </h2>
         {hasActiveFilters && (
           <Button
             variant="outline"
@@ -352,8 +337,8 @@ export default function ExerciseFiltersOptimized({
               <Star
                 key={star}
                 className={`h-5 w-5 cursor-pointer transition-colors ${
-                  state.rating >= star
-                    ? "fill-yellow-500 stroke-yellow-500"
+                  state.rating >= star 
+                    ? "fill-yellow-500 stroke-yellow-500" 
                     : "stroke-gray-400"
                 }`}
                 onClick={() => handleRatingClick(star)}
