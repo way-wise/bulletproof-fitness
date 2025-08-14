@@ -13,11 +13,11 @@ export const exerciseLibraryModule = new Hono();
 exerciseLibraryModule.get("/dashboard", async (c) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return c.json(
         {
           success: false,
-          message: "Authentication required",
+          message: "Unauthorized",
         },
         401,
       );
@@ -51,6 +51,17 @@ exerciseLibraryModule.get("/dashboard", async (c) => {
 // Get single exercise library video by ID
 exerciseLibraryModule.get("/dashboard/:id", async (c) => {
   try {
+    const session = await getSession();
+    if (!session?.user?.id || session.user.role !== 'admin') {
+      return c.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        401,
+      );
+    }
+
     const id = c.req.param("id");
     const result = await exerciseLibraryService.getExerciseLibraryVideoById(id);
 
@@ -78,11 +89,11 @@ exerciseLibraryModule.post("/dashboard", async (c: Context) => {
   try {
     // Get current user session
     const session = await getSession();
-    if (!session?.user?.id) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return c.json(
         {
           success: false,
-          message: "Authentication required",
+          message: "Unauthorized",
         },
         401,
       );
@@ -130,11 +141,11 @@ exerciseLibraryModule.post("/dashboard", async (c: Context) => {
 exerciseLibraryModule.put("/dashboard/:id", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return c.json(
         {
           success: false,
-          message: "Authentication required",
+          message: "Unauthorized",
         },
         401,
       );
@@ -183,11 +194,11 @@ exerciseLibraryModule.put("/dashboard/:id", async (c: Context) => {
 exerciseLibraryModule.delete("/dashboard/:id", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return c.json(
         {
           success: false,
-          message: "Authentication required",
+          message: "Unauthorized",
         },
         401,
       );
@@ -220,11 +231,11 @@ exerciseLibraryModule.delete("/dashboard/:id", async (c: Context) => {
 exerciseLibraryModule.post("/dashboard/:id/block", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return c.json(
         {
           success: false,
-          message: "Authentication required",
+          message: "Unauthorized",
         },
         401,
       );
@@ -273,11 +284,11 @@ exerciseLibraryModule.post("/dashboard/:id/block", async (c: Context) => {
 exerciseLibraryModule.post("/dashboard/:id/unblock", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return c.json(
         {
           success: false,
-          message: "Authentication required",
+          message: "Unauthorized",
         },
         401,
       );
@@ -310,11 +321,11 @@ exerciseLibraryModule.post("/dashboard/:id/unblock", async (c: Context) => {
 exerciseLibraryModule.patch("/dashboard/:id/status", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return c.json(
         {
           success: false,
-          message: "Authentication required",
+          message: "Unauthorized",
         },
         401,
       );

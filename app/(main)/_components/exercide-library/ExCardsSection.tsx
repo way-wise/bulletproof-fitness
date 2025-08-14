@@ -79,8 +79,8 @@ const ExCardsSection = ({
       <div className="container mx-auto py-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
           {/* Sticky Sidebar */}
-          <div className="hidden lg:block lg:w-64 lg:flex-shrink-0">
-            <div className="sticky top-24 h-fit max-h-[calc(100vh-6rem)] overflow-y-auto">
+          <div className="hidden lg:block lg:w-72 lg:flex-shrink-0">
+            <div className="sticky top-24 h-fit">
               <FilterSection onFiltersChange={handleFiltersChange} />
             </div>
           </div>

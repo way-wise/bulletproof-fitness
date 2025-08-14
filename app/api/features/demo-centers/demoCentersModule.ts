@@ -6,6 +6,7 @@ import {
   updateDemoCenterStatusSchema,
 } from "@/schema/demoCenters";
 import { paginationQuerySchema } from "@/schema/paginationSchema";
+import { getSession } from "@/lib/auth";
 import { Hono } from "hono";
 import { object, string } from "yup";
 import { validateInput } from "../../lib/validateInput";
@@ -29,22 +30,45 @@ demoCenterModule.get("/", async (c) => {
 });
 
 demoCenterModule.get("/dashboard", async (c) => {
-  const query = c.req.query();
+  try {
+    const session = await getSession();
+    if (!session?.user?.id || session.user.role !== "admin") {
+      return c.json(
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        401,
+      );
+    }
 
-  const validatedQuery = await validateInput({
-    type: "query",
-    schema: paginationQuerySchema,
-    data: query,
-  });
+    const query = c.req.query();
 
-  // Add search parameter if present
-  const searchQuery = query.search
-    ? { ...validatedQuery, search: query.search }
-    : validatedQuery;
+    const validatedQuery = await validateInput({
+      type: "query",
+      schema: paginationQuerySchema,
+      data: query,
+    });
 
-  const result = await demoCentersService.getDemoCentersDashboard(searchQuery);
+    // Add search parameter if present
+    const searchQuery = query.search
+      ? { ...validatedQuery, search: query.search }
+      : validatedQuery;
 
-  return c.json(result);
+    const result =
+      await demoCentersService.getDemoCentersDashboard(searchQuery);
+
+    return c.json(result);
+  } catch (error) {
+    console.error("Error fetching demo centers dashboard:", error);
+    return c.json(
+      {
+        success: false,
+        message: "Failed to fetch demo centers dashboard",
+      },
+      500,
+    );
+  }
 });
 
 /*

@@ -1,6 +1,4 @@
-import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { HTTPException } from "hono/http-exception";
 
 export interface DashboardStats {
   totalUsers: number;
@@ -39,13 +37,7 @@ export interface DashboardOverview {
 
 export const dashboardService = {
   getDashboardOverview: async (): Promise<DashboardOverview> => {
-    const session = await getSession();
-    if (!session?.user?.id) {
-      throw new HTTPException(401, {
-        message: "Unauthorized",
-      });
-    }
-
+    // OPTIMIZED: Remove redundant auth check (handled in module)
     // Get current date and 30 days ago for growth calculations
     const now = new Date();
     const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -55,86 +47,82 @@ export const dashboardService = {
       1,
     );
 
-    // Use transaction for efficient data fetching
+    // OPTIMIZED: Split into separate queries to reduce connection pool pressure
+    // Get basic stats with simplified queries
+    const [totalUsers, totalCenters, totalLibraryVideos, totalVideos] =
+      await Promise.all([
+        prisma.users.count(),
+        prisma.demoCenter.count(),
+        prisma.exerciseLibraryVideo.count(),
+        prisma.exerciseSetup.count(),
+      ]);
+
+    // OPTIMIZED: Get growth data separately (less critical for dashboard load)
+    const [currentUsers, currentCenters, currentLibraryVideos, currentVideos] =
+      await Promise.all([
+        prisma.users.count({
+          where: { createdAt: { gte: currentMonthStart } },
+        }),
+        prisma.demoCenter.count({
+          where: { createdAt: { gte: currentMonthStart } },
+        }),
+        prisma.exerciseLibraryVideo.count({
+          where: { createdAt: { gte: currentMonthStart } },
+        }),
+        prisma.exerciseSetup.count({
+          where: { createdAt: { gte: currentMonthStart } },
+        }),
+      ]);
+
+    // OPTIMIZED: Get previous month data separately
     const [
-      currentUsers,
-      currentCenters,
-      currentLibraryVideos,
-      currentVideos,
       previousUsers,
       previousCenters,
       previousLibraryVideos,
       previousVideos,
+    ] = await Promise.all([
+      prisma.users.count({
+        where: {
+          createdAt: {
+            gte: previousMonthStart,
+            lt: currentMonthStart,
+          },
+        },
+      }),
+      prisma.demoCenter.count({
+        where: {
+          createdAt: {
+            gte: previousMonthStart,
+            lt: currentMonthStart,
+          },
+        },
+      }),
+      prisma.exerciseLibraryVideo.count({
+        where: {
+          createdAt: {
+            gte: previousMonthStart,
+            lt: currentMonthStart,
+          },
+        },
+      }),
+      prisma.exerciseSetup.count({
+        where: {
+          createdAt: {
+            gte: previousMonthStart,
+            lt: currentMonthStart,
+          },
+        },
+      }),
+    ]);
+
+    // OPTIMIZED: Get recent activities with minimal data
+    const [
       recentUsers,
       recentCenters,
       recentLibraryVideos,
       recentVideos,
       topCenters,
-    ] = await prisma.$transaction([
-      // Current month stats
-      prisma.users.count({
-        where: {
-          createdAt: {
-            gte: currentMonthStart,
-          },
-        },
-      }),
-      prisma.demoCenter.count({
-        where: {
-          createdAt: {
-            gte: currentMonthStart,
-          },
-        },
-      }),
-      prisma.exerciseLibraryVideo.count({
-        where: {
-          createdAt: {
-            gte: currentMonthStart,
-          },
-        },
-      }),
-      prisma.exerciseSetup.count({
-        where: {
-          createdAt: {
-            gte: currentMonthStart,
-          },
-        },
-      }),
-      // Previous month stats for growth calculation
-      prisma.users.count({
-        where: {
-          createdAt: {
-            gte: previousMonthStart,
-            lt: currentMonthStart,
-          },
-        },
-      }),
-      prisma.demoCenter.count({
-        where: {
-          createdAt: {
-            gte: previousMonthStart,
-            lt: currentMonthStart,
-          },
-        },
-      }),
-      prisma.exerciseLibraryVideo.count({
-        where: {
-          createdAt: {
-            gte: previousMonthStart,
-            lt: currentMonthStart,
-          },
-        },
-      }),
-      prisma.exerciseSetup.count({
-        where: {
-          createdAt: {
-            gte: previousMonthStart,
-            lt: currentMonthStart,
-          },
-        },
-      }),
-      // Recent activities (last 10 activities across different types)
-      // Recent users
+    ] = await Promise.all([
       prisma.users.findMany({
         take: 3,
         orderBy: { createdAt: "desc" },
@@ -144,7 +132,6 @@ export const dashboardService = {
           createdAt: true,
         },
       }),
-      // Recent demo centers
       prisma.demoCenter.findMany({
         take: 3,
         orderBy: { createdAt: "desc" },
@@ -154,7 +141,6 @@ export const dashboardService = {
           createdAt: true,
         },
       }),
-      // Recent library videos
       prisma.exerciseLibraryVideo.findMany({
         take: 2,
         orderBy: { createdAt: "desc" },
@@ -164,7 +150,6 @@ export const dashboardService = {
           createdAt: true,
         },
       }),
-      // Recent exercise setup videos
       prisma.exerciseSetup.findMany({
         take: 2,
         orderBy: { createdAt: "desc" },
@@ -174,7 +159,6 @@ export const dashboardService = {
           createdAt: true,
         },
       }),
-      // Top performing demo centers (mock data for now, can be enhanced with actual metrics)
       prisma.demoCenter.findMany({
         take: 3,
         where: {
@@ -273,10 +257,10 @@ export const dashboardService = {
     );
 
     const stats: DashboardStats = {
-      totalUsers: currentUsers,
-      totalDemoCenters: currentCenters,
-      totalLibraryVideos: currentLibraryVideos,
-      totalExerciseVideos: currentVideos,
+      totalUsers: totalUsers,
+      totalDemoCenters: totalCenters,
+      totalLibraryVideos: totalLibraryVideos,
+      totalExerciseVideos: totalVideos,
       userGrowth: calculateGrowth(currentUsers, previousUsers),
       centerGrowth: calculateGrowth(currentCenters, previousCenters),
       libraryVideoGrowth: calculateGrowth(

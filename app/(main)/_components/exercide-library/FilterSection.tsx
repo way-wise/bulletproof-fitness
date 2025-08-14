@@ -293,7 +293,7 @@ export default function ExerciseFiltersOptimized({
   );
 
   return (
-    <div>
+    <div className="px-4">
       <div className="flex h-12 items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
         {hasActiveFilters && (
@@ -341,6 +341,7 @@ export default function ExerciseFiltersOptimized({
         <div className="flex flex-col items-start space-y-2">
           <Label className="text-[16px] font-semibold">Search Exercises</Label>
           <Input
+            type="search"
             placeholder="Search exercises..."
             value={state.searchQuery}
             onChange={handleSearchChange}
@@ -384,6 +385,7 @@ export default function ExerciseFiltersOptimized({
             Filter By Username
           </Label>
           <Input
+            type="search"
             placeholder="Search by Username..."
             value={state.username}
             onChange={handleUsernameChange}

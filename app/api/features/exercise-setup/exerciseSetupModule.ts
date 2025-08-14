@@ -116,11 +116,11 @@ exerciseSetupModule.get("/dashboard/:id", async (c) => {
 exerciseSetupModule.post("/dashboard", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return c.json(
         {
           success: false,
-          message: "Authentication required",
+          message: "Unauthorized",
         },
         401,
       );
@@ -168,11 +168,11 @@ exerciseSetupModule.post("/dashboard", async (c: Context) => {
 exerciseSetupModule.put("/dashboard/:id", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return c.json(
         {
           success: false,
-          message: "Authentication required",
+          message: "Unauthorized",
         },
         401,
       );
@@ -221,11 +221,11 @@ exerciseSetupModule.put("/dashboard/:id", async (c: Context) => {
 exerciseSetupModule.delete("/dashboard/:id", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return c.json(
         {
           success: false,
-          message: "Authentication required",
+          message: "Unauthorized",
         },
         401,
       );
@@ -258,11 +258,11 @@ exerciseSetupModule.delete("/dashboard/:id", async (c: Context) => {
 exerciseSetupModule.post("/dashboard/:id/block", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return c.json(
         {
           success: false,
-          message: "Authentication required",
+          message: "Unauthorized",
         },
         401,
       );
@@ -311,11 +311,11 @@ exerciseSetupModule.post("/dashboard/:id/block", async (c: Context) => {
 exerciseSetupModule.post("/dashboard/:id/unblock", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return c.json(
         {
           success: false,
-          message: "Authentication required",
+          message: "Unauthorized",
         },
         401,
       );
@@ -348,11 +348,11 @@ exerciseSetupModule.post("/dashboard/:id/unblock", async (c: Context) => {
 exerciseSetupModule.patch("/dashboard/:id/status", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id) {
+    if (!session?.user?.id || session.user.role !== 'admin') {
       return c.json(
         {
           success: false,
-          message: "Authentication required",
+          message: "Unauthorized",
         },
         401,
       );
