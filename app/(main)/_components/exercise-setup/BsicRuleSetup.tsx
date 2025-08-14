@@ -7,11 +7,12 @@ const BsicRuleSetup = () => {
         </h2>
         <div className="mx-auto aspect-video w-full overflow-hidden rounded shadow-md">
           <iframe
-            className="h-full w-full"
+            className="size-full"
             src="https://www.youtube.com/embed/kt6MxpsAnY4"
             title="Basic Rules To ISOLATOR Setup"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
+            loading="lazy"
           ></iframe>
         </div>
       </div>
@@ -21,11 +22,12 @@ const BsicRuleSetup = () => {
         </h2>
         <div className="mx-auto aspect-video w-full overflow-hidden rounded shadow-md">
           <iframe
-            className="h-full w-full"
+            className="size-full"
             src="https://www.youtube.com/embed/x7VRUJW8K6I"
             title="Basic Rules To ISOLATOR Setup"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
+            loading="lazy"
           ></iframe>
         </div>
       </div>

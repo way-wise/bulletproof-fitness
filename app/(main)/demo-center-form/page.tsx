@@ -162,7 +162,6 @@ export default function DemoCenterFormPage() {
             src={`https://na2.documents.adobe.com/public/esignWidget?wid=${agreementWidgetId}&hosted=false`}
             width="100%"
             height="600"
-            frameBorder="0"
             title="Adobe Sign Agreement"
             className="rounded-lg shadow-lg"
           />

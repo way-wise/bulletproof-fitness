@@ -124,15 +124,14 @@ const ExLibraryCard = ({
   );
   return (
     <div>
-      <CardUI className="overflow-hidden rounded-none border-none shadow-none">
-        <div className="relative aspect-video rounded-none shadow-none">
+      <CardUI className="overflow-hidden rounded-none border-none">
+        <div className="relative aspect-video">
           <iframe
             src={`${url}`}
             title={title}
-            frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
-            className="h-full w-full"
+            className="size-full"
             loading="lazy"
           ></iframe>
         </div>

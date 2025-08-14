@@ -18,10 +18,9 @@ const SetupCard = ({ item }: { item: ExerciseLibraryItem }) => {
           <iframe
             src={`https://www.youtube.com/embed/${videoId}`}
             title={item.title}
-            frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
-            className="h-full w-full"
+            className="size-full"
             loading="lazy"
           ></iframe>
         </div>

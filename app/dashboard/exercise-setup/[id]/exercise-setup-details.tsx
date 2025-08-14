@@ -94,9 +94,10 @@ export const ExerciseSetupDetails = ({ id }: ExerciseSetupDetailsProps) => {
                 <iframe
                   src={exerciseSetup.videoUrl}
                   title="Exercise Video"
-                  className="h-full w-full"
+                  className="size-full"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
+                  loading="lazy"
                 ></iframe>
               </div>
             </CardContent>

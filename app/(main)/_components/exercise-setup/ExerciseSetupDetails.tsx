@@ -128,9 +128,10 @@ export default function ExerciseSetupDetails({
           <iframe
             src={libraryData?.videoUrl}
             title="Exercise Video"
-            className="h-full w-full"
+            className="size-full"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
+            loading="lazy"
           ></iframe>
         </div>
 

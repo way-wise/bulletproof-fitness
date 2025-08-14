@@ -6,11 +6,12 @@ const BsicRule = () => {
       </h2>
       <div className="mx-auto aspect-video w-full overflow-hidden rounded shadow-md md:w-1/2">
         <iframe
-          className="h-full w-full"
+          className="size-full"
           src="https://www.youtube.com/embed/kt6MxpsAnY4"
           title="Basic Rules To ISOLATOR Setup"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
+          loading="lazy"
         ></iframe>
       </div>
     </div>
