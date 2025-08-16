@@ -305,6 +305,7 @@ enum RewardType {
   UPLOAD_EXERCISE
   UPLOAD_LIBRARY
   DISLIKE
+  DEMO_CENTER
 }
 
 model RewardPoints {

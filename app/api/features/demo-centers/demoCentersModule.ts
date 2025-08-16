@@ -77,13 +77,15 @@ demoCenterModule.get("/dashboard", async (c) => {
   @desc     Create new demo center
 */
 demoCenterModule.post("/", async (c) => {
+  const session = await getSession();
+  
   const validatedBody = await validateInput({
     type: "form",
     schema: demoCenterSchema,
     data: await c.req.json(),
   });
 
-  const result = await demoCentersService.createDemoCenter(validatedBody);
+  const result = await demoCentersService.createDemoCenter(validatedBody, session?.user?.id);
   return c.json(result);
 });
 

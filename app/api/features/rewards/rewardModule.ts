@@ -30,6 +30,7 @@ app.post("/", async (c) => {
         | "DISLIKE"
         | "UPLOAD_EXERCISE"
         | "UPLOAD_LIBRARY"
+        | "DEMO_CENTER"
       >()
         .oneOf([
           "LIKE",
@@ -39,6 +40,7 @@ app.post("/", async (c) => {
           "DISLIKE",
           "UPLOAD_EXERCISE",
           "UPLOAD_LIBRARY",
+          "DEMO_CENTER",
         ])
         .required(),
     }),
@@ -79,6 +81,7 @@ app.put("/:id", async (c) => {
         | "UPLOAD_EXERCISE"
         | "UPLOAD_LIBRARY"
         | "DISLIKE"
+        | "DEMO_CENTER"
       >()
         .oneOf([
           "LIKE",
@@ -87,6 +90,7 @@ app.put("/:id", async (c) => {
           "UPLOAD_EXERCISE",
           "UPLOAD_LIBRARY",
           "DISLIKE",
+          "DEMO_CENTER",
         ])
         .required("Type is required"),
     }),
