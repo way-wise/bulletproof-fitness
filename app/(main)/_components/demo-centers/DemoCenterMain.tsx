@@ -90,8 +90,16 @@ export default function DemoCenterMain() {
   return (
     <main className="container mx-auto max-w-[1200px] space-y-10 px-4 py-10">
       <section className="space-y-4 text-center">
-        <h1 className="text-3xl font-bold md:text-5xl">DEMO CENTER</h1>
-
+        <div className="mb-8 text-center">
+          <h1 className="mb-2 text-3xl font-bold md:text-5xl">DEMO CENTER</h1>
+          <h3 className="mb-1 text-xl font-semibold text-foreground/90 md:text-2xl">
+            Try Bulletproof Equipment in Your City. No Showroom Required.
+          </h3>
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+            Visit or host a demo center to test our gear in real gyms and home
+            setups — no pressure, no sales pitch.
+          </p>
+        </div>
         <Link href="/demo-center-form">
           <Button className="cursor-pointer rounded-sm bg-[#69727D] px-2 py-2 text-xs text-white uppercase sm:text-base md:px-6 md:tracking-wide">
             <CircleArrowRight />

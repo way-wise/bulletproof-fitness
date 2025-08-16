@@ -249,7 +249,7 @@ const RewardsTable = () => {
                   </FormItem>
                 )}
               />
-              <FormField
+              {/* <FormField
                 control={rewardForm.control}
                 name="type"
                 render={({ field }) => (
@@ -281,7 +281,7 @@ const RewardsTable = () => {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
 
               <FormField
                 control={rewardForm.control}
