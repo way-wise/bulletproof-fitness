@@ -14,7 +14,13 @@ import {
 import type { auth } from "@/lib/auth";
 import { signOut } from "@/lib/auth-client";
 import { useProgress } from "@bprogress/next";
-import { ChevronDown, LayoutGrid, LogOut, UserRound } from "lucide-react";
+import {
+  ChevronDown,
+  LayoutGrid,
+  LogOut,
+  Trophy,
+  UserRound,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -76,7 +82,14 @@ export const ProfileDropdown = ({ session }: { session: Session }) => {
               </Link>
             </DropdownMenuItem>
           )}
-
+          {session && (
+            <DropdownMenuItem asChild>
+              <Link href="/leaderboard">
+                <Trophy aria-hidden="true" />
+                <span>Leaderboard</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem asChild>
             <Link href="/profile">
               <UserRound aria-hidden="true" />

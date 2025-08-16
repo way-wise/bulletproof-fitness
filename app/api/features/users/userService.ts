@@ -188,10 +188,21 @@ export const userService = {
     const [users, total] = await prisma.$transaction([
       prisma.users.findMany({
         where: {
-          banned: false,
+          OR: [
+            { banned: false },
+            { banned: null }
+          ],
           totalPoints: {
             gt: 0,
           },
+          AND: [
+            {
+              OR: [
+                { role: { not: "admin" } },
+                { role: null }
+              ]
+            }
+          ],
         },
         select: {
           id: true,
@@ -232,10 +243,21 @@ export const userService = {
       }),
       prisma.users.count({
         where: {
-          banned: false,
+          OR: [
+            { banned: false },
+            { banned: null }
+          ],
           totalPoints: {
             gt: 0,
           },
+          AND: [
+            {
+              OR: [
+                { role: { not: "admin" } },
+                { role: null }
+              ]
+            }
+          ],
         },
       }),
     ]);

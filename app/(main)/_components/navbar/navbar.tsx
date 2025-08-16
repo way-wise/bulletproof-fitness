@@ -62,10 +62,6 @@ const Navbar = ({ session }: { session: Session }) => {
       title: "UPLOAD VIDEO",
       url: "/upload-video",
     },
-    ...(session ? [{
-      title: "LEADERBOARD",
-      url: "/leaderboard",
-    }] : []),
   ];
   const handleSignoutMobile = async () => {
     await signOut({
