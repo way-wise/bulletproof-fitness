@@ -180,4 +180,86 @@ export const userService = {
 
     return user;
   },
+
+  // Get leaderboard data with user stats
+  getLeaderboard: async (query: PaginationQuery) => {
+    const { skip, take, page, limit } = getPaginationQuery(query);
+    
+    const [users, total] = await prisma.$transaction([
+      prisma.users.findMany({
+        where: {
+          banned: false,
+          totalPoints: {
+            gt: 0,
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+          totalPoints: true,
+          createdAt: true,
+          _count: {
+            select: {
+              exerciseSetups: {
+                where: {
+                  isPublic: true,
+                  blocked: false,
+                },
+              },
+              ExerciseLibraryVideo: {
+                where: {
+                  isPublic: true,
+                  blocked: false,
+                },
+              },
+              views: true,
+              ratings: true,
+              reactions: {
+                where: {
+                  reaction: "LIKE",
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          totalPoints: "desc",
+        },
+        skip,
+        take,
+      }),
+      prisma.users.count({
+        where: {
+          banned: false,
+          totalPoints: {
+            gt: 0,
+          },
+        },
+      }),
+    ]);
+
+    // Transform data to include computed stats
+    const leaderboardData = users.map((user, index) => ({
+      ...user,
+      rank: skip + index + 1,
+      exerciseSetupCount: user._count.exerciseSetups,
+      exerciseLibraryCount: user._count.ExerciseLibraryVideo,
+      totalVideos: user._count.exerciseSetups + user._count.ExerciseLibraryVideo,
+      viewsCount: user._count.views,
+      ratingsCount: user._count.ratings,
+      likesCount: user._count.reactions,
+    }));
+
+    return {
+      data: leaderboardData,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  },
 };

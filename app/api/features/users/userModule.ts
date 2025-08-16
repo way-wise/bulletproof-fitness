@@ -46,6 +46,22 @@ app.put("/me", async (c) => {
 });
 
 /*
+  @route    GET: /users/leaderboard
+  @access   private
+  @desc     Get leaderboard data
+*/
+app.get("/leaderboard", async (c) => {
+  const validatedQuery = await validateInput({
+    type: "query",
+    schema: paginationQuerySchema,
+    data: c.req.query(),
+  });
+
+  const result = await userService.getLeaderboard(validatedQuery);
+  return c.json(result);
+});
+
+/*
   @route    GET: /users/:id
   @access   private
   @desc     Get user by id

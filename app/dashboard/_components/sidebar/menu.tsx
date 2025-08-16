@@ -34,7 +34,17 @@ const SidebarMenu = () => {
     {
       title: "Rewards",
       icon: <BadgeCent className="icon" />,
-      url: "/dashboard/rewards",
+      baseUrl: "/dashboard/rewards",
+      submenu: [
+        {
+          title: "Rewards",
+          url: "/dashboard/rewards",
+        },
+        {
+          title: "Leaderboard",
+          url: "/dashboard/rewards/leaderboard",
+        },
+      ],
     },
     {
       title: "Demo Centers",
