@@ -41,6 +41,10 @@ const Navbar = ({ session }: { session: Session }) => {
       url: "/exercise-setup",
     },
     {
+      title: "ABOUT US",
+      url: "/about-us",
+    },
+    {
       title: "DEMO/RETAIL CENTERS",
       baseUrl: "/demo-centers",
       submenu: [

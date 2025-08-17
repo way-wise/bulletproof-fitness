@@ -34,7 +34,7 @@ export default function DemoCentersPage() {
               </p>
 
               {/* Key Benefits List */}
-              <div className="mb-10 space-y-3 text-start md:text-center">
+              <div className="mb-10 space-y-3 text-start">
                 <div className="inline-flex sm:items-center gap-1.5 sm:gap-3 text-start">
                   <CheckCircle className="size-4 sm:size-5 text-green-600" />
                   <span className="font-medium text-gray-800 text-sm md:text-base">Try real Bulletproof setups near you</span>
