@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import { CheckCircleIcon } from "lucide-react";
 
 export default function AboutUs() {
     return (
@@ -85,7 +86,7 @@ export default function AboutUs() {
                     <div className="flex flex-col md:flex-row gap-12 items-center">
                         <Image src="/assets/problem.jpg" alt="Problem" width={500} height={500} className="w-full h-auto object-cover rounded-xl" />
                         <div className="w-full">
-                            <div className="bg-blue-50 backdrop-blur-sm rounded-3xl p-4 lg:p-8 border border-white/50 shadow-xl">
+                            <div className="bg-blue-50 backdrop-blur-sm rounded-xl p-4 lg:p-8 border border-white/50 shadow-xl">
                                 <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
                                     <span>THE PROBLEM: <br /> TOO MUCH VERSATILITY, TOO LITTLE CLARITY</span>
                                 </h3>
@@ -95,7 +96,7 @@ export default function AboutUs() {
                                         When we started Bulletproof, our mission was crystal clear:
                                     </p>
 
-                                    <blockquote className="border-l-4 border-primary pl-8 italic text-xl font-medium bg-gradient-to-r from-blue-50 to-purple-50 p-8 rounded-lg shadow-sm">
+                                    <blockquote className="border-l-4 border-primary pl-8 italic text-xl font-medium bg-white p-8 rounded-lg shadow-sm">
                                         Bring commercial-grade gym power into smaller gyms and home setups — with a fraction of the cost and space.
                                     </blockquote>
 
@@ -186,7 +187,7 @@ export default function AboutUs() {
             {/* Community Section */}
             <section className="py-10 lg:py-16">
                 <div className="container">
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-8 lg:p-10">
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 lg:p-10">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                             {/* Left Image - Community/Diverse People */}
                             <div className="relative order-2 lg:order-1">
@@ -212,7 +213,7 @@ export default function AboutUs() {
                                         Sure, Larry could've made hundreds of videos himself. But here's the deal:
                                     </p>
 
-                                    <blockquote className="border-l-4 border-primary pl-6 italic text-lg font-medium bg-white p-6 rounded-lg shadow-sm">
+                                    <blockquote className="border-l-4 border-primary pl-6 italic text-lg font-medium bg-green-50 p-6 rounded-lg shadow-sm">
                                         One man's height, build, rack, and goals can't cover all the infinite variations our customers bring to the table.
                                     </blockquote>
 
@@ -248,7 +249,9 @@ export default function AboutUs() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto gap-6 text-gray-900">
                             <div className="flex items-start gap-4 bg-gray-50 p-6 rounded-lg border border-gray-100 shadow-sm">
-                                <span className="text-2xl text-green-600">✅</span>
+                                <span className="bg-green-500 rounded-full p-1.5">
+                                    <CheckCircleIcon className="w-6 h-6 text-white" />
+                                </span>
                                 <div>
                                     <h4 className="font-bold text-lg mb-2 text-gray-900">Democratizes Knowledge</h4>
                                     <p className="text-base leading-relaxed">Everyone becomes both a student and a teacher. Share your discoveries and learn from others' innovations.</p>
@@ -256,7 +259,9 @@ export default function AboutUs() {
                             </div>
 
                             <div className="flex items-start gap-4 bg-gray-50 p-6 rounded-lg border border-gray-100 shadow-sm">
-                                <span className="text-2xl text-green-600">✅</span>
+                                <span className="bg-green-500 rounded-full p-1.5">
+                                    <CheckCircleIcon className="w-6 h-6 text-white" />
+                                </span>
                                 <div>
                                     <h4 className="font-bold text-lg mb-2 text-gray-900">Eliminates Frustration</h4>
                                     <p className="text-base leading-relaxed">Stop scratching your head over how to set something up — just search and go. No more guesswork.</p>
@@ -264,7 +269,9 @@ export default function AboutUs() {
                             </div>
 
                             <div className="flex items-start gap-4 bg-gray-50 p-6 rounded-lg border border-gray-100 shadow-sm">
-                                <span className="text-2xl text-green-600">✅</span>
+                                <span className="bg-green-500 rounded-full p-1.5">
+                                    <CheckCircleIcon className="w-6 h-6 text-white" />
+                                </span>
                                 <div>
                                     <h4 className="font-bold text-lg mb-2 text-gray-900">Unleashes Potential</h4>
                                     <p className="text-base leading-relaxed">Finally see everything your equipment can do — not just what you've already discovered on your own.</p>
@@ -272,7 +279,9 @@ export default function AboutUs() {
                             </div>
 
                             <div className="flex items-start gap-4 bg-gray-50 p-6 rounded-lg border border-gray-100 shadow-sm">
-                                <span className="text-2xl text-green-600">✅</span>
+                                <span className="bg-green-500 rounded-full p-1.5">
+                                    <CheckCircleIcon className="w-6 h-6 text-white" />
+                                </span>
                                 <div>
                                     <h4 className="font-bold text-lg mb-2 text-gray-900">Evolves Over Time</h4>
                                     <p className="text-base leading-relaxed">This isn't a static database — it grows as our community grows, constantly adding new possibilities.</p>
