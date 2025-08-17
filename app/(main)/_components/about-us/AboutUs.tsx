@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircleIcon } from "lucide-react";
+import { BookKey, CheckCircleIcon, SearchIcon, StarIcon, Users, VideoIcon } from "lucide-react";
 
 export default function AboutUs() {
     return (
@@ -23,25 +23,25 @@ export default function AboutUs() {
                             </p>
 
                             {/* Quick Overview Bullet Points */}
-                            <div className="space-y-3 mb-8">
+                            <div className="space-y-2 mb-8">
                                 <div className="flex items-start gap-3">
-                                    <span className="text-xl">🎥</span>
+                                    <VideoIcon />
                                     <span className="text-sm sm:text-base">Step-by-step setup videos by real customers</span>
                                 </div>
-                                <div className="flex items-start gap-3">
-                                    <span className="text-xl">🔎</span>
+                                <div className="flex items-center gap-3">
+                                    <SearchIcon className="size-5" />
                                     <span className="text-sm sm:text-base">Search by rack, height, movement, body part, or user</span>
                                 </div>
                                 <div className="flex items-start gap-3">
-                                    <span className="text-xl">⭐</span>
+                                    <StarIcon />
                                     <span className="text-sm sm:text-base">Top-rated and founder-approved content</span>
                                 </div>
                                 <div className="flex items-start gap-3">
-                                    <span className="text-xl">🧠</span>
+                                    <BookKey className="size-5" />
                                     <span className="text-sm sm:text-base">Created to help you unlock the full potential of your equipment</span>
                                 </div>
                                 <div className="flex items-start gap-3">
-                                    <span className="text-xl">🤝</span>
+                                    <Users className="size-5" />
                                     <span className="text-sm sm:text-base">Built by the community. Powered by your experience.</span>
                                 </div>
                             </div>
