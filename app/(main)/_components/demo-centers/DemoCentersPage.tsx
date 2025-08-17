@@ -16,7 +16,7 @@ export default function DemoCentersPage() {
             {/* Left Content */}
             <div className="text-center lg:text-left">
               {/* Badge */}
-              <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-200 to-purple-200 px-4 py-2 text-sm font-semibold text-black shadow-lg">
+              <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-gray-50 border border-gray-200 px-4 py-2 text-sm font-semibold text-black">
 
                 Bulletproof Demo Centers
               </div>
@@ -132,64 +132,64 @@ export default function DemoCentersPage() {
               {/* Left Content */}
               <div className="space-y-8 text-left lg:text-left">
                 <div className="relative">
-                    <div className="mb-4 flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
-                        <span className="text-white font-bold">?</span>
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-900">The Question</h3>
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
+                      <span className="text-white font-bold">?</span>
                     </div>
-                    <p className="text-lg font-medium text-gray-800 leading-relaxed">
-                      Before dropping thousands on a home gym, wouldn't it be great to actually try the equipment?
-                    </p>
+                    <h3 className="text-2xl font-bold text-gray-900">The Question</h3>
                   </div>
+                  <p className="text-lg font-medium text-gray-800 leading-relaxed">
+                    Before dropping thousands on a home gym, wouldn't it be great to actually try the equipment?
+                  </p>
+                </div>
 
                 <div className="relative">
-                    <div className="mb-4 flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-blue-600 shadow-lg">
-                        <span className="text-white font-bold">📞</span>
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-900">The Calls</h3>
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-blue-600 shadow-lg">
+                      <span className="text-white font-bold">📞</span>
                     </div>
-                    <p className="text-lg text-gray-700 leading-relaxed">
-                      At Bulletproof Fitness Equipment, we heard the calls (literally) from across the country — people ready to fly in just to get their hands on our gear.
-                    </p>
+                    <h3 className="text-2xl font-bold text-gray-900">The Calls</h3>
                   </div>
+                  <p className="text-lg text-gray-700 leading-relaxed">
+                    At Bulletproof Fitness Equipment, we heard the calls (literally) from across the country — people ready to fly in just to get their hands on our gear.
+                  </p>
+                </div>
               </div>
 
               {/* Right Content */}
               <div className="space-y-8">
                 <div className="relative">
-                    <div className="mb-2 flex text-start gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg">
-                        <span className="text-white font-bold">🚀</span>
-                      </div>
-                      <div>
-                        <h3 className="text-2xl font-bold text-gray-900">Why?</h3>
-                        <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                          Because what we make is different.
-                        </p>
-                      </div>
+                  <div className="mb-2 flex text-start gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg">
+                      <span className="text-white font-bold">🚀</span>
                     </div>
-
-                    <div className="rounded-lg border bg-gray-50 px-4 py-3 text-start text-black">
-                      <p className="text-lg font-semibold leading-tight">
-                        Not just a little different — game-changing, category-defining, no-comparison different.
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900">Why?</h3>
+                      <p className="text-lg text-gray-700 leading-relaxed mb-4">
+                        Because what we make is different.
                       </p>
                     </div>
+                  </div>
+
+                  <div className="rounded-lg border bg-gray-50 px-4 py-3 text-start text-black">
+                    <p className="text-lg font-semibold leading-tight">
+                      Not just a little different — game-changing, category-defining, no-comparison different.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="relative">
-                    <div className="mb-2 flex text-start gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-600 shadow-lg">
-                        <span className="text-white font-bold">💡</span>
-                      </div>
-                      <div>
-                        <h3 className="text-2xl font-bold text-gray-900">The Solution</h3>
-                        <p className="text-lg text-gray-700 leading-relaxed">
-                          So we created something just as unique to match.
-                        </p>
-                      </div>
+                  <div className="mb-2 flex text-start gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-600 shadow-lg">
+                      <span className="text-white font-bold">💡</span>
                     </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900">The Solution</h3>
+                      <p className="text-lg text-gray-700 leading-relaxed">
+                        So we created something just as unique to match.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -201,7 +201,7 @@ export default function DemoCentersPage() {
       <section className="py-20 bg-gradient-to-br from-gray-50 to-slate-100">
         <div className="container mx-auto max-w-5xl px-6">
           <div className="text-center">
-            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-white shadow-lg">
+            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gray-50 border border-gray-200 px-6 py-3 text-black shadow-lg">
               <span className="font-semibold">THE "UBER" OF GYM DEMOS IS HERE</span>
             </div>
             <h2 className="mb-8 text-2xl font-bold text-gray-900 md:text-2xl">
@@ -223,7 +223,7 @@ export default function DemoCentersPage() {
       <section className="py-24 bg-white">
         <div className="container mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
-            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-3 text-white shadow-lg">
+            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gray-50 border border-gray-200 px-6 py-3 text-black shadow-lg">
               <span className="font-semibold">HOW IT WORKS</span>
             </div>
             <h2 className="mb-4 text-4xl font-bold text-gray-900 md:text-3xl">
@@ -234,35 +234,37 @@ export default function DemoCentersPage() {
             </p>
           </div>
 
-          <div className="grid gap-16 lg:grid-cols-2">
+          <div className="flex flex-col gap-16">
             {/* Want to try - Left Side */}
-            <div className="space-y-6">
-              <div className="text-center lg:text-left">
-                <h3 className="mb-6 text-3xl font-bold text-gray-900">Want to try our equipment?</h3>
-              </div>
+            <div className="flex gap-12 items-center">
+              <div className="w-full lg:w-1/2 space-y-6">
+                <div className="text-center lg:text-left">
+                  <h3 className="text-2xl font-bold text-gray-900">Want to try our equipment?</h3>
+                </div>
 
-              {/* Step 1 */}
-              <div className="group relative rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-4 ring-1 ring-blue-100 transition-all hover:shadow-lg">
-                <div className="flex items-start gap-6">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold text-lg shadow-lg">
-                    1
-                  </div>
-                  <div>
-                    <h4 className="mb-3 text-xl font-bold text-gray-900">Find a Demo Center</h4>
-                    <p className="text-gray-600 leading-relaxed">Find a demo center near you by searching based on location, type (home, studio, gym), or gear availability.</p>
+                {/* Step 1 */}
+                <div className="group relative rounded-2xl bg-gray-50 border border-gray-200 p-4">
+                  <div className="flex items-start gap-6">
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-black  text-white font-bold text-lg shadow-lg">
+                      1
+                    </div>
+                    <div>
+                      <h4 className="mb-1 font-bold text-gray-900">Find a Demo Center</h4>
+                      <p className="text-gray-600 leading-relaxed">Find a demo center near you by searching based on location, type (home, studio, gym), or gear availability.</p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Step 2 */}
-              <div className="group relative rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 p-4 ring-1 ring-green-100 transition-all hover:shadow-lg">
-                <div className="flex items-start gap-6">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-lg shadow-lg">
-                    2
-                  </div>
-                  <div>
-                    <h4 className="mb-3 text-xl font-bold text-gray-900">Schedule Your Visit</h4>
-                    <p className="text-gray-600 leading-relaxed">Then simply schedule a visit, show up, and experience Bulletproof in action.</p>
+                {/* Step 2 */}
+                <div className="group relative rounded-2xl bg-gray-50 border border-gray-200 p-4">
+                  <div className="flex items-start gap-6">
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-black text-white font-bold text-lg shadow-lg">
+                      2
+                    </div>
+                    <div>
+                      <h4 className="mb-1 font-bold text-gray-900">Schedule Your Visit</h4>
+                      <p className="text-gray-600 leading-relaxed">Then simply schedule a visit, show up, and experience Bulletproof in action.</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -274,39 +276,13 @@ export default function DemoCentersPage() {
                   alt="Bulletproof equipment in action"
                   width={400}
                   height={250}
-                  className="h-[250px] w-full object-cover"
+                  className="w-full h-autoobject-cover"
                 />
               </div>
             </div>
 
             {/* Want to be a demo center - Right Side */}
-            <div className="space-y-6">
-              <div className="text-center lg:text-left">
-                <h3 className="mb-6 text-2xl font-bold">Want to be a demo center?</h3>
-              </div>
-
-              {/* Step 1 */}
-              <div className="flex items-start gap-6 group relative rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-4 ring-1 ring-blue-100 transition-all hover:shadow-lg">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-primary-foreground font-bold">
-                  1
-                </div>
-                <div>
-                  <h4 className="mb-1 font-semibold">Register Your Space</h4>
-                  <p className="text-muted-foreground">Register your location — whether it’s a home gym, PT studio, or commercial facility. Just enter your setup details, choose your availability, and you’re in.</p>
-                </div>
-              </div>
-
-              {/* Step 2 */}
-              <div className="flex items-start gap-6 group relative rounded-2xl bg-gradient-to-br from-lime-50 to-green-50 p-4 ring-1 ring-violet-100 transition-all hover:shadow-lg">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-primary-foreground font-bold">
-                  2
-                </div>
-                <div>
-                  <h4 className="mb-1 font-semibold">Hassle-Free</h4>
-                  <p className="text-muted-foreground">No sales experience needed. No inventory. No strings attached.</p>
-                </div>
-              </div>
-
+            <div className="flex gap-12 items-center">
               {/* Home Gym Image */}
               <div className="relative mt-8 overflow-hidden rounded-xl">
                 <Image
@@ -314,9 +290,38 @@ export default function DemoCentersPage() {
                   alt="Home gym demo center setup"
                   width={400}
                   height={250}
-                  className="h-[250px] w-full object-cover"
+                  className="w-full h-auto object-cover"
                 />
               </div>
+              <div className="space-y-6 w-full lg:w-2/3">
+                <div className="text-center lg:text-left">
+                  <h3 className="mb-6 text-2xl font-bold">Want to be a demo center?</h3>
+                </div>
+
+                {/* Step 1 */}
+                <div className="flex items-start gap-6 group relative rounded-2xl bg-gray-50 border border-gray-200 p-4">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-black text-white font-bold">
+                    1
+                  </div>
+                  <div>
+                    <h4 className="mb-1 font-bold">Register Your Space</h4>
+                    <p className="text-muted-foreground">Register your location — whether it’s a home gym, PT studio, or commercial facility. Just enter your setup details, choose your availability, and you’re in.</p>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="flex items-start gap-6 group relative rounded-2xl bg-gray-50 border border-gray-200 p-4">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-black text-white font-bold">
+                    2
+                  </div>
+                  <div>
+                    <h4 className="mb-1 font-bold">Hassle-Free</h4>
+                    <p className="text-muted-foreground">No sales experience needed. <br /> No inventory. No strings attached.</p>
+                  </div>
+                </div>
+
+              </div>
+              
             </div>
           </div>
 
@@ -346,8 +351,7 @@ export default function DemoCentersPage() {
       <section className="py-24 bg-gradient-to-br from-slate-50 to-gray-100">
         <div className="container mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
-            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-3 text-white shadow-lg">
-              <span className="text-xl">🤝</span>
+            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gray-50 border border-gray-200 px-6 py-3 text-black shadow-lg">
               <span className="font-semibold">WHY IT'S DIFFERENT</span>
             </div>
             <h2 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl">
@@ -486,9 +490,9 @@ export default function DemoCentersPage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-16 container rounded-2xl bg-gradient-to-br from-indigo-300 via-purple-300 to-pink-300 mb-12">
+      <section className="py-16 container rounded-2xl bg-gray-900/90 mb-12">
         <div className="px-6">
-          <div className="text-center max-w-4xl mx-auto text-black">
+          <div className="text-center max-w-4xl mx-auto text-white">
             <div className="mb-8 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm text-sm">
               <span className="font-medium">SEARCH. SCHEDULE. SWEAT.</span>
             </div>
@@ -497,7 +501,7 @@ export default function DemoCentersPage() {
               Ready to Get Started?
             </h2>
 
-            <p className="mb-12 text-lg leading-relaxed text-black/90 md:text-xl">
+            <p className="mb-12 text-lg leading-relaxed text-white/90 md:text-xl">
               Whether you're looking to try before you buy, or ready to be your city's go-to spot for experiencing Bulletproof gear, the Demo Center program is open and growing fast.
             </p>
 
