@@ -47,7 +47,7 @@ export default function AboutUs() {
                             </div>
 
                             {/* CTA Button */}
-                            <Link href="/exercise-library">
+                            <Link href="/">
                                 <Button size="lg" className="text-lg px-8 py-4">
                                     Explore Pump by Numbers
                                 </Button>
@@ -309,7 +309,7 @@ export default function AboutUs() {
                             <p className="text-2xl font-bold text-primary">Pump by Numbers.</p>
                         </div>
 
-                        <Link href="/exercise-library">
+                        <Link href="/">
                             <Button size="lg" className="text-xl px-10 py-6 bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all">
                                 Start Exploring Now
                             </Button>
