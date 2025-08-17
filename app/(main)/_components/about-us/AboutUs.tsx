@@ -85,7 +85,7 @@ export default function AboutUs() {
                     <div className="flex flex-col md:flex-row gap-12 items-center">
                         <Image src="/assets/problem.jpg" alt="Problem" width={500} height={500} className="w-full h-auto object-cover rounded-xl" />
                         <div className="w-full">
-                            <div className="bg-green-50 backdrop-blur-sm rounded-3xl p-4 lg:p-8 border border-white/50 shadow-xl">
+                            <div className="bg-blue-50 backdrop-blur-sm rounded-3xl p-4 lg:p-8 border border-white/50 shadow-xl">
                                 <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
                                     <span>THE PROBLEM: <br /> TOO MUCH VERSATILITY, TOO LITTLE CLARITY</span>
                                 </h3>
