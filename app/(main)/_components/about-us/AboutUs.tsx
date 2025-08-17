@@ -12,12 +12,12 @@ export default function AboutUs() {
                 <div className="container py-10 lg:py-24">
                     <div className="flex flex-col md:flex-row gap-10">
                         <div className="text-start w-full">
-                            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                            <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                                 Master Your Equipment. <br />
                                 One Setup at a Time.
                             </h1>
 
-                            <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
+                            <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
                                 A searchable video library made by real users — to help you get the most out of your Bulletproof gear.
                             </p>
 
@@ -25,23 +25,23 @@ export default function AboutUs() {
                             <div className="space-y-3 mb-8">
                                 <div className="flex items-start gap-3">
                                     <span className="text-xl">🎥</span>
-                                    <span className="text-base">Step-by-step setup videos by real customers</span>
+                                    <span className="text-sm sm:text-base">Step-by-step setup videos by real customers</span>
                                 </div>
                                 <div className="flex items-start gap-3">
                                     <span className="text-xl">🔎</span>
-                                    <span className="text-base">Search by rack, height, movement, body part, or user</span>
+                                    <span className="text-sm sm:text-base">Search by rack, height, movement, body part, or user</span>
                                 </div>
                                 <div className="flex items-start gap-3">
                                     <span className="text-xl">⭐</span>
-                                    <span className="text-base">Top-rated and founder-approved content</span>
+                                    <span className="text-sm sm:text-base">Top-rated and founder-approved content</span>
                                 </div>
                                 <div className="flex items-start gap-3">
                                     <span className="text-xl">🧠</span>
-                                    <span className="text-base">Created to help you unlock the full potential of your equipment</span>
+                                    <span className="text-sm sm:text-base">Created to help you unlock the full potential of your equipment</span>
                                 </div>
                                 <div className="flex items-start gap-3">
                                     <span className="text-xl">🤝</span>
-                                    <span className="text-base">Built by the community. Powered by your experience.</span>
+                                    <span className="text-sm sm:text-base">Built by the community. Powered by your experience.</span>
                                 </div>
                             </div>
 
@@ -61,17 +61,17 @@ export default function AboutUs() {
             <section className="py-16 lg:py-24 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
                 <div className="container">
                     <div className="max-w-4xl mx-auto text-center">
-                        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-10 lg:p-12 border border-white/50 shadow-xl">
-                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8 leading-tight">
+                        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 sm:p-10 lg:p-12 border border-white/50 shadow-xl">
+                            <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-8 leading-tight">
                                 Your Blueprint for Getting the Most from
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600"> Bulletproof Equipment</span>
                             </h2>
 
-                            <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed">
+                            <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
                                 What if mastering your equipment was as simple as painting by numbers?
                             </p>
 
-                            <p className="text-lg text-gray-900 leading-relaxed">
+                            <p className="text-base sm:text-lg text-gray-900 leading-relaxed">
                                 Introducing <strong>Pump by Numbers</strong> — a revolutionary platform from Bulletproof Fitness Equipment that's equal parts brilliant and badass. Inspired by the simplicity of the nostalgic "Paint by Numbers" kits, Pump by Numbers is our answer to one of the biggest challenges we never saw coming: our gear does so much, it overwhelmed people.
                             </p>
                         </div>
@@ -286,19 +286,18 @@ export default function AboutUs() {
             {/* Final CTA Section */}
             <section className="py-10 lg:py-16">
                 <div className="container">
-                    <div className="text-center bg-white border border-gray-200 rounded-lg p-10 lg:p-12">
-                        <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 flex items-center justify-center gap-3">
-                            <span className="text-4xl">🎬</span>
+                    <div className="text-center bg-white border border-gray-200 rounded-lg p-6 lg:p-12">
+                        <h3 className="text-2xl md:text-4xl font-bold text-gray-900 mb-6 flex items-center justify-center gap-3">
                             JOIN THE MOVEMENT
                         </h3>
 
-                        <p className="text-xl text-gray-900 mb-8 leading-relaxed max-w-3xl mx-auto">
+                        <p className="text-base md:text-lg text-gray-900 mb-8 leading-relaxed max-w-3xl mx-auto">
                             Pump by Numbers is where versatility meets accessibility, powered by you, approved by Larry, and built to make Bulletproof's legendary gear more powerful than ever.
                         </p>
 
-                        <div className="bg-white p-6 rounded-lg border-2 border-primary/20 mb-8 max-w-md mx-auto">
-                            <p className="text-2xl font-semibold text-gray-900 mb-2">Don't just train.</p>
-                            <p className="text-3xl font-bold text-primary">Pump by Numbers.</p>
+                        <div className="bg-blue-50 p-5 rounded-lg border border-blue-200 mb-8 max-w-md mx-auto">
+                            <p className="text-xl font-semibold text-gray-900 mb-1">Don't just train.</p>
+                            <p className="text-2xl font-bold text-primary">Pump by Numbers.</p>
                         </div>
 
                         <Link href="/exercise-library">
