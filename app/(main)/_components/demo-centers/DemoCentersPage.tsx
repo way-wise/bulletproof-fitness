@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CircleArrowRight, Dumbbell, Home, MessageCircle, DollarSign, Users, Search, MapPin, Calendar, Star, TrendingUp, Heart, Zap, CheckCircle, ArrowRight } from "lucide-react";
+import { CircleArrowRight, PhoneCall, Home, MessageCircle, Rocket, Users, Search, Lightbulb, Star, TrendingUp, Heart, Zap, CheckCircle, ArrowRight, CircleQuestionMark } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -11,7 +11,7 @@ export default function DemoCentersPage() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
 
-        <div className="container relative mx-auto max-w-7xl px-6 py-24 lg:py-32">
+        <div className="container relative mx-auto max-w-7xl px-6 py-10 md:py-24 lg:py-32">
           <div className="grid items-center gap-16 lg:grid-cols-2">
             {/* Left Content */}
             <div className="text-center lg:text-left">
@@ -34,31 +34,31 @@ export default function DemoCentersPage() {
               </p>
 
               {/* Key Benefits List */}
-              <div className="mb-10 space-y-3">
-                <div className="inline-flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                  <span className="font-medium text-gray-800">Try real Bulletproof setups near you</span>
+              <div className="mb-10 space-y-3 text-start md:text-center">
+                <div className="inline-flex sm:items-center gap-1.5 sm:gap-3 text-start">
+                  <CheckCircle className="size-4 sm:size-5 text-green-600" />
+                  <span className="font-medium text-gray-800 text-sm md:text-base">Try real Bulletproof setups near you</span>
                 </div>
-                <div className="inline-flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                  <span className="font-medium text-gray-800">Host with your home gym or training studio</span>
+                <div className="inline-flex sm:items-center gap-1.5 sm:gap-3 text-start">
+                  <CheckCircle className="size-4 sm:size-5 text-green-600" />
+                  <span className="font-medium text-gray-800 text-sm md:text-base">Host with your home gym or training studio</span>
                 </div>
-                <div className="inline-flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                  <span className="font-medium text-gray-800">Get authentic, honest feedback — not sales talk</span>
+                <div className="inline-flex sm:items-center gap-1.5 sm:gap-3 text-start">
+                  <CheckCircle className="size-4 sm:size-5 text-green-600" />
+                  <span className="font-medium text-gray-800 text-sm md:text-base">Get authentic, honest feedback — not sales talk</span>
                 </div>
-                <div className="inline-flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                  <span className="font-medium text-gray-800">Hosts earn money when visitors buy — no inventory needed</span>
+                <div className="inline-flex sm:items-center gap-1.5 sm:gap-3 text-start">
+                  <CheckCircle className="size-4 sm:size-5 text-green-600" />
+                  <span className="font-medium text-gray-800 text-sm md:text-base">Hosts earn money when visitors buy — no inventory needed</span>
                 </div>
-                <div className="inline-flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                  <span className="font-medium text-gray-800">Connect with like-minded fitness fans in your area</span>
+                <div className="inline-flex sm:items-center gap-1.5 sm:gap-3 text-start">
+                  <CheckCircle className="size-4 sm:size-5 text-green-600" />
+                  <span className="font-medium text-gray-800 text-sm md:text-base">Connect with like-minded fitness fans in your area</span>
                 </div>
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col gap-4 sm:flex-row lg:justify-start">
+              <div className="flex flex-col items-center md:items-start gap-4 sm:flex-row lg:justify-start">
                 <Link href="/demo-centers-list">
                   <Button size="lg" className="group relative w-full overflow-hidden bg-black cursor-pointer px-4 py-2 text-lg font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:scale-105 sm:w-auto">
                     <Search className="mr-2 h-5 w-5 transition-transform group-hover:scale-110" />
@@ -88,13 +88,13 @@ export default function DemoCentersPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
               </div>
               {/* Floating Stats */}
-              <div className="absolute -bottom-8 -left-8 rounded-2xl bg-white p-6 shadow-xl ring-1 ring-gray-200">
+              <div className="absolute -bottom-4 lg:-bottom-8 -left-4 lg:-left-8 rounded-2xl bg-white p-4 md:p-6 shadow-xl ring-1 ring-gray-200">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-indigo-600">50+</div>
                   <div className="text-sm font-medium text-gray-600">Demo Centers</div>
                 </div>
               </div>
-              <div className="absolute -right-8 -top-8 rounded-2xl bg-white p-6 shadow-xl ring-1 ring-gray-200">
+              <div className="absolute -right-4 lg:-right-8 -top-4 lg:-top-8 rounded-2xl bg-white p-4 md:p-6 shadow-xl ring-1 ring-gray-200">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-green-600">100%</div>
                   <div className="text-sm font-medium text-gray-600">Authentic</div>
@@ -105,7 +105,7 @@ export default function DemoCentersPage() {
         </div>
 
         {/* Bottom Wave */}
-        <div className="absolute bottom-0 left-0 right-0">
+        <div className="absolute bottom-0 left-0 right-0 hidden md:block">
           <svg viewBox="0 0 1200 120" className="h-16 w-full fill-white md:h-20">
             <path d="M0,60 C300,120 900,0 1200,60 L1200,120 L0,120 Z"></path>
           </svg>
@@ -113,13 +113,13 @@ export default function DemoCentersPage() {
       </section>
 
       {/* Try It. Feel It. Know It's Right Section */}
-      <section className="relative py-24 bg-ag-floating-bottom-full-width-container overflow-hidden">
+      <section className="relative py-10 md:py-24 bg-ag-floating-bottom-full-width-container overflow-hidden">
 
         <div className="container relative mx-auto max-w-6xl px-6">
           <div className="text-center">
 
             {/* Main Heading */}
-            <h2 className="mb-12 text-5xl font-bold text-gray-900 md:text-4xl">
+            <h2 className="mb-12 text-2xl font-bold text-gray-900 md:text-4xl">
               Try It.
               <br />
               Feel It.
@@ -133,24 +133,24 @@ export default function DemoCentersPage() {
               <div className="space-y-8 text-left lg:text-left">
                 <div className="relative">
                   <div className="mb-4 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
-                      <span className="text-white font-bold">?</span>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 border">
+                    <CircleQuestionMark />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900">The Question</h3>
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900">The Question</h3>
                   </div>
-                  <p className="text-lg font-medium text-gray-800 leading-relaxed">
+                  <p className="text-sm md:text-lg font-medium text-gray-800 leading-relaxed">
                     Before dropping thousands on a home gym, wouldn't it be great to actually try the equipment?
                   </p>
                 </div>
 
                 <div className="relative">
                   <div className="mb-4 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-blue-600 shadow-lg">
-                      <span className="text-white font-bold">📞</span>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 border">
+                      <PhoneCall />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900">The Calls</h3>
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900">The Calls</h3>
                   </div>
-                  <p className="text-lg text-gray-700 leading-relaxed">
+                  <p className="text-sm md:text-lg text-gray-700 leading-relaxed">
                     At Bulletproof Fitness Equipment, we heard the calls (literally) from across the country — people ready to fly in just to get their hands on our gear.
                   </p>
                 </div>
@@ -160,19 +160,19 @@ export default function DemoCentersPage() {
               <div className="space-y-8">
                 <div className="relative">
                   <div className="mb-2 flex text-start gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg">
-                      <span className="text-white font-bold">🚀</span>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 border">
+                    <Rocket />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-900">Why?</h3>
-                      <p className="text-lg text-gray-700 leading-relaxed mb-4">
+                      <h3 className="text-xl md:text-2xl font-bold text-gray-900">Why?</h3>
+                      <p className="text-sm md:text-lg text-gray-700 leading-relaxed mb-4">
                         Because what we make is different.
                       </p>
                     </div>
                   </div>
 
                   <div className="rounded-lg border bg-gray-50 px-4 py-3 text-start text-black">
-                    <p className="text-lg font-semibold leading-tight">
+                    <p className="text-sm md:text-lg font-semibold leading-tight">
                       Not just a little different — game-changing, category-defining, no-comparison different.
                     </p>
                   </div>
@@ -180,12 +180,12 @@ export default function DemoCentersPage() {
 
                 <div className="relative">
                   <div className="mb-2 flex text-start gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-600 shadow-lg">
-                      <span className="text-white font-bold">💡</span>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 border">
+                    <Lightbulb />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-900">The Solution</h3>
-                      <p className="text-lg text-gray-700 leading-relaxed">
+                      <h3 className="text-xl md:text-2xl font-bold text-gray-900">The Solution</h3>
+                      <p className="text-sm md:text-lg text-gray-700 leading-relaxed">
                         So we created something just as unique to match.
                       </p>
                     </div>
@@ -198,11 +198,11 @@ export default function DemoCentersPage() {
       </section>
 
       {/* The "Uber" of Gym Demos Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-slate-100">
+      <section className="py-10 md:py-20 bg-gradient-to-br from-gray-50 to-slate-100">
         <div className="container mx-auto max-w-5xl px-6">
           <div className="text-center">
-            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gray-50 border border-gray-200 px-6 py-3 text-black shadow-lg">
-              <span className="font-semibold">THE "UBER" OF GYM DEMOS IS HERE</span>
+            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gray-50 border border-gray-200 px-4 py-2 text-black">
+              <span className="font-semibold text-xs md:text-sm">THE "UBER" OF GYM DEMOS IS HERE</span>
             </div>
             <h2 className="mb-8 text-2xl font-bold text-gray-900 md:text-2xl">
               A Revolutionary Way to Try Equipment
@@ -220,23 +220,23 @@ export default function DemoCentersPage() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-24 bg-white">
+      <section className="py-10 md:py-24 bg-white">
         <div className="container mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
-            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gray-50 border border-gray-200 px-6 py-3 text-black shadow-lg">
-              <span className="font-semibold">HOW IT WORKS</span>
+            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gray-50 border border-gray-200 px-4 py-2 text-black">
+              <span className="font-semibold text-xs md:text-sm">HOW IT WORKS</span>
             </div>
-            <h2 className="mb-4 text-4xl font-bold text-gray-900 md:text-3xl">
+            <h2 className="mb-4 text-2xl font-bold text-gray-900 md:text-3xl">
               Simple, Straightforward Process
             </h2>
-            <p className="mx-auto max-w-3xl text-lg text-gray-600">
+            <p className="mx-auto max-w-3xl text-sm md:text-lg text-gray-600">
               Whether you want to try equipment or host demos, we've made it incredibly easy
             </p>
           </div>
 
           <div className="flex flex-col gap-16">
             {/* Want to try - Left Side */}
-            <div className="flex gap-12 items-center">
+            <div className="flex flex-col lg:flex-row gap-12 items-center">
               <div className="w-full lg:w-1/2 space-y-6">
                 <div className="text-center lg:text-left">
                   <h3 className="text-2xl font-bold text-gray-900">Want to try our equipment?</h3>
@@ -282,7 +282,7 @@ export default function DemoCentersPage() {
             </div>
 
             {/* Want to be a demo center - Right Side */}
-            <div className="flex gap-12 items-center">
+            <div className="flex flex-col lg:flex-row gap-12 items-center">
               {/* Home Gym Image */}
               <div className="relative mt-8 overflow-hidden rounded-xl">
                 <Image
@@ -327,7 +327,7 @@ export default function DemoCentersPage() {
 
           {/* CTA Section */}
           <div className="mt-16 text-center">
-            <div className="inline-flex gap-4">
+            <div className="inline-flex flex-wrap justify-center gap-4">
               <Link href="/demo-centers-list">
                 <Button className="group">
                   <Search className="mr-2 h-4 w-4" />
@@ -351,43 +351,43 @@ export default function DemoCentersPage() {
       <section className="py-24 bg-gradient-to-br from-slate-50 to-gray-100">
         <div className="container mx-auto max-w-7xl px-6">
           <div className="mb-16 text-center">
-            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gray-50 border border-gray-200 px-6 py-3 text-black shadow-lg">
-              <span className="font-semibold">WHY IT'S DIFFERENT</span>
+            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gray-50 border border-gray-200 px-4 py-2 text-black">
+              <span className="font-semibold text-xs md:text-sm">WHY IT'S DIFFERENT</span>
             </div>
-            <h2 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl">
+            <h2 className="mb-6 text-2xl font-bold text-gray-900 md:text-5xl">
               Unlike Traditional Showrooms
             </h2>
-            <p className="mx-auto max-w-3xl text-xl text-gray-600">
+            <p className="mx-auto max-w-3xl text-sm md:text-lg text-gray-600">
               Our demo centers offer something completely different from the typical sales experience
             </p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-3">
-            <div className="group relative overflow-hidden rounded-3xl bg-white p-8 shadow-lg ring-1 ring-gray-200 transition-all hover:shadow-xl hover:scale-105">
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 shadow-lg">
-                <Users className="h-8 w-8 text-white" />
+            <div className="group relative overflow-hidden rounded-3xl bg-white p-5 md:p-8 shadow-lg ring-1 ring-gray-200 transition-all hover:shadow-xl hover:scale-105">
+              <div className="mb-6 flex size-10 md:size-16 items-center justify-center rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 shadow-lg">
+                <Users className="size-6 md:size-8 text-white" />
               </div>
-              <h3 className="mb-4 text-2xl font-bold text-gray-900">Real Customers, Real Feedback</h3>
+              <h3 className="mb-4 text-xl font-bold text-gray-900">Real Customers, Real Feedback</h3>
               <p className="text-gray-600 leading-relaxed">
                 You're not talking to a polished salesperson — you're meeting fellow gym enthusiasts who actually use the gear. That means no fluff, no pressure, and honest conversations.
               </p>
             </div>
 
-            <div className="group relative overflow-hidden rounded-3xl bg-white p-8 shadow-lg ring-1 ring-gray-200 transition-all hover:shadow-xl hover:scale-105">
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
-                <MessageCircle className="h-8 w-8 text-white" />
+            <div className="group relative overflow-hidden rounded-3xl bg-white p-5 md:p-8 shadow-lg ring-1 ring-gray-200 transition-all hover:shadow-xl hover:scale-105">
+              <div className="mb-6 flex size-10 md:size-16 items-center justify-center rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
+                <MessageCircle className="size-6 md:size-8 text-white" />
               </div>
-              <h3 className="mb-4 text-2xl font-bold text-gray-900">Casual & Authentic</h3>
+              <h3 className="mb-4 text-xl font-bold text-gray-900">Casual & Authentic</h3>
               <p className="text-gray-600 leading-relaxed">
                 Demo hosts know their setups inside and out, but they're not expected to memorize manuals. It's a low-key, authentic environment where you can see, touch, and feel the difference.
               </p>
             </div>
 
-            <div className="group relative overflow-hidden rounded-3xl bg-white p-8 shadow-lg ring-1 ring-gray-200 transition-all hover:shadow-xl hover:scale-105">
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg">
-                <Heart className="h-8 w-8 text-white" />
+            <div className="group relative overflow-hidden rounded-3xl bg-white p-5 md:p-8 shadow-lg ring-1 ring-gray-200 transition-all hover:shadow-xl hover:scale-105">
+              <div className="mb-6 flex size-10 md:size-16 items-center justify-center rounded-2xl bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg">
+                <Heart className="size-6 md:size-8 text-white" />
               </div>
-              <h3 className="mb-4 text-2xl font-bold text-gray-900">Built for Connection</h3>
+              <h3 className="mb-4 text-xl font-bold text-gray-900">Built for Connection</h3>
               <p className="text-gray-600 leading-relaxed">
                 By registering or visiting a demo center, you're joining a like-minded community. This creates opportunities for live local workouts, events, collaborations, and new friendships in your area.
               </p>
@@ -402,10 +402,10 @@ export default function DemoCentersPage() {
           <div className="grid items-center gap-12 lg:grid-cols-2">
             {/* Left Content */}
             <div>
-              <h2 className="mb-6 text-3xl font-bold md:text-4xl">
+              <h2 className="mb-6 text-2xl font-bold md:text-4xl">
                 Earn Money by Doing What You Love
               </h2>
-              <p className="mb-8 text-lg text-muted-foreground">
+              <p className="mb-8 text-sm md:text-lg text-muted-foreground">
                 If you register your space:
               </p>
 
@@ -470,17 +470,17 @@ export default function DemoCentersPage() {
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <Image src="/assets/why-we-build.jpg" alt="Why We Built This" width={500} height={400} className="w-full h-auto rounded-lg" />
             <div>
-              <h2 className="mb-6 text-3xl font-bold md:text-4xl">
+              <h2 className="mb-6 text-2xl font-bold md:text-4xl">
                 Why We Built This
               </h2>
-              <div className="space-y-6 text-lg leading-relaxed text-gray-700">
+              <div className="space-y-6 text-sm md:text-lg leading-relaxed text-gray-700">
                 <p>
                   At Bulletproof, we've never followed the crowd. Our products are unique — which means our solutions need to be, too.
                 </p>
                 <p>
                   And we'd rather someone realize it's not the right fit than feel pressured into buying something that doesn't serve them. Because when it is the right fit, they'll feel it the second they touch it.
                 </p>
-                <p className="font-semibold text-black">
+                <p className="font-semibold text-black text-sm md:text-lg">
                   Demo Centers are about empowering smarter decisions in a way no one else in the fitness industry is doing.
                 </p>
               </div>
@@ -490,44 +490,44 @@ export default function DemoCentersPage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-16 container rounded-2xl bg-gray-900/90 mb-12">
+      <section className="py-8 md:py-16 container rounded-2xl bg-gray-900/90 mb-12">
         <div className="px-6">
           <div className="text-center max-w-4xl mx-auto text-white">
-            <div className="mb-8 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm text-sm">
+            <div className="mb-8 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm text-xs md:text-sm">
               <span className="font-medium">SEARCH. SCHEDULE. SWEAT.</span>
             </div>
 
-            <h2 className="mb-8 text-4xl font-bold md:text-5xl">
+            <h2 className="mb-8 text-2xl font-bold md:text-5xl">
               Ready to Get Started?
             </h2>
 
-            <p className="mb-12 text-lg leading-relaxed text-white/90 md:text-xl">
+            <p className="mb-12 text-sm md:text-lg leading-relaxed text-white/90 lg:text-xl">
               Whether you're looking to try before you buy, or ready to be your city's go-to spot for experiencing Bulletproof gear, the Demo Center program is open and growing fast.
             </p>
 
-            <div className="mb-12 flex flex-col items-center gap-3">
+            <div className="mb-6 md:mb-12 flex flex-col items-center gap-1.5 md:gap-3">
               <div className="inline-flex items-center justify-center gap-3 rounded-md bg-white/20 px-3 py-2 backdrop-blur-sm">
-                <CircleArrowRight className="h-6 w-6 text-green-400" />
-                <span className="text-lg font-semibold">Try the equipment.</span>
+                <CircleArrowRight className="size-4 md:size-6 text-green-400" />
+                <span className="text-sm md:text-lg font-semibold">Try the equipment.</span>
               </div>
               <div className="inline-flex items-center justify-center gap-3 rounded-md bg-white/20 px-3 py-2 backdrop-blur-sm">
-                <CircleArrowRight className="h-6 w-6 text-green-400" />
-                <span className="text-lg font-semibold">Meet the community.</span>
+                <CircleArrowRight className="size-4 md:size-6 text-green-400" />
+                <span className="text-sm md:text-lg font-semibold">Meet the community.</span>
               </div>
               <div className="inline-flex items-center justify-center gap-3 rounded-md bg-white/20 px-3 py-2 backdrop-blur-sm">
-                <CircleArrowRight className="h-6 w-6 text-green-400" />
-                <span className="text-lg font-semibold">Be part of the movement.</span>
+                <CircleArrowRight className="size-4 md:size-6 text-green-400" />
+                <span className="text-sm md:text-lg font-semibold">Be part of the movement.</span>
               </div>
             </div>
 
-            <div className="flex flex-col gap-6 sm:flex-row sm:justify-center">
+            <div className="flex flex-col gap-6 sm:flex-row items-center sm:justify-center">
               <Link href="/demo-centers-list">
-                <Button size="lg" className="w-full bg-black px-4 py-4 text-xl font-bold text-white shadow-xl transition-all hover:shadow-2xl hover:scale-105 sm:w-auto">
+                <Button size="lg" className="w-full bg-black px-4 py-4 text-sm md:text-xl font-bold text-white shadow-xl transition-all hover:shadow-2xl hover:scale-105 sm:w-auto">
                   Find a Demo Center
                 </Button>
               </Link>
               <Link href="/demo-center-form">
-                <Button size="lg" className="w-full bg-white px-4 py-4 text-xl font-bold text-gray-900 shadow-xl transition-all hover:bg-gray-100 hover:shadow-2xl hover:scale-105 sm:w-auto">
+                <Button size="lg" className="w-full bg-white px-4 py-4 text-sm md:text-xl font-bold text-gray-900 shadow-xl transition-all hover:bg-gray-100 hover:shadow-2xl hover:scale-105 sm:w-auto">
                   Become a Demo Center
                 </Button>
               </Link>
