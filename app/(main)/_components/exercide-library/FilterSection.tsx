@@ -293,7 +293,7 @@ export default function ExerciseFiltersOptimized({
   );
 
   return (
-    <div className="px-4">
+    <div className="px-4 py-2 bg-white border border-gray-200 rounded-md">
       <div className="flex h-12 items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
         {hasActiveFilters && (

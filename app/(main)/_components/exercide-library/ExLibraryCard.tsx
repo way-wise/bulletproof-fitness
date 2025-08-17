@@ -124,7 +124,7 @@ const ExLibraryCard = ({
   );
   return (
     <div>
-      <CardUI className="overflow-hidden rounded-none border-none">
+      <CardUI className="overflow-hidden rounded-md">
         <div className="relative aspect-video">
           <iframe
             src={`${url}`}
@@ -135,12 +135,12 @@ const ExLibraryCard = ({
             loading="lazy"
           ></iframe>
         </div>
-        <CardContent className="space-y-3 border-none p-4 text-left">
-          <Badge className="rounded-full border border-gray-400 bg-transparent text-[16px] font-light text-primary">
+        <CardContent className="space-y-2.5 border-none p-4 text-left">
+          <Badge className="rounded-full border border-gray-400 bg-gray-100 text-sm py-0.5 px-2 font-medium text-primary">
             {bodypart}
           </Badge>
 
-          <p className="text-[16px] text-gray-500">{author}</p>
+          <p className="text-[16px] text-gray-700">{author}</p>
 
           <Link
             href={`${type === "setup" ? `/exercise-setup/${id}` : `/${id}`}`}
