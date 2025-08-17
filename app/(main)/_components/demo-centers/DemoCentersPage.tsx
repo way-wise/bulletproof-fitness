@@ -7,25 +7,21 @@ import Image from "next/image";
 
 export default function DemoCentersPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <main>
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-muted/10"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent_50%)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(120,119,198,0.08),transparent_50%)]"></div>
-        
+      <section className="relative overflow-hidden bg-gray-100">
+
         <div className="container relative mx-auto max-w-7xl px-4 py-20 lg:py-32">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             {/* Left Content */}
             <div className="text-center lg:text-left">
               {/* Main Headline */}
               <span className="inline-block mb-6 text-xs font-semibold px-3 py-1.5 rounded-full bg-purple-700 text-white">
-                  Bulletproof Demo Centers
+                Bulletproof Demo Centers
               </span>
 
               {/* headline */}
-              <h1  className="mb-8 text-xl font-semibold text-foreground/80 md:text-3xl">
+              <h1 className="mb-8 text-xl font-semibold text-foreground/80 md:text-3xl">
                 Try <span className="inline-block">Bulletproof Equipment</span> in Your City.
                 <br />
                 <span>No Showroom Required.</span>
@@ -33,7 +29,7 @@ export default function DemoCentersPage() {
 
               {/* Description */}
               <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl lg:mx-0">
-                Visit or host a demo center to test our gear in real gyms and home setups — 
+                Visit or host a demo center to test our gear in real gyms and home setups —
                 <span className="font-semibold text-foreground"> no pressure, no sales pitch.</span>
               </p>
 
@@ -158,7 +154,7 @@ export default function DemoCentersPage() {
             <h2 className="mb-4 text-3xl font-bold md:text-4xl">
               💡 HOW IT WORKS
             </h2>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
               Simple, straightforward process for both visitors and hosts
             </p>
           </div>
@@ -169,7 +165,7 @@ export default function DemoCentersPage() {
               <div className="text-center lg:text-left">
                 <h3 className="mb-6 text-2xl font-bold">Want to try our equipment?</h3>
               </div>
-              
+
               {/* Step 1 */}
               <div className="flex gap-4">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
@@ -220,7 +216,7 @@ export default function DemoCentersPage() {
               <div className="text-center lg:text-left">
                 <h3 className="mb-6 text-2xl font-bold">Want to be a demo center?</h3>
               </div>
-              
+
               {/* Step 1 */}
               <div className="flex gap-4">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
@@ -337,20 +333,20 @@ export default function DemoCentersPage() {
             {/* Left Content */}
             <div>
               <h2 className="mb-6 text-3xl font-bold md:text-4xl">
-                💸 EARN MONEY BY DOING WHAT YOU LOVE
+                Earn Money by Doing What You Love
               </h2>
               <p className="mb-8 text-lg text-muted-foreground">
-                Turn your passion for fitness into a revenue stream. Here's what you get as a demo center host:
+              If you register your space:
               </p>
-              
-              <div className="space-y-6">
+
+              <div className="space-y-4">
                 <div className="flex gap-4">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                     <TrendingUp className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="mb-2 font-semibold">Affiliate Commissions</h3>
-                    <p className="text-muted-foreground">Earn competitive commissions on any equipment sold through your demo center — no caps, no limits.</p>
+                    <h3 className="mb-1 font-semibold">Affiliate Commissions</h3>
+                    <p className="text-muted-foreground">You earn affiliate commissions on any equipment sold through your demo.</p>
                   </div>
                 </div>
 
@@ -359,18 +355,8 @@ export default function DemoCentersPage() {
                     <Star className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="mb-2 font-semibold">Zero Overhead</h3>
-                    <p className="text-muted-foreground">No inventory to manage, no sales training required. We handle all fulfillment and customer service.</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                    <MessageCircle className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="mb-2 font-semibold">Just Be Yourself</h3>
-                    <p className="text-muted-foreground">Share your honest experience and passion. No scripts, no pressure — authenticity is what visitors want.</p>
+                    <h3 className="mb-1 font-semibold">Zero Overhead</h3>
+                    <p className="text-muted-foreground">You don’t need to handle inventory or sales — we do that.</p>
                   </div>
                 </div>
 
@@ -379,8 +365,8 @@ export default function DemoCentersPage() {
                     <Users className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="mb-2 font-semibold">Build Community</h3>
-                    <p className="text-muted-foreground">Connect with fellow fitness enthusiasts and become a local hub for the Bulletproof community.</p>
+                    <h3 className="mb-1 font-semibold">Build Community</h3>
+                    <p className="text-muted-foreground">You just share your honest experience, which you’re probably already doing anyway.</p>
                   </div>
                 </div>
               </div>
@@ -402,23 +388,6 @@ export default function DemoCentersPage() {
                   height={400}
                   className="h-[400px] w-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                
-                {/* Overlay Content */}
-                <div className="absolute bottom-6 left-6 right-6">
-                  <div className="rounded-lg bg-white/90 p-4 backdrop-blur-sm">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-sm text-muted-foreground">Monthly Earnings</div>
-                        <div className="text-2xl font-bold text-primary">$500-2000+</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm text-muted-foreground">Demo Sessions</div>
-                        <div className="text-2xl font-bold">5-15/month</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -427,51 +396,66 @@ export default function DemoCentersPage() {
 
       {/* Why We Built This Section */}
       <section className="py-16">
-        <div className="container mx-auto max-w-4xl px-4 text-center">
-          <h2 className="mb-6 text-3xl font-bold md:text-4xl">
-            🔄 WHY WE BUILT THIS
-          </h2>
-          <div className="space-y-6 text-lg leading-relaxed text-muted-foreground">
-            <p>
-              At Bulletproof, we've never followed the crowd. Our products are unique — which means our solutions need to be, too.
-            </p>
-            <p>
-              And we'd rather someone realize it's not the right fit than feel pressured into buying something that doesn't serve them. Because when it is the right fit, they'll feel it the second they touch it.
-            </p>
-            <p className="font-semibold text-foreground">
-              Demo Centers are about empowering smarter decisions in a way no one else in the fitness industry is doing.
-            </p>
+        <div className="container mx-auto max-w-6xl px-4">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+          <Image src="/assets/why-we-build.jpg" alt="Why We Built This" width={500} height={400} className="w-full h-auto rounded-lg" />
+          <div>
+            <h2 className="mb-6 text-3xl font-bold md:text-4xl">
+              Why We Built This
+            </h2>
+            <div className="space-y-6 text-lg leading-relaxed text-gray-700">
+              <p>
+                At Bulletproof, we've never followed the crowd. Our products are unique — which means our solutions need to be, too.
+              </p>
+              <p>
+                And we'd rather someone realize it's not the right fit than feel pressured into buying something that doesn't serve them. Because when it is the right fit, they'll feel it the second they touch it.
+              </p>
+              <p className="font-semibold text-black">
+                Demo Centers are about empowering smarter decisions in a way no one else in the fitness industry is doing.
+              </p>
+            </div>
+          </div>
           </div>
         </div>
       </section>
 
       {/* Final CTA Section */}
-      <section className="bg-gradient-to-r from-primary/10 to-primary/5 py-16">
-        <div className="container mx-auto max-w-4xl px-4 text-center">
+      <section className="py-16">
+        <div className="container text-center bg-gradient-to-r from-gray-200 to-purple-100 p-12 rounded-2xl">
           <h2 className="mb-6 text-3xl font-bold md:text-4xl">
-            🔍 SEARCH. SCHEDULE. SWEAT.
+            Search. Schedule. Sweat.
           </h2>
-          <p className="mb-8 text-lg text-muted-foreground">
+          <p className="mb-8 text-lg max-w-3xl mx-auto text-gray-800">
             Whether you're looking to try before you buy, or ready to be your city's go-to spot for experiencing Bulletproof gear, the Demo Center program is open and growing fast.
           </p>
-          <div className="mb-8 space-y-2">
-            <p className="text-lg font-semibold">Try the equipment. Meet the community.</p>
-            <p className="text-lg font-semibold">Be part of the movement.</p>
-          </div>
+          <ul className="mb-8 flex flex-col gap-1 text-lg font-semibold max-w-max mx-auto">
+            <li className="flex items-center gap-2">
+              <CircleArrowRight className="h-5 w-5 text-primary" />
+              Try the equipment.
+            </li>
+            <li className="flex items-center gap-2">
+              <CircleArrowRight className="h-5 w-5 text-primary" />
+              Meet the community.
+            </li>
+            <li className="flex items-center gap-2">
+              <CircleArrowRight className="h-5 w-5 text-primary" />
+              Be part of the movement.
+            </li>
+          </ul>
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
             <Link href="/demo-centers-list">
-              <Button size="lg" className="w-full bg-primary px-8 py-4 text-lg font-semibold sm:w-auto">
+              <Button size="lg" className="w-full bg-primary px-4 py-3 text-lg font-semibold sm:w-auto">
                 🚀 Find a Demo Center
               </Button>
             </Link>
-        <Link href="/demo-center-form">
-              <Button size="lg" variant="outline" className="w-full px-8 py-4 text-lg font-semibold sm:w-auto">
+            <Link href="/demo-center-form">
+              <Button size="lg" variant="outline" className="w-full px-4 py-3 text-lg font-semibold sm:w-auto">
                 🏡 Become a Demo Center
-          </Button>
-        </Link>
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 }
