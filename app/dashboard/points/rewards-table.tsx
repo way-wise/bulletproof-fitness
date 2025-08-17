@@ -196,7 +196,7 @@ const RewardsTable = () => {
   return (
     <>
       <div className="mb-8 flex justify-between">
-        <h1 className="text-2xl font-semibold">Rewards</h1>
+        <h1 className="text-2xl font-semibold">Points</h1>
       </div>
 
       <DataTable
@@ -214,13 +214,13 @@ const RewardsTable = () => {
           setEditModalOpen(false);
           setSelectedReward(null);
         }}
-        title={selectedReward ? "Edit Reward" : "Add Reward"}
+        title={selectedReward ? "Edit Point" : "Add Point"}
         isPending={rewardForm.formState.isSubmitting}
       >
         <Form {...rewardForm}>
           <form
             onSubmit={rewardForm.handleSubmit(handleAddOrUpdateReward)}
-            className="p-5"
+            className="pb-5"
           >
             <FormFieldset>
               <FormField
@@ -283,7 +283,7 @@ const RewardsTable = () => {
                 )}
               /> */}
 
-              <FormField
+              {/* <FormField
                 control={rewardForm.control}
                 name="icon"
                 render={({ field }) => (
@@ -308,7 +308,7 @@ const RewardsTable = () => {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
               <div className="flex justify-end gap-2 pt-5">
                 <Button
                   type="button"

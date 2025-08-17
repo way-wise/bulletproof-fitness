@@ -32,17 +32,17 @@ const SidebarMenu = () => {
       url: "/dashboard/users",
     },
     {
-      title: "Rewards",
+      title: "Points",
       icon: <BadgeCent className="icon" />,
-      baseUrl: "/dashboard/rewards",
+      baseUrl: "/dashboard/points",
       submenu: [
         {
-          title: "Rewards",
-          url: "/dashboard/rewards",
+          title: "Points",
+          url: "/dashboard/points",
         },
         {
           title: "Leaderboard",
-          url: "/dashboard/rewards/leaderboard",
+          url: "/dashboard/points/leaderboard",
         },
       ],
     },

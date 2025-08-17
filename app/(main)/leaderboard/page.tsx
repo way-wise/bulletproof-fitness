@@ -1,4 +1,4 @@
-import LeaderboardTable from "@/app/dashboard/rewards/leaderboard/leaderboard-table";
+import LeaderboardTable from "@/app/dashboard/points/leaderboard/leaderboard-table";
 
 export default function LeaderboardPage() {
   return (
