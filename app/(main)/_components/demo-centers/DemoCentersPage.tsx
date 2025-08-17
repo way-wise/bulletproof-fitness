@@ -286,39 +286,39 @@ export default function DemoCentersPage() {
       </section>
 
       {/* Why It's Different Section */}
-      <section className="py-16">
+      <section className="py-16 bg-gray-100">
         <div className="container mx-auto max-w-6xl px-4">
-          <h2 className="mb-12 text-center text-3xl font-bold md:text-4xl">
-            🤝 WHY IT'S DIFFERENT
+          <h2 className="mb-4 text-center text-3xl font-bold md:text-4xl">
+            Why It's Different
           </h2>
           <p className="mb-8 text-center text-lg text-muted-foreground">
             Unlike traditional showrooms, our demo centers are:
           </p>
           <div className="grid gap-8 md:grid-cols-3">
-            <div className="text-center">
-              <div className="mb-4 flex justify-center">
-                <Users className="h-12 w-12 text-primary" />
+            <div className="bg-white p-6 rounded-md">
+              <div className="mb-4">
+                <Users className="size-12 bg-purple-500 rounded-full p-2.5 text-white" />
               </div>
-              <h3 className="mb-3 text-xl font-bold">🧍‍♂️ Real Customers, Real Feedback</h3>
-              <p className="text-muted-foreground">
+              <h3 className="mb-3 text-lg font-bold">Real Customers, Real Feedback</h3>
+              <p className="text-sm text-gray-700">
                 You're not talking to a polished salesperson — you're meeting fellow gym enthusiasts who actually use the gear. That means no fluff, no pressure, and honest conversations.
               </p>
             </div>
-            <div className="text-center">
-              <div className="mb-4 flex justify-center">
-                <MessageCircle className="h-12 w-12 text-primary" />
+            <div className="bg-white p-6 rounded-md">
+              <div className="mb-4">
+                <MessageCircle className="size-12 bg-purple-500 rounded-full p-2.5 text-white" />
               </div>
-              <h3 className="mb-3 text-xl font-bold">💬 Casual & Authentic</h3>
-              <p className="text-muted-foreground">
+              <h3 className="mb-3 text-lg font-bold">Casual & Authentic</h3>
+              <p className="text-sm text-gray-700">
                 Demo hosts know their setups inside and out, but they're not expected to memorize manuals. It's a low-key, authentic environment where you can see, touch, and feel the difference.
               </p>
             </div>
-            <div className="text-center">
-              <div className="mb-4 flex justify-center">
-                <Heart className="h-12 w-12 text-primary" />
+            <div className="bg-white p-6 rounded-md">
+              <div className="mb-4">
+                <Heart className="size-12 bg-purple-500 rounded-full p-2.5 text-white" />
               </div>
-              <h3 className="mb-3 text-xl font-bold">🌍 Built for Connection</h3>
-              <p className="text-muted-foreground">
+              <h3 className="mb-3 text-lg font-bold">Built for Connection</h3>
+              <p className="text-sm text-gray-700">
                 By registering or visiting a demo center, you're joining a like-minded community. This creates opportunities for live local workouts, events, collaborations, and new friendships in your area.
               </p>
             </div>
