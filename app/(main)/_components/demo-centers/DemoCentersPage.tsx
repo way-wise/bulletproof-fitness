@@ -7,59 +7,67 @@ import Image from "next/image";
 
 export default function DemoCentersPage() {
   return (
-    <main>
+    <main className="bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gray-100">
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
 
-        <div className="container relative mx-auto max-w-7xl px-4 py-20 lg:py-32">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
+        <div className="container relative mx-auto max-w-7xl px-6 py-24 lg:py-32">
+          <div className="grid items-center gap-16 lg:grid-cols-2">
             {/* Left Content */}
             <div className="text-center lg:text-left">
-              {/* Main Headline */}
-              <span className="inline-block mb-6 text-xs font-semibold px-3 py-1.5 rounded-full bg-purple-700 text-white">
-                Bulletproof Demo Centers
-              </span>
+              {/* Badge */}
+              <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-200 to-purple-200 px-4 py-2 text-sm font-semibold text-black shadow-lg">
 
-              {/* headline */}
-              <h1 className="mb-8 text-xl font-semibold text-foreground/80 md:text-3xl">
-                Try <span className="inline-block">Bulletproof Equipment</span> in Your City.
+                Bulletproof Demo Centers
+              </div>
+
+              {/* Main Headline */}
+              <h1 className="mb-8 text-2xl font-bold leading-tight text-gray-900 md:text-3xl">
+                Try Bulletproof Equipment in Your City.
                 <br />
-                <span>No Showroom Required.</span>
+                <span className="text-gray-900 text-xl md:text-2xl">No Showroom Required</span>
               </h1>
 
               {/* Description */}
-              <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl lg:mx-0">
+              <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-gray-600 lg:mx-0">
                 Visit or host a demo center to test our gear in real gyms and home setups —
-                <span className="font-semibold text-foreground"> no pressure, no sales pitch.</span>
+                <span className="font-semibold text-gray-900"> no pressure, no sales pitch.</span>
               </p>
 
               {/* Key Benefits List */}
-              <div className="mb-8 space-y-3 text-left">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-primary" />
-                  <span className="text-sm font-medium">Try real Bulletproof setups near you</span>
+              <div className="mb-10 space-y-3">
+                <div className="inline-flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <span className="font-medium text-gray-800">Try real Bulletproof setups near you</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-primary" />
-                  <span className="text-sm font-medium">Get honest feedback from real users</span>
+                <div className="inline-flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <span className="font-medium text-gray-800">Host with your home gym or training studio</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-primary" />
-                  <span className="text-sm font-medium">Earn money hosting demos at your location</span>
+                <div className="inline-flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <span className="font-medium text-gray-800">Get authentic, honest feedback — not sales talk</span>
+                </div>
+                <div className="inline-flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <span className="font-medium text-gray-800">Hosts earn money when visitors buy — no inventory needed</span>
+                </div>
+                <div className="inline-flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  <span className="font-medium text-gray-800">Connect with like-minded fitness fans in your area</span>
                 </div>
               </div>
 
               {/* CTA Buttons */}
               <div className="flex flex-col gap-4 sm:flex-row lg:justify-start">
                 <Link href="/demo-centers-list">
-                  <Button size="lg" className="group relative w-full overflow-hidden bg-primary px-8 py-4 text-lg font-semibold transition-all hover:bg-primary/90 hover:scale-105 sm:w-auto">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 opacity-0 transition-opacity group-hover:opacity-100"></div>
-                    <Search className="relative mr-2 h-5 w-5 transition-transform group-hover:scale-110" />
-                    <span className="relative">Find a Demo Center</span>
+                  <Button size="lg" className="group relative w-full overflow-hidden bg-black cursor-pointer px-4 py-2 text-lg font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:scale-105 sm:w-auto">
+                    <Search className="mr-2 h-5 w-5 transition-transform group-hover:scale-110" />
+                    Find a Demo Center
                   </Button>
                 </Link>
                 <Link href="/demo-center-form">
-                  <Button size="lg" variant="outline" className="group w-full border-2 px-8 py-4 text-lg font-semibold transition-all hover:bg-primary hover:text-primary-foreground hover:scale-105 sm:w-auto">
+                  <Button size="lg" variant="outline" className="group w-full bg-white cursor-pointer px-4 py-2 text-lg font-semibold text-gray-800 shadow-lg transition-all hover:bg-gray-50 hover:shadow-xl hover:scale-105 sm:w-auto">
                     <Home className="mr-2 h-5 w-5 transition-transform group-hover:scale-110" />
                     Become a Host
                   </Button>
@@ -69,133 +77,136 @@ export default function DemoCentersPage() {
 
             {/* Right Image */}
             <div className="relative">
-              <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+              <div className="relative overflow-hidden rounded-3xl shadow-2xl ring-1 ring-gray-200">
                 <Image
                   src="/assets/demo-center-1.jpg"
                   alt="Bulletproof Demo Center - Real gym setup"
                   width={600}
                   height={400}
-                  className="h-[400px] w-full object-cover"
+                  className="h-[500px] w-full object-cover"
                   priority
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
               </div>
               {/* Floating Stats */}
-              <div className="absolute -bottom-6 -left-6 rounded-lg bg-card p-4 shadow-lg">
+              <div className="absolute -bottom-8 -left-8 rounded-2xl bg-white p-6 shadow-xl ring-1 ring-gray-200">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">50+</div>
-                  <div className="text-xs text-muted-foreground">Demo Centers</div>
+                  <div className="text-3xl font-bold text-indigo-600">50+</div>
+                  <div className="text-sm font-medium text-gray-600">Demo Centers</div>
                 </div>
               </div>
-              <div className="absolute -right-6 -top-6 rounded-lg bg-card p-4 shadow-lg">
+              <div className="absolute -right-8 -top-8 rounded-2xl bg-white p-6 shadow-xl ring-1 ring-gray-200">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">100%</div>
-                  <div className="text-xs text-muted-foreground">Authentic</div>
+                  <div className="text-3xl font-bold text-green-600">100%</div>
+                  <div className="text-sm font-medium text-gray-600">Authentic</div>
                 </div>
               </div>
             </div>
           </div>
-
-
         </div>
 
         {/* Bottom Wave */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1200 120" className="h-12 w-full fill-muted/20 md:h-20">
+          <svg viewBox="0 0 1200 120" className="h-16 w-full fill-white md:h-20">
             <path d="M0,60 C300,120 900,0 1200,60 L1200,120 L0,120 Z"></path>
           </svg>
         </div>
       </section>
 
       {/* Try It. Feel It. Know It's Right Section */}
-      <section className="bg-muted/30 py-16">
-        <div className="container mx-auto max-w-4xl px-4 text-center">
-          <h2 className="mb-6 text-3xl font-bold md:text-4xl">
-            Try It. Feel It. Know It's Right.
-          </h2>
-          <div className="space-y-6 text-lg leading-relaxed text-muted-foreground">
-            <p>
-              Before dropping thousands on a home gym, wouldn't it be great to actually try the equipment?
-            </p>
-            <p>
-              At Bulletproof Fitness Equipment, we heard the calls (literally) from across the country — people ready to fly in just to get their hands on our gear. Why? Because what we make is different.
-            </p>
-            <p className="font-semibold text-foreground">
-              Not just a little different — game-changing, category-defining, no-comparison different.
-            </p>
-            <p>
-              So we created something just as unique to match.
-            </p>
+      <section className="py-20 bg-white">
+        <div className="container mx-auto max-w-5xl px-6">
+          <div className="text-center">
+            <h2 className="mb-8 text-4xl font-bold text-gray-900 md:text-3xl">
+              Try It. Feel It. Know It's Right.
+            </h2>
+            <div className="mx-auto max-w-3xl space-y-8 text-lg leading-relaxed text-gray-600">
+              <p className="text-xl font-medium text-gray-800">
+                Before dropping thousands on a home gym, <br /> wouldn't it be great to actually try the equipment?
+              </p>
+              <p>
+                At Bulletproof Fitness Equipment, we heard the calls (literally) from across the country — people ready to fly in just to get their hands on our gear. Why? Because what we make is different.
+              </p>
+              <p className="text-2xl font-bold text-gray-900 text-start">
+                Not just a little different — game-changing,  category-defining, no-comparison different.
+              </p>
+              <p>
+                So we created something just as unique to match.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* The "Uber" of Gym Demos Section */}
-      <section className="py-16">
-        <div className="container mx-auto max-w-4xl px-4 text-center">
-          <h2 className="mb-6 text-3xl font-bold md:text-4xl">
-            🚘 THE "UBER" OF GYM DEMOS IS HERE
-          </h2>
-          <div className="space-y-6 text-lg leading-relaxed text-muted-foreground">
-            <p>
-              Introducing Bulletproof Demo Centers — a first-of-its-kind way to experience our equipment in person, without a showroom, warehouse, or waitlist.
-            </p>
-            <p>
-              Whether you're just curious or gearing up to make a serious investment in your gym, this is your try-before-you-buy, real-world test drive — right in your city.
-            </p>
+      <section className="py-20 bg-gradient-to-br from-gray-50 to-slate-100">
+        <div className="container mx-auto max-w-5xl px-6">
+          <div className="text-center">
+            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-white shadow-lg">
+              <span className="text-2xl">🚘</span>
+              <span className="font-semibold">THE "UBER" OF GYM DEMOS IS HERE</span>
+            </div>
+            <h2 className="mb-8 text-4xl font-bold text-gray-900 md:text-5xl">
+              A Revolutionary Way to Try Equipment
+            </h2>
+            <div className="mx-auto max-w-4xl space-y-8 text-xl leading-relaxed text-gray-600">
+              <p className="text-2xl font-medium text-gray-800">
+                Introducing Bulletproof Demo Centers — a first-of-its-kind way to experience our equipment in person, without a showroom, warehouse, or waitlist.
+              </p>
+              <p>
+                Whether you're just curious or gearing up to make a serious investment in your gym, this is your try-before-you-buy, real-world test drive — right in your city.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section className="bg-muted/30 py-16">
-        <div className="container mx-auto max-w-6xl px-4">
-          <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
-              💡 HOW IT WORKS
+      <section className="py-24 bg-white">
+        <div className="container mx-auto max-w-7xl px-6">
+          <div className="mb-16 text-center">
+            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-3 text-white shadow-lg">
+              <span className="text-xl">💡</span>
+              <span className="font-semibold">HOW IT WORKS</span>
+            </div>
+            <h2 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl">
+              Simple, Straightforward Process
             </h2>
-            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-              Simple, straightforward process for both visitors and hosts
+            <p className="mx-auto max-w-3xl text-xl text-gray-600">
+              Whether you want to try equipment or host demos, we've made it incredibly easy
             </p>
           </div>
 
-          <div className="grid gap-12 lg:grid-cols-2">
+          <div className="grid gap-16 lg:grid-cols-2">
             {/* Want to try - Left Side */}
-            <div className="space-y-8">
+            <div className="space-y-10">
               <div className="text-center lg:text-left">
-                <h3 className="mb-6 text-2xl font-bold">Want to try our equipment?</h3>
+                <h3 className="mb-6 text-3xl font-bold text-gray-900">Want to try our equipment?</h3>
               </div>
 
               {/* Step 1 */}
-              <div className="flex gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
-                  1
-                </div>
-                <div>
-                  <h4 className="mb-2 font-semibold">Find a Demo Center</h4>
-                  <p className="text-muted-foreground">Search by location, equipment type, or facility style to find the perfect demo center near you.</p>
+              <div className="group relative rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 p-8 ring-1 ring-blue-100 transition-all hover:shadow-lg">
+                <div className="flex items-start gap-6">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold text-lg shadow-lg">
+                    1
+                  </div>
+                  <div>
+                    <h4 className="mb-3 text-xl font-bold text-gray-900">Find a Demo Center</h4>
+                    <p className="text-gray-600 leading-relaxed">Find a demo center near you by searching based on location, type (home, studio, gym), or gear availability.</p>
+                  </div>
                 </div>
               </div>
 
               {/* Step 2 */}
-              <div className="flex gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
-                  2
-                </div>
-                <div>
-                  <h4 className="mb-2 font-semibold">Schedule Your Visit</h4>
-                  <p className="text-muted-foreground">Book a convenient time slot and connect directly with the host to plan your demo session.</p>
-                </div>
-              </div>
-
-              {/* Step 3 */}
-              <div className="flex gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
-                  3
-                </div>
-                <div>
-                  <h4 className="mb-2 font-semibold">Experience Bulletproof</h4>
-                  <p className="text-muted-foreground">Try the equipment, ask questions, and get honest feedback from real users in a no-pressure environment.</p>
+              <div className="group relative rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 p-8 ring-1 ring-green-100 transition-all hover:shadow-lg">
+                <div className="flex items-start gap-6">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-lg shadow-lg">
+                    2
+                  </div>
+                  <div>
+                    <h4 className="mb-3 text-xl font-bold text-gray-900">Schedule Your Visit</h4>
+                    <p className="text-gray-600 leading-relaxed">Then simply schedule a visit, show up, and experience Bulletproof in action.</p>
+                  </div>
                 </div>
               </div>
 
@@ -223,8 +234,8 @@ export default function DemoCentersPage() {
                   1
                 </div>
                 <div>
-                  <h4 className="mb-2 font-semibold">Register Your Space</h4>
-                  <p className="text-muted-foreground">Submit your gym details, location, and available Bulletproof equipment through our simple application.</p>
+                  <h4 className="mb-1 font-semibold">Register Your Space</h4>
+                  <p className="text-muted-foreground">Register your location — whether it’s a home gym, PT studio, or commercial facility. Just enter your setup details, choose your availability, and you’re in.</p>
                 </div>
               </div>
 
@@ -234,19 +245,8 @@ export default function DemoCentersPage() {
                   2
                 </div>
                 <div>
-                  <h4 className="mb-2 font-semibold">Set Your Availability</h4>
-                  <p className="text-muted-foreground">Choose when you're available for demos and set your preferences for visitor scheduling.</p>
-                </div>
-              </div>
-
-              {/* Step 3 */}
-              <div className="flex gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
-                  3
-                </div>
-                <div>
-                  <h4 className="mb-2 font-semibold">Start Earning</h4>
-                  <p className="text-muted-foreground">Host visitors, share your experience, and earn affiliate commissions on any equipment sales.</p>
+                  <h4 className="mb-1 font-semibold">Hassle-Free</h4>
+                  <p className="text-muted-foreground">No sales experience needed. No inventory. No strings attached.</p>
                 </div>
               </div>
 
@@ -286,39 +286,48 @@ export default function DemoCentersPage() {
       </section>
 
       {/* Why It's Different Section */}
-      <section className="py-16 bg-gray-100">
-        <div className="container mx-auto max-w-6xl px-4">
-          <h2 className="mb-4 text-center text-3xl font-bold md:text-4xl">
-            Why It's Different
-          </h2>
-          <p className="mb-8 text-center text-lg text-muted-foreground">
-            Unlike traditional showrooms, our demo centers are:
-          </p>
+      <section className="py-24 bg-gradient-to-br from-slate-50 to-gray-100">
+        <div className="container mx-auto max-w-7xl px-6">
+          <div className="mb-16 text-center">
+            <div className="mb-6 inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-3 text-white shadow-lg">
+              <span className="text-xl">🤝</span>
+              <span className="font-semibold">WHY IT'S DIFFERENT</span>
+            </div>
+            <h2 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl">
+              Unlike Traditional Showrooms
+            </h2>
+            <p className="mx-auto max-w-3xl text-xl text-gray-600">
+              Our demo centers offer something completely different from the typical sales experience
+            </p>
+          </div>
+
           <div className="grid gap-8 md:grid-cols-3">
-            <div className="bg-white p-6 rounded-md">
-              <div className="mb-4">
-                <Users className="size-12 bg-purple-500 rounded-full p-2.5 text-white" />
+            <div className="group relative overflow-hidden rounded-3xl bg-white p-8 shadow-lg ring-1 ring-gray-200 transition-all hover:shadow-xl hover:scale-105">
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 shadow-lg">
+                <Users className="h-8 w-8 text-white" />
               </div>
-              <h3 className="mb-3 text-lg font-bold">Real Customers, Real Feedback</h3>
-              <p className="text-sm text-gray-700">
+              <h3 className="mb-4 text-2xl font-bold text-gray-900">Real Customers, Real Feedback</h3>
+              <p className="text-gray-600 leading-relaxed">
                 You're not talking to a polished salesperson — you're meeting fellow gym enthusiasts who actually use the gear. That means no fluff, no pressure, and honest conversations.
               </p>
             </div>
-            <div className="bg-white p-6 rounded-md">
-              <div className="mb-4">
-                <MessageCircle className="size-12 bg-purple-500 rounded-full p-2.5 text-white" />
+
+            <div className="group relative overflow-hidden rounded-3xl bg-white p-8 shadow-lg ring-1 ring-gray-200 transition-all hover:shadow-xl hover:scale-105">
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
+                <MessageCircle className="h-8 w-8 text-white" />
               </div>
-              <h3 className="mb-3 text-lg font-bold">Casual & Authentic</h3>
-              <p className="text-sm text-gray-700">
+              <h3 className="mb-4 text-2xl font-bold text-gray-900">Casual & Authentic</h3>
+              <p className="text-gray-600 leading-relaxed">
                 Demo hosts know their setups inside and out, but they're not expected to memorize manuals. It's a low-key, authentic environment where you can see, touch, and feel the difference.
               </p>
             </div>
-            <div className="bg-white p-6 rounded-md">
-              <div className="mb-4">
-                <Heart className="size-12 bg-purple-500 rounded-full p-2.5 text-white" />
+
+            <div className="group relative overflow-hidden rounded-3xl bg-white p-8 shadow-lg ring-1 ring-gray-200 transition-all hover:shadow-xl hover:scale-105">
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg">
+                <Heart className="h-8 w-8 text-white" />
               </div>
-              <h3 className="mb-3 text-lg font-bold">Built for Connection</h3>
-              <p className="text-sm text-gray-700">
+              <h3 className="mb-4 text-2xl font-bold text-gray-900">Built for Connection</h3>
+              <p className="text-gray-600 leading-relaxed">
                 By registering or visiting a demo center, you're joining a like-minded community. This creates opportunities for live local workouts, events, collaborations, and new friendships in your area.
               </p>
             </div>
@@ -336,7 +345,7 @@ export default function DemoCentersPage() {
                 Earn Money by Doing What You Love
               </h2>
               <p className="mb-8 text-lg text-muted-foreground">
-              If you register your space:
+                If you register your space:
               </p>
 
               <div className="space-y-4">
@@ -398,61 +407,70 @@ export default function DemoCentersPage() {
       <section className="py-16">
         <div className="container mx-auto max-w-6xl px-4">
           <div className="grid items-center gap-12 lg:grid-cols-2">
-          <Image src="/assets/why-we-build.jpg" alt="Why We Built This" width={500} height={400} className="w-full h-auto rounded-lg" />
-          <div>
-            <h2 className="mb-6 text-3xl font-bold md:text-4xl">
-              Why We Built This
-            </h2>
-            <div className="space-y-6 text-lg leading-relaxed text-gray-700">
-              <p>
-                At Bulletproof, we've never followed the crowd. Our products are unique — which means our solutions need to be, too.
-              </p>
-              <p>
-                And we'd rather someone realize it's not the right fit than feel pressured into buying something that doesn't serve them. Because when it is the right fit, they'll feel it the second they touch it.
-              </p>
-              <p className="font-semibold text-black">
-                Demo Centers are about empowering smarter decisions in a way no one else in the fitness industry is doing.
-              </p>
+            <Image src="/assets/why-we-build.jpg" alt="Why We Built This" width={500} height={400} className="w-full h-auto rounded-lg" />
+            <div>
+              <h2 className="mb-6 text-3xl font-bold md:text-4xl">
+                Why We Built This
+              </h2>
+              <div className="space-y-6 text-lg leading-relaxed text-gray-700">
+                <p>
+                  At Bulletproof, we've never followed the crowd. Our products are unique — which means our solutions need to be, too.
+                </p>
+                <p>
+                  And we'd rather someone realize it's not the right fit than feel pressured into buying something that doesn't serve them. Because when it is the right fit, they'll feel it the second they touch it.
+                </p>
+                <p className="font-semibold text-black">
+                  Demo Centers are about empowering smarter decisions in a way no one else in the fitness industry is doing.
+                </p>
+              </div>
             </div>
-          </div>
           </div>
         </div>
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-16">
-        <div className="container text-center bg-gradient-to-r from-gray-200 to-purple-100 p-12 rounded-2xl">
-          <h2 className="mb-6 text-3xl font-bold md:text-4xl">
-            Search. Schedule. Sweat.
-          </h2>
-          <p className="mb-8 text-lg max-w-3xl mx-auto text-gray-800">
-            Whether you're looking to try before you buy, or ready to be your city's go-to spot for experiencing Bulletproof gear, the Demo Center program is open and growing fast.
-          </p>
-          <ul className="mb-8 flex flex-col gap-1 text-lg font-semibold max-w-max mx-auto">
-            <li className="flex items-center gap-2">
-              <CircleArrowRight className="h-5 w-5 text-primary" />
-              Try the equipment.
-            </li>
-            <li className="flex items-center gap-2">
-              <CircleArrowRight className="h-5 w-5 text-primary" />
-              Meet the community.
-            </li>
-            <li className="flex items-center gap-2">
-              <CircleArrowRight className="h-5 w-5 text-primary" />
-              Be part of the movement.
-            </li>
-          </ul>
-          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Link href="/demo-centers-list">
-              <Button size="lg" className="w-full bg-primary px-4 py-3 text-lg font-semibold sm:w-auto">
-                🚀 Find a Demo Center
-              </Button>
-            </Link>
-            <Link href="/demo-center-form">
-              <Button size="lg" variant="outline" className="w-full px-4 py-3 text-lg font-semibold sm:w-auto">
-                🏡 Become a Demo Center
-              </Button>
-            </Link>
+      <section className="py-16 container rounded-2xl bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900">
+        <div className="px-6">
+          <div className="text-center max-w-4xl mx-auto text-white">
+            <div className="mb-8 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 backdrop-blur-sm text-sm">
+              <span className="font-medium">SEARCH. SCHEDULE. SWEAT.</span>
+            </div>
+
+            <h2 className="mb-8 text-4xl font-bold md:text-5xl">
+              Ready to Get Started?
+            </h2>
+
+            <p className="mb-12 text-lg leading-relaxed text-indigo-100 md:text-xl">
+              Whether you're looking to try before you buy, or ready to be your city's go-to spot for experiencing Bulletproof gear, the Demo Center program is open and growing fast.
+            </p>
+
+            <div className="mb-12 flex flex-col items-center gap-3">
+              <div className="inline-flex items-center justify-center gap-3 rounded-md bg-white/10 px-3 py-2 backdrop-blur-sm">
+                <CircleArrowRight className="h-6 w-6 text-green-400" />
+                <span className="text-lg font-semibold">Try the equipment.</span>
+              </div>
+              <div className="inline-flex items-center justify-center gap-3 rounded-md bg-white/10 px-3 py-2 backdrop-blur-sm">
+                <CircleArrowRight className="h-6 w-6 text-green-400" />
+                <span className="text-lg font-semibold">Meet the community.</span>
+              </div>
+              <div className="inline-flex items-center justify-center gap-3 rounded-md bg-white/10 px-3 py-2 backdrop-blur-sm">
+                <CircleArrowRight className="h-6 w-6 text-green-400" />
+                <span className="text-lg font-semibold">Be part of the movement.</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-6 sm:flex-row sm:justify-center">
+              <Link href="/demo-centers-list">
+                <Button size="lg" className="w-full bg-gradient-to-r from-green-500 to-emerald-600 px-8 py-4 text-xl font-bold text-white shadow-xl transition-all hover:shadow-2xl hover:scale-105 sm:w-auto">
+                  🚀 Find a Demo Center
+                </Button>
+              </Link>
+              <Link href="/demo-center-form">
+                <Button size="lg" className="w-full bg-white px-8 py-4 text-xl font-bold text-gray-900 shadow-xl transition-all hover:bg-gray-100 hover:shadow-2xl hover:scale-105 sm:w-auto">
+                  🏡 Become a Demo Center
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
