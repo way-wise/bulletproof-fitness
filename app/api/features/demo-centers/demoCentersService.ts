@@ -12,6 +12,7 @@ import { getPaginationQuery } from "@api/lib/pagination";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
 import { awardPointsToUser } from "../actions/actionService";
+import { RewardType } from "@prisma/client";
 
 export const demoCentersService = {
   getDemoCenters: async (query: DemoCenterQuery) => {
@@ -198,7 +199,10 @@ export const demoCentersService = {
   },
 
   // Create demo center
-  createDemoCenter: async (data: InferType<typeof demoCenterSchema>, userId?: string) => {
+  createDemoCenter: async (
+    data: InferType<typeof demoCenterSchema>,
+    userId?: string,
+  ) => {
     // Geocode the address to get lat/lng coordinates
     const fullAddress = `${data.address}, ${data.cityZip}`;
     const geocodedLocation = await getGeoCodeAddress(fullAddress);
@@ -254,7 +258,7 @@ export const demoCentersService = {
     if (userId) {
       await awardPointsToUser(
         userId,
-        "DEMO_CENTER",
+        RewardType.DEMO_CENTER,
         "Demo Center",
         "Demo Center creation reward",
       );

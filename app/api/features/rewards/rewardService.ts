@@ -1,10 +1,20 @@
 import prisma from "@/lib/prisma";
-import { RewardType } from "@/prisma/generated/enums";
+import { RewardType } from "@prisma/client";
 import { PaginationQuery } from "@/schema/paginationSchema";
 import { Reward } from "@/schema/rewardsSchema";
 import { getPaginationQuery } from "../../lib/pagination";
 
 export const rewardService = {
+  resetAllUsersPoints: async () => {
+    await prisma.users.updateMany({
+      data: {
+        totalPoints: 0,
+      },
+    });
+    return {
+      message: "All users points reset successfully",
+    };
+  },
   getAllRewards: async (query: PaginationQuery) => {
     const { skip, take, page, limit } = getPaginationQuery(query);
     const [rewards, total] = await prisma.$transaction([
@@ -65,8 +75,9 @@ export const rewardService = {
       },
     });
 
-    if(rewardType?.id !== rewardId) throw new Error("Reward type does not match");
-    
+    if (rewardType?.id !== rewardId)
+      throw new Error("Reward type does not match");
+
     const reward = await prisma.rewardPoints.update({
       where: { id: rewardId },
       data: {

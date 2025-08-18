@@ -7,6 +7,32 @@ import { rewardService } from "./rewardService";
 const app = new Hono();
 
 /*
+    @route    GET: /rewards/reset-points
+    @access   private
+    @desc     Reset all user points
+*/
+app.get("/reset-points", async (c) => {
+  const result = await rewardService.resetAllUsersPoints();
+  return c.json(result);
+});
+
+/*
+    @route    GET: /rewards
+    @access   private
+    @desc     Get all rewards
+*/
+app.get("/", async (c) => {
+  const validatedQuery = await validateInput({
+    type: "query",
+    schema: paginationQuerySchema,
+    data: c.req.query(),
+  });
+
+  const result = await rewardService.getAllRewards(validatedQuery);
+  return c.json(result);
+});
+
+/*
     @route    POST: /users
     @access   private
     @desc     Create new user

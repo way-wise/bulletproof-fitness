@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -15,9 +14,15 @@ import {
   Heart,
   Star,
   Crown,
-  Users,
+  RotateCcw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { Form } from "@/components/ui/form";
+import { Modal } from "@/components/ui/modal";
+import { FormFieldset } from "@/components/ui/form";
+import { toast } from "sonner";
 
 interface LeaderboardUser {
   id: string;
@@ -50,9 +55,8 @@ const LeaderboardTable = () => {
   const [page, setPage] = useState(1);
   const limit = 50;
 
-  const { data, isLoading, error } = useSWR<LeaderboardData>(
-    `/api/users/leaderboard?page=${page}&limit=${limit}`,
-  );
+  const url = `/api/users/leaderboard?page=${page}&limit=${limit}`;
+  const { data, isLoading, error } = useSWR<LeaderboardData>(url);
 
   const leaderboardData = data?.data || [];
   const totalUsers = data?.meta.total || 0;
@@ -131,6 +135,24 @@ const LeaderboardTable = () => {
       return (num / 1000).toFixed(1) + "K";
     }
     return num.toString();
+  };
+
+  const [resetModal, setResetModal] = useState(false);
+  const resetForm = useForm();
+
+  const handleResetPoints = async () => {
+    try {
+      await fetch("/api/rewards/reset-points", {
+        method: "GET",
+      });
+      mutate(url);
+    } catch (error) {
+      console.log(error);
+    }
+
+    setResetModal(false);
+    resetForm.reset();
+    toast.success("Points reset successfully");
   };
 
   if (isLoading) {
@@ -345,11 +367,19 @@ const LeaderboardTable = () => {
 
       {/* Rest of the leaderboard */}
       <Card className="mt-20">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Trophy className="h-5 w-5" />
+        <CardHeader className="flex justify-between gap-2">
+          <CardTitle className="flex gap-2 text-left">
+            <Trophy className="size-5" />
             Full Rankings
           </CardTitle>
+          <Button
+            variant="outline"
+            className="w-fit"
+            onClick={() => setResetModal(true)}
+          >
+            <RotateCcw className="size-5" />
+            Reset Points
+          </Button>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -550,6 +580,41 @@ const LeaderboardTable = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Reset confirmed Modal */}
+      <Modal
+        isOpen={resetModal}
+        onClose={() => setResetModal(false)}
+        title="Reset Points"
+        isPending={resetForm.formState.isSubmitting}
+      >
+        <Form {...resetForm}>
+          <form onSubmit={resetForm.handleSubmit(handleResetPoints)}>
+            <FormFieldset disabled={resetForm.formState.isSubmitting}>
+              <p className="mb-5 text-muted-foreground">
+                This will allow the user to log in and use the application
+                again.
+              </p>
+              <div className="flex justify-end gap-3 py-5">
+                <Button
+                  type="button"
+                  onClick={() => setResetModal(false)}
+                  variant="secondary"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  variant="destructive"
+                  isLoading={resetForm.formState.isSubmitting}
+                >
+                  Continue
+                </Button>
+              </div>
+            </FormFieldset>
+          </form>
+        </Form>
+      </Modal>
     </div>
   );
 };

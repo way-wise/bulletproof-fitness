@@ -199,13 +199,15 @@ const RewardsTable = () => {
         <h1 className="text-2xl font-semibold">Points</h1>
       </div>
 
-      <DataTable
-        data={data}
-        columns={columns}
-        isPending={isValidating}
-        pagination={pagination}
-        onPaginationChange={setPagination}
-      />
+      <div className="rounded-xl border bg-card p-6">
+        <DataTable
+          data={data}
+          columns={columns}
+          isPending={isValidating}
+          pagination={pagination}
+          onPaginationChange={setPagination}
+        />
+      </div>
 
       <Modal
         isOpen={editModalOpen}
