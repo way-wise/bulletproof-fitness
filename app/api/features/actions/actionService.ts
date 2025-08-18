@@ -249,13 +249,15 @@ export const actionService = {
           },
         });
 
-        // Only award points on first rating
-        await awardPointsToUser(
-          userId,
-          RewardType.RATING,
-          "Rating",
-          `Rated content ${rating} stars`,
-        );
+        // Only award points on first rating if rating is 5
+        if (rating == 5) {
+          await awardPointsToUser(
+            userId,
+            RewardType.RATING,
+            "Rating",
+            `Rated content ${rating} stars`,
+          );
+        }
       }
 
       // Step 3: Get all ratings for this content
