@@ -1,9 +1,9 @@
-import DemoCentersPage from "../_components/demo-centers/DemoCentersPage";
+import DemoCenterMain from "../_components/demo-centers/DemoCenterMain";
 
 const DemoCenter = () => {
   return (
     <div>
-      <DemoCentersPage />
+      <DemoCenterMain />
     </div>
   );
 };
