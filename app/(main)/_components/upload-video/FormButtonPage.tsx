@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function FormsButtonPage() {
   return (
     <div className="flex h-[calc(100vh-120px)] items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md rounded-xl bg-gray-400 p-8 text-black shadow">
+      <Card className="w-full max-w-md rounded-xl bg-gray-900/90 p-8 text-black shadow">
         <div className="space-y-6 text-center">
           {/* Video Camera Icon */}
           <div className="flex justify-center">
@@ -16,7 +16,7 @@ export default function FormsButtonPage() {
           </div>
 
           {/* Main Text */}
-          <div className="space-y-2 text-black">
+          <div className="space-y-2 text-white">
             <h1 className="text-2xl font-bold tracking-wide">
               PLEASE CREATE ACCOUNT
             </h1>
@@ -26,7 +26,7 @@ export default function FormsButtonPage() {
           </div>
 
           {/* Subtitle */}
-          <p className="text-sm text-black">Create an account to get started</p>
+          <p className="text-sm text-white">Create an account to get started</p>
 
           {/* Action Button */}
           <div className="pt-4">
@@ -43,7 +43,7 @@ export default function FormsButtonPage() {
 
           {/* Sign In Link */}
           <div className="text-center">
-            <p className="text-sm text-black">
+            <p className="text-sm text-white">
               Already have an account?{" "}
               <Link
                 href="/auth/sign-in"
