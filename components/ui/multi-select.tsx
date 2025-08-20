@@ -72,12 +72,17 @@ export const MultiSelect = ({
           </Button>
         </PopoverTrigger>
 
-        <PopoverContent className="p-0">
+        <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)] max-w-[300px]" sideOffset={4}>
           <Command>
             <CommandInput placeholder="Search..." className="h-9" />
             <CommandEmpty>No option found.</CommandEmpty>
 
-            <ScrollArea className="max-h-40 overflow-y-auto">
+            <div 
+              className="max-h-40 overflow-y-auto"
+              onTouchStart={(e) => e.stopPropagation()}
+              onTouchMove={(e) => e.stopPropagation()}
+              onWheel={(e) => e.stopPropagation()}
+            >
               <CommandGroup>
                 {options.map((option) => (
                   <CommandItem
@@ -100,7 +105,7 @@ export const MultiSelect = ({
                   </CommandItem>
                 ))}
               </CommandGroup>
-            </ScrollArea>
+            </div>
           </Command>
 
           {/* Selected badges */}
