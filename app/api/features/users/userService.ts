@@ -78,6 +78,46 @@ export const userService = {
     };
   },
 
+  // Get user suggestions for search
+  getUserSuggestions: async (query: { search: string; limit?: string }) => {
+    const session = await getSession();
+    const limit = parseInt(query.limit || "5");
+
+    const users = await prisma.users.findMany({
+      where: {
+        NOT: {
+          id: session?.user?.id,
+        },
+        OR: [
+          {
+            name: {
+              contains: query.search,
+              mode: "insensitive",
+            },
+          },
+          {
+            email: {
+              contains: query.search,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+      },
+      take: limit,
+      orderBy: {
+        name: "asc",
+      },
+    });
+
+    return users;
+  },
+
   // Get current user profile
   getCurrentUser: async () => {
     const session = await getSession();

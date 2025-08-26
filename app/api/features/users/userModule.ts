@@ -25,6 +25,25 @@ app.get("/", async (c) => {
 });
 
 /*
+  @route    GET: /users/suggestions
+  @access   private
+  @desc     Get user suggestions for search
+*/
+app.get("/suggestions", async (c) => {
+  const validatedQuery = await validateInput({
+    type: "query",
+    schema: object({
+      search: string().required("Search query is required"),
+      limit: string().optional(),
+    }),
+    data: c.req.query(),
+  });
+
+  const result = await userService.getUserSuggestions(validatedQuery);
+  return c.json(result);
+});
+
+/*
   @route    GET: /users/me
   @access   private
   @desc     Get current user profile

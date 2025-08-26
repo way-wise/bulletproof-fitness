@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Slider } from "@/components/ui/slider";
+import { UserSearchPopover } from "@/components/ui/user-search-popover";
 import { useBodyParts } from "@/hooks/useBodyParts";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useEquipments } from "@/hooks/useEquipments";
@@ -92,7 +93,7 @@ export default function ExerciseFiltersOptimized({
   onFiltersChangeRef.current = onFiltersChange;
 
   // Debounce search inputs
-  const debouncedUsername = useDebounce(state.username, 500);
+  // Don't debounce username since it's only set when user selects from popover
   const debouncedSearchQuery = useDebounce(state.searchQuery, 500);
 
   // Memoize data fetching hooks
@@ -165,7 +166,7 @@ export default function ExerciseFiltersOptimized({
       bodyPartIds: state.selectedBodyParts,
       equipmentIds: state.selectedEquipments,
       rackIds: state.selectedRacks,
-      username: debouncedUsername || undefined,
+      username: state.username || undefined,
       minRating: state.rating > 0 ? state.rating : undefined,
       maxHeight: state.heightRange[0] < 85 ? state.heightRange[0] : undefined,
       search: debouncedSearchQuery || undefined,
@@ -174,7 +175,7 @@ export default function ExerciseFiltersOptimized({
       state.selectedBodyParts,
       state.selectedEquipments,
       state.selectedRacks,
-      debouncedUsername,
+      state.username,
       state.rating,
       state.heightRange,
       debouncedSearchQuery,
@@ -261,13 +262,6 @@ export default function ExerciseFiltersOptimized({
     dispatch({ type: "SET_RACKS", payload: value });
   }, []);
 
-  const handleUsernameChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      dispatch({ type: "SET_USERNAME", payload: e.target.value });
-    },
-    [],
-  );
-
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       dispatch({ type: "SET_SEARCH_QUERY", payload: e.target.value });
@@ -293,7 +287,7 @@ export default function ExerciseFiltersOptimized({
   );
 
   return (
-    <div className="px-4 py-2 bg-white border border-gray-200 rounded-md">
+    <div className="rounded-md border border-gray-200 bg-white px-4 py-2">
       <div className="flex h-12 items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
         {hasActiveFilters && (
@@ -384,12 +378,13 @@ export default function ExerciseFiltersOptimized({
           <Label className="text-[16px] font-semibold">
             Filter By Username
           </Label>
-          <Input
-            type="search"
-            placeholder="Search by Username..."
+          <UserSearchPopover
             value={state.username}
-            onChange={handleUsernameChange}
-            className="w-full rounded-sm py-4 text-[14px]"
+            onChange={(value) =>
+              dispatch({ type: "SET_USERNAME", payload: value })
+            }
+            placeholder="Search by Username..."
+            className="w-full"
           />
         </div>
 
