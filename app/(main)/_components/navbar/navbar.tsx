@@ -49,16 +49,16 @@ const Navbar = ({ session }: { session: Session }) => {
       baseUrl: "/demo-centers",
       submenu: [
         {
-          title: "DEMO CENTER",
+          title: "DEMO CENTERS",
           url: "/demo-centers",
         },
-        // {
-        //   title: "RETAIL CENTER",
-        //   url: "/demo-retail-centers/retail-center",
-        // },
         {
-          title: "DEMO CENTER FORM",
-          url: "/demo-center-form",
+          title: "ABOUT DEMO CENTERS",
+          url: "/about-demo-centers",
+        },
+        {
+          title: "UPLOAD DEMO CENTER",
+          url: "/upload-demo-center",
         },
       ],
     },

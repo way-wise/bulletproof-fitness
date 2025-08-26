@@ -111,8 +111,8 @@ const ExCardsSection = ({
                     Filter
                   </button>
                 </DrawerTrigger>
-                <DrawerContent side="right" className="w-80">
-                  <DrawerHeader>
+                <DrawerContent side="right" className="w-80 flex flex-col">
+                  <DrawerHeader className="flex-shrink-0">
                     <div className="flex w-full items-center justify-between">
                       <DrawerTitle>Filters</DrawerTitle>
                       <DrawerClose asChild>
@@ -136,8 +136,16 @@ const ExCardsSection = ({
                       </DrawerClose>
                     </div>
                   </DrawerHeader>
-                  <div className="flex-1 overflow-y-auto px-6 py-4">
-                    <FilterSection onFiltersChange={handleFiltersChange} />
+                  <div className="flex-1 overflow-hidden">
+                    <div 
+                      className="h-full overflow-y-auto px-6 py-4"
+                      style={{ 
+                        scrollbarWidth: 'thin',
+                        WebkitOverflowScrolling: 'touch'
+                      }}
+                    >
+                      <FilterSection onFiltersChange={handleFiltersChange} />
+                    </div>
                   </div>
                 </DrawerContent>
               </Drawer>

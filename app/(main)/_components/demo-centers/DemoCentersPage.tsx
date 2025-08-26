@@ -88,7 +88,7 @@ export default function DemoCentersPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
               </div>
               {/* Floating Stats */}
-              <div className="absolute -bottom-4 lg:-bottom-8 -left-4 lg:-left-8 rounded-2xl bg-white p-4 md:p-6 shadow-xl ring-1 ring-gray-200">
+              {/* <div className="absolute -bottom-4 lg:-bottom-8 -left-4 lg:-left-8 rounded-2xl bg-white p-4 md:p-6 shadow-xl ring-1 ring-gray-200">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-indigo-600">50+</div>
                   <div className="text-sm font-medium text-gray-600">Demo Centers</div>
@@ -99,7 +99,7 @@ export default function DemoCentersPage() {
                   <div className="text-3xl font-bold text-green-600">100%</div>
                   <div className="text-sm font-medium text-gray-600">Authentic</div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
