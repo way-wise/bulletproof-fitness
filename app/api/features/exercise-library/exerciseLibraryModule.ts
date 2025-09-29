@@ -8,7 +8,6 @@ import { Hono, type Context } from "hono";
 import { exerciseLibraryService } from "./exerciseLibraryService";
 import { extractPublicId } from "cloudinary-build-url";
 import cloudinary from "@api/lib/cloudinary";
-import { HTTPException } from "hono/http-exception";
 
 export const exerciseLibraryModule = new Hono();
 

@@ -6,6 +6,8 @@ import {
 import { Hono, type Context } from "hono";
 import { validateInput } from "../../lib/validateInput";
 import { exerciseSetupService } from "./exerciseSetupService";
+import { extractPublicId } from "cloudinary-build-url";
+import cloudinary from "@api/lib/cloudinary";
 
 export const exerciseSetupModule = new Hono();
 
@@ -116,7 +118,7 @@ exerciseSetupModule.get("/dashboard/:id", async (c) => {
 exerciseSetupModule.post("/dashboard", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
+    if (!session?.user?.id || session.user.role !== "admin") {
       return c.json(
         {
           success: false,
@@ -168,7 +170,7 @@ exerciseSetupModule.post("/dashboard", async (c: Context) => {
 exerciseSetupModule.put("/dashboard/:id", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
+    if (!session?.user?.id || session.user.role !== "admin") {
       return c.json(
         {
           success: false,
@@ -221,7 +223,7 @@ exerciseSetupModule.put("/dashboard/:id", async (c: Context) => {
 exerciseSetupModule.delete("/dashboard/:id", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
+    if (!session?.user?.id || session.user.role !== "admin") {
       return c.json(
         {
           success: false,
@@ -258,7 +260,7 @@ exerciseSetupModule.delete("/dashboard/:id", async (c: Context) => {
 exerciseSetupModule.post("/dashboard/:id/block", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
+    if (!session?.user?.id || session.user.role !== "admin") {
       return c.json(
         {
           success: false,
@@ -311,7 +313,7 @@ exerciseSetupModule.post("/dashboard/:id/block", async (c: Context) => {
 exerciseSetupModule.post("/dashboard/:id/unblock", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
+    if (!session?.user?.id || session.user.role !== "admin") {
       return c.json(
         {
           success: false,
@@ -348,7 +350,7 @@ exerciseSetupModule.post("/dashboard/:id/unblock", async (c: Context) => {
 exerciseSetupModule.patch("/dashboard/:id/status", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
+    if (!session?.user?.id || session.user.role !== "admin") {
       return c.json(
         {
           success: false,
@@ -485,4 +487,20 @@ exerciseSetupModule.post("/youtube/callback", async (c) => {
   const result =
     await exerciseSetupService.createExerciseSetupFromYoutube(rawData);
   return c.json(result);
+});
+
+// Delete Video from cloudinary after uploaded to youtube
+exerciseSetupModule.post("/youtube/uploaded", async (c) => {
+  const rawData = await c.req.json();
+
+  // Extract public id and delete
+  const publicId = extractPublicId(rawData.cloudinaryVideoUrl);
+  const result = cloudinary.uploader.destroy(publicId, {
+    resource_type: "video",
+  });
+
+  return c.json({
+    message: "Cloudinary video deleted",
+    result,
+  });
 });
