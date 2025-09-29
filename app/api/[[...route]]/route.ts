@@ -1,5 +1,6 @@
 import { errorHandler } from "@/app/api/lib/errorHandler";
 import { Hono } from "hono";
+import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 import { secureHeaders } from "hono/secure-headers";
 import { handle } from "hono/vercel";
@@ -18,6 +19,9 @@ import userModule from "../features/users/userModule";
 
 // Hono init
 const app = new Hono().basePath("/api");
+
+// Logger
+app.use(logger());
 
 // Secure headers
 app.use(secureHeaders());
