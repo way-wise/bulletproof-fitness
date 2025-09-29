@@ -6,7 +6,7 @@ export default function ExerciseLibraryDetailsSkeleton() {
       {/* Video & Info Section */}
       <div className="grid items-start gap-10 md:grid-cols-2">
         {/* Video Skeleton */}
-        <div className="aspect-video w-full overflow-hidden rounded shadow-md">
+        <div className="aspect-video w-full overflow-hidden rounded shadow-sm">
           <Skeleton className="h-full w-full" />
         </div>
 

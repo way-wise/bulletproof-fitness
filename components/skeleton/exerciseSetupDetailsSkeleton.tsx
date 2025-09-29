@@ -3,32 +3,32 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ExerciseSetupDetailsSkeleton() {
   return (
-    <div className="mx-auto max-w-[1200px] px-6 py-14 font-sans text-[17px] leading-relaxed text-[#222]">
+    <div className="mx-auto w-full max-w-[1200px] px-6 py-14 font-sans text-[17px] leading-relaxed text-[#222]">
       {/* Video & Info Section */}
       <div className="grid items-start gap-10 md:grid-cols-2">
         {/* Video Skeleton */}
-        <div className="aspect-video w-full overflow-hidden rounded shadow-md">
+        <div className="aspect-video w-full overflow-hidden rounded shadow-sm">
           <Skeleton className="h-full w-full" />
         </div>
 
         {/* Info Section Skeleton */}
-        <div className="space-y-5">
+        <div className="space-y-6">
           {/* Title Skeleton */}
-          <Skeleton className="h-8 w-3/4" />
+          <Skeleton className="h-8 w-[90%]" />
 
           {/* Info List Skeleton */}
-          <ul className="space-y-1.5 text-[16px]">
+          <ul className="space-y-3">
             {[1, 2, 3, 4, 5].map((item) => (
-              <li key={item} className="flex items-center gap-2">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-4 w-32" />
+              <li key={item} className="flex items-center gap-4">
+                <Skeleton className="h-5 w-[30%]" />
+                <Skeleton className="h-5 w-[50%]" />
               </li>
             ))}
           </ul>
 
           {/* Uploaded by Skeleton */}
-          <div className="rounded border bg-gray-100 px-4 py-3 text-base">
-            <Skeleton className="h-4 w-48" />
+          <div className="rounded border bg-gray-100 px-4 py-4">
+            <Skeleton className="h-5 w-[70%]" />
           </div>
         </div>
       </div>

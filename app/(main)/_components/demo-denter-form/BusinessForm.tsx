@@ -202,7 +202,6 @@ export default function BusinessForm({
                     isLoading ? "Loading equipment..." : "Select Equipment"
                   }
                   disabled={isLoading || equipment.length === 0}
-                  className="w-full"
                 />
               </FormControl>
               <p className="text-xs text-muted-foreground">

@@ -125,7 +125,7 @@ const ExLibraryCard = ({
   return (
     <div>
       <CardUI className="overflow-hidden rounded-md">
-        <div className="relative aspect-video">
+        <div className="relative aspect-video bg-gray-200">
           <iframe
             src={`${url}`}
             title={title}
@@ -136,7 +136,7 @@ const ExLibraryCard = ({
           ></iframe>
         </div>
         <CardContent className="space-y-2.5 border-none p-4 text-left">
-          <Badge className="rounded-full border border-gray-400 bg-gray-100 text-sm py-0.5 px-2 font-medium text-primary">
+          <Badge className="rounded-full border border-gray-400 bg-gray-100 px-2 py-0.5 text-sm font-medium text-primary">
             {bodypart}
           </Badge>
 

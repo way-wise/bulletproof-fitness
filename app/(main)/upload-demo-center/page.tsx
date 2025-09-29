@@ -174,7 +174,7 @@ export default function DemoCenterFormPage() {
   return (
     <div className="container mx-auto max-w-4xl p-6">
       <div className="mb-8 text-center">
-        <h1 className="mb-4 text-2xl font-bold md:text-3xl">
+        <h1 className="mb-2 text-2xl font-bold md:text-3xl">
           Demo Center Registration
         </h1>
         <p className="text-md text-muted-foreground md:text-lg">
@@ -183,19 +183,19 @@ export default function DemoCenterFormPage() {
       </div>
 
       <Tabs defaultValue="business" className="w-full">
-        <TabsList className="mx-auto flex w-fit gap-4 rounded-lg border bg-white p-1 shadow-sm">
+        <TabsList className="mx-auto flex w-fit gap-4 rounded-lg border bg-white px-1 py-5 shadow-sm">
           <TabsTrigger
             value="business"
-            className="rounded-md px-5 py-2 text-lg font-medium data-[state=active]:bg-black data-[state=active]:text-white"
+            className="rounded-md p-4 text-lg font-medium data-[state=active]:bg-black data-[state=active]:text-white"
           >
-            <Building2 className="mr-2 h-4 w-4" />
+            <Building2 className="size-4" />
             Business
           </TabsTrigger>
           <TabsTrigger
             value="residential"
-            className="rounded-md px-5 py-2 text-lg font-medium data-[state=active]:bg-black data-[state=active]:text-white"
+            className="rounded-md p-4 text-lg font-medium data-[state=active]:bg-black data-[state=active]:text-white"
           >
-            <Home className="mr-2 h-4 w-4" />
+            <Home className="size-4" />
             Residential
           </TabsTrigger>
         </TabsList>

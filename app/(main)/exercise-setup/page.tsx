@@ -3,6 +3,8 @@ import {
   ExerciseLibraryResponse,
 } from "@/lib/dataTypes";
 import ExSetupCardsSection from "../_components/exercide-library/ExSetupCardsSection";
+import { Suspense } from "react";
+import ExerciseLoading from "./exercise-loading";
 
 // Type for search params
 type SearchParams = {
@@ -118,12 +120,14 @@ const CardsPage = async ({ searchParams }: CardsPageProps) => {
   const initialData = await getExerciseLibraryData(initialFilters);
 
   return (
-    <div className="text-center text-xl">
-      <ExSetupCardsSection
-        initialData={initialData?.data}
-        initialFilters={initialFilters}
-      />
-    </div>
+    <Suspense fallback={<ExerciseLoading />}>
+      <div className="text-center text-xl">
+        <ExSetupCardsSection
+          initialData={initialData?.data}
+          initialFilters={initialFilters}
+        />
+      </div>
+    </Suspense>
   );
 };
 

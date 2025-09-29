@@ -14,7 +14,7 @@ const SetupCard = ({ item }: { item: ExerciseLibraryItem }) => {
   return (
     <div>
       <CardUI className="overflow-hidden rounded-none border-none">
-        <div className="relative aspect-video rounded-none">
+        <div className="relative aspect-video rounded-none bg-gray-200">
           <iframe
             src={`https://www.youtube.com/embed/${videoId}`}
             title={item.title}

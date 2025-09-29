@@ -100,7 +100,7 @@ export default function DemoCenterMain() {
             setups — no pressure, no sales pitch.
           </p>
         </div>
-        <Link href="/demo-center-form">
+        <Link href="/upload-demo-center">
           <Button className="cursor-pointer rounded-sm bg-[#69727D] px-2 py-2 text-xs text-white uppercase sm:text-base md:px-6 md:tracking-wide">
             <CircleArrowRight />
             Apply to be a demo center affiliate

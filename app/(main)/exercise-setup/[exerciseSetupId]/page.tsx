@@ -7,11 +7,7 @@ const ExerciseSetupDetailPage = async ({
 }) => {
   const { exerciseSetupId } = await params;
 
-  return (
-    <div>
-      <ExerciseSetupDetails exerciseSetupId={exerciseSetupId} />
-    </div>
-  );
+  return <ExerciseSetupDetails exerciseSetupId={exerciseSetupId} />;
 };
 
 export default ExerciseSetupDetailPage;
