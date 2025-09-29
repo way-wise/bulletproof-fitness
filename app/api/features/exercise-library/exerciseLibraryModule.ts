@@ -483,23 +483,18 @@ exerciseLibraryModule.post("/youtube/callback", async (c) => {
 
 // Delete Video from cloudinary after uploaded to youtube
 exerciseLibraryModule.post("/youtube/uploaded", async (c) => {
-  try {
-    const response = await c.req.json();
-    const rawData = response.data;
+  const rawData = await c.req.json();
 
-    console.log("RawData", response);
+  console.log("RawData", rawData);
 
-    // Extract public id and delete
-    const publicId = extractPublicId(rawData.cloudinaryVideoUrl);
-    const result = cloudinary.uploader.destroy(publicId, {
-      resource_type: "video",
-    });
+  // Extract public id and delete
+  const publicId = extractPublicId(rawData.cloudinaryVideoUrl);
+  const result = cloudinary.uploader.destroy(publicId, {
+    resource_type: "video",
+  });
 
-    return c.json({
-      message: "Cloudinary video deleted",
-      result,
-    });
-  } catch (error) {
-    throw new HTTPException(500, error as HTTPException);
-  }
+  return c.json({
+    message: "Cloudinary video deleted",
+    result,
+  });
 });
