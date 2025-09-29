@@ -487,7 +487,7 @@ exerciseLibraryModule.post("/youtube/uploaded", async (c) => {
     const response = await c.req.json();
     const rawData = response.data;
 
-    console.log("RawData", rawData);
+    console.log("RawData", response);
 
     // Extract public id and delete
     const publicId = extractPublicId(rawData.cloudinaryVideoUrl);
