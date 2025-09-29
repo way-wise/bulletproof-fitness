@@ -10,6 +10,8 @@ import type { PaginationQuery } from "@/schema/paginationSchema";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
 import { awardPointsToUser } from "../actions/actionService";
+import { extractPublicId } from "cloudinary-build-url";
+import cloudinary from "cloudinary";
 
 const zapierExerciseTriggerHook = process.env.ZAPIER_EXERCISE_TRIGGER_HOOK;
 
@@ -84,12 +86,17 @@ export const exerciseLibraryService = {
       const where: any = query.search
         ? {
             OR: [
-              { title: { contains: query.search, mode: "insensitive" as const } },
+              {
+                title: { contains: query.search, mode: "insensitive" as const },
+              },
               {
                 ExLibEquipment: {
                   some: {
                     equipment: {
-                      name: { contains: query.search, mode: "insensitive" as const },
+                      name: {
+                        contains: query.search,
+                        mode: "insensitive" as const,
+                      },
                     },
                   },
                 },
@@ -98,7 +105,10 @@ export const exerciseLibraryService = {
                 ExLibBodyPart: {
                   some: {
                     bodyPart: {
-                      name: { contains: query.search, mode: "insensitive" as const },
+                      name: {
+                        contains: query.search,
+                        mode: "insensitive" as const,
+                      },
                     },
                   },
                 },
@@ -107,7 +117,10 @@ export const exerciseLibraryService = {
                 ExLibRak: {
                   some: {
                     rack: {
-                      name: { contains: query.search, mode: "insensitive" as const },
+                      name: {
+                        contains: query.search,
+                        mode: "insensitive" as const,
+                      },
                     },
                   },
                 },

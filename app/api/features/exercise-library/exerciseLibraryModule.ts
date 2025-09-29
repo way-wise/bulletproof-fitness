@@ -1,4 +1,4 @@
-import { auth, getSession } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import {
   exerciseLibrarySchema,
   exerciseLibrarySchemaAdmin,
@@ -6,6 +6,9 @@ import {
 import { validateInput } from "@api/lib/validateInput";
 import { Hono, type Context } from "hono";
 import { exerciseLibraryService } from "./exerciseLibraryService";
+import { extractPublicId } from "cloudinary-build-url";
+import cloudinary from "@api/lib/cloudinary";
+import { HTTPException } from "hono/http-exception";
 
 export const exerciseLibraryModule = new Hono();
 
@@ -13,7 +16,7 @@ export const exerciseLibraryModule = new Hono();
 exerciseLibraryModule.get("/dashboard", async (c) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
+    if (!session?.user?.id || session.user.role !== "admin") {
       return c.json(
         {
           success: false,
@@ -30,7 +33,8 @@ exerciseLibraryModule.get("/dashboard", async (c) => {
       search: c.req.query("search") || "",
     };
 
-    const result = await exerciseLibraryService.getAllExerciseLibraryVideos(query);
+    const result =
+      await exerciseLibraryService.getAllExerciseLibraryVideos(query);
 
     return c.json(result);
   } catch (error) {
@@ -52,7 +56,7 @@ exerciseLibraryModule.get("/dashboard", async (c) => {
 exerciseLibraryModule.get("/dashboard/:id", async (c) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
+    if (!session?.user?.id || session.user.role !== "admin") {
       return c.json(
         {
           success: false,
@@ -89,7 +93,7 @@ exerciseLibraryModule.post("/dashboard", async (c: Context) => {
   try {
     // Get current user session
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
+    if (!session?.user?.id || session.user.role !== "admin") {
       return c.json(
         {
           success: false,
@@ -141,7 +145,7 @@ exerciseLibraryModule.post("/dashboard", async (c: Context) => {
 exerciseLibraryModule.put("/dashboard/:id", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
+    if (!session?.user?.id || session.user.role !== "admin") {
       return c.json(
         {
           success: false,
@@ -194,7 +198,7 @@ exerciseLibraryModule.put("/dashboard/:id", async (c: Context) => {
 exerciseLibraryModule.delete("/dashboard/:id", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
+    if (!session?.user?.id || session.user.role !== "admin") {
       return c.json(
         {
           success: false,
@@ -231,7 +235,7 @@ exerciseLibraryModule.delete("/dashboard/:id", async (c: Context) => {
 exerciseLibraryModule.post("/dashboard/:id/block", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
+    if (!session?.user?.id || session.user.role !== "admin") {
       return c.json(
         {
           success: false,
@@ -284,7 +288,7 @@ exerciseLibraryModule.post("/dashboard/:id/block", async (c: Context) => {
 exerciseLibraryModule.post("/dashboard/:id/unblock", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
+    if (!session?.user?.id || session.user.role !== "admin") {
       return c.json(
         {
           success: false,
@@ -321,7 +325,7 @@ exerciseLibraryModule.post("/dashboard/:id/unblock", async (c: Context) => {
 exerciseLibraryModule.patch("/dashboard/:id/status", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
+    if (!session?.user?.id || session.user.role !== "admin") {
       return c.json(
         {
           success: false,
@@ -475,4 +479,26 @@ exerciseLibraryModule.post("/youtube/callback", async (c) => {
   const result =
     await exerciseLibraryService.createExerciseLibraryFromYoutube(rawData);
   return c.json(result);
+});
+
+// Delete Video from cloudinary after uploaded to youtube
+exerciseLibraryModule.post("/youtube/uploaded", async (c) => {
+  try {
+    const rawData = await c.req.json();
+
+    console.log("RawData", rawData);
+
+    // Extract public id and delete
+    const publicId = extractPublicId(rawData.cloudinaryVideoUrl);
+    const result = cloudinary.uploader.destroy(publicId, {
+      resource_type: "video",
+    });
+
+    return c.json({
+      message: "Cloudinary video deleted",
+      result,
+    });
+  } catch (error) {
+    throw new HTTPException(500, error as HTTPException);
+  }
 });
