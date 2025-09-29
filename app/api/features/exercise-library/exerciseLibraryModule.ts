@@ -484,7 +484,8 @@ exerciseLibraryModule.post("/youtube/callback", async (c) => {
 // Delete Video from cloudinary after uploaded to youtube
 exerciseLibraryModule.post("/youtube/uploaded", async (c) => {
   try {
-    const rawData = await c.req.json();
+    const response = await c.req.json();
+    const rawData = response.data;
 
     console.log("RawData", rawData);
 
