@@ -121,12 +121,12 @@ export const MultiSelect = ({
                   <Badge
                     key={item}
                     variant="secondary"
-                    className="truncate rounded-sm px-2 font-normal"
+                    className="rounded-sm px-2 font-normal"
                     title={label}
                   >
                     {label}
                     <X
-                      className="ml-1 h-3 w-3 cursor-pointer"
+                      className="ml-1 size-3 shrink-0 cursor-pointer"
                       onClick={() => toggleItem(item)}
                     />
                   </Badge>
