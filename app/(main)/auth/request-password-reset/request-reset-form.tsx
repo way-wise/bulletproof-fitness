@@ -19,35 +19,34 @@ import {
 } from "@/components/ui/form";
 import { FormError } from "@/components/ui/form-error";
 import { Input } from "@/components/ui/input";
-import { signIn } from "@/lib/auth-client";
-import { signInSchema } from "@/schema/authSchema";
+import { requestPasswordReset } from "@/lib/auth-client";
+import { requestPasswordResetSchema, signInSchema } from "@/schema/authSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaGoogle } from "react-icons/fa";
-import { toast } from "sonner";
 import { InferType } from "yup";
+import Link from "next/link";
 
-const SigninForm = () => {
+const RequestPasswordResetForm = () => {
   const [pendingAuth, setPendingAuth] = useState<boolean>(false);
   const [formError, setFormError] = useState<string>("");
   const router = useRouter();
 
   const form = useForm({
-    resolver: yupResolver(signInSchema),
+    resolver: yupResolver(requestPasswordResetSchema),
     defaultValues: {
       email: "",
-      password: "",
     },
   });
 
-  const onSubmit = async (values: InferType<typeof signInSchema>) => {
-    await signIn.email(
+  const onSubmit = async (
+    values: InferType<typeof requestPasswordResetSchema>,
+  ) => {
+    await requestPasswordReset(
       {
         email: values.email,
-        password: values.password,
+        redirectTo: "/auth/reset-password",
       },
       {
         onRequest: () => {
@@ -55,9 +54,7 @@ const SigninForm = () => {
           setFormError("");
         },
         onSuccess: () => {
-          toast.success("Login successful");
-          router.push("/profile");
-          router.refresh();
+          setFormError("A Password reset link has been sent to your email");
         },
         onError: (ctx) => {
           setFormError(ctx.error.message);
@@ -71,9 +68,9 @@ const SigninForm = () => {
   return (
     <Card>
       <CardHeader className="items-center">
-        <CardTitle className="text-2xl">Sign In</CardTitle>
+        <CardTitle className="text-2xl">Request Password Reset</CardTitle>
         <CardDescription className="text-center">
-          Enter your account details to login
+          Enter your account email
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -97,23 +94,6 @@ const SigninForm = () => {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="Enter password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </FormFieldset>
             <FormError message={formError} />
             <Button
@@ -121,46 +101,17 @@ const SigninForm = () => {
               className="mt-4 w-full"
               isLoading={pendingAuth}
             >
-              Sign In
+              Send Reset Password Link
             </Button>
-
-            <div className="relative py-4 text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-              <span className="relative z-10 bg-card px-2 font-medium text-muted-foreground select-none">
-                OR
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              <Button
-                type="button"
-                variant="secondary"
-                className="w-full"
-                disabled={pendingAuth}
-                onClick={() => signIn.social({ provider: "google" })}
-              >
-                <FaGoogle />
-                <span>Login with Google</span>
-              </Button>
-            </div>
           </form>
         </Form>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-1 text-center text-sm">
-          <span className="text-muted-foreground">
-            Don&apos;t have an account?
-          </span>
+          <span className="text-muted-foreground">Remember Password?</span>
           <Link
-            href="/auth/sign-up"
+            href="/auth/sign-in"
             className="underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-hidden"
           >
-            Sign Up
-          </Link>
-        </div>
-        <div className="mt-4 text-center text-xs text-gray-500">
-          <Link
-            href="/auth/request-password-reset"
-            className="underline-offset-3 hover:underline focus-visible:underline focus-visible:outline-hidden"
-          >
-            Forgot Password?
+            Sign In
           </Link>
         </div>
       </CardContent>
@@ -168,4 +119,4 @@ const SigninForm = () => {
   );
 };
 
-export default SigninForm;
+export default RequestPasswordResetForm;

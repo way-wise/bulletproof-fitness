@@ -35,3 +35,29 @@ export async function sendVerificationEmail(
     `,
   });
 }
+
+export async function sendPasswordResetEmail(
+  to: string,
+  token: string,
+  url: string,
+) {
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM!,
+    to,
+    subject: "Reset Account Password",
+    text: `Reset your password by visiting: ${url} `,
+    html: `
+      <div style="font-family:sans-serif;">
+        <h2>Reset your password</h2>
+        <p>Click below to verify your email and reset password. This link will expire in 1 hour.</p>
+        <a href="${url}" style="display:inline-block;margin-top:10px;padding:10px 15px;background:#0070f3;color:white;text-decoration:none;border-radius:5px;">
+          Reset Password
+        </a>
+        <p>If the button doesn't work, copy and paste this URL into your browser:</p>
+        <p>${url}</p>
+        <hr />
+        <small>If you didn't request this, you can safely ignore this email.</small>
+      </div>
+    `,
+  });
+}

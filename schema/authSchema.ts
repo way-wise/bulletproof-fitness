@@ -12,3 +12,13 @@ export const signInSchema = object({
   email: string().email("Invalid email").required("Email is required"),
   password: string().required("Password is required"),
 });
+
+// Request Password Reset
+export const requestPasswordResetSchema = object({
+  email: string().email("Invalid email").required("Email is required"),
+});
+
+// Password Reset Schema
+export const resetPasswordSchema = object({
+  password: string().required("Password is required"),
+});
