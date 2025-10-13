@@ -53,11 +53,15 @@ const RequestPasswordResetForm = () => {
           setPendingAuth(true);
           setFormError("");
         },
-        onSuccess: () => {
-          setFormError("A Password reset link has been sent to your email");
-        },
         onError: (ctx) => {
           setFormError(ctx.error.message);
+        },
+        onSuccess: (data) => {
+          if (data?.data.status) {
+            setFormError(
+              "If this email exists in our system, check your email for the reset link",
+            );
+          }
         },
       },
     );
