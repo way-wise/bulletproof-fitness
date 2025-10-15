@@ -353,7 +353,7 @@ export const demoCentersService = {
       },
     });
 
-    if (equipment.length === 0) {
+    if (data.equipment.length > 0 && equipment.length === 0) {
       throw new HTTPException(400, {
         message: `Equipment not found for the provided IDs`,
       });
@@ -418,16 +418,29 @@ export const demoCentersService = {
       where: { demoCenterId: id },
     });
 
-    equipment.forEach(async (equipment) => {
-      await prisma.demoCenterEquipment.create({
-        data: {
+    // Create new equipment relationships if equipment is provided
+    if (equipment.length > 0) {
+      await prisma.demoCenterEquipment.createMany({
+        data: equipment.map((eq) => ({
           demoCenterId: id,
-          equipmentId: equipment.id,
-        },
+          equipmentId: eq.id,
+        })),
       });
+    }
+
+    // Fetch the updated demo center with equipment relationships
+    const finalDemoCenter = await prisma.demoCenter.findUnique({
+      where: { id },
+      include: {
+        demoCenterEquipments: {
+          include: {
+            equipment: true,
+          },
+        },
+      },
     });
 
-    return updatedDemoCenter;
+    return finalDemoCenter || updatedDemoCenter;
   },
 
   // Block demo center

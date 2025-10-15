@@ -320,6 +320,12 @@ export const DemoCenterTable = () => {
                     <span>Block</span>
                   </DropdownMenuItem>
                 )} */}
+                <DropdownMenuItem asChild>
+                  <Link href={`/dashboard/demo-centers/${id}/edit`}>
+                    <Pencil />
+                    <span>Edit</span>
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   variant="destructive"
                   onClick={() => {
