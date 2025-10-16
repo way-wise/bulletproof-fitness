@@ -43,35 +43,53 @@ async function main(total: number) {
 
     // Create rewards
     const rewards = [
+      // VIEW reward removed - not used in this system (views tracked for stats only, no points awarded)
       {
         type: RewardType.LIKE,
         name: "Like",
-        points: 1,
+        description: "Liked a video",
+        points: 2,
+        icon: "❤️",
         isActive: true,
       },
       {
         type: RewardType.RATING,
         name: "Rating",
+        description: "Rated a video 5 stars",
         points: 1,
+        icon: "⭐",
         isActive: true,
       },
-
       {
         type: RewardType.DISLIKE,
         name: "Dislike",
-        points: 1,
-        isActive: true,
+        description: "Disliked a video (deducts points)",
+        points: 1, // This value is DECREMENTED from user's total
+        icon: "👎",
+        isActive: false, // Currently disabled in admin panel
       },
       {
         type: RewardType.UPLOAD_EXERCISE,
         name: "Upload Exercise",
+        description: "Uploaded an exercise setup",
         points: 10,
+        icon: "💪",
         isActive: true,
       },
       {
         type: RewardType.UPLOAD_LIBRARY,
         name: "Upload Library",
+        description: "Uploaded a library video",
+        points: 1,
+        icon: "📚",
+        isActive: true,
+      },
+      {
+        type: RewardType.DEMO_CENTER,
+        name: "Upload Demo Center",
+        description: "Added a demo center",
         points: 10,
+        icon: "🏢",
         isActive: true,
       },
     ];

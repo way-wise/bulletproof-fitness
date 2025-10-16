@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import ProfileSkleton from "@/components/skeleton/ProfileSkleton";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { UserProfile, UserReward } from "@/lib/dataTypes";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProfileTabs } from "./ProfileTabs";
 import { StatsCards } from "./StatsCards";
 import { Modal } from "@/components/ui/modal";
@@ -43,10 +43,20 @@ const ProfileSection = () => {
   // Edit Profile Form
   const profileForm = useForm({
     defaultValues: {
-      name: user?.name,
-      email: user?.email,
+      name: user?.name || "",
+      email: user?.email || "",
     },
   });
+
+  // Sync form with user data when it changes
+  useEffect(() => {
+    if (user) {
+      profileForm.reset({
+        name: user.name || "",
+        email: user.email || "",
+      });
+    }
+  }, [user, profileForm]);
 
   // Edit Password Reset Form
   const passwordResetSchema = z
@@ -84,6 +94,7 @@ const ProfileSection = () => {
       });
 
       if (response.ok) {
+        // Mutate to refetch the latest user data
         await mutate();
         toast.success("Profile updated successfully");
         setIsEditModalOpen(false);
@@ -91,8 +102,6 @@ const ProfileSection = () => {
         const errorData = await response.json();
         toast.error(errorData.message);
       }
-
-      profileForm.reset();
     } catch (error) {
       toast.error("Error updating profile");
     }

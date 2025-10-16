@@ -7,6 +7,7 @@ import { Eye, Star, ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import SignInModal from "../SignInModal";
+import { mutate as globalMutate } from "swr";
 
 interface ExLibraryCardProps {
   id: string;
@@ -107,6 +108,10 @@ const ExLibraryCard = ({
         }
 
         if (mutate) mutate();
+
+        // Revalidate user profile cache to update rewards/points
+        globalMutate('/api/users/me');
+        globalMutate((key) => typeof key === 'string' && key.startsWith('/api/users/') && key.includes('/rewards'));
       } catch (err) {
         console.error("Failed to react:", err);
       }

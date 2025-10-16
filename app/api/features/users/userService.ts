@@ -167,6 +167,22 @@ export const userService = {
       });
     }
 
+    // 2. If a new email is being sent, validate it
+    if (data.email) {
+      const userWithThatEmail = await prisma.users.findUnique({
+        where: {
+          email: data.email,
+        },
+      });
+
+      // Check if the email is taken by a DIFFERENT user
+      if (userWithThatEmail && userWithThatEmail.id !== session.user.id) {
+        throw new HTTPException(409, {
+          message: "This email is already in use.",
+        });
+      }
+    }
+
     const updatedUser = await prisma.users.update({
       where: {
         id: session.user.id,
@@ -221,27 +237,175 @@ export const userService = {
     return user;
   },
 
+  // Get user rewards/action history
+  getUserRewards: async (userId: string) => {
+    const session = await getSession();
+    if (!session?.user?.id) {
+      throw new HTTPException(401, {
+        message: "Unauthorized",
+      });
+    }
+
+    // Verify user exists
+    const user = await prisma.users.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!user) {
+      throw new HTTPException(404, {
+        message: "User not found",
+      });
+    }
+
+    // Get user's action history with reward information
+    const [views, ratings, reactions] = await prisma.$transaction([
+      prisma.userView.findMany({
+        where: {
+          userId,
+        },
+        orderBy: {
+          viewedAt: "desc",
+        },
+        take: 50,
+      }),
+      prisma.userRating.findMany({
+        where: {
+          userId,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 50,
+      }),
+      prisma.userReaction.findMany({
+        where: {
+          userId,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 50,
+      }),
+    ]);
+
+    // Get reward points configuration
+    const rewardPoints = await prisma.rewardPoints.findMany({
+      where: {
+        isActive: true,
+      },
+    });
+
+    // Create a map of reward types to full reward info
+    const rewardMap = new Map(
+      rewardPoints.map((r) => [
+        r.type,
+        {
+          points: r.points,
+          description: r.description,
+          name: r.name,
+          isActive: r.isActive,
+        },
+      ]),
+    );
+
+    // Transform actions into reward history - ONLY include actions for active rewards
+    const rewardHistory = [
+      // Only show views if VIEW reward is active
+      ...views
+        .filter(() => rewardMap.has("VIEW"))
+        .map((v) => {
+          const rewardInfo = rewardMap.get("VIEW")!;
+          return {
+            id: v.id,
+            type: "VIEW",
+            points: rewardInfo.points,
+            description: rewardInfo.description || "Viewed a video",
+            name: rewardInfo.name || "View",
+            isActive: rewardInfo.isActive,
+            createdAt: v.viewedAt.toISOString(),
+            updatedAt: v.viewedAt.toISOString(),
+          };
+        }),
+      // Only show ratings if RATING reward is active
+      ...ratings
+        .filter(() => rewardMap.has("RATING"))
+        .map((r) => {
+          const rewardInfo = rewardMap.get("RATING")!;
+          return {
+            id: r.id,
+            type: "RATING",
+            points: rewardInfo.points,
+            description: rewardInfo.description || "Rated a video",
+            name: rewardInfo.name || "Rating",
+            isActive: rewardInfo.isActive,
+            createdAt: r.createdAt.toISOString(),
+            updatedAt: r.updatedAt.toISOString(),
+          };
+        }),
+      // Only show reactions if LIKE/DISLIKE rewards are active
+      ...reactions
+        .filter((r) => {
+          const rewardType = r.reaction === "LIKE" ? "LIKE" : "DISLIKE";
+          return rewardMap.has(rewardType);
+        })
+        .map((r) => {
+          const rewardType = r.reaction === "LIKE" ? "LIKE" : "DISLIKE";
+          const rewardInfo = rewardMap.get(rewardType)!;
+          return {
+            id: r.id,
+            type: r.reaction,
+            points: rewardInfo.points,
+            description:
+              rewardInfo.description || `${r.reaction.toLowerCase()}d a video`,
+            name: rewardInfo.name || r.reaction,
+            isActive: rewardInfo.isActive,
+            createdAt: r.createdAt.toISOString(),
+            updatedAt: r.updatedAt.toISOString(),
+          };
+        }),
+    ];
+
+    // Sort by date descending
+    rewardHistory.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+
+    // Calculate total points earned from history
+    const totalPointsEarned = rewardHistory.reduce(
+      (sum, item) => sum + item.points,
+      0,
+    );
+
+    return {
+      data: rewardHistory.slice(0, 50), // Return top 50 most recent
+      meta: {
+        total: rewardHistory.length,
+        totalPointsEarned,
+      },
+    };
+  },
+
   // Get leaderboard data with user stats
   getLeaderboard: async (query: PaginationQuery) => {
     const { skip, take, page, limit } = getPaginationQuery(query);
-    
+
     const [users, total] = await prisma.$transaction([
       prisma.users.findMany({
         where: {
-          OR: [
-            { banned: false },
-            { banned: null }
-          ],
+          OR: [{ banned: false }, { banned: null }],
           totalPoints: {
             gt: 0,
           },
           AND: [
             {
-              OR: [
-                { role: { not: "admin" } },
-                { role: null }
-              ]
-            }
+              OR: [{ role: { not: "admin" } }, { role: null }],
+            },
           ],
         },
         select: {
@@ -283,20 +447,14 @@ export const userService = {
       }),
       prisma.users.count({
         where: {
-          OR: [
-            { banned: false },
-            { banned: null }
-          ],
+          OR: [{ banned: false }, { banned: null }],
           totalPoints: {
             gt: 0,
           },
           AND: [
             {
-              OR: [
-                { role: { not: "admin" } },
-                { role: null }
-              ]
-            }
+              OR: [{ role: { not: "admin" } }, { role: null }],
+            },
           ],
         },
       }),
@@ -308,7 +466,8 @@ export const userService = {
       rank: skip + index + 1,
       exerciseSetupCount: user._count.exerciseSetups,
       exerciseLibraryCount: user._count.ExerciseLibraryVideo,
-      totalVideos: user._count.exerciseSetups + user._count.ExerciseLibraryVideo,
+      totalVideos:
+        user._count.exerciseSetups + user._count.ExerciseLibraryVideo,
       viewsCount: user._count.views,
       ratingsCount: user._count.ratings,
       likesCount: user._count.reactions,

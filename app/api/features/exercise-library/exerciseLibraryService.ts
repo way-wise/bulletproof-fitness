@@ -9,7 +9,7 @@ import {
 import type { PaginationQuery } from "@/schema/paginationSchema";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
-import { awardPointsToUser } from "../actions/actionService";
+import { actionService, awardPointsToUser } from "../actions/actionService";
 import { extractPublicId } from "cloudinary-build-url";
 import cloudinary from "cloudinary";
 
@@ -260,39 +260,13 @@ export const exerciseLibraryService = {
         throw new Error("Exercise library video not found");
       }
 
-      if (session?.user?.id && session?.session?.id) {
-        const { id: userId } = session.user;
-        const { id: sessionId, ipAddress, userAgent } = session.session;
-
-        const existView = await prisma.userView.findFirst({
-          where: {
-            libraryId: id,
-            userId,
-            sessionId,
-          },
-        });
-
-        if (!existView) {
-          await prisma.userView.create({
-            data: {
-              libraryId: id,
-              userId,
-              sessionId,
-              ipAddress,
-              userAgent,
-              viewedAt: new Date(),
-            },
-          });
-
-          const contentStats = await prisma.contentStats.findFirst({
-            where: { exerciseId: id },
-          });
-
-          await prisma.contentStats.upsert({
-            where: { id: contentStats?.id ?? "__new" },
-            update: { totalViews: { increment: 1 } },
-            create: { libraryId: id, totalViews: 1 },
-          });
+      // Track views for stats (no points awarded since VIEW reward doesn't exist)
+      if (session?.user?.id || session?.session?.id) {
+        try {
+          await actionService.recordView(id, "lib");
+        } catch (viewError) {
+          // Log error but don't fail the request if view tracking fails
+          console.error("Error recording view:", viewError);
         }
       }
 

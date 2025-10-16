@@ -9,7 +9,7 @@ import {
 import type { PaginationQuery } from "@/schema/paginationSchema";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
-import { awardPointsToUser } from "../actions/actionService";
+import { actionService, awardPointsToUser } from "../actions/actionService";
 
 const zapierSetupTriggerHook = process.env.ZAPIER_SETUP_TRIGGER_HOOK;
 
@@ -350,39 +350,13 @@ export const exerciseSetupService = {
         throw new Error("Exercise setup video not found");
       }
 
-      if (session?.user?.id && session?.session?.id) {
-        const { id: userId } = session.user;
-        const { id: sessionId, ipAddress, userAgent } = session.session;
-
-        const existView = await prisma.userView.findFirst({
-          where: {
-            exerciseId: id,
-            userId,
-            sessionId,
-          },
-        });
-
-        if (!existView) {
-          await prisma.userView.create({
-            data: {
-              exerciseId: id,
-              userId,
-              sessionId,
-              ipAddress,
-              userAgent,
-              viewedAt: new Date(),
-            },
-          });
-
-          const contentStats = await prisma.contentStats.findFirst({
-            where: { exerciseId: id },
-          });
-
-          await prisma.contentStats.upsert({
-            where: { id: contentStats?.id ?? "__new" },
-            update: { totalViews: { increment: 1 } },
-            create: { exerciseId: id, totalViews: 1 },
-          });
+      // Track views for stats (no points awarded since VIEW reward doesn't exist)
+      if (session?.user?.id || session?.session?.id) {
+        try {
+          await actionService.recordView(id, "setup");
+        } catch (viewError) {
+          // Log error but don't fail the request if view tracking fails
+          console.error("Error recording view:", viewError);
         }
       }
 

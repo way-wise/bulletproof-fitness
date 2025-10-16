@@ -3,9 +3,9 @@ import ExerciseLibraryDetailsSkeleton from "@/components/skeleton/exercoseLibrar
 import { useSession } from "@/lib/auth-client";
 import { TBodyPart, TEquipment, TRack } from "@/lib/types/exerciseTypes";
 import { Star } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import SignInModal from "../SignInModal";
 import BsicRule from "./BsicRule";
 import ContactUs from "./ContactUs";
@@ -27,6 +27,18 @@ export default function ExerciseDetailPage({
       : null,
   );
   const libraryData = data?.data;
+
+  // Revalidate user profile cache when video is viewed (view tracked server-side)
+  useEffect(() => {
+    if (!isLoading && data && session.data?.user) {
+      // Small delay to ensure server-side view tracking completes
+      const timer = setTimeout(() => {
+        mutate('/api/users/me');
+        mutate((key) => typeof key === 'string' && key.startsWith('/api/users/') && key.includes('/rewards'));
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [data, isLoading, session.data?.user]);
   const handleSubmitRating = async (value: number) => {
     if (!exerciseLibraryId) return;
 
@@ -55,6 +67,10 @@ export default function ExerciseDetailPage({
 
       setRating(value); // Set only after successful submission
       toast.success("Rating submitted successfully!");
+
+      // Revalidate user profile cache to update rewards/points
+      mutate('/api/users/me');
+      mutate((key) => typeof key === 'string' && key.startsWith('/api/users/') && key.includes('/rewards'));
     } catch (error: any) {
       console.error("Rating error:", error);
       toast.error(error.message || "Something went wrong.");

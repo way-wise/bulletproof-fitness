@@ -81,6 +81,24 @@ app.get("/leaderboard", async (c) => {
 });
 
 /*
+  @route    GET: /users/:id/rewards
+  @access   private
+  @desc     Get user rewards/action history
+*/
+app.get("/:id/rewards", async (c) => {
+  const validatedParam = await validateInput({
+    type: "param",
+    schema: object({
+      id: string().required(),
+    }),
+    data: c.req.param(),
+  });
+
+  const result = await userService.getUserRewards(validatedParam.id);
+  return c.json(result);
+});
+
+/*
   @route    GET: /users/:id
   @access   private
   @desc     Get user by id
