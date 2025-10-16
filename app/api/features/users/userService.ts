@@ -171,7 +171,7 @@ export const userService = {
     if (data.email) {
       const userWithThatEmail = await prisma.users.findUnique({
         where: {
-          email: data.email,
+          email: data.email.trim(),
         },
       });
 
