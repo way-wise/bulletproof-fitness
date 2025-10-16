@@ -36,7 +36,7 @@ export async function sendVerificationEmail(
                 <!-- Header with Logo -->
                 <tr>
                   <td style="background-color: #000000; padding: 30px 40px; text-align: center;">
-                    <img src="${process.env.APP_URL || "http://localhost:3000"}/logo.svg" alt="Bulletproof Fitness" style="height: 60px; width: auto;" />
+                    <img src="/logo.svg" alt="Bulletproof Fitness" style="height: 60px; width: auto;" />
                   </td>
                 </tr>
 
