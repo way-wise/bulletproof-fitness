@@ -204,7 +204,10 @@ export const demoCentersService = {
     userId?: string,
   ) => {
     // Geocode the address to get lat/lng coordinates
-    const fullAddress = `${data.address}, ${data.cityZip}`;
+    // If address is provided, include it; otherwise just use cityZip
+    const fullAddress = data.address
+      ? `${data.address}, ${data.cityZip}`
+      : data.cityZip;
     const geocodedLocation = await getGeoCodeAddress(fullAddress);
 
     // Validate that geocoding was successful
@@ -367,7 +370,10 @@ export const demoCentersService = {
       data.address !== demoCenter.address ||
       data.cityZip !== demoCenter.cityZip
     ) {
-      const fullAddress = `${data.address}, ${data.cityZip}`;
+      // If address is provided, include it; otherwise just use cityZip
+      const fullAddress = data.address
+        ? `${data.address}, ${data.cityZip}`
+        : data.cityZip;
       const geocodedLocation = await getGeoCodeAddress(fullAddress);
 
       // Validate that geocoding was successful for the new address

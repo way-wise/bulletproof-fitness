@@ -27,9 +27,11 @@ import * as z from "zod";
 export const businessFormSchema = z.object({
   buildingType: z.literal("BUSINESS"),
   name: z.string().min(1, "Business name is required"),
-  address: z.string().min(1, "Address is required"),
+  address: z.string().optional().or(z.literal("")),
   contact: z.string().min(1, "Contact information is required"),
-  cityZip: z.string().min(1, "City/Zip is required"),
+  city: z.string().min(1, "City is required"),
+  state: z.string().min(1, "State is required"),
+  zipCode: z.string().min(1, "Zip code is required"),
   equipment: z
     .array(z.string())
     .min(1, "At least one equipment must be selected"),
@@ -99,12 +101,12 @@ export default function BusinessForm({
           )}
         />
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-6">
           <FormField
             control={form.control}
             name="contact"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="md:col-span-3">
                 <FormLabel className="text-md font-semibold">
                   Phone or Email *
                 </FormLabel>
@@ -122,9 +124,9 @@ export default function BusinessForm({
             control={form.control}
             name="address"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="md:col-span-3">
                 <FormLabel className="text-md font-semibold">
-                  Street Address *
+                  Street Address
                 </FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="123 Main St." />
@@ -135,14 +137,40 @@ export default function BusinessForm({
           />
           <FormField
             control={form.control}
-            name="cityZip"
+            name="city"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="md:col-span-2">
+                <FormLabel className="text-md font-semibold">City *</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Los Angeles" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
+                <FormLabel className="text-md font-semibold">State *</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="CA" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="zipCode"
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
                 <FormLabel className="text-md font-semibold">
-                  City, State, Zip Code *
+                  Zip Code *
                 </FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Los Angeles, CA 99999" />
+                  <Input {...field} placeholder="99999" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

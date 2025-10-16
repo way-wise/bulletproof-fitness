@@ -4,7 +4,7 @@ import { array, boolean, InferType, number, object, string } from "yup";
 export const demoCenterSchema = object({
   buildingType: string().required("Building type is required"),
   name: string().required("Name is required"),
-  address: string().required("Address is required"),
+  address: string().optional(),
   contact: string().required("Contact is required"),
   cityZip: string().required("City/Zip is required"),
   image: string().required("Image is required"),

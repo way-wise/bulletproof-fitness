@@ -35,8 +35,8 @@ export async function sendVerificationEmail(
               <table role="presentation" style="width: 600px; max-width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                 <!-- Header with Logo -->
                 <tr>
-                  <td style="background-color: #000000; padding: 30px 40px; text-align: center;">
-                    <img src="/logo.svg" alt="Bulletproof Fitness" style="height: 60px; width: auto;" />
+                  <td style="background-color: #000000; padding: 30px 40px; text-align: center;color: white;font-size: 32px; font-weight: bold;">
+                    Bulletproof Fitness
                   </td>
                 </tr>
 

@@ -84,9 +84,14 @@ export default function DemoCenterFormPage() {
         return;
       }
 
+      // Transform separate city, state, zipCode fields into single cityZip field
+      const { city, state, zipCode, ...restData } = data;
+      const cityZip = `${city}, ${state} ${zipCode}`;
+
       // Prepare form data with required fields
       const formData = {
-        ...data,
+        ...restData,
+        cityZip,
         image: imageUrl,
         // Add required fields with default values for API
         isPublic: false,
