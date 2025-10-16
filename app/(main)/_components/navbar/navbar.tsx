@@ -57,7 +57,7 @@ const Navbar = ({ session }: { session: Session }) => {
           url: "/about-demo-centers",
         },
         {
-          title: "UPLOAD DEMO CENTER",
+          title: "BECOME A DEMO CENTER",
           url: "/upload-demo-center",
         },
       ],
