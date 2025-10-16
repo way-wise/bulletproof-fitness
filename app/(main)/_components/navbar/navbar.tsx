@@ -167,7 +167,7 @@ const Navbar = ({ session }: { session: Session }) => {
                                   key={subIndex}
                                   href={submenu.url}
                                   className={cn(
-                                    "mb-1 block w-full rounded-sm px-3 py-2 text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
+                                    "mb-1 block w-full rounded-sm px-3 py-2 text-sm whitespace-nowrap text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
                                     pathname === submenu.url &&
                                       "bg-accent text-accent-foreground",
                                   )}

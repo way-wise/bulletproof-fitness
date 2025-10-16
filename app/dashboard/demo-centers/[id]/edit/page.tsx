@@ -69,7 +69,9 @@ export default function EditDemoCenterPage() {
       name: "",
       address: "",
       contact: "",
-      cityZip: "",
+      city: "",
+      state: "",
+      zipCode: "",
       equipment: [],
       availability: "",
       bio: "",
@@ -122,12 +124,31 @@ export default function EditDemoCenterPage() {
         };
         businessForm.reset(businessFormData);
       } else {
+        // Split cityZip into city, state, zipCode for residential
+        let city = "";
+        let state = "";
+        let zipCode = "";
+
+        if (demoCenter.cityZip) {
+          const parts = demoCenter.cityZip.split(",").map(p => p.trim());
+          if (parts.length >= 2) {
+            city = parts[0];
+            const stateZip = parts[1].split(" ").filter(p => p);
+            if (stateZip.length >= 2) {
+              state = stateZip[0];
+              zipCode = stateZip[1];
+            }
+          }
+        }
+
         const residentialFormData = {
           buildingType: "RESIDENTIAL" as const,
           name: demoCenter.name,
           address: demoCenter.address,
           contact: demoCenter.contact,
-          cityZip: demoCenter.cityZip,
+          city,
+          state,
+          zipCode,
           equipment: equipmentIds,
           availability: demoCenter.availability || "",
           bio: demoCenter.bio,
@@ -235,9 +256,14 @@ export default function EditDemoCenterPage() {
         imageUrl = uploadedImageUrl;
       }
 
+      // Transform separate city, state, zipCode fields into single cityZip field
+      const { city, state, zipCode, ...restData } = data;
+      const cityZip = `${city}, ${state} ${zipCode}`;
+
       // Prepare form data
       const formData = {
-        ...data,
+        ...restData,
+        cityZip,
         image: imageUrl,
       };
 
