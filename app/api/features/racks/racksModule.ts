@@ -15,7 +15,11 @@ export const racksModule = new Hono();
 racksModule.get("/", async (c) => {
   const validatedQuery = await validateInput({
     type: "query",
-    schema: paginationQuerySchema,
+    schema: paginationQuerySchema && object({
+      search: string().optional(),
+      sortBy: string().optional(),
+      sortOrder: string().optional(),
+    }),
     data: c.req.query(),
   });
 

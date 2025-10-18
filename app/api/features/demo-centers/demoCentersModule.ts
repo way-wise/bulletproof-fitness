@@ -46,17 +46,20 @@ demoCenterModule.get("/dashboard", async (c) => {
 
     const validatedQuery = await validateInput({
       type: "query",
-      schema: paginationQuerySchema,
+      schema: paginationQuerySchema && object({
+        search: string().optional(),
+        buildingType: string().optional(),
+        equipmentIds: string().optional(),
+        isPublic: string().optional(),
+        blocked: string().optional(),
+        sortBy: string().optional(),
+        sortOrder: string().optional(),
+      }),
       data: query,
     });
 
-    // Add search parameter if present
-    const searchQuery = query.search
-      ? { ...validatedQuery, search: query.search }
-      : validatedQuery;
-
     const result =
-      await demoCentersService.getDemoCentersDashboard(searchQuery);
+      await demoCentersService.getDemoCentersDashboard(validatedQuery);
 
     return c.json(result);
   } catch (error) {

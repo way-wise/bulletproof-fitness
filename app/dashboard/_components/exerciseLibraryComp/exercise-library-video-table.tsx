@@ -43,6 +43,10 @@ import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import LibraryVideoUpload from "./create-ex-lib-admin";
 import UpdateLibraryVideo from "./UpdateLibraryVideo";
+import { TableFilters, FilterValues } from "../shared/TableFilters";
+import { useBodyParts } from "@/hooks/useBodyParts";
+import { useEquipments } from "@/hooks/useEquipments";
+import { useRacks } from "@/hooks/useRacks";
 export const ExerciseLibraryVideoTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [blockVideoModalOpen, setBlockVideoModalOpen] = useState(false);
@@ -52,24 +56,60 @@ export const ExerciseLibraryVideoTable = () => {
   const [updateExerciseModalOpen, setUpdateExerciseModalOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const [videoId, setVideoId] = useState<string | undefined>("");
-  const [searchQuery, setSearchQuery] = useState("");
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 1,
     pageSize: 10,
   });
 
-  // Get exercise library videos data with search
-  const url = `/api/exercise-library/dashboard?page=${pagination.pageIndex}&limit=${pagination.pageSize}&search=${encodeURIComponent(searchQuery)}`;
+  // Filter state
+  const [filters, setFilters] = useState<FilterValues>({
+    search: "",
+    bodyPartIds: [],
+    equipmentIds: [],
+    rackIds: [],
+    isPublic: [],
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
+
+  // Fetch filter options
+  const { bodyParts } = useBodyParts();
+  const { equipments } = useEquipments();
+  const { racks } = useRacks();
+
+  // Build URL with all filters
+  const buildUrl = () => {
+    const params = new URLSearchParams({
+      page: pagination.pageIndex.toString(),
+      limit: pagination.pageSize.toString(),
+    });
+
+    if (filters.search) params.append("search", filters.search);
+    if (Array.isArray(filters.bodyPartIds) && filters.bodyPartIds.length > 0) {
+      params.append("bodyPartIds", filters.bodyPartIds.join(","));
+    }
+    if (Array.isArray(filters.equipmentIds) && filters.equipmentIds.length > 0) {
+      params.append("equipmentIds", filters.equipmentIds.join(","));
+    }
+    if (Array.isArray(filters.rackIds) && filters.rackIds.length > 0) {
+      params.append("rackIds", filters.rackIds.join(","));
+    }
+    if (Array.isArray(filters.isPublic) && filters.isPublic.length > 0) {
+      params.append("isPublic", filters.isPublic[0]);
+    }
+    if (filters.sortBy) params.append("sortBy", filters.sortBy);
+    if (filters.sortOrder) params.append("sortOrder", filters.sortOrder);
+
+    return `/api/exercise-library/dashboard?${params.toString()}`;
+  };
+
+  const url = buildUrl();
   const { isValidating, data } = useSWR(url);
 
-  // Debounced search
+  // Reset to page 1 when filters change
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setPagination((prev) => ({ ...prev, pageIndex: 1 }));
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+    setPagination((prev) => ({ ...prev, pageIndex: 1 }));
+  }, [filters]);
 
   // Block Video Form
   const blockVideoForm = useForm<{ blockReason: string }>({
@@ -432,19 +472,64 @@ export const ExerciseLibraryVideoTable = () => {
           <span>Add Exercise Video</span>
         </Button>
       </div>
+
       <div className="rounded-xl border bg-card p-6">
-        <div className="flex items-center justify-between gap-4 pb-6">
-          <div className="relative max-w-xs">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search videos..."
-              className="pl-10"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
+        {/* Filters */}
+        <div className="mb-6">
+          <TableFilters
+            config={{
+              showSearch: true,
+              searchPlaceholder: "Search by title, equipment, body part, or rack...",
+              multiSelects: [
+                {
+                  key: "bodyPartIds",
+                  label: "Body Parts",
+                  placeholder: "Filter by body parts",
+                  options: bodyParts.map((bp) => ({
+                    value: bp.id,
+                    label: bp.name,
+                  })),
+                },
+                {
+                  key: "equipmentIds",
+                  label: "Equipment",
+                  placeholder: "Filter by equipment",
+                  options: equipments.map((eq) => ({
+                    value: eq.id,
+                    label: eq.name,
+                  })),
+                },
+                {
+                  key: "rackIds",
+                  label: "Racks",
+                  placeholder: "Filter by racks",
+                  options: racks.map((r) => ({
+                    value: r.id,
+                    label: r.name,
+                  })),
+                },
+                {
+                  key: "isPublic",
+                  label: "Status",
+                  placeholder: "Filter by status",
+                  options: [
+                    { value: "true", label: "Published" },
+                    { value: "false", label: "Private" },
+                  ],
+                },
+              ],
+              sortOptions: [
+                { field: "createdAt", label: "Created Date" },
+                { field: "updatedAt", label: "Updated Date" },
+                { field: "title", label: "Title" },
+                { field: "height", label: "Height" },
+              ],
+            }}
+            values={filters}
+            onChange={setFilters}
+          />
         </div>
+
         <DataTable
           data={data}
           columns={columns}

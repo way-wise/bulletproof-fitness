@@ -26,12 +26,13 @@ import { equipmentSchema } from "@/schema/equipment";
 import { yupResolver } from "@hookform/resolvers/yup";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { MoreVertical, Pencil, Plus, Trash } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import { InferType } from "yup";
 import UpdateEquipments from "./UpdateEquipments";
+import { TableFilters, FilterValues } from "../shared/TableFilters";
 
 type TEquipment = {
   id?: string;
@@ -53,9 +54,34 @@ const EquipmentsTable = () => {
     pageSize: 10,
   });
 
-  // Get equipments data
-  const url = `/api/equipments?page=${pagination.pageIndex}&limit=${pagination.pageSize}`;
+  // Filter state
+  const [filters, setFilters] = useState<FilterValues>({
+    search: "",
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
+
+  // Build URL with filters
+  const buildUrl = () => {
+    const params = new URLSearchParams({
+      page: pagination.pageIndex.toString(),
+      limit: pagination.pageSize.toString(),
+    });
+
+    if (filters.search) params.append("search", filters.search);
+    if (filters.sortBy) params.append("sortBy", filters.sortBy);
+    if (filters.sortOrder) params.append("sortOrder", filters.sortOrder);
+
+    return `/api/equipments?${params.toString()}`;
+  };
+
+  const url = buildUrl();
   const { isValidating, data } = useSWR(url);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPagination((prev) => ({ ...prev, pageIndex: 1 }));
+  }, [filters]);
 
   // Add Equipment Form
   const addEquipmentForm = useForm({
@@ -190,10 +216,23 @@ const EquipmentsTable = () => {
         </Button>
       </div>
       <div className="rounded-xl border bg-card p-6">
-        {/* need to add search bar here */}
-        {/* <div className="flex items-center justify-between gap-4 pb-6">
-          <Input type="search" placeholder="Search..." className="max-w-xs" />
-        </div> */}
+        {/* Filters */}
+        <div className="mb-6">
+          <TableFilters
+            config={{
+              showSearch: true,
+              searchPlaceholder: "Search by name...",
+              sortOptions: [
+                { field: "createdAt", label: "Created Date" },
+                { field: "updatedAt", label: "Updated Date" },
+                { field: "name", label: "Name" },
+              ],
+            }}
+            values={filters}
+            onChange={setFilters}
+          />
+        </div>
+
         <DataTable
           data={data}
           columns={columns}

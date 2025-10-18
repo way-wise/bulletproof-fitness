@@ -35,6 +35,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import { InferType } from "yup";
+import { TableFilters, FilterValues } from "../_components/shared/TableFilters";
 
 export const UsersTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -46,22 +47,43 @@ export const UsersTable = () => {
     pageIndex: 1,
     pageSize: 10,
   });
-  // debounce search
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  // Debounce search input
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 600);
+  // Filter state
+  const [filters, setFilters] = useState<FilterValues>({
+    search: "",
+    role: [],
+    banned: [],
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
 
-    return () => clearTimeout(timer);
-  }, [search]);
+  // Build URL with all filters
+  const buildUrl = () => {
+    const params = new URLSearchParams({
+      page: pagination.pageIndex.toString(),
+      limit: pagination.pageSize.toString(),
+    });
 
-  // Get users data
-  const url = `/api/users?page=${pagination.pageIndex}&limit=${pagination.pageSize}${debouncedSearch.trim() ? `&search=${encodeURIComponent(debouncedSearch.trim())}` : ""}`;
+    if (filters.search) params.append("search", filters.search);
+    if (Array.isArray(filters.role) && filters.role.length > 0) {
+      params.append("role", filters.role[0]);
+    }
+    if (Array.isArray(filters.banned) && filters.banned.length > 0) {
+      params.append("banned", filters.banned[0]);
+    }
+    if (filters.sortBy) params.append("sortBy", filters.sortBy);
+    if (filters.sortOrder) params.append("sortOrder", filters.sortOrder);
+
+    return `/api/users?${params.toString()}`;
+  };
+
+  const url = buildUrl();
   const { isValidating, data } = useSWR(url);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPagination((prev) => ({ ...prev, pageIndex: 1 }));
+  }, [filters]);
 
   // Add User Form
   const addUserForm = useForm({
@@ -72,14 +94,6 @@ export const UsersTable = () => {
       password: "",
     },
   });
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    setPagination({
-      pageIndex: 1,
-      pageSize: 10,
-    });
-  };
 
   // Handle Add User
   const handleAddUser = async (values: InferType<typeof signUpSchema>) => {
@@ -296,16 +310,46 @@ export const UsersTable = () => {
           <span>Add User</span>
         </Button>
       </div>
+
       <div className="rounded-xl border bg-card p-6">
-        <div className="flex items-center justify-between gap-4 pb-6">
-          <Input
-            type="search"
-            placeholder="Search name, email..."
-            value={search}
-            onChange={handleSearchChange}
-            className="max-w-xs"
+        {/* Filters */}
+        <div className="mb-6">
+          <TableFilters
+            config={{
+              showSearch: true,
+              searchPlaceholder: "Search by name or email...",
+              multiSelects: [
+                {
+                  key: "role",
+                  label: "Role",
+                  placeholder: "Filter by role",
+                  options: [
+                    { value: "admin", label: "Admin" },
+                    { value: "user", label: "User" },
+                  ],
+                },
+                {
+                  key: "banned",
+                  label: "Banned Users",
+                  placeholder: "Show banned users",
+                  options: [
+                    { value: "true", label: "Banned" },
+                  ],
+                },
+              ],
+              sortOptions: [
+                { field: "createdAt", label: "Created Date" },
+                { field: "updatedAt", label: "Updated Date" },
+                { field: "name", label: "Name" },
+                { field: "email", label: "Email" },
+                { field: "totalPoints", label: "Total Points" },
+              ],
+            }}
+            values={filters}
+            onChange={setFilters}
           />
         </div>
+
         <DataTable
           data={data}
           columns={columns}

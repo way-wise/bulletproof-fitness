@@ -8,17 +8,36 @@ import { getPaginationQuery } from "../../lib/pagination";
 
 export const racksService = {
   // Get all racks
-  getRacks: async (query: PaginationQuery) => {
+  getRacks: async (query: PaginationQuery & {
+    search?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  }) => {
     const { skip, take, page, limit } = getPaginationQuery(query);
+
+    // Build where clause
+    const where: any = query.search
+      ? {
+          name: {
+            contains: query.search,
+            mode: "insensitive" as const,
+          },
+        }
+      : {};
+
+    // Build orderBy
+    const sortBy = query.sortBy || "createdAt";
+    const sortOrder = (query.sortOrder || "desc") as "asc" | "desc";
+    const orderBy: any = { [sortBy]: sortOrder };
+
     const [racks, total] = await prisma.$transaction([
       prisma.rack.findMany({
+        where,
         skip,
         take,
-        orderBy: {
-          id: "desc",
-        },
+        orderBy,
       }),
-      prisma.rack.count(),
+      prisma.rack.count({ where }),
     ]);
 
     return {

@@ -26,11 +26,13 @@ import { formatDate } from "@/lib/date-format";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
 import { Eye, Globe, Lock, MoreVertical, Pencil, Trash } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import UpdateDemoCenter from "./UpdateDemoCenter";
+import { TableFilters, FilterValues } from "../shared/TableFilters";
+import { useEquipments } from "@/hooks/useEquipments";
 
 export const DemoCenterTable = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -43,15 +45,54 @@ export const DemoCenterTable = () => {
   const [demoCenterId, setDemoCenterId] = useState<string | undefined>("");
   const [selectedDemoCenter, setSelectedDemoCenter] =
     useState<DemoCenter | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 1,
     pageSize: 10,
   });
 
-  // Get demo centers data with search
-  const url = `/api/demo-centers/dashboard?page=${pagination.pageIndex}&limit=${pagination.pageSize}${searchQuery.trim() ? `&search=${encodeURIComponent(searchQuery.trim())}` : ""}`;
+  // Filter state
+  const [filters, setFilters] = useState<FilterValues>({
+    search: "",
+    buildingType: [],
+    equipmentIds: [],
+    isPublic: [],
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
+
+  // Fetch filter options
+  const { equipments } = useEquipments();
+
+  // Build URL with all filters
+  const buildUrl = () => {
+    const params = new URLSearchParams({
+      page: pagination.pageIndex.toString(),
+      limit: pagination.pageSize.toString(),
+    });
+
+    if (filters.search) params.append("search", filters.search);
+    if (Array.isArray(filters.buildingType) && filters.buildingType.length > 0) {
+      params.append("buildingType", filters.buildingType[0]);
+    }
+    if (Array.isArray(filters.equipmentIds) && filters.equipmentIds.length > 0) {
+      params.append("equipmentIds", filters.equipmentIds.join(","));
+    }
+    if (Array.isArray(filters.isPublic) && filters.isPublic.length > 0) {
+      params.append("isPublic", filters.isPublic[0]);
+    }
+    if (filters.sortBy) params.append("sortBy", filters.sortBy);
+    if (filters.sortOrder) params.append("sortOrder", filters.sortOrder);
+
+    return `/api/demo-centers/dashboard?${params.toString()}`;
+  };
+
+  const url = buildUrl();
   const { isValidating, data } = useSWR(url);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPagination((prev) => ({ ...prev, pageIndex: 1 }));
+  }, [filters]);
 
   // Block Demo Center Form
   const blockDemoCenterForm = useForm({
@@ -346,23 +387,60 @@ export const DemoCenterTable = () => {
 
   return (
     <>
-      <div className="rounded-xl border bg-card p-6">
-        <div className="flex items-center justify-between gap-4 pb-6">
-          <div>
-            <h1 className="text-2xl font-medium">Demo Centers</h1>
-          </div>
+      <div className="mb-8">
+        <h1 className="text-2xl font-medium">Demo Centers</h1>
+      </div>
 
-          {/* <div className="relative max-w-xs">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search demo centers..."
-              className="pl-10"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div> */}
+      <div className="rounded-xl border bg-card p-6">
+        {/* Filters */}
+        <div className="mb-6">
+          <TableFilters
+            config={{
+              showSearch: true,
+              searchPlaceholder: "Search by name, address, city/zip, or contact...",
+              multiSelects: [
+                {
+                  key: "buildingType",
+                  label: "Building Type",
+                  placeholder: "Filter by building type",
+                  options: [
+                    { value: "Gym", label: "Gym" },
+                    { value: "Studio", label: "Studio" },
+                    { value: "Center", label: "Center" },
+                    { value: "Other", label: "Other" },
+                  ],
+                },
+                {
+                  key: "equipmentIds",
+                  label: "Equipment",
+                  placeholder: "Filter by equipment",
+                  options: equipments.map((eq) => ({
+                    value: eq.id,
+                    label: eq.name,
+                  })),
+                },
+                {
+                  key: "isPublic",
+                  label: "Status",
+                  placeholder: "Filter by status",
+                  options: [
+                    { value: "true", label: "Published" },
+                    { value: "false", label: "Private" },
+                  ],
+                },
+              ],
+              sortOptions: [
+                { field: "createdAt", label: "Created Date" },
+                { field: "updatedAt", label: "Updated Date" },
+                { field: "name", label: "Name" },
+                { field: "buildingType", label: "Building Type" },
+              ],
+            }}
+            values={filters}
+            onChange={setFilters}
+          />
         </div>
+
         <DataTable
           data={data}
           columns={columns}

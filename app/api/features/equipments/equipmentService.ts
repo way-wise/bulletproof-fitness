@@ -17,17 +17,36 @@ export const equipmentService = {
     return equipments;
   },
   // Get all equipments (Paginated)
-  getEquipments: async (query: PaginationQuery) => {
+  getEquipments: async (query: PaginationQuery & {
+    search?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  }) => {
     const { skip, take, page, limit } = getPaginationQuery(query);
+
+    // Build where clause
+    const where: any = query.search
+      ? {
+          name: {
+            contains: query.search,
+            mode: "insensitive" as const,
+          },
+        }
+      : {};
+
+    // Build orderBy
+    const sortBy = query.sortBy || "createdAt";
+    const sortOrder = (query.sortOrder || "desc") as "asc" | "desc";
+    const orderBy: any = { [sortBy]: sortOrder };
+
     const [equipments, total] = await prisma.$transaction([
       prisma.equipment.findMany({
+        where,
         skip,
         take,
-        orderBy: {
-          id: "desc",
-        },
+        orderBy,
       }),
-      prisma.equipment.count(),
+      prisma.equipment.count({ where }),
     ]);
 
     return {

@@ -16,6 +16,11 @@ app.get("/", async (c) => {
     type: "query",
     schema: paginationQuerySchema && object({
       search: string().optional(),
+      role: string().optional(),
+      banned: string().optional(),
+      emailVerified: string().optional(),
+      sortBy: string().optional(),
+      sortOrder: string().optional(),
     }),
     data: c.req.query(),
   });

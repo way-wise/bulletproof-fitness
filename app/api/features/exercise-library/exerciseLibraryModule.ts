@@ -30,6 +30,13 @@ exerciseLibraryModule.get("/dashboard", async (c) => {
       page: parseInt(c.req.query("page") || "1"),
       limit: parseInt(c.req.query("limit") || "10"),
       search: c.req.query("search") || "",
+      bodyPartIds: c.req.query("bodyPartIds") || "",
+      equipmentIds: c.req.query("equipmentIds") || "",
+      rackIds: c.req.query("rackIds") || "",
+      isPublic: c.req.query("isPublic") || "",
+      blocked: c.req.query("blocked") || "",
+      sortBy: c.req.query("sortBy") || "createdAt",
+      sortOrder: c.req.query("sortOrder") || "desc",
     };
 
     const result =

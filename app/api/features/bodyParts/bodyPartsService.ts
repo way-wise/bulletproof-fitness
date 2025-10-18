@@ -8,17 +8,36 @@ import { getPaginationQuery } from "../../lib/pagination";
 
 export const bodyPartsService = {
   // Get all body parts
-  getBodyParts: async (query: PaginationQuery) => {
+  getBodyParts: async (query: PaginationQuery & {
+    search?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  }) => {
     const { skip, take, page, limit } = getPaginationQuery(query);
+
+    // Build where clause
+    const where: any = query.search
+      ? {
+          name: {
+            contains: query.search,
+            mode: "insensitive" as const,
+          },
+        }
+      : {};
+
+    // Build orderBy
+    const sortBy = query.sortBy || "createdAt";
+    const sortOrder = (query.sortOrder || "desc") as "asc" | "desc";
+    const orderBy: any = { [sortBy]: sortOrder };
+
     const [bodyParts, total] = await prisma.$transaction([
       prisma.bodyPart.findMany({
+        where,
         skip,
         take,
-        orderBy: {
-          id: "desc",
-        },
+        orderBy,
       }),
-      prisma.bodyPart.count(),
+      prisma.bodyPart.count({ where }),
     ]);
 
     return {

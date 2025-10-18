@@ -6,65 +6,85 @@ import { HTTPException } from "hono/http-exception";
 
 export const userService = {
   // Get all users
-  getUsers: async (query: PaginationQuery) => {
+  getUsers: async (query: PaginationQuery & {
+    role?: string;
+    banned?: string;
+    emailVerified?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  }) => {
     const session = await getSession();
 
     const { skip, take, page, limit } = getPaginationQuery(query);
+
+    // Build where clause with filters
+    const where: any = {
+      NOT: {
+        id: session?.user?.id,
+      },
+    };
+    const andConditions: any[] = [];
+
+    // Search filter
+    if (query.search) {
+      andConditions.push({
+        OR: [
+          {
+            name: {
+              contains: query.search,
+              mode: "insensitive" as const,
+            },
+          },
+          {
+            email: {
+              contains: query.search,
+              mode: "insensitive" as const,
+            },
+          },
+        ],
+      });
+    }
+
+    // Role filter
+    if (query.role) {
+      andConditions.push({
+        role: query.role,
+      });
+    }
+
+    // Banned filter
+    if (query.banned !== undefined && query.banned !== "") {
+      andConditions.push({
+        banned: query.banned === "true",
+      });
+    }
+
+    // Email verified filter
+    if (query.emailVerified !== undefined && query.emailVerified !== "") {
+      andConditions.push({
+        emailVerified: query.emailVerified === "true",
+      });
+    }
+
+    // Apply all conditions
+    if (andConditions.length > 0) {
+      where.AND = andConditions;
+    }
+
+    // Build orderBy based on sortBy and sortOrder
+    const sortBy = query.sortBy || "createdAt";
+    const sortOrder = (query.sortOrder || "desc") as "asc" | "desc";
+    const orderBy: any = { [sortBy]: sortOrder };
+
     const [users, total] = await prisma.$transaction([
       prisma.users.findMany({
-        where: {
-          NOT: {
-            id: session?.user?.id,
-          },
-          ...(query.search
-            ? {
-                OR: [
-                  {
-                    name: {
-                      contains: query.search,
-                      mode: "insensitive",
-                    },
-                  },
-                  {
-                    email: {
-                      contains: query.search,
-                      mode: "insensitive",
-                    },
-                  },
-                ],
-              }
-            : {}),
-        },
+        where,
         skip,
         take,
-        orderBy: {
-          id: "desc",
-        },
+        orderBy,
       }),
       prisma.users.count({
-        where: {
-          NOT: {
-            id: session?.user?.id,
-          },
-          ...(query.search
-            ? {
-                OR: [
-                  {
-                    name: {
-                      contains: query.search,
-                      mode: "insensitive",
-                    },
-                  },
-                  {
-                    email: {
-                      contains: query.search,
-                      mode: "insensitive",
-                    },
-                  },
-                ],
-              }
-            : {}),
-        },
+        where,
       }),
     ]);
 

@@ -78,65 +78,148 @@ export const exerciseLibraryService = {
     }
   },
   // Get all exercise library videos for dashboard (admin) - OPTIMIZED
-  getAllExerciseLibraryVideos: async (query: PaginationQuery) => {
+  getAllExerciseLibraryVideos: async (query: PaginationQuery & {
+    bodyPartIds?: string;
+    equipmentIds?: string;
+    rackIds?: string;
+    isPublic?: string;
+    blocked?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  }) => {
     try {
       const { skip, take, page, limit } = getPaginationQuery(query);
 
-      // Build optimized where clause for search
-      const where: any = query.search
-        ? {
-            OR: [
-              {
-                title: { contains: query.search, mode: "insensitive" as const },
-              },
-              {
-                ExLibEquipment: {
-                  some: {
-                    equipment: {
-                      name: {
-                        contains: query.search,
-                        mode: "insensitive" as const,
-                      },
+      // Build where clause with filters
+      const where: any = {};
+      const andConditions: any[] = [];
+
+      // Search filter
+      if (query.search) {
+        andConditions.push({
+          OR: [
+            {
+              title: { contains: query.search, mode: "insensitive" as const },
+            },
+            {
+              ExLibEquipment: {
+                some: {
+                  equipment: {
+                    name: {
+                      contains: query.search,
+                      mode: "insensitive" as const,
                     },
                   },
                 },
               },
-              {
-                ExLibBodyPart: {
-                  some: {
-                    bodyPart: {
-                      name: {
-                        contains: query.search,
-                        mode: "insensitive" as const,
-                      },
+            },
+            {
+              ExLibBodyPart: {
+                some: {
+                  bodyPart: {
+                    name: {
+                      contains: query.search,
+                      mode: "insensitive" as const,
                     },
                   },
                 },
               },
-              {
-                ExLibRak: {
-                  some: {
-                    rack: {
-                      name: {
-                        contains: query.search,
-                        mode: "insensitive" as const,
-                      },
+            },
+            {
+              ExLibRak: {
+                some: {
+                  rack: {
+                    name: {
+                      contains: query.search,
+                      mode: "insensitive" as const,
                     },
                   },
                 },
               },
-            ],
-          }
-        : {};
+            },
+          ],
+        });
+      }
+
+      // Body part filter
+      if (query.bodyPartIds) {
+        const bodyPartIdsArray = query.bodyPartIds.split(",").filter(Boolean);
+        if (bodyPartIdsArray.length > 0) {
+          andConditions.push({
+            ExLibBodyPart: {
+              some: {
+                bodyPartId: { in: bodyPartIdsArray },
+              },
+            },
+          });
+        }
+      }
+
+      // Equipment filter
+      if (query.equipmentIds) {
+        const equipmentIdsArray = query.equipmentIds.split(",").filter(Boolean);
+        if (equipmentIdsArray.length > 0) {
+          andConditions.push({
+            ExLibEquipment: {
+              some: {
+                equipmentId: { in: equipmentIdsArray },
+              },
+            },
+          });
+        }
+      }
+
+      // Rack filter
+      if (query.rackIds) {
+        const rackIdsArray = query.rackIds.split(",").filter(Boolean);
+        if (rackIdsArray.length > 0) {
+          andConditions.push({
+            ExLibRak: {
+              some: {
+                rackId: { in: rackIdsArray },
+              },
+            },
+          });
+        }
+      }
+
+      // isPublic filter
+      if (query.isPublic !== undefined && query.isPublic !== "") {
+        andConditions.push({
+          isPublic: query.isPublic === "true",
+        });
+      }
+
+      // blocked filter
+      if (query.blocked !== undefined && query.blocked !== "") {
+        andConditions.push({
+          blocked: query.blocked === "true",
+        });
+      }
+
+      // Apply all conditions
+      if (andConditions.length > 0) {
+        where.AND = andConditions;
+      }
+
+      // Build orderBy based on sortBy and sortOrder
+      const sortBy = query.sortBy || "createdAt";
+      const sortOrder = (query.sortOrder || "desc") as "asc" | "desc";
+      const orderBy: any = {};
+      
+      // Handle nested sorting for user name
+      if (sortBy === "userName") {
+        orderBy.user = { name: sortOrder };
+      } else {
+        orderBy[sortBy] = sortOrder;
+      }
 
       // OPTIMIZED: Separate queries to reduce connection pool pressure
       const exercises = await prisma.exerciseLibraryVideo.findMany({
         where,
         skip,
         take,
-        orderBy: {
-          createdAt: "desc",
-        },
+        orderBy,
         select: {
           id: true,
           title: true,

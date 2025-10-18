@@ -126,55 +126,108 @@ export const demoCentersService = {
     };
   },
   getDemoCentersDashboard: async (
-    query: PaginationQuery & { search?: string },
+    query: PaginationQuery & {
+      search?: string;
+      buildingType?: string;
+      equipmentIds?: string;
+      isPublic?: string;
+      blocked?: string;
+      sortBy?: string;
+      sortOrder?: string;
+    },
   ) => {
     const { skip, take, page, limit } = getPaginationQuery(query);
 
-    // Build search filter
-    const searchFilter = {
-      ...(query.search
-        ? {
-            OR: [
-              {
-                name: { contains: query.search, mode: "insensitive" as const },
-              },
-              {
-                buildingType: {
-                  contains: query.search,
-                  mode: "insensitive" as const,
-                },
-              },
-              {
-                contact: {
-                  contains: query.search,
-                  mode: "insensitive" as const,
-                },
-              },
-              {
-                address: {
-                  contains: query.search,
-                  mode: "insensitive" as const,
-                },
-              },
-              {
-                cityZip: {
-                  contains: query.search,
-                  mode: "insensitive" as const,
-                },
-              },
-            ],
-          }
-        : {}),
-    };
+    // Build where clause with filters
+    const where: any = {};
+    const andConditions: any[] = [];
+
+    // Search filter
+    if (query.search) {
+      andConditions.push({
+        OR: [
+          {
+            name: { contains: query.search, mode: "insensitive" as const },
+          },
+          {
+            buildingType: {
+              contains: query.search,
+              mode: "insensitive" as const,
+            },
+          },
+          {
+            contact: {
+              contains: query.search,
+              mode: "insensitive" as const,
+            },
+          },
+          {
+            address: {
+              contains: query.search,
+              mode: "insensitive" as const,
+            },
+          },
+          {
+            cityZip: {
+              contains: query.search,
+              mode: "insensitive" as const,
+            },
+          },
+        ],
+      });
+    }
+
+    // Building type filter
+    if (query.buildingType) {
+      andConditions.push({
+        buildingType: query.buildingType,
+      });
+    }
+
+    // Equipment filter
+    if (query.equipmentIds) {
+      const equipmentIdsArray = query.equipmentIds.split(",").filter(Boolean);
+      if (equipmentIdsArray.length > 0) {
+        andConditions.push({
+          demoCenterEquipments: {
+            some: {
+              equipmentId: { in: equipmentIdsArray },
+            },
+          },
+        });
+      }
+    }
+
+    // isPublic filter
+    if (query.isPublic !== undefined && query.isPublic !== "") {
+      andConditions.push({
+        isPublic: query.isPublic === "true",
+      });
+    }
+
+    // blocked filter
+    if (query.blocked !== undefined && query.blocked !== "") {
+      andConditions.push({
+        blocked: query.blocked === "true",
+      });
+    }
+
+    // Apply all conditions
+    if (andConditions.length > 0) {
+      where.AND = andConditions;
+    }
+
+    // Build orderBy based on sortBy and sortOrder
+    const sortBy = query.sortBy || "createdAt";
+    const sortOrder = (query.sortOrder || "desc") as "asc" | "desc";
+    const orderBy: any = { [sortBy]: sortOrder };
 
     const [demoCenters, total] = await prisma.$transaction([
       prisma.demoCenter.findMany({
-        where: searchFilter,
+        where,
         skip,
         take,
-        orderBy: {
-          id: "desc",
-        },
+        orderBy,
         include: {
           demoCenterEquipments: {
             include: {
@@ -184,7 +237,7 @@ export const demoCentersService = {
         },
       }),
       prisma.demoCenter.count({
-        where: searchFilter,
+        where,
       }),
     ]);
 
