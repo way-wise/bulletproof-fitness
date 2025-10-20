@@ -437,13 +437,13 @@ export default function ContestMain() {
               <h2 className="text-4xl font-bold text-gray-900 mb-4">{yourMissionSection.title}</h2>
             </div>
             <div className="bg-white rounded-3xl p-12 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-48 h-48 opacity-5">
+              {/* <div className="absolute top-0 right-0 w-48 h-48 opacity-5">
                 <img 
                   src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" 
                   alt="Fitness equipment"
                   className="w-full h-full object-cover"
                 />
-              </div>
+              </div> */}
               <div className="relative z-10">
                 {yourMissionSection.description && (
                   <div 
@@ -490,7 +490,7 @@ export default function ContestMain() {
             </div>
 
             {prizesSection.cards && prizesSection.cards.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 bg-white p-12 rounded-3xl">
                 {prizesSection.cards.map((card, index) => {
                   const textColor = getTextColor(card.backgroundColor);
                   const isGrandPrize = index === 0;
@@ -499,27 +499,13 @@ export default function ContestMain() {
                     <Card 
                       key={card.id} 
                       className={`relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
-                        isGrandPrize ? 'md:col-span-2 lg:col-span-1 lg:row-span-2' : ''
+                        isGrandPrize ? 'md:col-span-2 lg:col-span-1' : ''
                       }`}
                       style={{ 
                         backgroundColor: card.backgroundColor,
                         borderColor: card.backgroundColor,
                       }}
                     >
-                      {/* Prize-specific background images */}
-                      <div className="absolute inset-0 opacity-10">
-                        <img 
-                          src={
-                            isGrandPrize 
-                              ? "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-                              : index === 1 
-                              ? "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-                              : "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
-                          }
-                          alt="Prize background"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
                       
                       {isGrandPrize && (
                         <div className="absolute top-4 right-4 bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-bold z-20">
