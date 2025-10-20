@@ -69,7 +69,7 @@ async function main(total: number) {
         isActive: false, // Currently disabled in admin panel
       },
       {
-        type: RewardType.UPLOAD_EXERCISE,
+        type: "UPLOAD_EXERCISE" as RewardType,
         name: "Upload Exercise",
         description: "Uploaded an exercise setup",
         points: 10,
@@ -77,7 +77,7 @@ async function main(total: number) {
         isActive: true,
       },
       {
-        type: RewardType.UPLOAD_LIBRARY,
+        type: "UPLOAD_LIBRARY" as RewardType,
         name: "Upload Library",
         description: "Uploaded a library video",
         points: 1,
@@ -85,7 +85,7 @@ async function main(total: number) {
         isActive: true,
       },
       {
-        type: RewardType.DEMO_CENTER,
+        type: "DEMO_CENTER" as RewardType,
         name: "Upload Demo Center",
         description: "Added a demo center",
         points: 10,

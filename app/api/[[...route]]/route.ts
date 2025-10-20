@@ -7,6 +7,7 @@ import { handle } from "hono/vercel";
 import actionModule from "../features/actions/actionModule";
 import authModule from "../features/auth/authModule";
 import { bodyPartsModule } from "../features/bodyParts/bodyPartsModule";
+import contestModule from "../features/contest/contestModule";
 import dashboardModule from "../features/dashboard/dashboardModule";
 import { demoCenterModule } from "../features/demo-centers/demoCentersModule";
 import { equipmentModule } from "../features/equipments/equipmentModule";
@@ -42,6 +43,7 @@ app.route("/rewards", rewardModule);
 app.route("/action", actionModule);
 app.route("/sign-upload", signUploadModule);
 app.route("/dashboard", dashboardModule);
+app.route("/contest", contestModule);
 
 // Not found
 app.notFound((c) => {

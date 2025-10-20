@@ -8,6 +8,7 @@ import {
   MessageSquareMore,
   Play,
   Rows3,
+  Trophy,
   UsersRound,
 } from "lucide-react";
 import MenuCollapsible from "./menu-collapsible";
@@ -55,6 +56,11 @@ const SidebarMenu = () => {
       title: "Feedbacks",
       icon: <MessageSquareMore className="icon" />,
       url: "/dashboard/feedback",
+    },
+    {
+      title: "Contest",
+      icon: <Trophy className="icon" />,
+      url: "/dashboard/contest",
     },
     {
       title: "Equipment",

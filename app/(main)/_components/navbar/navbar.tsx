@@ -41,6 +41,10 @@ const Navbar = ({ session }: { session: Session }) => {
       url: "/exercise-setup",
     },
     {
+      title: "CONTEST",
+      url: "/contest",
+    },
+    {
       title: "ABOUT US",
       url: "/about-us",
     },
