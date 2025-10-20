@@ -157,7 +157,7 @@ export default function ContestMain() {
               alt="Fitness gym background"
               className="w-full h-full object-cover opacity-20"
             />
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/80 via-purple-600/80 to-indigo-800/80"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-indigo-800/20"></div>
           </div>
           
           {/* Background Pattern */}
@@ -172,24 +172,24 @@ export default function ContestMain() {
               <div className="p-3 bg-white/20 backdrop-blur-sm rounded-full">
                 <Trophy className="h-8 w-8 text-yellow-300" />
               </div>
-              <Badge variant={getStatusVariant() as any} className="text-lg px-4 py-2 bg-white/20 backdrop-blur-sm border-white/30">
+              {/* <Badge variant={getStatusVariant() as any} className="text-lg px-4 py-2 bg-white/20 backdrop-blur-sm border-white/30">
                 {getContestStatus()}
-              </Badge>
+              </Badge> */}
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
+            <h1 className="text-5xl md:text-6xl font-black mb-6 leading-tight">
               {heroSection.title}
             </h1>
 
             {heroSection.subtitle && (
-              <p className="text-2xl md:text-3xl font-light mb-8 text-blue-100">
+              <p className="text-2xl md:text-3xl font-medium mb-8 text-gray-50">
                 {heroSection.subtitle}
               </p>
             )}
 
             {heroSection.description && (
               <div 
-                className="text-xl text-blue-100 max-w-3xl mx-auto mb-12 leading-relaxed"
+                className="text-xl text-gray-50 max-w-3xl mx-auto mb-12 leading-relaxed"
                 dangerouslySetInnerHTML={{ __html: heroSection.description }}
               />
             )}
@@ -221,7 +221,7 @@ export default function ContestMain() {
           <div className="max-w-4xl mx-auto">
             <Card className="bg-white/90 backdrop-blur-sm shadow-2xl border-0">
               <CardContent className="p-8">
-                <div className="flex items-center gap-3 mb-6">
+                <div className="flex justify-center items-center gap-3 mb-6">
                   <Calendar className="h-6 w-6 text-blue-600" />
                   <h3 className="text-2xl font-bold text-gray-900">Contest Timeline</h3>
                 </div>
@@ -264,8 +264,8 @@ export default function ContestMain() {
       <div className="max-w-7xl mx-auto px-4 py-20 space-y-32">
         {/* Main Contest Section - Split Layout */}
         {mainSection && (
-          <section className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
+          <section className="grid grid-cols-1 lg:grid-cols-3 gap-16 items-center">
+            <div className="col-span-2">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                 {mainSection.title}
               </h2>
@@ -283,11 +283,11 @@ export default function ContestMain() {
             </div>
             <div className="relative">
               <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl p-8 text-white shadow-2xl overflow-hidden">
-                <img 
+                {/* <img 
                   src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
                   alt="Fitness community"
                   className="absolute inset-0 w-full h-full object-cover opacity-20"
-                />
+                /> */}
                 <div className="relative z-10">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="p-3 bg-white/20 rounded-full">
@@ -295,10 +295,10 @@ export default function ContestMain() {
                     </div>
                     <div>
                       <h3 className="text-2xl font-bold">Join the Movement</h3>
-                      <p className="text-blue-100">Be part of something bigger</p>
+                      <p className="text-gray-50">Be part of something bigger</p>
                     </div>
                   </div>
-                  <p className="text-lg text-blue-100">
+                  <p className="text-lg text-gray-50">
                     Connect with fitness enthusiasts, share your expertise, and help build the future of fitness training.
                   </p>
                 </div>
