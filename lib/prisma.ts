@@ -1,14 +1,16 @@
 import { PrismaClient } from "@prisma/client";
-import { withAccelerate } from "@prisma/extension-accelerate";
+import { PrismaNeon } from "@prisma/adapter-neon";
+import { neonConfig } from "@neondatabase/serverless";
 
-const globalForPrisma = global as unknown as {
-  prisma: PrismaClient;
-};
+import ws from "ws";
+neonConfig.webSocketConstructor = ws;
 
-const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({ log: ["error", "warn"] }).$extends(withAccelerate());
+declare global {
+  var prisma: PrismaClient | undefined;
+}
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
-
+const connectionString = `${process.env.DATABASE_URL}`;
+const adapter = new PrismaNeon({ connectionString });
+const prisma = global.prisma || new PrismaClient({ adapter });
+if (process.env.NODE_ENV === "development") global.prisma = prisma;
 export default prisma;
