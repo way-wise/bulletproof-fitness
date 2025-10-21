@@ -89,7 +89,7 @@ export default function UpdateContestForm({ contest, onSuccess, onCancel }: Upda
         startDate: formatDateForInput(contest.startDate) as any,
         endDate: formatDateForInput(contest.endDate) as any,
       });
-      
+
       // Set sections
       const formattedSections: ContestSectionFormData[] = contest.sections.map(section => ({
         id: section.id,
@@ -117,6 +117,19 @@ export default function UpdateContestForm({ contest, onSuccess, onCancel }: Upda
   const onSubmit = async (data: any) => {
     setIsSubmitting(true);
     try {
+      // Validate sections before submission
+      const { contestSectionSchema } = await import("@/schema/contestSchema");
+
+      for (let i = 0; i < sections.length; i++) {
+        try {
+          await contestSectionSchema.validate(sections[i], { abortEarly: false });
+        } catch (error: any) {
+          toast.error(`Section ${i + 1}: ${error.errors?.join(', ') || 'Validation failed'}`);
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
       const response = await fetch(`/api/contest/${contest.id}`, {
         method: "PUT",
         headers: {
@@ -165,188 +178,195 @@ export default function UpdateContestForm({ contest, onSuccess, onCancel }: Upda
   };
 
   return (
-    <div className="w-full">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <Tabs defaultValue="settings" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="settings">Contest Settings</TabsTrigger>
-            <TabsTrigger value="sections">Content Sections</TabsTrigger>
-          </TabsList>
+    <div className="w-full h-full flex flex-col">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
+        <Tabs defaultValue="settings" className="w-full flex flex-col h-full pb-8">
+          {/* Fixed Header - Tabs */}
+          <div className="flex-shrink-0 pb-4">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="settings">Contest Settings</TabsTrigger>
+              <TabsTrigger value="sections">Content Sections</TabsTrigger>
+            </TabsList>
+          </div>
 
-          <TabsContent value="settings" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Contest Settings</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto pr-2 min-h-0">
+            <TabsContent value="settings" className="space-y-6 mt-0">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Contest Settings</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
 
-                {/* Dates */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="startDate">Start Date & Time</Label>
-                    <Input
-                      id="startDate"
-                      {...register("startDate")}
-                      type="datetime-local"
-                    />
-                    <FormError message={errors.startDate?.message} />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="endDate">End Date & Time</Label>
-                    <Input
-                      id="endDate"
-                      {...register("endDate")}
-                      type="datetime-local"
-                    />
-                    <FormError message={errors.endDate?.message} />
-                  </div>
-                </div>
-
-                {/* Active Status */}
-                <div className="flex items-center space-x-2 p-4 bg-blue-50 rounded-lg">
-                  <Switch
-                    id="isActive"
-                    checked={isActive}
-                    onCheckedChange={(checked) => setValue("isActive", checked)}
-                  />
-                  <div>
-                    <Label htmlFor="isActive" className="font-medium">
-                      Make this contest active
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      {isActive 
-                        ? "This contest will be visible to users and will deactivate other contests" 
-                        : "This contest will be saved as draft and not visible to users"
-                      }
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="sections" className="space-y-6">
-            <div className="space-y-6">
-              {sections.map((section, sectionIndex) => (
-                <Card key={section.id} className="border-l-4 border-blue-500">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <span className="capitalize">{section.sectionType.replace('_', ' ')}</span>
-                      <Switch
-                        checked={section.isVisible}
-                        onCheckedChange={(checked) => updateSectionField(sectionIndex, 'isVisible', checked)}
-                      />
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {/* Section Title */}
+                  {/* Dates */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label>Section Title</Label>
+                      <Label htmlFor="startDate">Start Date & Time</Label>
                       <Input
-                        value={section.title || ''}
-                        onChange={(e) => updateSectionField(sectionIndex, 'title', e.target.value)}
-                        placeholder="Enter section title..."
+                        id="startDate"
+                        {...register("startDate")}
+                        type="datetime-local"
                       />
+                      <FormError message={errors.startDate?.message} />
                     </div>
 
-                    {/* Section Subtitle */}
                     <div>
-                      <Label>Section Subtitle</Label>
+                      <Label htmlFor="endDate">End Date & Time</Label>
                       <Input
-                        value={section.subtitle || ''}
-                        onChange={(e) => updateSectionField(sectionIndex, 'subtitle', e.target.value)}
-                        placeholder="Enter section subtitle..."
+                        id="endDate"
+                        {...register("endDate")}
+                        type="datetime-local"
                       />
+                      <FormError message={errors.endDate?.message} />
                     </div>
+                  </div>
 
-                    {/* Section Description */}
+                  {/* Active Status */}
+                  <div className="flex items-center space-x-2 p-4 bg-blue-50 rounded-lg">
+                    <Switch
+                      id="isActive"
+                      checked={isActive}
+                      onCheckedChange={(checked) => setValue("isActive", checked)}
+                    />
                     <div>
-                      <Label>Section Description</Label>
-                      <RichTextEditor
-                        content={section.description || ''}
-                        onChange={(content) => updateSectionField(sectionIndex, 'description', content)}
-                        placeholder="Enter section content..."
-                        className="min-h-[200px]"
-                      />
+                      <Label htmlFor="isActive" className="font-medium">
+                        Make this contest active
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        {isActive
+                          ? "This contest will be visible to users and will deactivate other contests"
+                          : "This contest will be saved as draft and not visible to users"
+                        }
+                      </p>
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-                    {/* CTA Button */}
-                    <div className="grid grid-cols-2 gap-4">
+            <TabsContent value="sections" className="space-y-6">
+              <div className="space-y-6">
+                {sections.map((section, sectionIndex) => (
+                  <Card key={section.id} className="border-l-4 border-blue-500">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <span className="capitalize">{section.sectionType.replace('_', ' ')}</span>
+                        <Switch
+                          checked={section.isVisible}
+                          onCheckedChange={(checked) => updateSectionField(sectionIndex, 'isVisible', checked)}
+                        />
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {/* Section Title */}
                       <div>
-                        <Label>CTA Button Text</Label>
+                        <Label>Section Title</Label>
                         <Input
-                          value={section.ctaText || ''}
-                          onChange={(e) => updateSectionField(sectionIndex, 'ctaText', e.target.value)}
-                          placeholder="e.g., Get Started"
+                          value={section.title || ''}
+                          onChange={(e) => updateSectionField(sectionIndex, 'title', e.target.value)}
+                          placeholder="Enter section title..."
                         />
                       </div>
+
+                      {/* Section Subtitle */}
                       <div>
-                        <Label>CTA Button URL</Label>
+                        <Label>Section Subtitle</Label>
                         <Input
-                          value={section.ctaUrl || ''}
-                          onChange={(e) => updateSectionField(sectionIndex, 'ctaUrl', e.target.value)}
-                          placeholder="e.g., /upload-video"
+                          value={section.subtitle || ''}
+                          onChange={(e) => updateSectionField(sectionIndex, 'subtitle', e.target.value)}
+                          placeholder="Enter section subtitle..."
                         />
                       </div>
-                    </div>
 
-                    {/* Cards for sections that have them */}
-                    {section.cards && section.cards.length > 0 && (
-                      <div className="mt-6">
-                        <Label className="text-lg font-semibold">Cards</Label>
-                        <div className="space-y-4 mt-2">
-                          {section.cards.map((card, cardIndex) => (
-                            <Card key={card.id} className="bg-gray-50">
-                              <CardContent className="p-4 space-y-3">
-                                <div className="grid grid-cols-2 gap-4">
-                                  <div>
-                                    <Label>Card Title</Label>
-                                    <Input
-                                      value={card.title}
-                                      onChange={(e) => updateCardField(sectionIndex, cardIndex, 'title', e.target.value)}
-                                      placeholder="Enter card title..."
-                                    />
-                                  </div>
-                                  <div>
-                                    <Label>Background Color</Label>
-                                    <Input
-                                      type="color"
-                                      value={card.backgroundColor}
-                                      onChange={(e) => updateCardField(sectionIndex, cardIndex, 'backgroundColor', e.target.value)}
-                                    />
-                                  </div>
-                                </div>
-                                <div>
-                                  <Label>Card Description</Label>
-                                  <RichTextEditor
-                                    content={card.description}
-                                    onChange={(content) => updateCardField(sectionIndex, cardIndex, 'description', content)}
-                                    placeholder="Enter card description..."
-                                    className="min-h-[150px]"
-                                  />
-                                </div>
-                              </CardContent>
-                            </Card>
-                          ))}
+                      {/* Section Description */}
+                      <div>
+                        <Label>Section Description</Label>
+                        <RichTextEditor
+                          content={section.description || ''}
+                          onChange={(content) => updateSectionField(sectionIndex, 'description', content)}
+                          placeholder="Enter section content..."
+                          className="min-h-[200px]"
+                        />
+                      </div>
+
+                      {/* CTA Button */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>CTA Button Text</Label>
+                          <Input
+                            value={section.ctaText || ''}
+                            onChange={(e) => updateSectionField(sectionIndex, 'ctaText', e.target.value)}
+                            placeholder="e.g., Get Started"
+                          />
+                        </div>
+                        <div>
+                          <Label>CTA Button URL</Label>
+                          <Input
+                            value={section.ctaUrl || ''}
+                            onChange={(e) => updateSectionField(sectionIndex, 'ctaUrl', e.target.value)}
+                            placeholder="e.g., /upload-video"
+                          />
                         </div>
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
 
-        <div className="flex justify-end space-x-2 pt-6 border-t">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" disabled={isSubmitting} size="lg">
-            {isSubmitting ? "Updating Contest..." : "Update Contest"}
-          </Button>
-        </div>
+                      {/* Cards for sections that have them */}
+                      {section.cards && section.cards.length > 0 && (
+                        <div className="mt-6">
+                          <Label className="text-lg font-semibold">Cards</Label>
+                          <div className="space-y-4 mt-2">
+                            {section.cards.map((card, cardIndex) => (
+                              <Card key={card.id} className="bg-gray-50">
+                                <CardContent className="p-4 space-y-3">
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <Label>Card Title</Label>
+                                      <Input
+                                        value={card.title}
+                                        onChange={(e) => updateCardField(sectionIndex, cardIndex, 'title', e.target.value)}
+                                        placeholder="Enter card title..."
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label>Background Color</Label>
+                                      <Input
+                                        type="color"
+                                        value={card.backgroundColor}
+                                        onChange={(e) => updateCardField(sectionIndex, cardIndex, 'backgroundColor', e.target.value)}
+                                      />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <Label>Card Description</Label>
+                                    <RichTextEditor
+                                      content={card.description}
+                                      onChange={(content) => updateCardField(sectionIndex, cardIndex, 'description', content)}
+                                      placeholder="Enter card description..."
+                                      className="min-h-[150px]"
+                                    />
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+          </div>
+
+          {/* Fixed Footer - Buttons */}
+          <div className="flex-shrink-0 flex justify-end space-x-2 pt-6 border-t bg-white mt-4">
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting} size="lg">
+              {isSubmitting ? "Updating Contest..." : "Update Contest"}
+            </Button>
+          </div>
+        </Tabs>
       </form>
     </div>
   );

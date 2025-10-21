@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ColumnDef, PaginationState } from "@tanstack/react-table";
-import { MoreHorizontal, Plus, Edit, Trash2, Eye, Power } from "lucide-react";
+import { MoreHorizontal, Edit, Trash2, Power } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,7 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DataTable } from "@/components/ui/data-table";
 import { Modal } from "@/components/ui/modal";
-import { Dialog } from "@headlessui/react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { mutate } from "swr";
 import { useContests } from "@/hooks/useContest";
@@ -116,7 +121,7 @@ export const ContestTable = () => {
     }
   };
 
-  const columns: ColumnDef<Contest>[] = [
+  const columns: ColumnDef<Contest, unknown>[] = [
     {
       accessorKey: "id",
       header: "Contest",
@@ -229,10 +234,10 @@ export const ContestTable = () => {
     <>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-medium">Contest Management</h1>
-        <Button onClick={() => setCreateModalOpen(true)}>
+        {/* <Button onClick={() => setCreateModalOpen(true)}>
           <Plus />
           <span>Create Contest</span>
-        </Button>
+        </Button> */}
       </div>
 
       <div className="rounded-xl border bg-card p-6">
@@ -246,55 +251,50 @@ export const ContestTable = () => {
       </div>
 
       {/* Create Contest Modal */}
-      <Dialog open={createModalOpen} onClose={() => setCreateModalOpen(false)} className="relative z-50">
-        <div className="fixed inset-0 bg-black/75" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <div className="w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-lg bg-white shadow-xl">
-            <div className="p-6 border-b">
-              <h2 className="text-xl font-semibold">Create New Contest</h2>
-            </div>
-            <div className="p-6">
-              <CreateContestForm
-                onSuccess={() => {
-                  setCreateModalOpen(false);
-                  mutate("/api/contest/admin");
-                }}
-                onCancel={() => setCreateModalOpen(false)}
-              />
-            </div>
-          </div>
-        </div>
+      <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
+        <DialogContent className="w-full max-w-7xl h-[90vh] overflow-hidden sm:max-w-7xl lg:max-w-8xl xl:max-w-9xl flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Create New Contest</DialogTitle>
+          </DialogHeader>
+          <CreateContestForm
+            onSuccess={() => {
+              setCreateModalOpen(false);
+              mutate("/api/contest/admin");
+            }}
+            onCancel={() => setCreateModalOpen(false)}
+          />
+        </DialogContent>
       </Dialog>
 
       {/* Update Contest Modal */}
-      <Dialog open={updateModalOpen} onClose={() => {
-        setUpdateModalOpen(false);
-        setSelectedContest(null);
-      }} className="relative z-50">
-        <div className="fixed inset-0 bg-black/75" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <div className="w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-lg bg-white shadow-xl">
-            <div className="p-6 border-b">
-              <h2 className="text-xl font-semibold">Update Contest</h2>
-            </div>
-            <div className="p-6">
-              {selectedContest && (
-                <UpdateContestForm
-                  contest={selectedContest}
-                  onSuccess={() => {
-                    setUpdateModalOpen(false);
-                    setSelectedContest(null);
-                    mutate("/api/contest/admin");
-                  }}
-                  onCancel={() => {
-                    setUpdateModalOpen(false);
-                    setSelectedContest(null);
-                  }}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+      <Dialog 
+        open={updateModalOpen} 
+        onOpenChange={(open) => {
+          if (!open) {
+            setUpdateModalOpen(false);
+            setSelectedContest(null);
+          }
+        }}
+      >
+        <DialogContent className="w-full max-w-7xl h-[90vh] overflow-hidden sm:max-w-7xl lg:max-w-8xl xl:max-w-9xl flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Update Contest</DialogTitle>
+          </DialogHeader>
+          {selectedContest && (
+            <UpdateContestForm
+              contest={selectedContest}
+              onSuccess={() => {
+                setUpdateModalOpen(false);
+                setSelectedContest(null);
+                mutate("/api/contest/admin");
+              }}
+              onCancel={() => {
+                setUpdateModalOpen(false);
+                setSelectedContest(null);
+              }}
+            />
+          )}
+        </DialogContent>
       </Dialog>
 
       {/* Delete Confirmation Modal */}
