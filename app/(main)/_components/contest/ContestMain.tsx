@@ -1,7 +1,6 @@
 "use client";
 
 import { Calendar, Trophy, FileText, ArrowRight, Star, Zap, Target, Users, Award, Clock, CheckCircle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
@@ -33,15 +32,6 @@ interface ContestSection {
   updatedAt: string;
 }
 
-interface Contest {
-  id: string;
-  isActive: boolean;
-  startDate?: string;
-  endDate?: string;
-  sections?: ContestSection[];
-  createdAt: string;
-  updatedAt: string;
-}
 
 export default function ContestMain() {
   const { contest, isLoading, isError } = useActiveContest();
@@ -109,15 +99,6 @@ export default function ContestMain() {
     return "Inactive";
   };
 
-  const getStatusVariant = () => {
-    const status = getContestStatus();
-    switch (status) {
-      case "Active": return "default";
-      case "Coming Soon": return "secondary";
-      case "Ended": return "destructive";
-      default: return "outline";
-    }
-  };
 
   // Helper function to determine text color based on background
   const getTextColor = (backgroundColor: string) => {
@@ -323,7 +304,14 @@ export default function ContestMain() {
                   <div className="p-3 bg-orange-100 rounded-full group-hover:bg-orange-200 transition-colors">
                     <Trophy className="h-8 w-8 text-orange-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900">{demoCenterSection.title}</h3>
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900">{demoCenterSection.title}</h3>
+                    {demoCenterSection.subtitle && (
+                      <p className="text-lg text-orange-600 font-medium mt-1">
+                        {demoCenterSection.subtitle}
+                      </p>
+                    )}
+                  </div>
                 </div>
                 {demoCenterSection.description && (
                   <div 
@@ -349,7 +337,14 @@ export default function ContestMain() {
                   <div className="p-3 bg-blue-100 rounded-full group-hover:bg-blue-200 transition-colors">
                     <FileText className="h-8 w-8 text-blue-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900">{pumpNumbersSection.title}</h3>
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900">{pumpNumbersSection.title}</h3>
+                    {pumpNumbersSection.subtitle && (
+                      <p className="text-lg text-blue-600 font-medium mt-1">
+                        {pumpNumbersSection.subtitle}
+                      </p>
+                    )}
+                  </div>
                 </div>
                 {pumpNumbersSection.description && (
                   <div 
@@ -370,7 +365,14 @@ export default function ContestMain() {
                 <div className="p-3 bg-yellow-100 rounded-full">
                   <Target className="h-8 w-8 text-yellow-600" />
                 </div>
-                <h2 className="text-4xl font-bold text-gray-900">{missionSection.title}</h2>
+                <div>
+                  <h2 className="text-4xl font-bold text-gray-900">{missionSection.title}</h2>
+                  {missionSection.subtitle && (
+                    <p className="text-xl text-yellow-600 font-medium mt-2">
+                      {missionSection.subtitle}
+                    </p>
+                  )}
+                </div>
               </div>
               {missionSection.description && (
                 <div 
@@ -394,7 +396,12 @@ export default function ContestMain() {
             </div>
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
             <div className="relative z-10 max-w-4xl mx-auto text-center">
-              <h2 className="text-4xl font-bold mb-8">{whyMattersSection.title}</h2>
+              <h2 className="text-4xl font-bold mb-4">{whyMattersSection.title}</h2>
+              {whyMattersSection.subtitle && (
+                <p className="text-xl text-purple-100 font-medium mb-8">
+                  {whyMattersSection.subtitle}
+                </p>
+              )}
               {whyMattersSection.description && (
                 <div 
                   className="text-xl leading-relaxed text-purple-100"
@@ -409,6 +416,11 @@ export default function ContestMain() {
         {gettingStartedSection && (
           <section className="text-center">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">{gettingStartedSection.title}</h2>
+            {gettingStartedSection.subtitle && (
+              <p className="text-xl text-gray-600 font-medium mb-8">
+                {gettingStartedSection.subtitle}
+              </p>
+            )}
             {gettingStartedSection.description && (
               <div className="max-w-3xl mx-auto mb-12">
                 <div 
@@ -435,6 +447,11 @@ export default function ContestMain() {
           <section>
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-gray-900 mb-4">{yourMissionSection.title}</h2>
+              {yourMissionSection.subtitle && (
+                <p className="text-xl text-gray-600 font-medium mb-8">
+                  {yourMissionSection.subtitle}
+                </p>
+              )}
             </div>
             <div className="bg-white rounded-3xl p-12 shadow-2xl relative overflow-hidden">
               {/* <div className="absolute top-0 right-0 w-48 h-48 opacity-5">
@@ -538,6 +555,11 @@ export default function ContestMain() {
           <section>
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-gray-900 mb-4">{howToWinSection.title}</h2>
+              {howToWinSection.subtitle && (
+                <p className="text-xl text-gray-600 font-medium mb-8">
+                  {howToWinSection.subtitle}
+                </p>
+              )}
             </div>
             <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-3xl p-12">
               {howToWinSection.description && (
@@ -558,7 +580,14 @@ export default function ContestMain() {
                 <div className="p-3 bg-green-100 rounded-full">
                   <CheckCircle className="h-8 w-8 text-green-600" />
                 </div>
-                <h2 className="text-4xl font-bold text-gray-900">{fairTransparentSection.title}</h2>
+                <div>
+                  <h2 className="text-4xl font-bold text-gray-900">{fairTransparentSection.title}</h2>
+                  {fairTransparentSection.subtitle && (
+                    <p className="text-xl text-green-600 font-medium mt-2">
+                      {fairTransparentSection.subtitle}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
             {fairTransparentSection.description && (
@@ -575,6 +604,11 @@ export default function ContestMain() {
           <section>
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-gray-900 mb-4">{whyJoinSection.title}</h2>
+              {whyJoinSection.subtitle && (
+                <p className="text-xl text-gray-600 font-medium mb-8">
+                  {whyJoinSection.subtitle}
+                </p>
+              )}
             </div>
             <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-12">
               {whyJoinSection.description && (
@@ -592,6 +626,11 @@ export default function ContestMain() {
           <section>
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-gray-900 mb-4">{timelineSection.title}</h2>
+              {timelineSection.subtitle && (
+                <p className="text-xl text-gray-600 font-medium mb-8">
+                  {timelineSection.subtitle}
+                </p>
+              )}
             </div>
             <div className="bg-white rounded-3xl p-12 shadow-lg">
               {timelineSection.description && (
@@ -617,7 +656,12 @@ export default function ContestMain() {
               </div>
               <div className="absolute inset-0 bg-gradient-to-r from-orange-500/80 to-pink-500/80"></div>
               <div className="relative z-10">
-                <h2 className="text-4xl md:text-5xl font-bold mb-8">{readyToJoinSection.title}</h2>
+                <h2 className="text-4xl md:text-5xl font-bold mb-4">{readyToJoinSection.title}</h2>
+                {readyToJoinSection.subtitle && (
+                  <p className="text-xl text-orange-100 font-medium mb-8">
+                    {readyToJoinSection.subtitle}
+                  </p>
+                )}
                 {readyToJoinSection.description && (
                   <div 
                     className="text-xl leading-relaxed mb-12 max-w-3xl mx-auto"
