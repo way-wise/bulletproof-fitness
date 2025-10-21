@@ -40,8 +40,7 @@ export const contestSectionSchema = object({
     .optional()
     .max(100, "CTA text must be less than 100 characters"),
   ctaUrl: string()
-    .optional()
-    .matches(/^\/[a-zA-Z0-9\-_\/]*$/, "CTA URL must be a valid path (e.g., /upload-video)"),
+    .optional(),
   order: number()
     .required("Order is required")
     .min(0, "Order must be 0 or greater"),

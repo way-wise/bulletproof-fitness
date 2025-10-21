@@ -119,11 +119,12 @@ export default function UpdateContestForm({ contest, onSuccess, onCancel }: Upda
     try {
       // Validate sections before submission
       const { contestSectionSchema } = await import("@/schema/contestSchema");
-
+ 
       for (let i = 0; i < sections.length; i++) {
         try {
           await contestSectionSchema.validate(sections[i], { abortEarly: false });
         } catch (error: any) {
+          console.error(`Section ${i + 1} validation error:`, error.errors);
           toast.error(`Section ${i + 1}: ${error.errors?.join(', ') || 'Validation failed'}`);
           setIsSubmitting(false);
           return;
