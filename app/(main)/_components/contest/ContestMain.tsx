@@ -217,7 +217,7 @@ export default function ContestMain() {
 
       {/* Contest Timeline - Floating Card */}
       {(contest.startDate || contest.endDate) && (
-        <section className="relative -mt-20 z-20 px-4">
+        <section className="relative z-10 -mt-20 px-4">
           <div className="max-w-4xl mx-auto">
             <Card className="bg-white/90 backdrop-blur-sm shadow-2xl border-0">
               <CardContent className="p-8">

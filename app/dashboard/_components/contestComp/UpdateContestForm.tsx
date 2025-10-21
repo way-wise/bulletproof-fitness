@@ -5,14 +5,13 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { FormError } from "@/components/ui/form-error";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { updateContestSchema, UpdateContestFormData, ContestSectionFormData, ContestCardFormData } from "@/schema/contestSchema";
+import { updateContestSchema, ContestSectionFormData } from "@/schema/contestSchema";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 
 interface ContestCard {
@@ -20,8 +19,6 @@ interface ContestCard {
   title: string;
   description: string;
   backgroundColor: string;
-  order: number;
-  cardType?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -35,8 +32,6 @@ interface ContestSection {
   description?: string;
   ctaText?: string;
   ctaUrl?: string;
-  order: number;
-  isVisible: boolean;
   cards: ContestCard[];
   createdAt: string;
   updatedAt: string;
@@ -91,7 +86,8 @@ export default function UpdateContestForm({ contest, onSuccess, onCancel }: Upda
       });
 
       // Set sections
-      const formattedSections: ContestSectionFormData[] = contest.sections.map(section => ({
+      console.log('Contest sections:', contest.sections);
+      const formattedSections: ContestSectionFormData[] = (contest.sections || []).map(section => ({
         id: section.id,
         sectionType: section.sectionType,
         title: section.title || "",
@@ -99,17 +95,14 @@ export default function UpdateContestForm({ contest, onSuccess, onCancel }: Upda
         description: section.description || "",
         ctaText: section.ctaText || "",
         ctaUrl: section.ctaUrl || "",
-        order: section.order,
-        isVisible: section.isVisible,
-        cards: section.cards.map(card => ({
+        cards: (section.cards || []).map(card => ({
           id: card.id,
           title: card.title,
           description: card.description,
           backgroundColor: card.backgroundColor,
-          order: card.order,
-          cardType: card.cardType || "",
         })),
       }));
+      console.log('Formatted sections:', formattedSections);
       setSections(formattedSections);
     }
   }, [contest, reset]);
@@ -247,15 +240,16 @@ export default function UpdateContestForm({ contest, onSuccess, onCancel }: Upda
 
             <TabsContent value="sections" className="space-y-6">
               <div className="space-y-6">
-                {sections.map((section, sectionIndex) => (
+                {sections.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    No sections found. Please check the contest data.
+                  </div>
+                ) : (
+                  sections.map((section, sectionIndex) => (
                   <Card key={section.id} className="border-l-4 border-blue-500">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <span className="capitalize">{section.sectionType.replace('_', ' ')}</span>
-                        <Switch
-                          checked={section.isVisible}
-                          onCheckedChange={(checked) => updateSectionField(sectionIndex, 'isVisible', checked)}
-                        />
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -290,28 +284,30 @@ export default function UpdateContestForm({ contest, onSuccess, onCancel }: Upda
                         />
                       </div>
 
-                      {/* CTA Button */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label>CTA Button Text</Label>
-                          <Input
-                            value={section.ctaText || ''}
-                            onChange={(e) => updateSectionField(sectionIndex, 'ctaText', e.target.value)}
-                            placeholder="e.g., Get Started"
-                          />
-                        </div>
-                        <div>
-                          <Label>CTA Button URL</Label>
-                          <Input
-                            value={section.ctaUrl || ''}
-                            onChange={(e) => updateSectionField(sectionIndex, 'ctaUrl', e.target.value)}
-                            placeholder="e.g., /upload-video"
-                          />
-                        </div>
-                      </div>
+                       {/* CTA Button - Only for sections that use it in UI */}
+                       {['hero', 'getting_started', 'your_mission', 'ready_to_join'].includes(section.sectionType) && (
+                         <div className="grid grid-cols-2 gap-4">
+                           <div>
+                             <Label>CTA Button Text</Label>
+                             <Input
+                               value={section.ctaText || ''}
+                               onChange={(e) => updateSectionField(sectionIndex, 'ctaText', e.target.value)}
+                               placeholder="e.g., Get Started"
+                             />
+                           </div>
+                           <div>
+                             <Label>CTA Button URL</Label>
+                             <Input
+                               value={section.ctaUrl || ''}
+                               onChange={(e) => updateSectionField(sectionIndex, 'ctaUrl', e.target.value)}
+                               placeholder="e.g., /upload-video"
+                             />
+                           </div>
+                         </div>
+                       )}
 
-                      {/* Cards for sections that have them */}
-                      {section.cards && section.cards.length > 0 && (
+                       {/* Cards - Only for prizes section */}
+                       {section.sectionType === 'prizes' && section.cards && section.cards.length > 0 && (
                         <div className="mt-6">
                           <Label className="text-lg font-semibold">Cards</Label>
                           <div className="space-y-4 mt-2">
@@ -353,7 +349,8 @@ export default function UpdateContestForm({ contest, onSuccess, onCancel }: Upda
                       )}
                     </CardContent>
                   </Card>
-                ))}
+                  ))
+                )}
               </div>
             </TabsContent>
           </div>

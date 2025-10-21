@@ -1,4 +1,4 @@
-import { object, string, boolean, date, array, number, InferType } from "yup";
+import { object, string, boolean, date, array, InferType } from "yup";
 
 // Contest card schema
 export const contestCardSchema = object({
@@ -11,11 +11,6 @@ export const contestCardSchema = object({
   backgroundColor: string()
     .required("Background color is required")
     .matches(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, "Must be a valid hex color code"),
-  order: number()
-    .required("Order is required")
-    .min(0, "Order must be 0 or greater"),
-  cardType: string()
-    .optional(),
 });
 
 // Contest section schema
@@ -41,11 +36,6 @@ export const contestSectionSchema = object({
     .max(100, "CTA text must be less than 100 characters"),
   ctaUrl: string()
     .optional(),
-  order: number()
-    .required("Order is required")
-    .min(0, "Order must be 0 or greater"),
-  isVisible: boolean()
-    .default(true),
   cards: array(contestCardSchema)
     .optional()
     .default([]),

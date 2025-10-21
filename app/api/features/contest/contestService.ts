@@ -39,7 +39,6 @@ export class ContestService {
         where: { isActive: true },
         include: {
           sections: {
-            where: { isVisible: true },
             include: {
               cards: {
                 orderBy: { order: "asc" }
@@ -125,14 +124,14 @@ export class ContestService {
               description: section.description || null,
               ctaText: section.ctaText || null,
               ctaUrl: section.ctaUrl || null,
-              order: section.order,
+              order: section.order ?? 0,
               isVisible: section.isVisible ?? true,
               cards: section.cards && section.cards.length > 0 ? {
                 create: section.cards.map((card) => ({
                   title: card.title,
                   description: card.description,
                   backgroundColor: card.backgroundColor,
-                  order: card.order,
+                  order: card.order ?? 0,
                   cardType: card.cardType || null,
                 }))
               } : undefined,
@@ -198,14 +197,14 @@ export class ContestService {
                 description: section.description || null,
                 ctaText: section.ctaText || null,
                 ctaUrl: section.ctaUrl || null,
-                order: section.order,
+                order: section.order ?? 0,
                 isVisible: section.isVisible ?? true,
                 cards: section.cards && section.cards.length > 0 ? {
                   create: section.cards.map((card) => ({
                     title: card.title,
                     description: card.description,
                     backgroundColor: card.backgroundColor,
-                    order: card.order,
+                    order: card.order ?? 0,
                     cardType: card.cardType || null,
                   }))
                 } : undefined,
