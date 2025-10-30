@@ -54,7 +54,9 @@ export const auth = betterAuth({
     autoSignInAfterVerification: true,
     expiresIn: 3600, // 1 hour,
   },
-  plugins: [admin()],
+  plugins: [
+    admin(),
+  ],
 });
 
 // Get the current user session from request headers

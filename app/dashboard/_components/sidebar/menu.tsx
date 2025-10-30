@@ -8,6 +8,7 @@ import {
   MessageSquareMore,
   Play,
   Rows3,
+  Shield,
   Trophy,
   UsersRound,
 } from "lucide-react";
@@ -31,6 +32,11 @@ const SidebarMenu = () => {
       title: "Users",
       icon: <UsersRound className="icon" />,
       url: "/dashboard/users",
+    },
+    {
+      title: "Roles",
+      icon: <Shield className="icon" />,
+      url: "/dashboard/roles",
     },
     {
       title: "Points",

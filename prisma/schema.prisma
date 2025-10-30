@@ -89,6 +89,54 @@ model verifications {
   @@index([identifier])
 }
 
+// Dynamic Permission System
+model Role {
+  id          String   @id @default(ulid())
+  name        String   @unique // e.g., "admin", "moderator", "contentManager"
+  description String?
+  isSystem    Boolean  @default(false) // System roles cannot be deleted
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  rolePermissions RolePermission[]
+
+  @@index([name])
+  @@index([isSystem])
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(ulid())
+  resource    String // e.g., "exerciseSetup", "exerciseLibrary", "user"
+  action      String // e.g., "create", "update", "delete", "publish"
+  displayName String // e.g., "Create Exercise Setup"
+  description String?
+  group       String // For UI grouping: "content", "user_management", "system"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  rolePermissions RolePermission[]
+
+  @@unique([resource, action])
+  @@index([resource])
+  @@index([group])
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String     @id @default(ulid())
+  roleId       String
+  permissionId String
+  createdAt    DateTime   @default(now())
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
 model BodyPart {
   id              String            @id @default(ulid())
   name            String
