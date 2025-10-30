@@ -21,6 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { mutate } from "swr";
 
 interface Permission {
   id: string;
@@ -69,6 +70,7 @@ export function RoleEditForm({
 
       if (res.ok) {
         toast.success("Role updated successfully");
+        mutate("/api/admin/roles"); // Revalidate roles cache
         router.refresh();
       } else {
         const error = await res.json();
@@ -91,6 +93,7 @@ export function RoleEditForm({
 
       if (res.ok) {
         toast.success("Role deleted successfully");
+        mutate("/api/admin/roles"); // Revalidate roles cache
         router.push("/dashboard/roles");
         router.refresh();
       } else {

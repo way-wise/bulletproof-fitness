@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { mutate } from "swr";
 
 interface Permission {
   id: string;
@@ -48,6 +49,7 @@ export function CreateRoleForm({
 
       if (res.ok) {
         toast.success("Role created successfully");
+        mutate("/api/admin/roles"); // Revalidate roles cache
         router.push("/dashboard/roles");
         router.refresh();
       } else {
@@ -65,19 +67,19 @@ export function CreateRoleForm({
     setSelectedPermissions((prev) =>
       prev.includes(permissionId)
         ? prev.filter((id) => id !== permissionId)
-        : [...prev, permissionId]
+        : [...prev, permissionId],
     );
   };
 
   const toggleGroup = (permissions: Permission[]) => {
     const permissionIds = permissions.map((p) => p.id);
     const allSelected = permissionIds.every((id) =>
-      selectedPermissions.includes(id)
+      selectedPermissions.includes(id),
     );
 
     if (allSelected) {
       setSelectedPermissions((prev) =>
-        prev.filter((id) => !permissionIds.includes(id))
+        prev.filter((id) => !permissionIds.includes(id)),
       );
     } else {
       setSelectedPermissions((prev) => [
@@ -91,14 +93,14 @@ export function CreateRoleForm({
       <div>
         <Link href="/dashboard/roles">
           <Button variant="ghost" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Roles
           </Button>
         </Link>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="border rounded-lg p-6 space-y-4">
+        <div className="space-y-4 rounded-lg border p-6">
           <div className="space-y-2">
             <Label htmlFor="name">Role Name *</Label>
             <Input
@@ -129,7 +131,7 @@ export function CreateRoleForm({
           </div>
         </div>
 
-        <div className="border rounded-lg p-6 space-y-4">
+        <div className="space-y-4 rounded-lg border p-6">
           <div className="flex items-center justify-between">
             <Label className="text-lg font-semibold">Permissions *</Label>
             <p className="text-sm text-muted-foreground">
@@ -140,36 +142,36 @@ export function CreateRoleForm({
           <div className="space-y-6">
             {Object.entries(permissionGroups).map(([group, permissions]) => (
               <div key={group} className="space-y-3">
-                <div className="flex items-center gap-2 pb-2 border-b">
+                <div className="flex items-center gap-2 border-b pb-2">
                   <Checkbox
                     id={`group-${group}`}
                     checked={permissions.every((p) =>
-                      selectedPermissions.includes(p.id)
+                      selectedPermissions.includes(p.id),
                     )}
                     onCheckedChange={() => toggleGroup(permissions)}
                   />
                   <Label
                     htmlFor={`group-${group}`}
-                    className="font-semibold text-base uppercase cursor-pointer"
+                    className="cursor-pointer text-base font-semibold uppercase"
                   >
                     {group.replace(/_/g, " ")}
                   </Label>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 ml-6">
+                <div className="ml-6 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
                   {permissions.map((permission) => (
                     <div
                       key={permission.id}
-                      className="flex items-start gap-2 p-2 rounded hover:bg-muted/50"
+                      className="flex items-center gap-2 rounded p-2 hover:bg-muted/50"
                     >
                       <Checkbox
                         id={permission.id}
                         checked={selectedPermissions.includes(permission.id)}
                         onCheckedChange={() => togglePermission(permission.id)}
-                        className="mt-1"
+                        className=""
                       />
                       <Label
                         htmlFor={permission.id}
-                        className="text-sm font-normal cursor-pointer leading-tight"
+                        className="cursor-pointer text-sm leading-tight font-normal"
                       >
                         {permission.displayName}
                       </Label>
@@ -188,7 +190,7 @@ export function CreateRoleForm({
             </Button>
           </Link>
           <Button type="submit" disabled={loading}>
-            {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Create Role
           </Button>
         </div>

@@ -22,13 +22,28 @@ import {
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { admin } from "@/lib/auth-client";
 import { formatDate } from "@/lib/date-format";
 import { signUpSchema } from "@/schema/authSchema";
 import { User } from "@/schema/userSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
-import { Ban, Eye, MoreVertical, Plus, Trash } from "lucide-react";
+import {
+  Ban,
+  Eye,
+  MoreVertical,
+  Plus,
+  Trash,
+  UserCog,
+  Loader2,
+} from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -42,7 +57,10 @@ export const UsersTable = () => {
   const [banModalOpen, setBanModalOpen] = useState(false);
   const [unbanModalOpen, setUnbanModalOpen] = useState(false);
   const [addUserModalOpen, setAddUserModalOpen] = useState(false);
+  const [updateRoleModalOpen, setUpdateRoleModalOpen] = useState(false);
   const [userId, setUserId] = useState<string | undefined>("");
+  const [selectedRole, setSelectedRole] = useState<string>("user");
+  const [updatingRole, setUpdatingRole] = useState(false);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 1,
     pageSize: 10,
@@ -80,10 +98,24 @@ export const UsersTable = () => {
   const url = buildUrl();
   const { isValidating, data } = useSWR(url);
 
+  // Fetch roles list with shared cache key
+  const { data: rolesData } = useSWR("/api/admin/roles", {
+    revalidateOnFocus: true,
+    revalidateOnMount: true,
+    dedupingInterval: 2000,
+  });
+
   // Reset to page 1 when filters change
   useEffect(() => {
     setPagination((prev) => ({ ...prev, pageIndex: 1 }));
   }, [filters]);
+
+  // Revalidate roles when add user modal opens
+  useEffect(() => {
+    if (addUserModalOpen) {
+      mutate("/api/admin/roles");
+    }
+  }, [addUserModalOpen]);
 
   // Add User Form
   const addUserForm = useForm({
@@ -94,10 +126,11 @@ export const UsersTable = () => {
       password: "",
     },
   });
+  const [newUserRole, setNewUserRole] = useState("user");
 
   // Handle Add User
   const handleAddUser = async (values: InferType<typeof signUpSchema>) => {
-    const { error } = await admin.createUser({
+    const { error, data } = await admin.createUser({
       name: values.name,
       email: values.email,
       password: values.password,
@@ -109,9 +142,23 @@ export const UsersTable = () => {
       return toast.error(error.message);
     }
 
+    // Update the user's role if it's not the default "user"
+    if (data?.user?.id && newUserRole !== "user") {
+      try {
+        await fetch(`/api/users/${data.user.id}/role`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role: newUserRole }),
+        });
+      } catch (err) {
+        console.error("Failed to set user role:", err);
+      }
+    }
+
     toast.success("User added successfully");
     setAddUserModalOpen(false);
     addUserForm.reset();
+    setNewUserRole("user");
     mutate(url);
   };
 
@@ -177,6 +224,32 @@ export const UsersTable = () => {
 
     setDeleteModalOpen(false);
     mutate(url);
+  };
+
+  // Handle Update Role
+  const handleUpdateRole = async () => {
+    setUpdatingRole(true);
+    try {
+      const res = await fetch(`/api/users/${userId}/role`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: selectedRole }),
+      });
+
+      if (res.ok) {
+        toast.success("User role updated successfully");
+        setUpdateRoleModalOpen(false);
+        mutate(url);
+        mutate("/api/admin/roles"); // Revalidate roles cache
+      } else {
+        const error = await res.json();
+        toast.error(error.error || "Failed to update role");
+      }
+    } catch (error) {
+      toast.error("Failed to update role");
+    } finally {
+      setUpdatingRole(false);
+    }
   };
 
   // Table columns
@@ -249,17 +322,23 @@ export const UsersTable = () => {
               <DropdownMenuTrigger>
                 <MoreVertical />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-36">
+              <DropdownMenuContent align="end" className="w-44">
                 <DropdownMenuItem asChild>
                   <Link href={`/dashboard/users/${id}`}>
                     <Eye />
                     <span>View</span>
                   </Link>
                 </DropdownMenuItem>
-                {/* <DropdownMenuItem>
-                  <Pencil />
-                  <span>Edit</span>
-                </DropdownMenuItem> */}
+                <DropdownMenuItem
+                  onClick={() => {
+                    setUserId(id);
+                    setSelectedRole(row.original.role || "user");
+                    setUpdateRoleModalOpen(true);
+                  }}
+                >
+                  <UserCog />
+                  <span>Update Role</span>
+                </DropdownMenuItem>
                 {banned ? (
                   <DropdownMenuItem
                     variant="destructive"
@@ -323,18 +402,18 @@ export const UsersTable = () => {
                   key: "role",
                   label: "Role",
                   placeholder: "Filter by role",
-                  options: [
-                    { value: "admin", label: "Admin" },
-                    { value: "user", label: "User" },
-                  ],
+                  options:
+                    rolesData?.map((role: any) => ({
+                      value: role.name,
+                      label:
+                        role.name.charAt(0).toUpperCase() + role.name.slice(1),
+                    })) || [],
                 },
                 {
                   key: "banned",
                   label: "Banned Users",
                   placeholder: "Show banned users",
-                  options: [
-                    { value: "true", label: "Banned" },
-                  ],
+                  options: [{ value: "true", label: "Banned" }],
                 },
               ],
               sortOptions: [
@@ -408,6 +487,25 @@ export const UsersTable = () => {
                   </FormItem>
                 )}
               />
+              {rolesData && rolesData.length > 0 && (
+                <div className="space-y-2">
+                  <label className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Role
+                  </label>
+                  <Select value={newUserRole} onValueChange={setNewUserRole}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent position="popper" sideOffset={5}>
+                      {rolesData.map((role: any) => (
+                        <SelectItem key={role.id} value={role.name}>
+                          <span className="capitalize">{role.name}</span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <div className="flex justify-end gap-3 py-5">
                 <Button
                   type="button"
@@ -550,6 +648,50 @@ export const UsersTable = () => {
             </FormFieldset>
           </form>
         </Form>
+      </Modal>
+
+      {/* Update Role Modal */}
+      <Modal
+        isOpen={updateRoleModalOpen}
+        onClose={() => setUpdateRoleModalOpen(false)}
+        title="Update User Role"
+        isPending={false}
+      >
+        <div>
+          <div>
+            <label className="mb-2 block text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Role
+            </label>
+            <Select value={selectedRole} onValueChange={setSelectedRole}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select role" />
+              </SelectTrigger>
+              <SelectContent position="popper" sideOffset={5}>
+                {rolesData?.map((role: any) => (
+                  <SelectItem key={role.id} value={role.name}>
+                    <span className="capitalize">{role.name}</span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex justify-end gap-3 py-5">
+            <Button
+              type="button"
+              onClick={() => setUpdateRoleModalOpen(false)}
+              variant="secondary"
+              disabled={updatingRole}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleUpdateRole} disabled={updatingRole}>
+              {updatingRole && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Update Role
+            </Button>
+          </div>
+        </div>
       </Modal>
     </>
   );
