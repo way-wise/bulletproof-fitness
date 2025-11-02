@@ -447,6 +447,20 @@ async function main() {
   // Create system roles
   console.log("👥 Creating system roles...");
 
+  // Super Admin role with all permissions (for Better Auth admin plugin)
+  const superRole = await prisma.role.upsert({
+    where: { name: "super" },
+    update: {
+      description: "Super Administrator with full system access",
+      isSystem: true,
+    },
+    create: {
+      name: "super",
+      description: "Super Administrator with full system access",
+      isSystem: true,
+    },
+  });
+
   // Admin role with all permissions
   const adminRole = await prisma.role.upsert({
     where: { name: "admin" },
@@ -461,12 +475,30 @@ async function main() {
     },
   });
 
-  // Assign all permissions to admin
+  // Assign all permissions to both super and admin roles
   const allPermissions = await prisma.permission.findMany();
+
+  // Clear existing permissions for super role
+  await prisma.rolePermission.deleteMany({
+    where: { roleId: superRole.id },
+  });
+
+  // Clear existing permissions for admin role
   await prisma.rolePermission.deleteMany({
     where: { roleId: adminRole.id },
   });
 
+  // Assign all permissions to super role
+  for (const permission of allPermissions) {
+    await prisma.rolePermission.create({
+      data: {
+        roleId: superRole.id,
+        permissionId: permission.id,
+      },
+    });
+  }
+
+  // Assign all permissions to admin role
   for (const permission of allPermissions) {
     await prisma.rolePermission.create({
       data: {

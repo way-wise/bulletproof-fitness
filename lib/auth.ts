@@ -1,9 +1,10 @@
 import { emailEvents, EmailEventType } from "@/app/api/lib/events/email_event";
 import prisma from "@/lib/prisma";
 import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin } from "better-auth/plugins";
+import { prismaAdapter } from "better-auth/adapters/prisma";
 import { headers } from "next/headers";
+import { ac, superAdmin, admin as adminRole, user } from "./permissions";
 
 // Auth Config
 export const auth = betterAuth({
@@ -56,7 +57,12 @@ export const auth = betterAuth({
   },
   plugins: [
     admin({
-      adminRoles: ["super"],
+      ac,
+      roles: {
+        super: superAdmin,
+        admin: adminRole,
+        user,
+      },
       defaultRole: "user",
     }),
   ],
