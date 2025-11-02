@@ -52,8 +52,11 @@ export function RoleEditForm({
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>(
-    role.rolePermissions.map((rp) => rp.permission.id)
+    role.rolePermissions.map((rp) => rp.permission.id),
   );
+  const [formData, setFormData] = useState({
+    description: role.description || "",
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,6 +67,7 @@ export function RoleEditForm({
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          description: formData.description,
           permissionIds: selectedPermissions,
         }),
       });
@@ -107,23 +111,59 @@ export function RoleEditForm({
     }
   };
 
-  const togglePermission = (permissionId: string) => {
-    setSelectedPermissions((prev) =>
-      prev.includes(permissionId)
-        ? prev.filter((id) => id !== permissionId)
-        : [...prev, permissionId]
-    );
+  const togglePermission = (
+    permissionId: string,
+    permissions: Permission[],
+  ) => {
+    setSelectedPermissions((prev) => {
+      const clickedPermission = permissions.find((p) => p.id === permissionId);
+      const isCurrentlySelected = prev.includes(permissionId);
+
+      // Check if the clicked permission is a LIST or VIEW permission
+      const isListOrView =
+        clickedPermission?.displayName.includes("_LIST") ||
+        clickedPermission?.displayName.includes("_VIEW");
+
+      if (isCurrentlySelected) {
+        // Deselecting
+        if (isListOrView) {
+          // If deselecting LIST/VIEW, remove ALL permissions in this group
+          const groupPermissionIds = permissions.map((p) => p.id);
+          return prev.filter((id) => !groupPermissionIds.includes(id));
+        } else {
+          // Just remove this permission
+          return prev.filter((id) => id !== permissionId);
+        }
+      } else {
+        // Selecting - add this permission AND auto-select LIST/VIEW if exists
+        const newSelected = [...prev, permissionId];
+
+        // Find LIST or VIEW permission in the same group
+        const listOrViewPerm = permissions.find(
+          (p) =>
+            (p.displayName.includes("_LIST") ||
+              p.displayName.includes("_VIEW")) &&
+            !newSelected.includes(p.id),
+        );
+
+        if (listOrViewPerm) {
+          newSelected.push(listOrViewPerm.id);
+        }
+
+        return newSelected;
+      }
+    });
   };
 
   const toggleGroup = (permissions: Permission[]) => {
     const permissionIds = permissions.map((p) => p.id);
     const allSelected = permissionIds.every((id) =>
-      selectedPermissions.includes(id)
+      selectedPermissions.includes(id),
     );
 
     if (allSelected) {
       setSelectedPermissions((prev) =>
-        prev.filter((id) => !permissionIds.includes(id))
+        prev.filter((id) => !permissionIds.includes(id)),
       );
     } else {
       setSelectedPermissions((prev) => [
@@ -137,7 +177,7 @@ export function RoleEditForm({
       <div className="flex items-center justify-between">
         <Link href="/dashboard/roles">
           <Button variant="ghost" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Roles
           </Button>
         </Link>
@@ -147,9 +187,9 @@ export function RoleEditForm({
             <AlertDialogTrigger asChild>
               <Button variant="destructive" size="sm" disabled={deleting}>
                 {deleting ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
-                  <Trash2 className="h-4 w-4 mr-2" />
+                  <Trash2 className="mr-2 h-4 w-4" />
                 )}
                 Delete Role
               </Button>
@@ -158,8 +198,8 @@ export function RoleEditForm({
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This will permanently delete the role "{role.name}".
-                  This action cannot be undone.
+                  This will permanently delete the role "{role.name}". This
+                  action cannot be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -174,25 +214,37 @@ export function RoleEditForm({
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="border rounded-lg p-6 space-y-4">
+        <div className="space-y-4 rounded-lg border p-6">
           <div className="space-y-2">
             <Label>Role Name</Label>
             <Input value={role.name} disabled className="capitalize" />
+            <p className="text-xs text-muted-foreground">
+              Role name cannot be changed
+            </p>
           </div>
 
           <div className="space-y-2">
-            <Label>Description</Label>
-            <Textarea value={role.description || ""} disabled rows={3} />
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              disabled={role.isSystem}
+              rows={3}
+              placeholder="Describe the role's purpose"
+            />
           </div>
 
           {role.isSystem && (
-            <p className="text-sm text-orange-600 bg-orange-50 p-3 rounded-md">
+            <p className="rounded-md bg-orange-50 p-3 text-sm text-orange-600">
               ⚠️ This is a system role. You can only modify its permissions.
             </p>
           )}
         </div>
 
-        <div className="border rounded-lg p-6 space-y-4">
+        <div className="space-y-4 rounded-lg border p-6">
           <div className="flex items-center justify-between">
             <Label className="text-lg font-semibold">Permissions</Label>
             <p className="text-sm text-muted-foreground">
@@ -203,38 +255,39 @@ export function RoleEditForm({
           <div className="space-y-6">
             {Object.entries(permissionGroups).map(([group, permissions]) => (
               <div key={group} className="space-y-3">
-                <div className="flex items-center gap-2 pb-2 border-b">
+                <div className="flex items-center gap-2 border-b pb-2">
                   <Checkbox
                     id={`group-${group}`}
                     checked={permissions.every((p) =>
-                      selectedPermissions.includes(p.id)
+                      selectedPermissions.includes(p.id),
                     )}
                     onCheckedChange={() => toggleGroup(permissions)}
                   />
                   <Label
                     htmlFor={`group-${group}`}
-                    className="font-semibold text-base uppercase cursor-pointer"
+                    className="cursor-pointer text-base font-semibold uppercase"
                   >
                     {group.replace(/_/g, " ")}
                   </Label>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 ml-6">
+                <div className="ml-6 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
                   {permissions.map((permission) => (
                     <div
                       key={permission.id}
-                      className="flex items-start gap-2 p-2 rounded hover:bg-muted/50"
+                      className="flex items-start gap-2 rounded p-2 hover:bg-muted/50"
                     >
                       <Checkbox
                         id={permission.id}
                         checked={selectedPermissions.includes(permission.id)}
-                        onCheckedChange={() => togglePermission(permission.id)}
-                        className="mt-1"
+                        onCheckedChange={() =>
+                          togglePermission(permission.id, permissions)
+                        }
                       />
                       <Label
                         htmlFor={permission.id}
-                        className="text-sm font-normal cursor-pointer leading-tight"
+                        className="cursor-pointer text-sm leading-tight font-normal"
                       >
-                        {permission.displayName}
+                        {permission.displayName.split("_").join(" ")}
                       </Label>
                     </div>
                   ))}
@@ -246,7 +299,7 @@ export function RoleEditForm({
 
         <div className="flex justify-end">
           <Button type="submit" disabled={loading}>
-            {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save Changes
           </Button>
         </div>

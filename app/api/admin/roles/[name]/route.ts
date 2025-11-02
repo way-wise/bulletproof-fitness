@@ -5,6 +5,7 @@ import {
   deleteRole,
 } from "@/lib/permissions-service";
 import { NextRequest } from "next/server";
+import prisma from "@/lib/prisma";
 
 export async function GET(
   req: NextRequest,
@@ -60,13 +61,26 @@ export async function PATCH(
 
   try {
     const body = await req.json();
-    const { permissionIds } = body;
+    const { permissionIds, description } = body;
 
     if (!permissionIds || !Array.isArray(permissionIds)) {
       return Response.json(
         { error: "Invalid permission IDs" },
         { status: 400 }
       );
+    }
+
+    // Update role description if provided and role is not system role
+    const role = await getRoleWithPermissions(name);
+    if (!role) {
+      return Response.json({ error: "Role not found" }, { status: 404 });
+    }
+    
+    if (!role.isSystem && description !== undefined) {
+      await prisma.role.update({
+        where: { name },
+        data: { description },
+      });
     }
 
     await updateRolePermissions(name, permissionIds);

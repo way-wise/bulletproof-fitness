@@ -63,12 +63,48 @@ export function CreateRoleForm({
     }
   };
 
-  const togglePermission = (permissionId: string) => {
-    setSelectedPermissions((prev) =>
-      prev.includes(permissionId)
-        ? prev.filter((id) => id !== permissionId)
-        : [...prev, permissionId],
-    );
+  const togglePermission = (
+    permissionId: string,
+    permissions: Permission[],
+  ) => {
+    setSelectedPermissions((prev) => {
+      const clickedPermission = permissions.find((p) => p.id === permissionId);
+      const isCurrentlySelected = prev.includes(permissionId);
+
+      // Check if the clicked permission is a LIST or VIEW permission
+      const isListOrView =
+        clickedPermission?.displayName.includes("_LIST") ||
+        clickedPermission?.displayName.includes("_VIEW");
+
+      if (isCurrentlySelected) {
+        // Deselecting
+        if (isListOrView) {
+          // If deselecting LIST/VIEW, remove ALL permissions in this group
+          const groupPermissionIds = permissions.map((p) => p.id);
+          return prev.filter((id) => !groupPermissionIds.includes(id));
+        } else {
+          // Just remove this permission
+          return prev.filter((id) => id !== permissionId);
+        }
+      } else {
+        // Selecting - add this permission AND auto-select LIST/VIEW if exists
+        const newSelected = [...prev, permissionId];
+
+        // Find LIST or VIEW permission in the same group
+        const listOrViewPerm = permissions.find(
+          (p) =>
+            (p.displayName.includes("_LIST") ||
+              p.displayName.includes("_VIEW")) &&
+            !newSelected.includes(p.id),
+        );
+
+        if (listOrViewPerm) {
+          newSelected.push(listOrViewPerm.id);
+        }
+
+        return newSelected;
+      }
+    });
   };
 
   const toggleGroup = (permissions: Permission[]) => {
@@ -166,14 +202,15 @@ export function CreateRoleForm({
                       <Checkbox
                         id={permission.id}
                         checked={selectedPermissions.includes(permission.id)}
-                        onCheckedChange={() => togglePermission(permission.id)}
-                        className=""
+                        onCheckedChange={() =>
+                          togglePermission(permission.id, permissions)
+                        }
                       />
                       <Label
                         htmlFor={permission.id}
                         className="cursor-pointer text-sm leading-tight font-normal"
                       >
-                        {permission.displayName}
+                        {permission.displayName.split("_").join(" ")}
                       </Label>
                     </div>
                   ))}
