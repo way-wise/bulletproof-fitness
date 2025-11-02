@@ -55,7 +55,9 @@ export const auth = betterAuth({
     expiresIn: 3600, // 1 hour,
   },
   plugins: [
-    admin(),
+    admin({
+      defaultRole: "user",
+    }),
   ],
 });
 

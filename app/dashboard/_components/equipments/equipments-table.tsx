@@ -33,6 +33,7 @@ import useSWR, { mutate } from "swr";
 import { InferType } from "yup";
 import UpdateEquipments from "./UpdateEquipments";
 import { TableFilters, FilterValues } from "../shared/TableFilters";
+import { useSessionWithPermissions } from "@/hooks/useSessionWithPermissions";
 
 type TEquipment = {
   id?: string;
@@ -42,6 +43,21 @@ type TEquipment = {
 };
 
 const EquipmentsTable = () => {
+  const { data: session } = useSessionWithPermissions();
+
+  // Permission checks
+  const hasPermission = (action: string) => {
+    if (!session?.user) return false;
+    if (session.user.role === "admin") return true;
+    const user = session.user as any;
+    return user.permissions?.some(
+      (p: any) => p.resource === "equipment" && p.action === action
+    ) || false;
+  };
+
+  const canCreate = hasPermission("create");
+  const canUpdate = hasPermission("update");
+  const canDelete = hasPermission("delete");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [addEquipmentModalOpen, setAddEquipmentModalOpen] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
@@ -165,55 +181,66 @@ const EquipmentsTable = () => {
       cell: ({ row }) =>
         row.original.createdAt ? formatDate(row.original.createdAt) : "-",
     },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => {
-        const { id } = row.original;
+    // Only show actions column if user has permissions
+    ...(canUpdate || canDelete
+      ? [
+          {
+            id: "actions",
+            header: "Actions",
+            cell: ({ row }: any) => {
+              const { id } = row.original;
 
-        return (
-          <>
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger>
-                <MoreVertical />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-36">
-                <DropdownMenuItem
-                  onClick={() => {
-                    setUpdateModalOpen(true);
-                    setSelectedEquipment(row.original);
-                  }}
-                >
-                  <Pencil />
-                  <span>Edit</span>
-                </DropdownMenuItem>
+              if (!canUpdate && !canDelete) return null;
 
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={() => {
-                    setEquipmentId(id);
-                    setDeleteModalOpen(true);
-                  }}
-                >
-                  <Trash />
-                  <span>Delete</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </>
-        );
-      },
-    },
+              return (
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger>
+                    <MoreVertical />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-36">
+                    {canUpdate && (
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setUpdateModalOpen(true);
+                          setSelectedEquipment(row.original);
+                        }}
+                      >
+                        <Pencil />
+                        <span>Edit</span>
+                      </DropdownMenuItem>
+                    )}
+
+                    {canDelete && (
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => {
+                          setEquipmentId(id);
+                          setDeleteModalOpen(true);
+                        }}
+                      >
+                        <Trash />
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   return (
     <>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-medium">Equipment</h1>
-        <Button onClick={() => setAddEquipmentModalOpen(true)}>
-          <Plus />
-          <span>Add Equipment</span>
-        </Button>
+        {canCreate && (
+          <Button onClick={() => setAddEquipmentModalOpen(true)}>
+            <Plus />
+            <span>Add Equipment</span>
+          </Button>
+        )}
       </div>
       <div className="rounded-xl border bg-card p-6">
         {/* Filters */}

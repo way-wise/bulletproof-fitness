@@ -47,7 +47,24 @@ import { TableFilters, FilterValues } from "../shared/TableFilters";
 import { useBodyParts } from "@/hooks/useBodyParts";
 import { useEquipments } from "@/hooks/useEquipments";
 import { useRacks } from "@/hooks/useRacks";
+import { useSessionWithPermissions } from "@/hooks/useSessionWithPermissions";
+
 export const ExerciseLibraryVideoTable = () => {
+  const { data: session } = useSessionWithPermissions();
+
+  const hasPermission = (action: string) => {
+    if (!session?.user) return false;
+    if (session.user.role === "admin") return true;
+    const user = session.user as any;
+    return user.permissions?.some(
+      (p: any) => p.resource === "exerciseLibrary" && p.action === action
+    ) || false;
+  };
+
+  const canCreate = hasPermission("create");
+  const canUpdate = hasPermission("update");
+  const canDelete = hasPermission("delete");
+  const canChangeStatus = hasPermission("status");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [blockVideoModalOpen, setBlockVideoModalOpen] = useState(false);
   const [unblockVideoModalOpen, setUnblockVideoModalOpen] = useState(false);
@@ -364,6 +381,7 @@ export const ExerciseLibraryVideoTable = () => {
       accessorKey: "createdAt",
       cell: ({ row }) => formatDate(row.original.createdAt),
     },
+    // Always show actions column because View is always available
     {
       id: "actions",
       header: "Actions",
@@ -371,91 +389,62 @@ export const ExerciseLibraryVideoTable = () => {
         const { id, blocked, isPublic, videoUrl } = row.original;
 
         return (
-          <>
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger>
-                <MoreVertical />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40">
-                {/* <DropdownMenuItem asChild>
-                  <Link
-                    href={videoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Play className="mr-2 h-4 w-4" />
-                    <span>Watch</span>
-                  </Link>
-                </DropdownMenuItem> */}
-                <DropdownMenuItem asChild>
-                  <Link href={`/dashboard/exercise-library/${id}`}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    <span>View</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    setSelectedVideo(row.original);
-                    setUpdateExerciseModalOpen(true);
-                  }}
-                >
-                  <Pencil className="mr-2 h-4 w-4" />
-                  <span>Edit</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    setVideoId(id);
-                    setPublishVideoModalOpen(true);
-                  }}
-                >
-                  {isPublic ? (
-                    <>
-                      <Lock className="mr-2 h-4 w-4" />
-                      <span>Make Private</span>
-                    </>
-                  ) : (
-                    <>
-                      <Globe className="mr-2 h-4 w-4" />
-                      <span>Publish</span>
-                    </>
-                  )}
-                </DropdownMenuItem>
-                {/* {blocked ? (
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onClick={() => {
-                      setVideoId(id);
-                      setUnblockVideoModalOpen(true);
-                    }}
-                  >
-                    <XCircle className="mr-2 h-4 w-4" />
-                    <span>Unblock</span>
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onClick={() => {
-                      setVideoId(id);
-                      setBlockVideoModalOpen(true);
-                    }}
-                  >
-                    <Ban className="mr-2 h-4 w-4" />
-                    <span>Block</span>
-                  </DropdownMenuItem>
-                )} */}
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={() => {
-                    setVideoId(id);
-                    setDeleteModalOpen(true);
-                  }}
-                >
-                  <Trash className="mr-2 h-4 w-4" />
-                  <span>Delete</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </>
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger>
+                    <MoreVertical />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-40">
+                    <DropdownMenuItem asChild>
+                      <Link href={`/dashboard/exercise-library/${id}`}>
+                        <Eye className="mr-2 h-4 w-4" />
+                        <span>View</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    {canUpdate && (
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setSelectedVideo(row.original);
+                          setUpdateExerciseModalOpen(true);
+                        }}
+                      >
+                        <Pencil className="mr-2 h-4 w-4" />
+                        <span>Edit</span>
+                      </DropdownMenuItem>
+                    )}
+                    {canChangeStatus && (
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setVideoId(id);
+                          setPublishVideoModalOpen(true);
+                        }}
+                      >
+                        {isPublic ? (
+                          <>
+                            <Lock className="mr-2 h-4 w-4" />
+                            <span>Make Private</span>
+                          </>
+                        ) : (
+                          <>
+                            <Globe className="mr-2 h-4 w-4" />
+                            <span>Publish</span>
+                          </>
+                        )}
+                      </DropdownMenuItem>
+                    )}
+                    {canDelete && (
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => {
+                          setVideoId(id);
+                          setDeleteModalOpen(true);
+                        }}
+                      >
+                        <Trash className="mr-2 h-4 w-4" />
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
         );
       },
     },
@@ -467,10 +456,12 @@ export const ExerciseLibraryVideoTable = () => {
         <h1 className="text-3xl font-bold tracking-tight">
           Exercise Library Videos
         </h1>
-        <Button onClick={() => setAddExerciseModalOpen(true)}>
-          <Plus />
-          <span>Add Exercise Video</span>
-        </Button>
+        {canCreate && (
+          <Button onClick={() => setAddExerciseModalOpen(true)}>
+            <Plus />
+            <span>Add Exercise Video</span>
+          </Button>
+        )}
       </div>
 
       <div className="rounded-xl border bg-card p-6">

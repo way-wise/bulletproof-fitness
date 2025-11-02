@@ -33,6 +33,7 @@ import useSWR, { mutate } from "swr";
 import { InferType } from "yup";
 import UpdatesBodyParts from "./UpdatesBodyParts";
 import { TableFilters, FilterValues } from "../shared/TableFilters";
+import { useSessionWithPermissions } from "@/hooks/useSessionWithPermissions";
 
 type TBodyPart = {
   id?: string;
@@ -42,6 +43,21 @@ type TBodyPart = {
 };
 
 const BodyPartsTable = () => {
+  const { data: session } = useSessionWithPermissions();
+
+  const hasPermission = (action: string) => {
+    if (!session?.user) return false;
+    if (session.user.role === "admin") return true;
+    const user = session.user as any;
+    return user.permissions?.some(
+      (p: any) => p.resource === "bodyPart" && p.action === action
+    ) || false;
+  };
+
+  const canCreate = hasPermission("create");
+  const canUpdate = hasPermission("update");
+  const canDelete = hasPermission("delete");
+
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [addBodyPartModalOpen, setAddBodyPartModalOpen] = useState(false);
   const [updateBodyPartModalOpen, setUpdateBodyPartModalOpen] = useState(false);
@@ -165,55 +181,64 @@ const BodyPartsTable = () => {
       cell: ({ row }) =>
         row.original.createdAt ? formatDate(row.original.createdAt) : "-",
     },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => {
-        const { id } = row.original;
+    ...(canUpdate || canDelete
+      ? [
+          {
+            id: "actions",
+            header: "Actions",
+            cell: ({ row }: any) => {
+              const { id } = row.original;
+              if (!canUpdate && !canDelete) return null;
 
-        return (
-          <>
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger>
-                <MoreVertical />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-36">
-                <DropdownMenuItem
-                  onClick={() => {
-                    setUpdateBodyPartModalOpen(true);
-                    setSelectedBodyPart(row.original);
-                  }}
-                >
-                  <Pencil />
-                  <span>Edit</span>
-                </DropdownMenuItem>
+              return (
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger>
+                    <MoreVertical />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-36">
+                    {canUpdate && (
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setUpdateBodyPartModalOpen(true);
+                          setSelectedBodyPart(row.original);
+                        }}
+                      >
+                        <Pencil />
+                        <span>Edit</span>
+                      </DropdownMenuItem>
+                    )}
 
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={() => {
-                    setBodyPartId(id);
-                    setDeleteModalOpen(true);
-                  }}
-                >
-                  <Trash />
-                  <span>Delete</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </>
-        );
-      },
-    },
+                    {canDelete && (
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => {
+                          setBodyPartId(id);
+                          setDeleteModalOpen(true);
+                        }}
+                      >
+                        <Trash />
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   return (
     <>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-medium">Body Parts</h1>
-        <Button onClick={() => setAddBodyPartModalOpen(true)}>
-          <Plus />
-          <span>Add Body Part</span>
-        </Button>
+        {canCreate && (
+          <Button onClick={() => setAddBodyPartModalOpen(true)}>
+            <Plus />
+            <span>Add Body Part</span>
+          </Button>
+        )}
       </div>
       <div className="rounded-xl border bg-card p-6">
         {/* Filters */}

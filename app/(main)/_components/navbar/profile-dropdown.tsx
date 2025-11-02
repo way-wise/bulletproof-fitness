@@ -24,13 +24,47 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useSessionWithPermissions } from "@/hooks/useSessionWithPermissions";
 
 type Session = typeof auth.$Infer.Session | null;
 
-export const ProfileDropdown = ({ session }: { session: Session }) => {
+export const ProfileDropdown = ({ session: serverSession }: { session: Session }) => {
   const router = useRouter();
   const { start, stop } = useProgress();
-  const isAdmin = session?.user?.role === "admin";
+  
+  // Use client-side session which includes permissions
+  const { data: clientSession } = useSessionWithPermissions();
+  const session = clientSession || serverSession;
+  
+  // Check if user can access dashboard (has any management permission)
+  const canAccessDashboard = (): boolean => {
+    if (!session?.user) return false;
+    if (session.user.role === "admin") return true;
+    
+    // Check if user has any LIST/VIEW permission from major sections
+    const user = session.user as any;
+    const permissions = user.permissions || [];
+    
+    return permissions.some((p: any) => 
+      (p.action === "list" || p.action === "view") &&
+      (
+        p.resource === "user" ||
+        p.resource === "role" ||
+        p.resource === "demoCenter" ||
+        p.resource === "equipment" ||
+        p.resource === "bodyPart" ||
+        p.resource === "rack" ||
+        p.resource === "exerciseLibrary" ||
+        p.resource === "exerciseSetup" ||
+        p.resource === "points" ||
+        p.resource === "contest" ||
+        p.resource === "feedback" ||
+        p.resource === "system"
+      )
+    );
+  };
+  
+  const showDashboard = canAccessDashboard();
 
   // Handle sign-out & progressbar
   const handleSignout = async () => {
@@ -74,7 +108,7 @@ export const ProfileDropdown = ({ session }: { session: Session }) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {isAdmin && (
+          {showDashboard && (
             <DropdownMenuItem asChild>
               <Link href="/dashboard">
                 <LayoutGrid aria-hidden="true" />

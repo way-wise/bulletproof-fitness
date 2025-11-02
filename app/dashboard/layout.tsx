@@ -1,6 +1,7 @@
 import Header from "@/app/dashboard/_components/header";
 import Sidebar from "@/app/dashboard/_components/sidebar";
 import { getSession } from "@/lib/auth";
+import prisma from "@/lib/prisma";
 import { SidebarProvider } from "@/providers/sidebar-provider";
 import { redirect } from "next/navigation";
 
@@ -12,8 +13,37 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
     redirect("/auth/sign-in");
   }
 
-  // If not admin, redirect to profile
-  if (session.user?.role !== "admin") {
+  // Check if user has any permissions
+  const user = await prisma.users.findUnique({
+    where: { id: session.user.id },
+    select: { role: true },
+  });
+
+  if (!user?.role) {
+    redirect("/profile");
+  }
+
+  const role = await prisma.role.findUnique({
+    where: { name: user.role },
+    select: {
+      rolePermissions: {
+        select: {
+          permission: {
+            select: {
+              action: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // Check if user has any LIST or VIEW permission
+  const hasListOrViewPermission = role?.rolePermissions.some(
+    (rp) => rp.permission.action === "list" || rp.permission.action === "view"
+  );
+
+  if (!hasListOrViewPermission) {
     redirect("/profile");
   }
 

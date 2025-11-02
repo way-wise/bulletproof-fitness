@@ -11,7 +11,5 @@ export const {
   requestPasswordReset,
   resetPassword,
 } = createAuthClient({
-  plugins: [
-    adminClient(),
-  ],
+  plugins: [adminClient()],
 });

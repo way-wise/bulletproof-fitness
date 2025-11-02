@@ -24,7 +24,7 @@ import { demoCenterAdmin } from "@/lib/admin/demoCenter";
 import { DemoCenter } from "@/lib/dataTypes";
 import { formatDate } from "@/lib/date-format";
 import type { ColumnDef, PaginationState } from "@tanstack/react-table";
-import { Eye, Globe, Lock, MoreVertical, Pencil, Trash } from "lucide-react";
+import { Eye, Globe, Lock, MoreVertical, Pencil, Plus, Trash } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -33,8 +33,25 @@ import useSWR, { mutate } from "swr";
 import UpdateDemoCenter from "./UpdateDemoCenter";
 import { TableFilters, FilterValues } from "../shared/TableFilters";
 import { useEquipments } from "@/hooks/useEquipments";
+import { useSessionWithPermissions } from "@/hooks/useSessionWithPermissions";
 
 export const DemoCenterTable = () => {
+  const { data: session } = useSessionWithPermissions();
+
+  // Permission checks
+  const hasPermission = (action: string) => {
+    if (!session?.user) return false;
+    if (session.user.role === "admin") return true;
+    const user = session.user as any;
+    return user.permissions?.some(
+      (p: any) => p.resource === "demoCenter" && p.action === action
+    ) || false;
+  };
+
+  const canCreate = hasPermission("create");
+  const canUpdate = hasPermission("update");
+  const canDelete = hasPermission("delete");
+  const canPublish = hasPermission("publish");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [blockDemoCenterModalOpen, setBlockDemoCenterModalOpen] =
     useState(false);
@@ -292,6 +309,7 @@ export const DemoCenterTable = () => {
     //   accessorKey: "updatedAt",
     //   cell: ({ row }) => formatDate(row.original.updatedAt),
     // },
+    // Always show actions column because View is always available
     {
       id: "actions",
       header: "Actions",
@@ -299,87 +317,59 @@ export const DemoCenterTable = () => {
         const { id, blocked, isPublic } = row.original;
 
         return (
-          <>
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger>
-                <MoreVertical />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuItem asChild>
-                  <Link href={`/dashboard/demo-centers/${id}`}>
-                    <Eye />
-                    <span>View</span>
-                  </Link>
-                </DropdownMenuItem>
-                {/* <DropdownMenuItem
-                  onClick={() => {
-                    setSelectedDemoCenter(row.original);
-                    setUpdateModalOpen(true);
-                  }}
-                >
-                  <Pencil className="mr-2 h-4 w-4" />
-                  <span>Edit</span>
-                </DropdownMenuItem> */}
-                <DropdownMenuItem
-                  onClick={() => {
-                    setDemoCenterId(id);
-                    setPublishModalOpen(true);
-                  }}
-                >
-                  {isPublic ? (
-                    <>
-                      <Lock />
-                      <span>Make Private</span>
-                    </>
-                  ) : (
-                    <>
-                      <Globe />
-                      <span>Publish</span>
-                    </>
-                  )}
-                </DropdownMenuItem>
-                {/* {blocked ? (
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onClick={() => {
-                      setDemoCenterId(id);
-                      setUnblockDemoCenterModalOpen(true);
-                    }}
-                  >
-                    <XCircle className="mr-2 h-4 w-4" />
-                    <span>Unblock</span>
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onClick={() => {
-                      setDemoCenterId(id);
-                      setBlockDemoCenterModalOpen(true);
-                    }}
-                  >
-                    <Ban className="mr-2 h-4 w-4" />
-                    <span>Block</span>
-                  </DropdownMenuItem>
-                )} */}
-                <DropdownMenuItem asChild>
-                  <Link href={`/dashboard/demo-centers/${id}/edit`}>
-                    <Pencil />
-                    <span>Edit</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={() => {
-                    setDemoCenterId(id);
-                    setDeleteModalOpen(true);
-                  }}
-                >
-                  <Trash />
-                  <span>Delete</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </>
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger>
+                    <MoreVertical />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-44">
+                    <DropdownMenuItem asChild>
+                      <Link href={`/dashboard/demo-centers/${id}`}>
+                        <Eye />
+                        <span>View</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    {canPublish && (
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setDemoCenterId(id);
+                          setPublishModalOpen(true);
+                        }}
+                      >
+                        {isPublic ? (
+                          <>
+                            <Lock />
+                            <span>Make Private</span>
+                          </>
+                        ) : (
+                          <>
+                            <Globe />
+                            <span>Publish</span>
+                          </>
+                        )}
+                      </DropdownMenuItem>
+                    )}
+                    {canUpdate && (
+                      <DropdownMenuItem asChild>
+                        <Link href={`/dashboard/demo-centers/${id}/edit`}>
+                          <Pencil />
+                          <span>Edit</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    {canDelete && (
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => {
+                          setDemoCenterId(id);
+                          setDeleteModalOpen(true);
+                        }}
+                      >
+                        <Trash />
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
         );
       },
     },
@@ -387,8 +377,16 @@ export const DemoCenterTable = () => {
 
   return (
     <>
-      <div className="mb-8">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-medium">Demo Centers</h1>
+        {canCreate && (
+          <Button asChild>
+            <Link href="/dashboard/demo-centers/create">
+              <Plus />
+              <span>Add Demo Center</span>
+            </Link>
+          </Button>
+        )}
       </div>
 
       <div className="rounded-xl border bg-card p-6">

@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useSessionWithPermissions } from "@/hooks/useSessionWithPermissions";
 
 interface Role {
   id: string;
@@ -36,6 +37,21 @@ interface Role {
 
 export function RolesTable({ roles }: { roles: Role[] }) {
   const router = useRouter();
+  const { data: session } = useSessionWithPermissions();
+
+  // Permission checks
+  const hasPermission = (action: string) => {
+    if (!session?.user) return false;
+    if (session.user.role === "admin") return true;
+    const user = session.user as any;
+    return user.permissions?.some(
+      (p: any) => p.resource === "role" && p.action === action
+    ) || false;
+  };
+
+  const canUpdate = hasPermission("update");
+  const canDelete = hasPermission("delete");
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 1,
     pageSize: 10,
@@ -115,39 +131,51 @@ export function RolesTable({ roles }: { roles: Role[] }) {
           <Badge>Custom</Badge>
         ),
     },
-    {
-      id: "actions",
-      header: () => <div className="text-right">Actions</div>,
-      cell: ({ row }) => {
-        const role = row.original;
-        const isSystemRole = role.isSystem;
+    // Only show actions column if user has update or delete permissions
+    ...(canUpdate || canDelete
+      ? [
+          {
+            id: "actions",
+            header: () => <div className="text-right">Actions</div>,
+            cell: ({ row }: any) => {
+              const role = row.original;
+              const isSystemRole = role.isSystem;
 
-        return (
-          <div className="flex items-center justify-end gap-2">
-            <Link href={`/dashboard/roles/${role.name}`}>
-              <Button variant="secondary" size="sm">
-                <Pencil className="h-4 w-4" />
-                Edit
-              </Button>
-            </Link>
+              // If no permissions for this row, don't show actions
+              if (!canUpdate && !(canDelete && !isSystemRole)) {
+                return null;
+              }
 
-            {!isSystemRole && (
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => {
-                  setRoleToDelete(role.name);
-                  setDeleteDialogOpen(true);
-                }}
-              >
-                <Trash2 className="h-4 w-4" />
-                Delete
-              </Button>
-            )}
-          </div>
-        );
-      },
-    },
+              return (
+                <div className="flex items-center justify-end gap-2">
+                  {canUpdate && (
+                    <Link href={`/dashboard/roles/${role.name}`}>
+                      <Button variant="secondary" size="sm">
+                        <Pencil className="h-4 w-4" />
+                        Edit
+                      </Button>
+                    </Link>
+                  )}
+
+                  {canDelete && !isSystemRole && (
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        setRoleToDelete(role.name);
+                        setDeleteDialogOpen(true);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Delete
+                    </Button>
+                  )}
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   // Transform roles data to match PaginatedData format

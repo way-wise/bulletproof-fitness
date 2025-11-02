@@ -51,8 +51,27 @@ import { toast } from "sonner";
 import useSWR, { mutate } from "swr";
 import { InferType } from "yup";
 import { TableFilters, FilterValues } from "../_components/shared/TableFilters";
+import { useSessionWithPermissions } from "@/hooks/useSessionWithPermissions";
 
 export const UsersTable = () => {
+  const { data: session } = useSessionWithPermissions();
+
+  // Permission checks
+  const hasPermission = (action: string) => {
+    if (!session?.user) return false;
+    if (session.user.role === "admin") return true;
+    const user = session.user as any;
+    return user.permissions?.some(
+      (p: any) => p.resource === "user" && p.action === action
+    ) || false;
+  };
+
+  const canView = hasPermission("view");
+  const canCreate = hasPermission("create");
+  const canUpdate = hasPermission("update");
+  const canDelete = hasPermission("delete");
+  const canBan = hasPermission("ban");
+  const canSetRole = hasPermission("set-role");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [banModalOpen, setBanModalOpen] = useState(false);
   const [unbanModalOpen, setUnbanModalOpen] = useState(false);
@@ -314,91 +333,105 @@ export const UsersTable = () => {
       accessorKey: "createdAt",
       cell: ({ row }) => formatDate(row.original.createdAt),
     },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => {
-        const { id, banned, role } = row.original;
-        const isAdminUser = role === "admin";
+    // Only show actions column if user has any action permissions
+    ...(canView || canSetRole || canBan || canDelete
+      ? [
+          {
+            id: "actions",
+            header: "Actions",
+            cell: ({ row }: any) => {
+              const { id, banned, role } = row.original;
+              const isAdminUser = role === "admin";
 
-        return (
-          <>
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger>
-                <MoreVertical />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuItem asChild>
-                  <Link href={`/dashboard/users/${id}`}>
-                    <Eye />
-                    <span>View</span>
-                  </Link>
-                </DropdownMenuItem>
-                {!isAdminUser && (
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setUserId(id);
-                      setSelectedRole(row.original.role || "user");
-                      setUpdateRoleModalOpen(true);
-                    }}
-                  >
-                    <UserCog />
-                    <span>Update Role</span>
-                  </DropdownMenuItem>
-                )}
-                {!isAdminUser && (
-                  <>
-                    {banned ? (
-                      <DropdownMenuItem
-                        variant="destructive"
-                        onClick={() => {
-                          setUserId(id);
-                          setUnbanModalOpen(true);
-                        }}
-                      >
-                        <Ban />
-                        <span>Unban</span>
-                      </DropdownMenuItem>
-                    ) : (
-                      <DropdownMenuItem
-                        variant="destructive"
-                        onClick={() => {
-                          setUserId(id);
-                          setBanModalOpen(true);
-                        }}
-                      >
-                        <Ban />
-                        <span>Ban</span>
+              // Check if there are any actions to show
+              const hasAnyAction = canView || (canSetRole && !isAdminUser) || (canBan && !isAdminUser) || (canDelete && !isAdminUser);
+              
+              if (!hasAnyAction) return null;
+
+              return (
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger>
+                    <MoreVertical />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-44">
+                    {canView && (
+                      <DropdownMenuItem asChild>
+                        <Link href={`/dashboard/users/${id}`}>
+                          <Eye />
+                          <span>View</span>
+                        </Link>
                       </DropdownMenuItem>
                     )}
-                    <DropdownMenuItem
-                      variant="destructive"
-                      onClick={() => {
-                        setUserId(id);
-                        setDeleteModalOpen(true);
-                      }}
-                    >
-                      <Trash />
-                      <span>Delete</span>
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </>
-        );
-      },
-    },
+                    {canSetRole && !isAdminUser && (
+                      <DropdownMenuItem
+                        onClick={() => {
+                          setUserId(id);
+                          setSelectedRole(row.original.role || "user");
+                          setUpdateRoleModalOpen(true);
+                        }}
+                      >
+                        <UserCog />
+                        <span>Update Role</span>
+                      </DropdownMenuItem>
+                    )}
+                    {canBan && !isAdminUser && (
+                      <>
+                        {banned ? (
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onClick={() => {
+                              setUserId(id);
+                              setUnbanModalOpen(true);
+                            }}
+                          >
+                            <Ban />
+                            <span>Unban</span>
+                          </DropdownMenuItem>
+                        ) : (
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onClick={() => {
+                              setUserId(id);
+                              setBanModalOpen(true);
+                            }}
+                          >
+                            <Ban />
+                            <span>Ban</span>
+                          </DropdownMenuItem>
+                        )}
+                      </>
+                    )}
+                    {canDelete && !isAdminUser && (
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => {
+                          setUserId(id);
+                          setDeleteModalOpen(true);
+                        }}
+                      >
+                        <Trash />
+                        <span>Delete</span>
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              );
+            },
+          },
+        ]
+      : []),
   ];
 
   return (
     <>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-medium">Users</h1>
-        <Button onClick={() => setAddUserModalOpen(true)}>
-          <Plus />
-          <span>Add User</span>
-        </Button>
+        {canCreate && (
+          <Button onClick={() => setAddUserModalOpen(true)}>
+            <Plus />
+            <span>Add User</span>
+          </Button>
+        )}
       </div>
 
       <div className="rounded-xl border bg-card p-6">
