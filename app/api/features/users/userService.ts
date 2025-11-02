@@ -19,9 +19,14 @@ export const userService = {
 
     // Build where clause with filters
     const where: any = {
-      NOT: {
-        id: session?.user?.id,
-      },
+      NOT: [
+        {
+          id: session?.user?.id,
+        },
+        {
+          role: "admin", // Exclude admin users from the list
+        },
+      ],
     };
     const andConditions: any[] = [];
 

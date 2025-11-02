@@ -98,12 +98,15 @@ export const UsersTable = () => {
   const url = buildUrl();
   const { isValidating, data } = useSWR(url);
 
-  // Fetch roles list with shared cache key
+  // Fetch roles list with shared cache key (excluding admin role)
   const { data: rolesData } = useSWR("/api/admin/roles", {
     revalidateOnFocus: true,
     revalidateOnMount: true,
     dedupingInterval: 2000,
   });
+
+  // Filter out admin role from the list
+  const availableRoles = rolesData?.filter((role: any) => role.name !== "admin") || [];
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -314,7 +317,8 @@ export const UsersTable = () => {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
-        const { id, banned } = row.original;
+        const { id, banned, role } = row.original;
+        const isAdminUser = role === "admin";
 
         return (
           <>
@@ -329,49 +333,55 @@ export const UsersTable = () => {
                     <span>View</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    setUserId(id);
-                    setSelectedRole(row.original.role || "user");
-                    setUpdateRoleModalOpen(true);
-                  }}
-                >
-                  <UserCog />
-                  <span>Update Role</span>
-                </DropdownMenuItem>
-                {banned ? (
+                {!isAdminUser && (
                   <DropdownMenuItem
-                    variant="destructive"
                     onClick={() => {
                       setUserId(id);
-                      setUnbanModalOpen(true);
+                      setSelectedRole(row.original.role || "user");
+                      setUpdateRoleModalOpen(true);
                     }}
                   >
-                    <Ban />
-                    <span>Unban</span>
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onClick={() => {
-                      setUserId(id);
-                      setBanModalOpen(true);
-                    }}
-                  >
-                    <Ban />
-                    <span>Ban</span>
+                    <UserCog />
+                    <span>Update Role</span>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem
-                  variant="destructive"
-                  onClick={() => {
-                    setUserId(id);
-                    setDeleteModalOpen(true);
-                  }}
-                >
-                  <Trash />
-                  <span>Delete</span>
-                </DropdownMenuItem>
+                {!isAdminUser && (
+                  <>
+                    {banned ? (
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => {
+                          setUserId(id);
+                          setUnbanModalOpen(true);
+                        }}
+                      >
+                        <Ban />
+                        <span>Unban</span>
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => {
+                          setUserId(id);
+                          setBanModalOpen(true);
+                        }}
+                      >
+                        <Ban />
+                        <span>Ban</span>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onClick={() => {
+                        setUserId(id);
+                        setDeleteModalOpen(true);
+                      }}
+                    >
+                      <Trash />
+                      <span>Delete</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </>
@@ -403,11 +413,11 @@ export const UsersTable = () => {
                   label: "Role",
                   placeholder: "Filter by role",
                   options:
-                    rolesData?.map((role: any) => ({
+                    availableRoles.map((role: any) => ({
                       value: role.name,
                       label:
                         role.name.charAt(0).toUpperCase() + role.name.slice(1),
-                    })) || [],
+                    })),
                 },
                 {
                   key: "banned",
@@ -487,17 +497,17 @@ export const UsersTable = () => {
                   </FormItem>
                 )}
               />
-              {rolesData && rolesData.length > 0 && (
+              {availableRoles.length > 0 && (
                 <div className="space-y-2">
                   <label className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                     Role
                   </label>
                   <Select value={newUserRole} onValueChange={setNewUserRole}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger>
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent position="popper" sideOffset={5}>
-                      {rolesData.map((role: any) => (
+                      {availableRoles.map((role: any) => (
                         <SelectItem key={role.id} value={role.name}>
                           <span className="capitalize">{role.name}</span>
                         </SelectItem>
@@ -667,7 +677,7 @@ export const UsersTable = () => {
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent position="popper" sideOffset={5}>
-                {rolesData?.map((role: any) => (
+                {availableRoles.map((role: any) => (
                   <SelectItem key={role.id} value={role.name}>
                     <span className="capitalize">{role.name}</span>
                   </SelectItem>

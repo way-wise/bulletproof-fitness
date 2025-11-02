@@ -25,6 +25,26 @@ export async function PATCH(
       return Response.json({ error: "Role is required" }, { status: 400 });
     }
 
+    // Get the target user
+    const targetUser = await prisma.users.findUnique({
+      where: { id },
+      select: { id: true, role: true, email: true },
+    });
+
+    if (!targetUser) {
+      return Response.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // CRITICAL: Prevent changing admin users' roles
+    if (targetUser.role === "admin") {
+      return Response.json(
+        { 
+          error: "Cannot change admin role. Admin users are protected for security reasons." 
+        },
+        { status: 403 }
+      );
+    }
+
     // Verify role exists
     const roleExists = await prisma.role.findUnique({
       where: { name: role },
