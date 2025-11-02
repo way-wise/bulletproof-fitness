@@ -8,7 +8,7 @@ export const userSchema = object({
   emailVerified: boolean().nullable(),
   image: string().nullable(),
   banned: boolean().nullable(),
-  role: string().nullable().oneOf(["admin", "user"]),
+  role: string().nullable(),
   banReason: string().nullable(),
   banExpires: mixed().nullable(),
   createdAt: mixed(),

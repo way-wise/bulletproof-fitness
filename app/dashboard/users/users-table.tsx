@@ -59,7 +59,7 @@ export const UsersTable = () => {
   // Permission checks
   const hasPermission = (action: string) => {
     if (!session?.user) return false;
-    if (session.user.role === "admin") return true;
+    if (session.user.role === "super") return true;
     const user = session.user as any;
     return user.permissions?.some(
       (p: any) => p.resource === "user" && p.action === action
@@ -124,9 +124,10 @@ export const UsersTable = () => {
     dedupingInterval: 2000,
   });
 
-  // Filter out admin role from the list
-  const availableRoles =
-    rolesData?.filter((role: any) => role.name !== "admin") || [];
+  // Filter out super admin role from the list
+  const availableRoles = Array.isArray(rolesData)
+    ? rolesData.filter((role: any) => role.name !== "super")
+    : [];
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -310,8 +311,10 @@ export const UsersTable = () => {
       header: "Role",
       accessorKey: "role",
       cell: ({ row }) => {
-        return row.original.role === "admin" ? (
-          <Badge variant="success">Admin</Badge>
+        return row.original.role === "super" ? (
+          <Badge variant="success">Super Admin</Badge>
+        ) : row.original.role === "admin" ? (
+          <Badge variant="default">Admin</Badge>
         ) : (
           <Badge variant="secondary">User</Badge>
         );
@@ -341,10 +344,10 @@ export const UsersTable = () => {
             header: "Actions",
             cell: ({ row }: any) => {
               const { id, banned, role } = row.original;
-              const isAdminUser = role === "admin";
+              const isSuperAdmin = role === "super";
 
               // Check if there are any actions to show
-              const hasAnyAction = canView || (canSetRole && !isAdminUser) || (canBan && !isAdminUser) || (canDelete && !isAdminUser);
+              const hasAnyAction = canView || (canSetRole && !isSuperAdmin) || (canBan && !isSuperAdmin) || (canDelete && !isSuperAdmin);
               
               if (!hasAnyAction) return null;
 
@@ -362,7 +365,7 @@ export const UsersTable = () => {
                         </Link>
                       </DropdownMenuItem>
                     )}
-                    {canSetRole && !isAdminUser && (
+                    {canSetRole && !isSuperAdmin && (
                       <DropdownMenuItem
                         onClick={() => {
                           setUserId(id);
@@ -374,7 +377,7 @@ export const UsersTable = () => {
                         <span>Update Role</span>
                       </DropdownMenuItem>
                     )}
-                    {canBan && !isAdminUser && (
+                    {canBan && !isSuperAdmin && (
                       <>
                         {banned ? (
                           <DropdownMenuItem
@@ -401,7 +404,7 @@ export const UsersTable = () => {
                         )}
                       </>
                     )}
-                    {canDelete && !isAdminUser && (
+                    {canDelete && !isSuperAdmin && (
                       <DropdownMenuItem
                         variant="destructive"
                         onClick={() => {

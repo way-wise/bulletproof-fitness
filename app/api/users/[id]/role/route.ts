@@ -12,7 +12,7 @@ export async function PATCH(
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (session.user.role !== "admin") {
+  if (session.user.role !== "super") {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -35,11 +35,11 @@ export async function PATCH(
       return Response.json({ error: "User not found" }, { status: 404 });
     }
 
-    // CRITICAL: Prevent changing admin users' roles
-    if (targetUser.role === "admin") {
+    // CRITICAL: Prevent changing super admin users' roles
+    if (targetUser.role === "super") {
       return Response.json(
         { 
-          error: "Cannot change admin role. Admin users are protected for security reasons." 
+          error: "Cannot change super admin role. Super admin users are protected for security reasons." 
         },
         { status: 403 }
       );

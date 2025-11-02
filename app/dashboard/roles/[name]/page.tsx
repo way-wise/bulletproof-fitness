@@ -14,8 +14,8 @@ export default async function RoleEditPage({
     redirect("/login");
   }
 
-  // Check if user is admin
-  if (session.user.role !== "admin") {
+  // Check if user is super admin
+  if (session.user.role !== "super") {
     redirect("/");
   }
 
@@ -26,8 +26,8 @@ export default async function RoleEditPage({
     notFound();
   }
 
-  // Prevent editing admin role
-  if (role.name === "admin") {
+  // Prevent editing super admin role
+  if (role.name === "super") {
     redirect("/dashboard/roles");
   }
 

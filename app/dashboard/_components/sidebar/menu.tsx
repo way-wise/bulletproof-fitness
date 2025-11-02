@@ -27,8 +27,8 @@ const SidebarMenu = () => {
   // Helper function to check if user has permission
   const hasPermission = (resource: string, action: string): boolean => {
     if (!session?.user) return false;
-    // Admin has all permissions
-    if (session.user.role === "admin") return true;
+    // Super admin has all permissions
+    if (session.user.role === "super") return true;
 
     // Check permission using Better Auth (permissions added by admin plugin)
     const user = session.user as any;

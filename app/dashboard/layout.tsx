@@ -23,28 +23,34 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
     redirect("/profile");
   }
 
-  const role = await prisma.role.findUnique({
-    where: { name: user.role },
-    select: {
-      rolePermissions: {
-        select: {
-          permission: {
-            select: {
-              action: true,
+  // Super admin always has access
+  if (user.role === "super") {
+    // Super admin bypasses all permission checks
+  } else {
+    // For non-super users, check if they have permissions
+    const role = await prisma.role.findUnique({
+      where: { name: user.role },
+      select: {
+        rolePermissions: {
+          select: {
+            permission: {
+              select: {
+                action: true,
+              },
             },
           },
         },
       },
-    },
-  });
+    });
 
-  // Check if user has any LIST or VIEW permission
-  const hasListOrViewPermission = role?.rolePermissions.some(
-    (rp) => rp.permission.action === "list" || rp.permission.action === "view"
-  );
+    // Check if user has any LIST or VIEW permission
+    const hasListOrViewPermission = role?.rolePermissions.some(
+      (rp) => rp.permission.action === "list" || rp.permission.action === "view"
+    );
 
-  if (!hasListOrViewPermission) {
-    redirect("/profile");
+    if (!hasListOrViewPermission) {
+      redirect("/profile");
+    }
   }
 
   return (

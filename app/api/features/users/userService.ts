@@ -24,7 +24,7 @@ export const userService = {
           id: session?.user?.id,
         },
         {
-          role: "admin", // Exclude admin users from the list
+          role: "super", // Exclude super admin users from the list
         },
       ],
     };
@@ -429,7 +429,7 @@ export const userService = {
           },
           AND: [
             {
-              OR: [{ role: { not: "admin" } }, { role: null }],
+              OR: [{ role: { not: "super" } }, { role: null }],
             },
           ],
         },
@@ -478,7 +478,7 @@ export const userService = {
           },
           AND: [
             {
-              OR: [{ role: { not: "admin" } }, { role: null }],
+              OR: [{ role: { not: "super" } }, { role: null }],
             },
           ],
         },

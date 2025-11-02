@@ -39,7 +39,7 @@ export const ProfileDropdown = ({ session: serverSession }: { session: Session }
   // Check if user can access dashboard (has any management permission)
   const canAccessDashboard = (): boolean => {
     if (!session?.user) return false;
-    if (session.user.role === "admin") return true;
+    if (session.user.role === "super") return true;
     
     // Check if user has any LIST/VIEW permission from major sections
     const user = session.user as any;

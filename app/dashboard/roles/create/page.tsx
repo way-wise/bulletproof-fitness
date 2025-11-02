@@ -10,7 +10,7 @@ export default async function CreateRolePage() {
     redirect("/login");
   }
 
-  if (session.user.role !== "admin") {
+  if (session.user.role !== "super") {
     redirect("/");
   }
 

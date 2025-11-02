@@ -54,7 +54,7 @@ export const ExerciseLibraryVideoTable = () => {
 
   const hasPermission = (action: string) => {
     if (!session?.user) return false;
-    if (session.user.role === "admin") return true;
+    if (session.user.role === "super") return true;
     const user = session.user as any;
     return user.permissions?.some(
       (p: any) => p.resource === "exerciseLibrary" && p.action === action

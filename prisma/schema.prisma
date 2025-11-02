@@ -20,7 +20,7 @@ model users {
   name                 String
   emailVerified        Boolean
   image                String?
-  role                 String?
+  role                 String?                @default("user")
   banned               Boolean?
   banReason            String?
   banExpires           Int?

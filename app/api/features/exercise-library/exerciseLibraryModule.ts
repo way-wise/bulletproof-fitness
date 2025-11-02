@@ -15,7 +15,7 @@ export const exerciseLibraryModule = new Hono();
 exerciseLibraryModule.get("/dashboard", async (c) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== "admin") {
+    if (!session?.user?.id || session.user.role !== "super") {
       return c.json(
         {
           success: false,
@@ -88,7 +88,7 @@ exerciseLibraryModule.post("/dashboard", async (c: Context) => {
   try {
     // Get current user session
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== "admin") {
+    if (!session?.user?.id || session.user.role !== "super") {
       return c.json(
         {
           success: false,
@@ -140,7 +140,7 @@ exerciseLibraryModule.post("/dashboard", async (c: Context) => {
 exerciseLibraryModule.put("/dashboard/:id", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== "admin") {
+    if (!session?.user?.id || session.user.role !== "super") {
       return c.json(
         {
           success: false,
@@ -193,7 +193,7 @@ exerciseLibraryModule.put("/dashboard/:id", async (c: Context) => {
 exerciseLibraryModule.delete("/dashboard/:id", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== "admin") {
+    if (!session?.user?.id || session.user.role !== "super") {
       return c.json(
         {
           success: false,
@@ -230,7 +230,7 @@ exerciseLibraryModule.delete("/dashboard/:id", async (c: Context) => {
 exerciseLibraryModule.post("/dashboard/:id/block", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== "admin") {
+    if (!session?.user?.id || session.user.role !== "super") {
       return c.json(
         {
           success: false,
@@ -283,7 +283,7 @@ exerciseLibraryModule.post("/dashboard/:id/block", async (c: Context) => {
 exerciseLibraryModule.post("/dashboard/:id/unblock", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== "admin") {
+    if (!session?.user?.id || session.user.role !== "super") {
       return c.json(
         {
           success: false,
@@ -320,7 +320,7 @@ exerciseLibraryModule.post("/dashboard/:id/unblock", async (c: Context) => {
 exerciseLibraryModule.patch("/dashboard/:id/status", async (c: Context) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== "admin") {
+    if (!session?.user?.id || session.user.role !== "super") {
       return c.json(
         {
           success: false,

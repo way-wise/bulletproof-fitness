@@ -17,7 +17,7 @@ export async function GET(
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (session.user.role !== "admin") {
+  if (session.user.role !== "super") {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -45,16 +45,16 @@ export async function PATCH(
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (session.user.role !== "admin") {
+  if (session.user.role !== "super") {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const { name } = await params;
 
-  // Prevent editing admin role
-  if (name === "admin") {
+  // Prevent editing super admin role
+  if (name === "super") {
     return Response.json(
-      { error: "Cannot edit admin role" },
+      { error: "Cannot edit super admin role" },
       { status: 403 }
     );
   }
@@ -101,14 +101,14 @@ export async function DELETE(
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (session.user.role !== "admin") {
+  if (session.user.role !== "super") {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const { name } = await params;
 
-  // Prevent deleting system roles (admin and user)
-  if (name === "admin" || name === "user") {
+  // Prevent deleting system roles (super and user)
+  if (name === "super" || name === "user") {
     return Response.json(
       { error: "Cannot delete system roles" },
       { status: 403 }

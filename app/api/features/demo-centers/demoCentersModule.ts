@@ -32,7 +32,7 @@ demoCenterModule.get("/", async (c) => {
 demoCenterModule.get("/dashboard", async (c) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== "admin") {
+    if (!session?.user?.id || session.user.role !== "super") {
       return c.json(
         {
           success: false,

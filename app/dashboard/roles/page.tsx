@@ -13,15 +13,15 @@ export default async function RolesPage() {
     redirect("/login");
   }
 
-  // Check if user is admin
-  if (session.user.role !== "admin") {
+  // Check if user is super admin
+  if (session.user.role !== "super") {
     redirect("/");
   }
 
   const roles = await getAllRoles();
   
-  // Filter out admin role from the list
-  const filteredRoles = roles.filter((role) => role.name !== "admin");
+  // Filter out super admin role from the list
+  const filteredRoles = roles.filter((role) => role.name !== "super");
 
   return (
     <div className="container mx-auto py-8 px-4">
