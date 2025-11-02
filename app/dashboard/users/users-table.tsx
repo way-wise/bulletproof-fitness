@@ -106,7 +106,8 @@ export const UsersTable = () => {
   });
 
   // Filter out admin role from the list
-  const availableRoles = rolesData?.filter((role: any) => role.name !== "admin") || [];
+  const availableRoles =
+    rolesData?.filter((role: any) => role.name !== "admin") || [];
 
   // Reset to page 1 when filters change
   useEffect(() => {
@@ -412,12 +413,11 @@ export const UsersTable = () => {
                   key: "role",
                   label: "Role",
                   placeholder: "Filter by role",
-                  options:
-                    availableRoles.map((role: any) => ({
-                      value: role.name,
-                      label:
-                        role.name.charAt(0).toUpperCase() + role.name.slice(1),
-                    })),
+                  options: availableRoles.map((role: any) => ({
+                    value: role.name,
+                    label:
+                      role.name.charAt(0).toUpperCase() + role.name.slice(1),
+                  })),
                 },
                 {
                   key: "banned",
@@ -503,7 +503,7 @@ export const UsersTable = () => {
                     Role
                   </label>
                   <Select value={newUserRole} onValueChange={setNewUserRole}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent position="popper" sideOffset={5}>
