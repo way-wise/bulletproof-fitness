@@ -112,7 +112,7 @@ const Navbar = ({ session }: { session: Session }) => {
 
   return (
     <>
-      <nav className="sticky top-0 z-20 h-16 border-b border-border bg-white py-3 dark:bg-card">
+      <nav className="sticky top-0 z-50 h-16 border-b border-border bg-white py-3 dark:bg-card">
         <div className="container flex items-center justify-between gap-2">
           <Link href="/" className="flex shrink-0 items-center">
             <Image
