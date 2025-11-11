@@ -3,8 +3,37 @@ import { getSession } from "@/lib/auth";
 import { ContestService } from "./contestService";
 import { contestSchema, updateContestSchema } from "@/schema/contestSchema";
 import { ValidationError } from "yup";
+import prisma from "@/lib/prisma";
 
 const app = new Hono();
+
+// Permission helper with super-admin bypass
+async function hasPermission(userId: string, resource: string, action: string): Promise<boolean> {
+  const user = await prisma.users.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  if (!user?.role) return false;
+  if (user.role === "super") return true;
+
+  const role = await prisma.role.findUnique({
+    where: { name: user.role },
+    select: {
+      rolePermissions: {
+        select: {
+          permission: { select: { resource: true, action: true } },
+        },
+      },
+    },
+  });
+
+  return (
+    role?.rolePermissions.some(
+      (rp: any) => rp.permission.resource === resource && rp.permission.action === action
+    ) || false
+  );
+}
 
 /*
   @route    GET: /contest
@@ -35,27 +64,20 @@ app.get("/", async (c) => {
 app.get("/admin", async (c) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
-      return c.json(
-        {
-          success: false,
-          message: "Unauthorized",
-        },
-        401,
-      );
+    if (!session?.user?.id) {
+      return c.json({ success: false, message: "Unauthorized" }, 401);
+    }
+
+    const allowed = await hasPermission(session.user.id, "contest", "view");
+    if (!allowed) {
+      return c.json({ success: false, message: "Unauthorized" }, 401);
     }
 
     const result = await ContestService.getAllContests();
     return c.json(result);
   } catch (error) {
     console.error("Error fetching contests:", error);
-    return c.json(
-      {
-        success: false,
-        message: "Failed to fetch contests",
-      },
-      500,
-    );
+    return c.json({ success: false, message: "Failed to fetch contests" }, 500);
   }
 });
 
@@ -67,14 +89,13 @@ app.get("/admin", async (c) => {
 app.get("/:id", async (c) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
-      return c.json(
-        {
-          success: false,
-          message: "Unauthorized",
-        },
-        401,
-      );
+    if (!session?.user?.id) {
+      return c.json({ success: false, message: "Unauthorized" }, 401);
+    }
+
+    const allowed = await hasPermission(session.user.id, "contest", "view");
+    if (!allowed) {
+      return c.json({ success: false, message: "Unauthorized" }, 401);
     }
 
     const id = c.req.param("id");
@@ -82,13 +103,7 @@ app.get("/:id", async (c) => {
     return c.json(result);
   } catch (error) {
     console.error("Error fetching contest:", error);
-    return c.json(
-      {
-        success: false,
-        message: "Failed to fetch contest",
-      },
-      500,
-    );
+    return c.json({ success: false, message: "Failed to fetch contest" }, 500);
   }
 });
 
@@ -100,18 +115,17 @@ app.get("/:id", async (c) => {
 app.post("/", async (c) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
-      return c.json(
-        {
-          success: false,
-          message: "Unauthorized",
-        },
-        401,
-      );
+    if (!session?.user?.id) {
+      return c.json({ success: false, message: "Unauthorized" }, 401);
+    }
+
+    const allowed = await hasPermission(session.user.id, "contest", "create");
+    if (!allowed) {
+      return c.json({ success: false, message: "Unauthorized" }, 401);
     }
 
     const body = await c.req.json();
-    
+
     // Validate request body
     const validatedData = await contestSchema.validate(body, {
       abortEarly: false,
@@ -122,24 +136,10 @@ app.post("/", async (c) => {
     return c.json(result, result.success ? 201 : 400);
   } catch (error) {
     if (error instanceof ValidationError) {
-      return c.json(
-        {
-          success: false,
-          message: "Validation failed",
-          errors: error.errors,
-        },
-        400,
-      );
+      return c.json({ success: false, message: "Validation failed", errors: error.errors }, 400);
     }
-
     console.error("Error creating contest:", error);
-    return c.json(
-      {
-        success: false,
-        message: "Failed to create contest",
-      },
-      500,
-    );
+    return c.json({ success: false, message: "Failed to create contest" }, 500);
   }
 });
 
@@ -151,19 +151,18 @@ app.post("/", async (c) => {
 app.put("/:id", async (c) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
-      return c.json(
-        {
-          success: false,
-          message: "Unauthorized",
-        },
-        401,
-      );
+    if (!session?.user?.id) {
+      return c.json({ success: false, message: "Unauthorized" }, 401);
+    }
+
+    const allowed = await hasPermission(session.user.id, "contest", "update");
+    if (!allowed) {
+      return c.json({ success: false, message: "Unauthorized" }, 401);
     }
 
     const id = c.req.param("id");
     const body = await c.req.json();
-    
+
     // Validate request body
     const validatedData = await updateContestSchema.validate(body, {
       abortEarly: false,
@@ -174,24 +173,10 @@ app.put("/:id", async (c) => {
     return c.json(result, result.success ? 200 : 400);
   } catch (error) {
     if (error instanceof ValidationError) {
-      return c.json(
-        {
-          success: false,
-          message: "Validation failed",
-          errors: error.errors,
-        },
-        400,
-      );
+      return c.json({ success: false, message: "Validation failed", errors: error.errors }, 400);
     }
-
     console.error("Error updating contest:", error);
-    return c.json(
-      {
-        success: false,
-        message: "Failed to update contest",
-      },
-      500,
-    );
+    return c.json({ success: false, message: "Failed to update contest" }, 500);
   }
 });
 
@@ -203,14 +188,13 @@ app.put("/:id", async (c) => {
 app.delete("/:id", async (c) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
-      return c.json(
-        {
-          success: false,
-          message: "Unauthorized",
-        },
-        401,
-      );
+    if (!session?.user?.id) {
+      return c.json({ success: false, message: "Unauthorized" }, 401);
+    }
+
+    const allowed = await hasPermission(session.user.id, "contest", "delete");
+    if (!allowed) {
+      return c.json({ success: false, message: "Unauthorized" }, 401);
     }
 
     const id = c.req.param("id");
@@ -218,13 +202,7 @@ app.delete("/:id", async (c) => {
     return c.json(result, result.success ? 200 : 400);
   } catch (error) {
     console.error("Error deleting contest:", error);
-    return c.json(
-      {
-        success: false,
-        message: "Failed to delete contest",
-      },
-      500,
-    );
+    return c.json({ success: false, message: "Failed to delete contest" }, 500);
   }
 });
 
@@ -236,42 +214,32 @@ app.delete("/:id", async (c) => {
 app.patch("/:id/toggle", async (c) => {
   try {
     const session = await getSession();
-    if (!session?.user?.id || session.user.role !== 'admin') {
-      return c.json(
-        {
-          success: false,
-          message: "Unauthorized",
-        },
-        401,
-      );
+    if (!session?.user?.id) {
+      return c.json({ success: false, message: "Unauthorized" }, 401);
+    }
+
+    const allowed = await hasPermission(session.user.id, "contest", "status");
+    if (!allowed) {
+      return c.json({ success: false, message: "Unauthorized" }, 401);
     }
 
     const id = c.req.param("id");
-    
+
     // Get current contest
     const currentResult = await ContestService.getContestById(id);
     if (!currentResult.success || !currentResult.data) {
-      return c.json({
-        success: false,
-        message: "Contest not found",
-      }, 404);
+      return c.json({ success: false, message: "Contest not found" }, 404);
     }
 
     // Toggle the active status
     const result = await ContestService.updateContest(id, {
-      isActive: !currentResult.data.isActive
+      isActive: !currentResult.data.isActive,
     });
-    
+
     return c.json(result, result.success ? 200 : 400);
   } catch (error) {
     console.error("Error toggling contest status:", error);
-    return c.json(
-      {
-        success: false,
-        message: "Failed to toggle contest status",
-      },
-      500,
-    );
+    return c.json({ success: false, message: "Failed to toggle contest status" }, 500);
   }
 });
 
