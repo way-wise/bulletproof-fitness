@@ -223,7 +223,7 @@ export default function ContestMain() {
                 </Button>
               )}
             </div>
-            <div className="w-full md:w-1/2 relative z-20">
+            <div className="relative z-20 w-full md:w-1/2">
               <video
                 src="/assets/promo.mp4"
                 className="h-full w-full rounded-lg object-cover"
