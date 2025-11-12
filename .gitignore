@@ -42,7 +42,3 @@ next-env.d.ts
 
 # prisma
 prisma/generated
-
-# large video files
-public/assets/promo.mp4
-*.mp4
