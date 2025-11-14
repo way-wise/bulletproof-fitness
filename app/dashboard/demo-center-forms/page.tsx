@@ -982,6 +982,20 @@ export default function FormBuilderPage() {
                                       className="h-7 w-7 bg-background shadow-sm"
                                       onClick={(e) => {
                                         e.stopPropagation();
+
+                                        // Clear active entity if it's the grid or any of its children
+                                        const gridChildrenIds = (
+                                          gridChildren[props.entity.id] || []
+                                        ).map((c: any) => c.id);
+                                        if (
+                                          activeEntityId === props.entity.id ||
+                                          gridChildrenIds.includes(
+                                            activeEntityId,
+                                          )
+                                        ) {
+                                          setActiveEntityId(undefined);
+                                        }
+
                                         builderStore.deleteEntity(
                                           props.entity.id,
                                         );
@@ -1048,6 +1062,10 @@ export default function FormBuilderPage() {
                                     className="h-7 w-7 bg-background shadow-sm"
                                     onClick={(e) => {
                                       e.stopPropagation();
+                                      // Clear active entity if it's the one being deleted
+                                      if (activeEntityId === props.entity.id) {
+                                        setActiveEntityId(undefined);
+                                      }
                                       builderStore.deleteEntity(
                                         props.entity.id,
                                       );
