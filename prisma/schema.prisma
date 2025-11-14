@@ -15,25 +15,26 @@ datasource db {
 }
 
 model users {
-  id                   String                 @id @default(ulid())
-  email                String                 @unique
-  name                 String
-  emailVerified        Boolean
-  image                String?
-  role                 String?                @default("user")
-  banned               Boolean?
-  banReason            String?
-  banExpires           Int?
-  totalPoints          Float                  @default(0)
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
-  sessions             sessions[]
-  accounts             accounts[]
-  exerciseSetups       ExerciseSetup[]
-  ExerciseLibraryVideo ExerciseLibraryVideo[]
-  views                UserView[]
-  ratings              UserRating[]
-  reactions            UserReaction[]
+  id                        String                     @id @default(ulid())
+  email                     String                     @unique
+  name                      String
+  emailVerified             Boolean
+  image                     String?
+  role                      String?                    @default("user")
+  banned                    Boolean?
+  banReason                 String?
+  banExpires                Int?
+  totalPoints               Float                      @default(0)
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+  sessions                  sessions[]
+  accounts                  accounts[]
+  exerciseSetups            ExerciseSetup[]
+  ExerciseLibraryVideo      ExerciseLibraryVideo[]
+  views                     UserView[]
+  ratings                   UserRating[]
+  reactions                 UserReaction[]
+  demoCenterFormSubmissions DemoCenterFormSubmission[]
 
   @@index([email])
   @@index([emailVerified])
@@ -231,29 +232,31 @@ model ExSetupRak {
 }
 
 model DemoCenter {
-  id                   String                @id @default(ulid())
-  buildingType         String
-  name                 String
-  address              String
-  contact              String
-  cityZip              String
-  lat                  Float?
-  lng                  Float?
-  bio                  String
-  image                String
-  availability         String?
-  weekdays             String[]
-  weekends             String[]
-  weekdayOpen          String?
-  weekdayClose         String?
-  weekendOpen          String?
-  weekendClose         String?
-  isPublic             Boolean               @default(false)
-  blocked              Boolean               @default(false)
-  blockReason          String?
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  demoCenterEquipments DemoCenterEquipment[]
+  id                        String                     @id @default(ulid())
+  buildingType              String
+  name                      String
+  address                   String
+  contact                   String
+  cityZip                   String
+  lat                       Float?
+  lng                       Float?
+  bio                       String
+  image                     String
+  availability              String?
+  weekdays                  String[]
+  weekends                  String[]
+  weekdayOpen               String?
+  weekdayClose              String?
+  weekendOpen               String?
+  weekendClose              String?
+  isPublic                  Boolean                    @default(false)
+  blocked                   Boolean                    @default(false)
+  blockReason               String?
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
+  demoCenterEquipments      DemoCenterEquipment[]
+  demoCenterFormSchema      DemoCenterFormSchema?
+  demoCenterFormSubmissions DemoCenterFormSubmission[]
 
   @@index([isPublic, blocked])
   @@index([lat, lng])
@@ -268,6 +271,40 @@ model DemoCenterEquipment {
   equipment    Equipment  @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+}
+
+// Dynamic form schema attached to a demo center
+model DemoCenterFormSchema {
+  id           String     @id @default(ulid())
+  demoCenterId String     @unique
+  demoCenter   DemoCenter @relation(fields: [demoCenterId], references: [id], onDelete: Cascade)
+
+  // Separate JSON schemas for business and residential forms
+  businessFormSchema    Json?
+  residentialFormSchema Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// User submissions to a demo center form
+model DemoCenterFormSubmission {
+  id           String     @id @default(ulid())
+  demoCenterId String
+  demoCenter   DemoCenter @relation(fields: [demoCenterId], references: [id], onDelete: Cascade)
+
+  userId String?
+  user   users?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Answers keyed by field name according to schemaJson
+  values Json
+  status String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([demoCenterId])
+  @@index([userId])
 }
 
 model ExerciseLibraryVideo {

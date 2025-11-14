@@ -85,8 +85,20 @@ const SidebarMenu = () => {
     {
       title: "Demo Centers",
       icon: <Building2 className="icon" />,
-      url: "/dashboard/demo-centers",
+      baseUrl: "/dashboard/demo-centers",
       permission: { resource: "demoCenter", action: "list" }, // DEMO_CENTER_LIST
+      submenu: [
+        {
+          title: "All Demo Centers",
+          url: "/dashboard/demo-centers",
+          permission: { resource: "demoCenter", action: "list" }, // DEMO_CENTER_LIST
+        },
+        {
+          title: "Form Builder",
+          url: "/dashboard/demo-center-forms",
+          permission: { resource: "demoCenterForm", action: "view" }, // VIEW_DEMO_CENTER_FORMS
+        },
+      ],
     },
     {
       title: "Feedbacks",
@@ -161,7 +173,10 @@ const SidebarMenu = () => {
             // If no permission required, show it
             if (!submenu.permission) return true;
             // Check if user has the required permission
-            return hasPermission(submenu.permission.resource, submenu.permission.action);
+            return hasPermission(
+              submenu.permission.resource,
+              submenu.permission.action,
+            );
           });
 
           // Only show parent menu if there are visible submenu items

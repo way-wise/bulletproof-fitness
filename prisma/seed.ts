@@ -405,6 +405,36 @@ async function main() {
       group: "FEEDBACK",
     },
 
+    // Demo Center Form Builder (4 permissions)
+    {
+      resource: "demoCenterForm",
+      action: "view",
+      displayName: "VIEW_DEMO_CENTER_FORMS",
+      description: "View demo center form schemas",
+      group: "DEMO_CENTER_MANAGEMENT",
+    },
+    {
+      resource: "demoCenterForm",
+      action: "create",
+      displayName: "CREATE_DEMO_CENTER_FORMS",
+      description: "Create demo center form schemas",
+      group: "DEMO_CENTER_MANAGEMENT",
+    },
+    {
+      resource: "demoCenterForm",
+      action: "update",
+      displayName: "UPDATE_DEMO_CENTER_FORMS",
+      description: "Update demo center form schemas",
+      group: "DEMO_CENTER_MANAGEMENT",
+    },
+    {
+      resource: "demoCenterForm",
+      action: "delete",
+      displayName: "DELETE_DEMO_CENTER_FORMS",
+      description: "Delete demo center form schemas",
+      group: "DEMO_CENTER_MANAGEMENT",
+    },
+
     // System (2 permissions)
     {
       resource: "system",
