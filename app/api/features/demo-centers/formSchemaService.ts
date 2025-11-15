@@ -5,6 +5,8 @@ export interface FormBuilderSchema {
   gridChildren: Record<string, any[]>; // Nested children in grid layouts
 }
 
+const DEMO_CENTER_ID = "demo-center-1";
+
 export class FormSchemaService {
   /**
    * Get form schema for a demo center
@@ -62,7 +64,7 @@ export class FormSchemaService {
   /**
    * Get business form schema
    */
-  async getBusinessFormSchema(demoCenterId: string) {
+  async getBusinessFormSchema(demoCenterId: string = DEMO_CENTER_ID) {
     const schema = await prisma.demoCenterFormSchema.findUnique({
       where: { demoCenterId },
       select: { businessFormSchema: true },
@@ -74,7 +76,7 @@ export class FormSchemaService {
   /**
    * Get residential form schema
    */
-  async getResidentialFormSchema(demoCenterId: string) {
+  async getResidentialFormSchema(demoCenterId: string = DEMO_CENTER_ID) {
     const schema = await prisma.demoCenterFormSchema.findUnique({
       where: { demoCenterId },
       select: { residentialFormSchema: true },

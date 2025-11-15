@@ -34,6 +34,7 @@ model users {
   views                     UserView[]
   ratings                   UserRating[]
   reactions                 UserReaction[]
+  newDemoCenters            NewDemoCenter[] // NEW - dynamic submissions
   demoCenterFormSubmissions DemoCenterFormSubmission[]
 
   @@index([email])
@@ -305,6 +306,25 @@ model DemoCenterFormSubmission {
 
   @@index([demoCenterId])
   @@index([userId])
+}
+
+// NEW: Dynamic demo center submissions from public form builder
+model NewDemoCenter {
+  id     String  @id @default(ulid())
+  userId String?
+  user   users?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  type    String // "business" or "residential"
+  details Json // Dynamic form data from builder
+  status  String @default("pending") // "pending", "approved", "rejected"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model ExerciseLibraryVideo {

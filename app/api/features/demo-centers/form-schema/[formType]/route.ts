@@ -2,11 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { formSchemaService } from "../../formSchemaService";
 import prisma from "@/lib/prisma";
 
-// For now, we'll use a hardcoded demo center ID
-// In production, this would come from the authenticated user's demo center
 const DEMO_CENTER_ID = "demo-center-1";
 
-// Ensure demo center exists
+// Ensure demo center exists before saving schema
 async function ensureDemoCenterExists() {
   const existing = await prisma.demoCenter.findUnique({
     where: { id: DEMO_CENTER_ID },
@@ -16,18 +14,20 @@ async function ensureDemoCenterExists() {
     await prisma.demoCenter.create({
       data: {
         id: DEMO_CENTER_ID,
-        buildingType: "Commercial",
+        buildingType: "BUSINESS",
         name: "Default Demo Center",
         address: "123 Main St",
         contact: "555-0100",
-        cityZip: "Default City, CA 12345",
-        lat: 0,
-        lng: 0,
+        cityZip: "New York, NY 10001",
         bio: "Default demo center for form builder",
-        image: "",
-        weekdays: [],
-        weekends: [],
-        isPublic: true,
+        image: "https://via.placeholder.com/400",
+        weekdays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        weekends: ["Saturday", "Sunday"],
+        weekdayOpen: "9:00 AM",
+        weekdayClose: "5:00 PM",
+        weekendOpen: "10:00 AM",
+        weekendClose: "4:00 PM",
+        isPublic: false,
         blocked: false,
       },
     });
@@ -106,9 +106,9 @@ export async function GET(
 
     let schema;
     if (formType === "business") {
-      schema = await formSchemaService.getBusinessFormSchema(DEMO_CENTER_ID);
+      schema = await formSchemaService.getBusinessFormSchema();
     } else {
-      schema = await formSchemaService.getResidentialFormSchema(DEMO_CENTER_ID);
+      schema = await formSchemaService.getResidentialFormSchema();
     }
 
     return NextResponse.json({
