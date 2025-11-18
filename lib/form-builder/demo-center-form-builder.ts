@@ -4,6 +4,7 @@ import { textareaFieldEntity } from "./entities/textarea-field";
 import { selectFieldEntity } from "./entities/select-field";
 import { fileFieldEntity } from "./entities/file-field";
 import { gridLayoutEntity } from "./entities/grid-layout";
+import { locationFieldEntity } from "./entities/location-field";
 
 export const demoCenterFormBuilder = createBuilder({
   entities: [
@@ -12,6 +13,7 @@ export const demoCenterFormBuilder = createBuilder({
     selectFieldEntity,
     fileFieldEntity,
     gridLayoutEntity,
+    locationFieldEntity,
   ],
 });
 

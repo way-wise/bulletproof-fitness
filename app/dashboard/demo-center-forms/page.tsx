@@ -24,6 +24,7 @@ import {
   X,
   LayoutGrid,
   GripVertical,
+  MapPin,
 } from "lucide-react";
 import { demoCenterFormBuilder } from "@/lib/form-builder/demo-center-form-builder";
 import { labelAttribute } from "@/lib/form-builder/attributes/label";
@@ -37,6 +38,7 @@ import { textareaFieldEntity } from "@/lib/form-builder/entities/textarea-field"
 import { selectFieldEntity } from "@/lib/form-builder/entities/select-field";
 import { fileFieldEntity } from "@/lib/form-builder/entities/file-field";
 import { gridLayoutEntity } from "@/lib/form-builder/entities/grid-layout";
+import { locationFieldEntity } from "@/lib/form-builder/entities/location-field";
 import { toast } from "sonner";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -322,6 +324,35 @@ const FileFieldEntity = createEntityComponent(fileFieldEntity, (props) => {
   );
 });
 
+const LocationFieldEntity = createEntityComponent(
+  locationFieldEntity,
+  (props) => {
+    const label = props.entity.attributes.label as string;
+    const placeholder = props.entity.attributes.placeholder as string;
+    const required = props.entity.attributes.required as boolean;
+
+    return (
+      <div className="space-y-2">
+        <Label className="text-sm">
+          {label || "Location"}
+          {required && <span className="text-red-500"> *</span>}
+        </Label>
+        <div className="relative">
+          <MapPin className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder={placeholder || "Search for a location..."}
+            disabled
+            className="pl-10"
+          />
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Users will be able to search and select a location using Google Places
+        </p>
+      </div>
+    );
+  },
+);
+
 const GridLayoutEntityWrapper = ({
   entity,
   gridChildren,
@@ -477,6 +508,16 @@ function FileFieldAttributes() {
   return (
     <div className="space-y-4">
       <LabelAttribute />
+      <RequiredAttribute />
+    </div>
+  );
+}
+
+function LocationFieldAttributes() {
+  return (
+    <div className="space-y-4">
+      <LabelAttribute />
+      <PlaceholderAttribute />
       <RequiredAttribute />
     </div>
   );
@@ -668,6 +709,7 @@ export default function FormBuilderPage() {
     { type: "textareaField", label: "Text Area", icon: FileText },
     { type: "selectField", label: "Dropdown", icon: List },
     { type: "fileField", label: "File Upload", icon: Image },
+    { type: "locationField", label: "Location", icon: MapPin },
     { type: "gridLayout", label: "Grid Layout", icon: LayoutGrid },
   ];
 
@@ -937,6 +979,7 @@ export default function FormBuilderPage() {
                         textareaField: TextareaFieldEntity,
                         selectField: SelectFieldEntity,
                         fileField: FileFieldEntity,
+                        locationField: LocationFieldEntity,
                         gridLayout: GridLayoutEntity,
                       }}
                     >
@@ -1268,6 +1311,7 @@ export default function FormBuilderPage() {
                       textareaField: TextareaFieldAttributes,
                       selectField: SelectFieldAttributes,
                       fileField: FileFieldAttributes,
+                      locationField: LocationFieldAttributes,
                       gridLayout: GridLayoutAttributes,
                     }}
                     entityId={activeEntityId}

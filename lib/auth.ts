@@ -10,6 +10,7 @@ import { ac, superAdmin, admin as adminRole, user } from "./permissions";
 export const auth = betterAuth({
   trustedOrigins: [
     "http://localhost:3000",
+    "http://localhost:3001",
     "https://bulletproof.waywisetech.com",
   ],
   database: prismaAdapter(prisma, {

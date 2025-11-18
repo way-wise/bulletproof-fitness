@@ -1,4 +1,5 @@
 import NewDemoCenterForm from "./_components/NewDemoCenterForm";
+import { formSchemaService } from "@/app/api/features/demo-centers/formSchemaService";
 
 interface FormSchema {
   schema: {
@@ -10,32 +11,25 @@ interface FormSchema {
 
 async function getFormSchemas() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-
-    // Fetch both schemas in parallel
-    const [businessRes, residentialRes] = await Promise.all([
-      fetch(`${baseUrl}/api/features/demo-centers/form-schema/business`, {
-        cache: "no-store",
-      }),
-      fetch(`${baseUrl}/api/features/demo-centers/form-schema/residential`, {
-        cache: "no-store",
-      }),
+    // Call service directly in server component - no need for HTTP fetch
+    const [businessSchema, residentialSchema] = await Promise.all([
+      formSchemaService.getBusinessFormSchema(),
+      formSchemaService.getResidentialFormSchema(),
     ]);
 
-    let businessSchema: FormSchema | null = null;
-    let residentialSchema: FormSchema | null = null;
+    console.log(
+      "[getFormSchemas] Business schema:",
+      businessSchema ? "loaded" : "null",
+    );
+    console.log(
+      "[getFormSchemas] Residential schema:",
+      residentialSchema ? "loaded" : "null",
+    );
 
-    if (businessRes.ok) {
-      const businessData = await businessRes.json();
-      businessSchema = businessData.data || null;
-    }
-
-    if (residentialRes.ok) {
-      const residentialData = await residentialRes.json();
-      residentialSchema = residentialData.data || null;
-    }
-
-    return { businessSchema, residentialSchema };
+    return {
+      businessSchema: businessSchema as FormSchema | null,
+      residentialSchema: residentialSchema as FormSchema | null,
+    };
   } catch (error) {
     console.error("Error loading form schemas:", error);
     return { businessSchema: null, residentialSchema: null };

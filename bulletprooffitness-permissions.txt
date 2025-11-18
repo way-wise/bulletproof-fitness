@@ -1,0 +1,77 @@
+# Users Management
+- User List
+- Create User
+- Update User
+- View User (User Details)
+- Impersonate User
+- Delete User
+- Ban/Unban User
+- Set User Password
+- Set User Role
+- List Session
+- Revoke Session
+
+# Demo Centers
+- Demo Center List
+- Create Demo Center
+- Update Demo Center
+- Delete Demo Center
+- Publish/Unpublish Demo Center
+
+# Role Permissions Management
+- Role List
+- Create Role
+- Update Role
+- Delete Role
+
+# Equipment Management
+- Equipment List
+- Create Equipment
+- Update Equipment
+- Delete Equipment
+
+# Body Parts Management
+- Body List
+- Create Body
+- Update Body
+- Delete Body
+
+# Racks Management
+- Rack List
+- Create Rack
+- Update Rack
+- Delete Rack
+
+# Exercise Library Management
+- Exercise Library List
+- Create Exercise Library
+- Update Exercise Library
+- Delete Exercise Library
+- Public/Private Status Update
+
+# Exercise Setup Management
+- Exercise Setup List
+- Create Setup Library
+- Update Setup Library
+- Delete Setup Library
+- Public/Private Status Update
+
+# Point System Management
+- Points List
+- Update Point
+- Point Active/Deactivate Status
+
+# Contest Management
+- Contest View
+- Create Contest
+- Update Contest
+- Delete Contest
+- Active/Deactivate Contest
+- Leaderboard List
+
+# Feedback
+- Feedback List
+
+# System
+- Dashboard Stats
+- Recent Activity

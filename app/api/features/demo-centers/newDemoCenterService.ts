@@ -46,16 +46,27 @@ export class NewDemoCenterService {
     type?: "business" | "residential";
     status?: string;
     userId?: string;
+    location?: string; // Search by city, state, or address
     page?: number;
     limit?: number;
   }) {
-    const { type, status, userId, page = 1, limit = 10 } = filters || {};
+    const {
+      type,
+      status,
+      userId,
+      location,
+      page = 1,
+      limit = 10,
+    } = filters || {};
     const skip = (page - 1) * limit;
 
     const where: any = {};
     if (type) where.type = type;
     if (status) where.status = status;
     if (userId) where.userId = userId;
+
+    // Note: Location search would need to query JSON field
+    // For now, location filtering is not supported
 
     const [data, total] = await Promise.all([
       prisma.newDemoCenter.findMany({

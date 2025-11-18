@@ -10,6 +10,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { type, formData, userId } = body;
 
+    console.log("[POST /new-demo-centers] Received:", {
+      type,
+      formData,
+      userId,
+    });
+
     // Validate type
     if (type !== "business" && type !== "residential") {
       return NextResponse.json(
@@ -40,7 +46,13 @@ export async function POST(request: NextRequest) {
         schema as any,
       );
 
+      console.log("[POST /new-demo-centers] Validation result:", validation);
+
       if (!validation.valid) {
+        console.error(
+          "[POST /new-demo-centers] Validation failed:",
+          validation.errors,
+        );
         return NextResponse.json(
           {
             error: "Validation failed",
@@ -52,11 +64,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the submission
+    console.log("[POST /new-demo-centers] Creating submission...");
     const result = await newDemoCenterService.createNewDemoCenter({
       type,
       details: formData,
       userId,
     });
+    console.log("[POST /new-demo-centers] Submission created:", result.id);
 
     return NextResponse.json({
       success: true,
@@ -83,6 +97,7 @@ export async function GET(request: NextRequest) {
       type: searchParams.get("type") as "business" | "residential" | undefined,
       status: searchParams.get("status") || undefined,
       userId: searchParams.get("userId") || undefined,
+      location: searchParams.get("location") || undefined,
       page: parseInt(searchParams.get("page") || "1"),
       limit: parseInt(searchParams.get("limit") || "10"),
     };

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Upload } from "lucide-react";
 import { useState } from "react";
+import LocationInput from "./LocationInput";
 
 interface FormField {
   id: string;
@@ -129,7 +130,9 @@ export default function DynamicForm({
               value={values[fieldId] || ""}
               onValueChange={(value) => onChange(fieldId, value)}
             >
-              <SelectTrigger className={error ? "border-red-500" : ""}>
+              <SelectTrigger
+                className={`w-full ${error ? "border-red-500" : ""}`}
+              >
                 <SelectValue placeholder={placeholder || "Select..."} />
               </SelectTrigger>
               <SelectContent>
@@ -173,6 +176,23 @@ export default function DynamicForm({
                 const file = e.target.files?.[0];
                 if (file) onChange(fieldId, file);
               }}
+            />
+            {error && <p className="text-sm text-red-500">{error}</p>}
+          </div>
+        );
+
+      case "locationField":
+        return (
+          <div key={entityId} className="space-y-2">
+            <Label htmlFor={fieldId} className="text-sm font-medium">
+              {label}
+              {required && <span className="text-red-500"> *</span>}
+            </Label>
+            <LocationInput
+              value={values[fieldId]}
+              onChange={(location) => onChange(fieldId, location)}
+              placeholder={placeholder}
+              error={!!error}
             />
             {error && <p className="text-sm text-red-500">{error}</p>}
           </div>
@@ -270,7 +290,9 @@ export default function DynamicForm({
               value={values[fieldId] || ""}
               onValueChange={(value) => onChange(fieldId, value)}
             >
-              <SelectTrigger className={error ? "border-red-500" : ""}>
+              <SelectTrigger
+                className={`w-full ${error ? "border-red-500" : ""}`}
+              >
                 <SelectValue placeholder={field.placeholder || "Select..."} />
               </SelectTrigger>
               <SelectContent>
@@ -314,6 +336,23 @@ export default function DynamicForm({
                 const file = e.target.files?.[0];
                 if (file) onChange(fieldId, file);
               }}
+            />
+            {error && <p className="text-sm text-red-500">{error}</p>}
+          </div>
+        );
+
+      case "locationField":
+        return (
+          <div key={field.id} className="space-y-2">
+            <Label htmlFor={fieldId} className="text-sm font-medium">
+              {field.label}
+              {field.required && <span className="text-red-500"> *</span>}
+            </Label>
+            <LocationInput
+              value={values[fieldId]}
+              onChange={(location) => onChange(fieldId, location)}
+              placeholder={field.placeholder}
+              error={!!error}
             />
             {error && <p className="text-sm text-red-500">{error}</p>}
           </div>
