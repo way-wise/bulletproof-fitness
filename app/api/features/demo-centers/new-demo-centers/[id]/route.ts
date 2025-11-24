@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { newDemoCenterService } from "../../newDemoCenterService";
+import { publishingService } from "../../../points/publishingService";
+import { getSession } from "@/lib/auth";
 
 /**
  * GET - Get a single demo center submission by ID
@@ -53,6 +55,27 @@ export async function PATCH(
       id,
       updateData,
     );
+
+    // Handle point approvals based on status change
+    if (status) {
+      const session = await getSession();
+      if (session?.user?.id) {
+        if (status === "approved") {
+          // Demo center is being approved - approve pending points
+          await publishingService.approvePointsForPublishedContent(
+            id,
+            session.user.id,
+          );
+        } else if (status === "rejected") {
+          // Demo center is being rejected - reject pending points
+          await publishingService.rejectPointsForContent(
+            id,
+            session.user.id,
+            "Demo center rejected",
+          );
+        }
+      }
+    }
 
     return NextResponse.json({
       success: true,

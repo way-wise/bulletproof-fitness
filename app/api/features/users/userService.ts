@@ -6,13 +6,15 @@ import { HTTPException } from "hono/http-exception";
 
 export const userService = {
   // Get all users
-  getUsers: async (query: PaginationQuery & {
-    role?: string;
-    banned?: string;
-    emailVerified?: string;
-    sortBy?: string;
-    sortOrder?: string;
-  }) => {
+  getUsers: async (
+    query: PaginationQuery & {
+      role?: string;
+      banned?: string;
+      emailVerified?: string;
+      sortBy?: string;
+      sortOrder?: string;
+    },
+  ) => {
     const session = await getSession();
 
     const { skip, take, page, limit } = getPaginationQuery(query);
@@ -161,6 +163,8 @@ export const userService = {
         name: true,
         email: true,
         totalPoints: true,
+        availablePoints: true,
+        pendingPoints: true,
         createdAt: true,
         updatedAt: true,
         banned: true,
@@ -420,82 +424,66 @@ export const userService = {
   getLeaderboard: async (query: PaginationQuery) => {
     const { skip, take, page, limit } = getPaginationQuery(query);
 
-    const [users, total] = await prisma.$transaction([
-      prisma.users.findMany({
-        where: {
-          OR: [{ banned: false }, { banned: null }],
-          totalPoints: {
-            gt: 0,
-          },
-          AND: [
-            {
-              OR: [{ role: { not: "super" } }, { role: null }],
-            },
-          ],
-        },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          image: true,
-          totalPoints: true,
-          createdAt: true,
-          _count: {
-            select: {
-              exerciseSetups: {
-                where: {
-                  isPublic: true,
-                  blocked: false,
-                },
-              },
-              ExerciseLibraryVideo: {
-                where: {
-                  isPublic: true,
-                  blocked: false,
-                },
-              },
-              views: true,
-              ratings: true,
-              reactions: {
-                where: {
-                  reaction: "LIKE",
-                },
-              },
-            },
-          },
-        },
-        orderBy: {
-          totalPoints: "desc",
-        },
-        skip,
-        take,
-      }),
-      prisma.users.count({
-        where: {
-          OR: [{ banned: false }, { banned: null }],
-          totalPoints: {
-            gt: 0,
-          },
-          AND: [
-            {
-              OR: [{ role: { not: "super" } }, { role: null }],
-            },
-          ],
-        },
-      }),
-    ]);
+    // Get users with their approved point totals from transactions
+    const usersWithPoints = (await prisma.$queryRaw`
+      SELECT 
+        u.id,
+        u.name,
+        u.email,
+        u.image,
+        u.createdAt,
+        COALESCE(SUM(pt.points), 0) as totalPoints,
+        COUNT(DISTINCT CASE WHEN es.isPublic = true AND es.blocked = false THEN es.id END) as exerciseSetupCount,
+        COUNT(DISTINCT CASE WHEN elv.isPublic = true AND elv.blocked = false THEN elv.id END) as exerciseLibraryCount,
+        COUNT(DISTINCT v.id) as viewsCount,
+        COUNT(DISTINCT r.id) as ratingsCount,
+        COUNT(DISTINCT CASE WHEN re.reaction = 'LIKE' THEN re.id END) as likesCount,
+        ROW_NUMBER() OVER (ORDER BY COALESCE(SUM(pt.points), 0) DESC, u.createdAt ASC) as rank
+      FROM users u
+      LEFT JOIN UserPointTransaction pt ON u.id = pt.userId AND pt.status = 'approved'
+      LEFT JOIN exerciseSetups es ON u.id = es.userId
+      LEFT JOIN ExerciseLibraryVideo elv ON u.id = elv.userId
+      LEFT JOIN userView v ON u.id = v.userId
+      LEFT JOIN userRating r ON u.id = r.userId
+      LEFT JOIN userReaction re ON u.id = re.userId
+      WHERE (u.banned = false OR u.banned IS NULL)
+        AND (u.role != 'super' OR u.role IS NULL)
+      GROUP BY u.id, u.name, u.email, u.image, u.createdAt
+      HAVING COALESCE(SUM(pt.points), 0) > 0
+      ORDER BY totalPoints DESC, u.createdAt ASC
+      LIMIT ${take} OFFSET ${skip}
+    `) as any[];
 
-    // Transform data to include computed stats
-    const leaderboardData = users.map((user, index) => ({
-      ...user,
-      rank: skip + index + 1,
-      exerciseSetupCount: user._count.exerciseSetups,
-      exerciseLibraryCount: user._count.ExerciseLibraryVideo,
+    // Get total count
+    const total = (await prisma.$queryRaw`
+      SELECT COUNT(*) as count
+      FROM (
+        SELECT u.id
+        FROM users u
+        LEFT JOIN UserPointTransaction pt ON u.id = pt.userId AND pt.status = 'approved'
+        WHERE (u.banned = false OR u.banned IS NULL)
+          AND (u.role != 'super' OR u.role IS NULL)
+        GROUP BY u.id
+        HAVING COALESCE(SUM(pt.points), 0) > 0
+      ) as grouped_users
+    `) as any[];
+
+    // Transform data to match expected format
+    const leaderboardData = usersWithPoints.map((user: any) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      image: user.image,
+      totalPoints: Number(user.totalPoints),
+      createdAt: user.createdAt,
+      rank: Number(user.rank),
+      exerciseSetupCount: Number(user.exerciseSetupCount),
+      exerciseLibraryCount: Number(user.exerciseLibraryCount),
       totalVideos:
-        user._count.exerciseSetups + user._count.ExerciseLibraryVideo,
-      viewsCount: user._count.views,
-      ratingsCount: user._count.ratings,
-      likesCount: user._count.reactions,
+        Number(user.exerciseSetupCount) + Number(user.exerciseLibraryCount),
+      viewsCount: Number(user.viewsCount),
+      ratingsCount: Number(user.ratingsCount),
+      likesCount: Number(user.likesCount),
     }));
 
     return {
@@ -503,8 +491,8 @@ export const userService = {
       meta: {
         page,
         limit,
-        total,
-        totalPages: Math.ceil(total / limit),
+        total: Number(total[0]?.count || 0),
+        totalPages: Math.ceil(Number(total[0]?.count || 0) / limit),
       },
     };
   },

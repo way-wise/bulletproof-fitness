@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { newDemoCenterService } from "../newDemoCenterService";
 import { formSchemaService } from "../formSchemaService";
+import { awardPointsToUser } from "../../actions/actionService";
+import { RewardType } from "@prisma/client";
 
 /**
  * POST - Create a new demo center submission
@@ -71,6 +73,16 @@ export async function POST(request: NextRequest) {
       userId,
     });
     console.log("[POST /new-demo-centers] Submission created:", result.id);
+
+    // Award points for demo center submission (pending until approved)
+    await awardPointsToUser(
+      userId,
+      RewardType.DEMO_CENTER,
+      "Demo Center",
+      "Demo center submission reward",
+      result.id, // reference ID for approval when published
+      false, // pending approval until demo center is approved
+    );
 
     return NextResponse.json({
       success: true,

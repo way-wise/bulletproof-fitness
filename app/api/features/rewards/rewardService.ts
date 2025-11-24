@@ -6,11 +6,23 @@ import { getPaginationQuery } from "../../lib/pagination";
 
 export const rewardService = {
   resetAllUsersPoints: async () => {
+    // Mark all approved transactions as rejected to preserve audit trail
+    await prisma.userPointTransaction.updateMany({
+      where: {
+        status: "approved",
+      },
+      data: {
+        status: "rejected",
+      },
+    });
+
+    // Also reset legacy totalPoints for backward compatibility
     await prisma.users.updateMany({
       data: {
         totalPoints: 0,
       },
     });
+
     return {
       message: "All users points reset successfully",
     };

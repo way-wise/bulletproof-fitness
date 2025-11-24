@@ -78,15 +78,17 @@ export const exerciseLibraryService = {
     }
   },
   // Get all exercise library videos for dashboard (admin) - OPTIMIZED
-  getAllExerciseLibraryVideos: async (query: PaginationQuery & {
-    bodyPartIds?: string;
-    equipmentIds?: string;
-    rackIds?: string;
-    isPublic?: string;
-    blocked?: string;
-    sortBy?: string;
-    sortOrder?: string;
-  }) => {
+  getAllExerciseLibraryVideos: async (
+    query: PaginationQuery & {
+      bodyPartIds?: string;
+      equipmentIds?: string;
+      rackIds?: string;
+      isPublic?: string;
+      blocked?: string;
+      sortBy?: string;
+      sortOrder?: string;
+    },
+  ) => {
     try {
       const { skip, take, page, limit } = getPaginationQuery(query);
 
@@ -206,7 +208,7 @@ export const exerciseLibraryService = {
       const sortBy = query.sortBy || "createdAt";
       const sortOrder = (query.sortOrder || "desc") as "asc" | "desc";
       const orderBy: any = {};
-      
+
       // Handle nested sorting for user name
       if (sortBy === "userName") {
         orderBy.user = { name: sortOrder };
@@ -898,6 +900,8 @@ export const exerciseLibraryService = {
       "UPLOAD_LIBRARY",
       "Exercise Library",
       "Exercise Library Video upload Reward",
+      result.id, // reference ID for approval when published
+      false, // pending approval until content is published
     );
 
     return {

@@ -53,16 +53,19 @@ interface LeaderboardData {
 
 const LeaderboardTable = () => {
   const [page, setPage] = useState(1);
-  const limit = 50;
 
-  const url = `/api/users/leaderboard?page=${page}&limit=${limit}`;
+  const url = `/api/users/leaderboard?page=${page}&limit=${50}`;
   const { data, isLoading, error } = useSWR<LeaderboardData>(url);
 
   const leaderboardData = data?.data || [];
   const totalUsers = data?.meta.total || 0;
 
-  const topThree = leaderboardData.slice(0, 3);
-  const restOfUsers = leaderboardData.slice(3);
+  // Show only top 5 if total users <= 5, otherwise show up to 50 with pagination
+  const displayLimit = totalUsers <= 5 ? totalUsers : 50;
+  const limitedData = leaderboardData.slice(0, displayLimit);
+
+  const topThree = limitedData.slice(0, 3);
+  const restOfUsers = limitedData.slice(3);
 
   // Generate placeholder items for empty positions (starting from rank 4)
   const generatePlaceholderUsers = (startRank: number, count: number) => {
@@ -85,15 +88,15 @@ const LeaderboardTable = () => {
   };
 
   // Calculate starting rank for the table (after top 3)
-  const tableStartRank = (page - 1) * limit + 4;
+  const tableStartRank = (page - 1) * 50 + 4;
 
-  // Fill remaining slots with placeholders if needed
-  const itemsPerPage = limit - 3; // Subtract top 3 from limit
+  // Fill remaining slots with placeholders if needed (only for small datasets)
   const displayUsers = [...restOfUsers];
 
-  if (displayUsers.length < itemsPerPage) {
-    const placeholdersNeeded = itemsPerPage - displayUsers.length;
-    const startRankForPlaceholders = tableStartRank + displayUsers.length;
+  // Only show placeholders when we have very few users (<= 5)
+  if (totalUsers <= 5 && displayUsers.length < 2) {
+    const placeholdersNeeded = 2 - displayUsers.length; // Show max 2 users in table (ranks 4-5)
+    const startRankForPlaceholders = 4 + displayUsers.length;
     const placeholders = generatePlaceholderUsers(
       startRankForPlaceholders,
       placeholdersNeeded,
@@ -135,24 +138,6 @@ const LeaderboardTable = () => {
       return (num / 1000).toFixed(1) + "K";
     }
     return num.toString();
-  };
-
-  const [resetModal, setResetModal] = useState(false);
-  const resetForm = useForm();
-
-  const handleResetPoints = async () => {
-    try {
-      await fetch("/api/rewards/reset-points", {
-        method: "GET",
-      });
-      mutate(url);
-    } catch (error) {
-      console.log(error);
-    }
-
-    setResetModal(false);
-    resetForm.reset();
-    toast.success("Points reset successfully");
   };
 
   if (isLoading) {
@@ -372,14 +357,6 @@ const LeaderboardTable = () => {
             <Trophy className="size-5" />
             Full Rankings
           </CardTitle>
-          <Button
-            variant="outline"
-            className="w-fit"
-            onClick={() => setResetModal(true)}
-          >
-            <RotateCcw className="size-5" />
-            Reset Points
-          </Button>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -555,66 +532,35 @@ const LeaderboardTable = () => {
             ))}
           </div>
 
-          {/* Pagination - Always show for first page */}
-          <div className="mt-6 flex justify-center gap-2">
-            <button
-              onClick={() => setPage(page - 1)}
-              disabled={page <= 1}
-              className="rounded-md border px-4 py-2 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Previous
-            </button>
+          {/* Pagination - Only show when there are more than 5 users */}
+          {totalUsers > 5 && (
+            <div className="mt-6 flex justify-center gap-2">
+              <button
+                onClick={() => setPage(page - 1)}
+                disabled={page <= 1}
+                className="rounded-md border px-4 py-2 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Previous
+              </button>
 
-            <span className="px-4 py-2 text-sm text-muted-foreground">
-              Page {page}{" "}
-              {data?.meta ? `of ${Math.max(1, data.meta.totalPages)}` : "of 1"}
-            </span>
+              <span className="px-4 py-2 text-sm text-muted-foreground">
+                Page {page}{" "}
+                {data?.meta
+                  ? `of ${Math.max(1, data.meta.totalPages)}`
+                  : "of 1"}
+              </span>
 
-            <button
-              onClick={() => setPage(page + 1)}
-              disabled={!data?.meta || page >= data.meta.totalPages}
-              className="rounded-md border px-4 py-2 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+              <button
+                onClick={() => setPage(page + 1)}
+                disabled={!data?.meta || page >= data.meta.totalPages}
+                className="rounded-md border px-4 py-2 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </CardContent>
       </Card>
-
-      {/* Reset confirmed Modal */}
-      <Modal
-        isOpen={resetModal}
-        onClose={() => setResetModal(false)}
-        title="Reset Points"
-        isPending={resetForm.formState.isSubmitting}
-      >
-        <Form {...resetForm}>
-          <form onSubmit={resetForm.handleSubmit(handleResetPoints)}>
-            <FormFieldset disabled={resetForm.formState.isSubmitting}>
-              <p className="mb-5 text-muted-foreground">
-                This will allow the user to log in and use the application
-                again.
-              </p>
-              <div className="flex justify-end gap-3 py-5">
-                <Button
-                  type="button"
-                  onClick={() => setResetModal(false)}
-                  variant="secondary"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="destructive"
-                  isLoading={resetForm.formState.isSubmitting}
-                >
-                  Continue
-                </Button>
-              </div>
-            </FormFieldset>
-          </form>
-        </Form>
-      </Modal>
     </div>
   );
 };

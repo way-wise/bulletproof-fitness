@@ -8,6 +8,7 @@ import { validateInput } from "../../lib/validateInput";
 import { exerciseSetupService } from "./exerciseSetupService";
 import { extractPublicId } from "cloudinary-build-url";
 import cloudinary from "@api/lib/cloudinary";
+import { publishingService } from "../points/publishingService";
 
 export const exerciseSetupModule = new Hono();
 
@@ -379,6 +380,29 @@ exerciseSetupModule.patch("/dashboard/:id/status", async (c: Context) => {
         blockReason,
       },
     );
+
+    // Handle point approvals/rejections based on status change
+    if (isPublic && !blocked) {
+      // Content is being published - approve pending points
+      await publishingService.approvePointsForPublishedContent(
+        id,
+        session.user.id,
+      );
+    } else if (blocked) {
+      // Content is being blocked - reject pending points
+      await publishingService.rejectPointsForContent(
+        id,
+        session.user.id,
+        blockReason || "Content blocked by admin",
+      );
+    } else if (!isPublic) {
+      // Content is being unpublished - reject pending points
+      await publishingService.rejectPointsForContent(
+        id,
+        session.user.id,
+        "Content unpublished",
+      );
+    }
 
     return c.json({
       success: true,

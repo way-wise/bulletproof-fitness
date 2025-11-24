@@ -278,6 +278,8 @@ export interface UserProfile {
   name: string;
   email: string;
   totalPoints: number;
+  availablePoints: number;
+  pendingPoints: number;
   createdAt: string;
   updatedAt: string;
   banned: boolean | null;

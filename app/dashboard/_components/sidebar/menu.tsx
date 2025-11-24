@@ -76,6 +76,16 @@ const SidebarMenu = () => {
           permission: { resource: "points", action: "list" }, // POINTS_LIST
         },
         {
+          title: "Transactions",
+          url: "/dashboard/points/transactions",
+          permission: { resource: "points", action: "list" }, // POINTS_LIST
+        },
+        {
+          title: "Pending Approvals",
+          url: "/dashboard/points/pending",
+          permission: { resource: "points", action: "approve" }, // POINTS_APPROVE
+        },
+        {
           title: "Leaderboard",
           url: "/dashboard/points/leaderboard",
           permission: { resource: "contest", action: "leaderboard" }, // LEADERBOARD_LIST

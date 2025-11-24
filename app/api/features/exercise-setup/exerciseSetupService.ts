@@ -84,15 +84,17 @@ export const exerciseSetupService = {
   },
 
   // Get all exercise setup videos for dashboard (admin) - OPTIMIZED
-  getAllExerciseSetupVideos: async (query: PaginationQuery & {
-    bodyPartIds?: string;
-    equipmentIds?: string;
-    rackIds?: string;
-    isPublic?: string;
-    blocked?: string;
-    sortBy?: string;
-    sortOrder?: string;
-  }) => {
+  getAllExerciseSetupVideos: async (
+    query: PaginationQuery & {
+      bodyPartIds?: string;
+      equipmentIds?: string;
+      rackIds?: string;
+      isPublic?: string;
+      blocked?: string;
+      sortBy?: string;
+      sortOrder?: string;
+    },
+  ) => {
     try {
       const { skip, take, page, limit } = getPaginationQuery(query);
 
@@ -109,7 +111,10 @@ export const exerciseSetupService = {
               ExSetupEquipment: {
                 some: {
                   equipment: {
-                    name: { contains: query.search, mode: "insensitive" as const },
+                    name: {
+                      contains: query.search,
+                      mode: "insensitive" as const,
+                    },
                   },
                 },
               },
@@ -118,7 +123,10 @@ export const exerciseSetupService = {
               ExSetupBodyPart: {
                 some: {
                   bodyPart: {
-                    name: { contains: query.search, mode: "insensitive" as const },
+                    name: {
+                      contains: query.search,
+                      mode: "insensitive" as const,
+                    },
                   },
                 },
               },
@@ -127,7 +135,10 @@ export const exerciseSetupService = {
               ExSetupRak: {
                 some: {
                   rack: {
-                    name: { contains: query.search, mode: "insensitive" as const },
+                    name: {
+                      contains: query.search,
+                      mode: "insensitive" as const,
+                    },
                   },
                 },
               },
@@ -201,7 +212,7 @@ export const exerciseSetupService = {
       const sortBy = query.sortBy || "createdAt";
       const sortOrder = (query.sortOrder || "desc") as "asc" | "desc";
       const orderBy: any = {};
-      
+
       // Handle nested sorting for user name
       if (sortBy === "userName") {
         orderBy.user = { name: sortOrder };
@@ -975,6 +986,8 @@ export const exerciseSetupService = {
       "UPLOAD_EXERCISE",
       "Exercise Setup",
       "Exercise Setup Video upload Reward",
+      result.id, // reference ID for approval when published
+      false, // pending approval until content is published
     );
 
     return {

@@ -24,7 +24,9 @@ model users {
   banned                    Boolean?
   banReason                 String?
   banExpires                Int?
-  totalPoints               Float                      @default(0)
+  totalPoints               Float                      @default(0) // Legacy - will be migrated to availablePoints
+  availablePoints           Float                      @default(0) // Points that are approved and available
+  pendingPoints             Float                      @default(0) // Points waiting for approval
   createdAt                 DateTime                   @default(now())
   updatedAt                 DateTime                   @updatedAt
   sessions                  sessions[]
@@ -36,6 +38,7 @@ model users {
   reactions                 UserReaction[]
   newDemoCenters            NewDemoCenter[] // NEW - dynamic submissions
   demoCenterFormSubmissions DemoCenterFormSubmission[]
+  pointTransactions         UserPointTransaction[]
 
   @@index([email])
   @@index([emailVerified])
@@ -43,6 +46,8 @@ model users {
   @@index([banned])
   @@index([banExpires])
   @@index([totalPoints])
+  @@index([availablePoints])
+  @@index([pendingPoints])
   @@index([name])
 }
 
@@ -427,6 +432,36 @@ model RewardPoints {
   @@index([isActive])
   @@index([type])
   @@map("reward_points")
+}
+
+// Track individual point transactions with approval workflow
+model UserPointTransaction {
+  id     String @id @default(ulid())
+  userId String
+  user   users  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // What earned the points
+  actionType  RewardType // UPLOAD_EXERCISE, UPLOAD_LIBRARY, DEMO_CENTER, LIKE, RATING
+  referenceId String? // The ID of the content (exercise, library video, demo center, etc.)
+
+  // Points details
+  points      Int // Can be positive (award) or negative (deduct)
+  description String? // Human-readable description of the action
+  notes       String? // Admin notes for rejection/reason
+
+  // Status tracking
+  status     String    @default("pending") // "pending", "approved", "rejected"
+  approvedBy String? // Admin who approved/rejected
+  approvedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([actionType])
+  @@index([referenceId])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model UserView {

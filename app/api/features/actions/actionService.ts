@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { ReactionType, RewardType } from "@prisma/client";
 import { PaginationQuery } from "@/schema/paginationSchema";
 import { getPaginationQuery } from "../../lib/pagination";
+import { pointTrackingService } from "../points/pointTrackingService";
 
 async function getRewardPointValue(type: RewardType) {
   const reward = await prisma.rewardPoints.findFirst({
@@ -25,18 +26,21 @@ export async function awardPointsToUser(
   type: RewardType,
   name: string,
   description: string,
+  referenceId?: string,
+  autoApprove: boolean = false,
 ) {
   const points = await getRewardPointValue(type);
 
   if (!points) return;
 
-  await prisma.users.update({
-    where: { id: userId },
-    data: {
-      totalPoints: {
-        increment: points,
-      },
-    },
+  // Use new point tracking system
+  await pointTrackingService.createTransaction({
+    userId,
+    actionType: type,
+    referenceId,
+    points,
+    description,
+    status: autoApprove ? "approved" : "pending",
   });
 }
 export async function decrementPointsFromUser(
@@ -44,18 +48,20 @@ export async function decrementPointsFromUser(
   type: RewardType,
   name: string,
   description: string,
+  referenceId?: string,
 ) {
   const points = await getRewardPointValue(type);
 
   if (!points) return;
 
-  await prisma.users.update({
-    where: { id: userId },
-    data: {
-      totalPoints: {
-        decrement: points,
-      },
-    },
+  // Use new point tracking system for negative points (auto-approved)
+  await pointTrackingService.createTransaction({
+    userId,
+    actionType: type,
+    referenceId,
+    points: -points, // Negative points for deduction
+    description,
+    status: "approved", // Auto-approve deductions
   });
 }
 
@@ -159,6 +165,7 @@ export const actionService = {
               : RewardType.DISLIKE,
             "Reaction",
             `User switched from ${existingReaction.reaction}`,
+            contentId, // reference ID
           );
 
           await awardPointsToUser(
@@ -166,6 +173,8 @@ export const actionService = {
             type === "LIKE" ? RewardType.LIKE : RewardType.DISLIKE,
             "Reaction",
             `User switched to ${type}`,
+            contentId, // reference ID
+            true, // auto-approve reactions
           );
 
           return { message: "Reaction switched", stats };
@@ -190,6 +199,8 @@ export const actionService = {
           RewardType.LIKE,
           "Reaction",
           "User liked",
+          contentId, // reference ID
+          true, // auto-approve likes
         );
       } else {
         await decrementPointsFromUser(
@@ -197,6 +208,7 @@ export const actionService = {
           RewardType.DISLIKE,
           "Reaction",
           "User disliked",
+          contentId, // reference ID
         );
       }
 
@@ -256,6 +268,8 @@ export const actionService = {
             RewardType.RATING,
             "Rating",
             `Rated content ${rating} stars`,
+            contentId, // reference ID
+            true, // auto-approve ratings
           );
         }
       }

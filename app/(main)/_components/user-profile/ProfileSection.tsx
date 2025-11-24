@@ -190,7 +190,7 @@ const ProfileSection = () => {
               <div className="flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-yellow-500" />
                 <span className="font-semibold">
-                  {user?.totalPoints || 0} Points
+                  {user?.availablePoints || 0} Points
                 </span>
               </div>
             </div>
