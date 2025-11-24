@@ -111,7 +111,7 @@ const ExCardsSection = ({
                     Filter
                   </button>
                 </DrawerTrigger>
-                <DrawerContent side="right" className="w-80 flex flex-col">
+                <DrawerContent side="right" className="flex w-80 flex-col">
                   <DrawerHeader className="flex-shrink-0">
                     <div className="flex w-full items-center justify-between">
                       <DrawerTitle>Filters</DrawerTitle>
@@ -137,11 +137,11 @@ const ExCardsSection = ({
                     </div>
                   </DrawerHeader>
                   <div className="flex-1 overflow-hidden">
-                    <div 
+                    <div
                       className="h-full overflow-y-auto px-6 py-4"
-                      style={{ 
-                        scrollbarWidth: 'thin',
-                        WebkitOverflowScrolling: 'touch'
+                      style={{
+                        scrollbarWidth: "thin",
+                        WebkitOverflowScrolling: "touch",
                       }}
                     >
                       <FilterSection onFiltersChange={handleFiltersChange} />
@@ -175,7 +175,7 @@ const ExCardsSection = ({
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {displayData.map((item) => (
                   <ExLibraryCard
-                    alreadyReacted={item.reactions?.[0]?.reaction || null}
+                    alreadyReacted={item.alreadyReacted}
                     type="lib"
                     key={item.id}
                     id={item.id}

@@ -1,3 +1,5 @@
+import { ReactionType } from "@prisma/client";
+
 // Paginated Data Types
 export type PaginatedData<T> = {
   data: T[];
@@ -76,6 +78,9 @@ export type ExerciseLibraryItem = {
   updatedAt: string;
   contentStats?: contentStats[];
   reactions?: Reactions[];
+  alreadyReacted: ReactionType | null;
+  averageRating: number;
+  dislikes: number;
 };
 
 export interface contentStats {
@@ -271,6 +276,12 @@ export type ExerciseSetupVideo = {
     name: string;
     email: string;
   };
+  // Reaction and stats fields
+  alreadyReacted: ReactionType | null;
+  views: number;
+  likes: number;
+  averageRating: number;
+  dislikes: number;
 };
 
 export interface UserProfile {

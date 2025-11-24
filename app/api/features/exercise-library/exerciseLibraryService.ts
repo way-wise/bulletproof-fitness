@@ -807,12 +807,14 @@ export const exerciseLibraryService = {
           ...(session?.user?.id
             ? {
                 reactions: {
-                  where: { userId: session.user.id },
+                  where: {
+                    userId: session.user.id,
+                  },
                   select: {
                     id: true,
                     reaction: true,
+                    libraryId: true,
                   },
-                  take: 1,
                 },
               }
             : {}),
@@ -822,8 +824,28 @@ export const exerciseLibraryService = {
       // Separate count query for better performance
       const total = await prisma.exerciseLibraryVideo.count({ where });
 
+      // Transform data to match frontend expectations
+      const transformedData = exercises.map((exercise: any) => {
+        const alreadyReacted =
+          exercise.reactions?.find((r: any) => r.libraryId === exercise.id)
+            ?.reaction || null;
+        console.log("DEBUG ExerciseLibrary:", {
+          exerciseId: exercise.id,
+          reactions: exercise.reactions,
+          alreadyReacted,
+        });
+        return {
+          ...exercise,
+          alreadyReacted,
+          views: exercise.contentStats?.totalViews || 0,
+          likes: exercise.contentStats?.totalLikes || 0,
+          averageRating: exercise.contentStats?.avgRating || 0,
+          dislikes: 0, // TODO: Calculate from reactions if needed
+        };
+      });
+
       return {
-        data: exercises,
+        data: transformedData,
         meta: {
           total,
           page,
