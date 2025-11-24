@@ -58,7 +58,7 @@ const LeaderboardTable = () => {
   const { data, isLoading, error } = useSWR<LeaderboardData>(url);
 
   const leaderboardData = data?.data || [];
-  const totalUsers = data?.meta.total || 0;
+  const totalUsers = data?.meta?.total || 0;
 
   // Show only top 5 if total users <= 5, otherwise show up to 50 with pagination
   const displayLimit = totalUsers <= 5 ? totalUsers : 50;
@@ -546,13 +546,13 @@ const LeaderboardTable = () => {
               <span className="px-4 py-2 text-sm text-muted-foreground">
                 Page {page}{" "}
                 {data?.meta
-                  ? `of ${Math.max(1, data.meta.totalPages)}`
+                  ? `of ${Math.max(1, data.meta?.totalPages || 1)}`
                   : "of 1"}
               </span>
 
               <button
                 onClick={() => setPage(page + 1)}
-                disabled={!data?.meta || page >= data.meta.totalPages}
+                disabled={!data?.meta || page >= (data.meta?.totalPages || 1)}
                 className="rounded-md border px-4 py-2 hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
