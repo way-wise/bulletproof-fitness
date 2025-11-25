@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Type,
@@ -25,6 +26,8 @@ import {
   LayoutGrid,
   GripVertical,
   MapPin,
+  Check,
+  CheckSquare,
 } from "lucide-react";
 import { demoCenterFormBuilder } from "@/lib/form-builder/demo-center-form-builder";
 import { labelAttribute } from "@/lib/form-builder/attributes/label";
@@ -39,6 +42,8 @@ import { selectFieldEntity } from "@/lib/form-builder/entities/select-field";
 import { fileFieldEntity } from "@/lib/form-builder/entities/file-field";
 import { gridLayoutEntity } from "@/lib/form-builder/entities/grid-layout";
 import { locationFieldEntity } from "@/lib/form-builder/entities/location-field";
+import { checkboxFieldEntity } from "@/lib/form-builder/entities/checkbox-field";
+import { checkboxGroupFieldEntity } from "@/lib/form-builder/entities/checkbox-group-field";
 import { toast } from "sonner";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -353,6 +358,54 @@ const LocationFieldEntity = createEntityComponent(
   },
 );
 
+const CheckboxFieldEntity = createEntityComponent(
+  checkboxFieldEntity,
+  (props) => {
+    const label = props.entity.attributes.label as string;
+    const required = props.entity.attributes.required as boolean;
+
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center space-x-2">
+          <Checkbox disabled />
+          <Label className="text-sm">
+            {label || "Checkbox"}
+            {required && <span className="text-red-500"> *</span>}
+          </Label>
+        </div>
+      </div>
+    );
+  },
+);
+
+const CheckboxGroupFieldEntity = createEntityComponent(
+  checkboxGroupFieldEntity,
+  (props) => {
+    const label = props.entity.attributes.label as string;
+    const required = props.entity.attributes.required as boolean;
+    const options = (props.entity.attributes.options as any[]) || [];
+
+    return (
+      <div className="space-y-2">
+        <Label className="text-sm">
+          {label || "Checkbox Group"}
+          {required && <span className="text-red-500"> *</span>}
+        </Label>
+        <div className="space-y-2">
+          {options
+            .filter((opt: any) => opt.value)
+            .map((opt: any, idx: number) => (
+              <div key={idx} className="flex items-center space-x-2">
+                <Checkbox disabled />
+                <Label className="text-sm">{opt.label}</Label>
+              </div>
+            ))}
+        </div>
+      </div>
+    );
+  },
+);
+
 const GridLayoutEntityWrapper = ({
   entity,
   gridChildren,
@@ -519,6 +572,25 @@ function LocationFieldAttributes() {
       <LabelAttribute />
       <PlaceholderAttribute />
       <RequiredAttribute />
+    </div>
+  );
+}
+
+function CheckboxFieldAttributes() {
+  return (
+    <div className="space-y-4">
+      <LabelAttribute />
+      <RequiredAttribute />
+    </div>
+  );
+}
+
+function CheckboxGroupFieldAttributes() {
+  return (
+    <div className="space-y-4">
+      <LabelAttribute />
+      <RequiredAttribute />
+      <OptionsAttribute />
     </div>
   );
 }
@@ -708,6 +780,8 @@ export default function FormBuilderPage() {
     { type: "textField", label: "Text Input", icon: Type },
     { type: "textareaField", label: "Text Area", icon: FileText },
     { type: "selectField", label: "Dropdown", icon: List },
+    { type: "checkboxField", label: "Checkbox", icon: Check },
+    { type: "checkboxGroupField", label: "Checkbox Group", icon: CheckSquare },
     { type: "fileField", label: "File Upload", icon: Image },
     { type: "locationField", label: "Location", icon: MapPin },
     { type: "gridLayout", label: "Grid Layout", icon: LayoutGrid },
@@ -729,7 +803,8 @@ export default function FormBuilderPage() {
       placeholder: "",
       required: false,
       columnIndex,
-      ...(fieldType === "selectField" && {
+      ...((fieldType === "selectField" ||
+        fieldType === "checkboxGroupField") && {
         options: [{ label: "Option 1", value: "option1" }],
       }),
     };
@@ -910,8 +985,11 @@ export default function FormBuilderPage() {
                   },
                 });
                 newEntityId = entity.id;
-              } else if (fieldType === "selectField") {
-                // Select field needs options
+              } else if (
+                fieldType === "selectField" ||
+                fieldType === "checkboxGroupField"
+              ) {
+                // Select field and checkbox group need options
                 const entity = builderStore.addEntity({
                   type: fieldType as any,
                   attributes: {
@@ -978,6 +1056,8 @@ export default function FormBuilderPage() {
                         textField: TextFieldEntity,
                         textareaField: TextareaFieldEntity,
                         selectField: SelectFieldEntity,
+                        checkboxField: CheckboxFieldEntity,
+                        checkboxGroupField: CheckboxGroupFieldEntity,
                         fileField: FileFieldEntity,
                         locationField: LocationFieldEntity,
                         gridLayout: GridLayoutEntity,
@@ -1310,6 +1390,8 @@ export default function FormBuilderPage() {
                       textField: TextFieldAttributes,
                       textareaField: TextareaFieldAttributes,
                       selectField: SelectFieldAttributes,
+                      checkboxField: CheckboxFieldAttributes,
+                      checkboxGroupField: CheckboxGroupFieldAttributes,
                       fileField: FileFieldAttributes,
                       locationField: LocationFieldAttributes,
                       gridLayout: GridLayoutAttributes,

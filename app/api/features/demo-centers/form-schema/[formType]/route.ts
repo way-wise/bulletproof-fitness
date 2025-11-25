@@ -2,6 +2,50 @@ import { NextRequest, NextResponse } from "next/server";
 import { formSchemaService } from "../../formSchemaService";
 import prisma from "@/lib/prisma";
 
+// Transform builder schema to public form format
+function transformBuilderSchemaToFields(schema: any): any[] {
+  if (!schema?.entities || !schema?.root) {
+    return [];
+  }
+
+  const fields: any[] = [];
+
+  // Process entities in root order
+  schema.root.forEach((entityId: string) => {
+    const entity = schema.entities[entityId];
+    if (!entity) return;
+
+    // Map entity types to field types
+    const fieldTypeMap: Record<string, string> = {
+      textField: "text",
+      textareaField: "textarea",
+      selectField: "select",
+      checkboxField: "checkbox",
+      checkboxGroupField: "checkboxGroup",
+      fileField: "file",
+      locationField: "text", // Treat location as text for now
+      gridLayout: "layout",
+    };
+
+    const fieldType = fieldTypeMap[entity.type] || entity.type;
+
+    const field = {
+      id: entityId,
+      type: fieldType,
+      label: entity.attributes?.label || "Field",
+      name: entityId,
+      placeholder: entity.attributes?.placeholder || "",
+      required: entity.attributes?.required || false,
+      options: entity.attributes?.options || [],
+      layout: entity.attributes?.columns || "1x",
+    };
+
+    fields.push(field);
+  });
+
+  return fields;
+}
+
 const DEMO_CENTER_ID = "demo-center-1";
 
 // Ensure demo center exists before saving schema
@@ -111,9 +155,22 @@ export async function GET(
       schema = await formSchemaService.getResidentialFormSchema();
     }
 
+    console.log("DEBUG: Raw schema from database:", schema);
+
+    // Transform builder schema to public form format
+    const schemaData = typeof schema === "string" ? JSON.parse(schema) : schema;
+    console.log("DEBUG: Parsed schema data:", schemaData);
+
+    const transformedFields = transformBuilderSchemaToFields(
+      schemaData?.schema,
+    );
+    console.log("DEBUG: Transformed fields:", transformedFields);
+
     return NextResponse.json({
       success: true,
-      data: schema || null,
+      schema: {
+        fields: transformedFields,
+      },
     });
   } catch (error) {
     console.error("Error fetching form schema:", error);

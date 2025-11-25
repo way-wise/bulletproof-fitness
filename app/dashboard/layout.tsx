@@ -1,14 +1,17 @@
 import Header from "@/app/dashboard/_components/header";
 import Sidebar from "@/app/dashboard/_components/sidebar";
 import { getSession } from "@/lib/auth";
+import { getSessionCookie } from "better-auth/cookies";
+import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { SidebarProvider } from "@/providers/sidebar-provider";
 import { redirect } from "next/navigation";
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
+  // Note: Authentication is handled by middleware - no need for duplicate checks
   const session = await getSession();
 
-  // If not authenticated, redirect to sign-in
+  // Safety check - if session is somehow null, redirect
   if (!session) {
     redirect("/auth/sign-in");
   }
@@ -45,7 +48,8 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
 
     // Check if user has any LIST or VIEW permission
     const hasListOrViewPermission = role?.rolePermissions.some(
-      (rp) => rp.permission.action === "list" || rp.permission.action === "view"
+      (rp) =>
+        rp.permission.action === "list" || rp.permission.action === "view",
     );
 
     if (!hasListOrViewPermission) {

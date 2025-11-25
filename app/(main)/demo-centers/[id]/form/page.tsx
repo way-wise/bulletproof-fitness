@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import useSWR from "swr";
@@ -198,6 +199,68 @@ export default function DemoCenterFormPage() {
               {field.required && <span className="text-red-500"> *</span>}
             </Label>
             <Input type="file" name={field.name} accept="image/*" />
+            {form.formState.errors[field.name] && (
+              <p className="text-sm text-red-500">This field is required</p>
+            )}
+          </div>
+        );
+
+      case "checkbox":
+        return (
+          <div key={field.id} className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id={field.name}
+                checked={form.watch(field.name) || false}
+                onCheckedChange={(checked) =>
+                  form.setValue(field.name, checked)
+                }
+              />
+              <Label htmlFor={field.name}>
+                {field.label}
+                {field.required && <span className="text-red-500"> *</span>}
+              </Label>
+            </div>
+            {form.formState.errors[field.name] && (
+              <p className="text-sm text-red-500">This field is required</p>
+            )}
+          </div>
+        );
+
+      case "checkboxGroup":
+        return (
+          <div key={field.id} className="space-y-2">
+            <Label>
+              {field.label}
+              {field.required && <span className="text-red-500"> *</span>}
+            </Label>
+            <div className="space-y-2">
+              {(field.options || []).map((option, idx) => {
+                const optionId = `${field.name}_${idx}`;
+                const currentValue = form.watch(field.name) || [];
+                const isChecked = currentValue.includes(option.value);
+
+                return (
+                  <div key={idx} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={optionId}
+                      checked={isChecked}
+                      onCheckedChange={(checked) => {
+                        const newValue = checked
+                          ? [...currentValue, option.value]
+                          : currentValue.filter(
+                              (v: string) => v !== option.value,
+                            );
+                        form.setValue(field.name, newValue);
+                      }}
+                    />
+                    <Label htmlFor={optionId} className="text-sm">
+                      {option.label}
+                    </Label>
+                  </div>
+                );
+              })}
+            </div>
             {form.formState.errors[field.name] && (
               <p className="text-sm text-red-500">This field is required</p>
             )}

@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Upload } from "lucide-react";
 import { useState } from "react";
 import LocationInput from "./LocationInput";
@@ -194,6 +195,62 @@ export default function DynamicForm({
               placeholder={placeholder}
               error={!!error}
             />
+            {error && <p className="text-sm text-red-500">{error}</p>}
+          </div>
+        );
+
+      case "checkboxField":
+        return (
+          <div key={entityId} className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id={fieldId}
+                checked={values[fieldId] || false}
+                onCheckedChange={(checked) => onChange(fieldId, checked)}
+              />
+              <Label htmlFor={fieldId} className="text-sm font-medium">
+                {label}
+                {required && <span className="text-red-500"> *</span>}
+              </Label>
+            </div>
+            {error && <p className="text-sm text-red-500">{error}</p>}
+          </div>
+        );
+
+      case "checkboxGroupField":
+        return (
+          <div key={entityId} className="space-y-2">
+            <Label className="text-sm font-medium">
+              {label}
+              {required && <span className="text-red-500"> *</span>}
+            </Label>
+            <div className="space-y-2">
+              {(attributes.options || []).map((option, idx) => {
+                const optionId = `${fieldId}_${idx}`;
+                const currentValue = values[fieldId] || [];
+                const isChecked = currentValue.includes(option.value);
+
+                return (
+                  <div key={idx} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={optionId}
+                      checked={isChecked}
+                      onCheckedChange={(checked) => {
+                        const newValue = checked
+                          ? [...currentValue, option.value]
+                          : currentValue.filter(
+                              (v: string) => v !== option.value,
+                            );
+                        onChange(fieldId, newValue);
+                      }}
+                    />
+                    <Label htmlFor={optionId} className="text-sm">
+                      {option.label}
+                    </Label>
+                  </div>
+                );
+              })}
+            </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
           </div>
         );
