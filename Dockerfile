@@ -16,6 +16,7 @@ RUN npx prisma generate
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/prisma/generated ./prisma/generated
 COPY . .
 
 # Only NEXT_PUBLIC_* vars are needed at build time (they get inlined into JS bundles)
