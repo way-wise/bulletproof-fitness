@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { newDemoCenterService } from "../newDemoCenterService";
 import { formSchemaService } from "../formSchemaService";
 import { awardPointsToUser } from "../../actions/actionService";
-import { RewardType } from "@prisma/client";
+import { RewardType } from "@/prisma/generated/client";
 
 /**
  * POST - Create a new demo center submission

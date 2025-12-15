@@ -1,6 +1,6 @@
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { ReactionType, RewardType } from "@prisma/client";
+import { ReactionType, RewardType } from "@/prisma/generated/client";
 import { PaginationQuery } from "@/schema/paginationSchema";
 import { getPaginationQuery } from "../../lib/pagination";
 import { pointTrackingService } from "../points/pointTrackingService";
@@ -398,13 +398,13 @@ export const actionService = {
 
     const searchFilter = search
       ? {
-          OR: [
-            { fullName: { contains: search, mode: "insensitive" as const } },
-            { email: { contains: search, mode: "insensitive" as const } },
-            { phone: { contains: search, mode: "insensitive" as const } },
-            { message: { contains: search, mode: "insensitive" as const } },
-          ],
-        }
+        OR: [
+          { fullName: { contains: search, mode: "insensitive" as const } },
+          { email: { contains: search, mode: "insensitive" as const } },
+          { phone: { contains: search, mode: "insensitive" as const } },
+          { message: { contains: search, mode: "insensitive" as const } },
+        ],
+      }
       : {};
 
     const [feedbacks, total] = await prisma.$transaction([

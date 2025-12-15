@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { RewardType } from "@prisma/client";
+import { RewardType } from "@/prisma/generated/client";
 
 export interface CreatePointTransactionParams {
   userId: string;

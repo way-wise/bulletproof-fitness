@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { RewardType } from "@prisma/client";
+import { RewardType } from "@/prisma/generated/client";
 import { PaginationQuery } from "@/schema/paginationSchema";
 import { Reward } from "@/schema/rewardsSchema";
 import { getPaginationQuery } from "../../lib/pagination";

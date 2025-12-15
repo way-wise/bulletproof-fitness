@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pointTrackingService } from "./pointTrackingService";
-import { RewardType } from "@prisma/client";
+import { RewardType } from "@/prisma/generated/client";
 
 /**
  * GET - Get point transactions with optional filters

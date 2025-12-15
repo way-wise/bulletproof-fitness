@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 
-import { ReactionType } from "@prisma/client";
+import { ReactionType } from "@/prisma/generated/client";
 import { paginationQuerySchema } from "@/schema/paginationSchema";
 import { mixed, number, object, string } from "yup";
 import { validateInput } from "../../lib/validateInput";

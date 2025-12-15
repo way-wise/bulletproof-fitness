@@ -1,4 +1,4 @@
-import { ReactionType } from "@prisma/client";
+import { ReactionType } from "@/prisma/generated/client";
 
 // Paginated Data Types
 export type PaginatedData<T> = {

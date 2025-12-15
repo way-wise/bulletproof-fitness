@@ -12,7 +12,7 @@ import { getPaginationQuery } from "@api/lib/pagination";
 import { HTTPException } from "hono/http-exception";
 import { InferType } from "yup";
 import { awardPointsToUser } from "../actions/actionService";
-import { RewardType } from "@prisma/client";
+import { RewardType } from "@/prisma/generated/client";
 
 export const demoCentersService = {
   getDemoCenters: async (query: DemoCenterQuery) => {
